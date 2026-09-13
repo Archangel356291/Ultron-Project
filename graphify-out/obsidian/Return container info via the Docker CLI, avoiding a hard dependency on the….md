@@ -1,18 +1,17 @@
 ---
-source_file: "app.py"
+source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "Legacy App Status Functions"
-location: "L179"
+community: "docker_ps"
+location: "L479"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Legacy_App_Status_Functions
+  - community/docker_ps
 ---
 
 # Return container info via the Docker CLI, avoiding a hard dependency on the…
 
 ## Connections
-- [[docker_ps()_1]] - `rationale_for` [EXTRACTED]
 - [[docker_ps()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Legacy_App_Status_Functions
+#graphify/rationale #graphify/EXTRACTED #community/docker_ps

@@ -1,17 +1,18 @@
 ---
-source_file: "dev-tools/fake_pkgs/discord/__init__.py"
+source_file: "dev-tools/fake_pkgs/anthropic/__init__.py"
 type: "code"
-community: "Discord Bot Core"
-location: "L34"
+community: "anthropic/__init__.py"
+location: "L22"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Discord_Bot_Core
+  - community/anthropic/__init__py
 ---
 
 # .__init__()
 
 ## Connections
-- [[User]] - `method` [EXTRACTED]
+- [[dot-__init__()_9]] - `calls` [EXTRACTED]
+- [[APIStatusError]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Discord_Bot_Core
+#graphify/code #graphify/EXTRACTED #community/anthropic/__init__py

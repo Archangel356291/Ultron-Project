@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-discord-bot/bot.py"
 type: "rationale"
-community: "Discord Test Fakes"
+community: "bot.py"
 location: "L1"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Discord_Test_Fakes
+  - community/botpy
 ---
 
 # Ultron Discord bot — a thin remote-control surface for the existing backend.…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[bot.py]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Discord_Test_Fakes
+#graphify/rationale #graphify/EXTRACTED #community/botpy

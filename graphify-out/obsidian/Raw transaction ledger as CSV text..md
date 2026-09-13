@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "Trade FIFO Engine"
-location: "L1410"
+community: "trades"
+location: "L1451"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Trade_FIFO_Engine
+  - community/trades
 ---
 
 # Raw transaction ledger as CSV text.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_trades_to_csv()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Trade_FIFO_Engine
+#graphify/rationale #graphify/EXTRACTED #community/trades

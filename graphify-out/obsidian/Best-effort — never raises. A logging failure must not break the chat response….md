@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "MCP Tool Dispatch"
-location: "L1743"
+community: "_json_result"
+location: "L1786"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/MCP_Tool_Dispatch
+  - community/_json_result
 ---
 
 # Best-effort — never raises. A logging failure must not break the chat response…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_log_llm_usage()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/MCP_Tool_Dispatch
+#graphify/rationale #graphify/EXTRACTED #community/_json_result

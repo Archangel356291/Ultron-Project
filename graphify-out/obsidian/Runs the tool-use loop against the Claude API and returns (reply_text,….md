@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "MCP Tool Dispatch"
-location: "L2366"
+community: "run_ultron_chat"
+location: "L2415"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/MCP_Tool_Dispatch
+  - community/run_ultron_chat
 ---
 
 # Runs the tool-use loop against the Claude API and returns (reply_text,…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[run_ultron_chat()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/MCP_Tool_Dispatch
+#graphify/rationale #graphify/EXTRACTED #community/run_ultron_chat

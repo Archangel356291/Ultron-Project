@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-discord-bot/requirements.txt"
 type: "code"
-community: "Test Infra & MCP Security"
+community: "fake_pkgs/ (drop-in fake SDKs)"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Test_Infra__MCP_Security
+  - community/fake_pkgs/_drop-in_fake_SDKs
 ---
 
 # aiohttp
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[fake_pkgsaiohttp (aiohttp client fake)]] - `shares_data_with` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Test_Infra__MCP_Security
+#graphify/code #graphify/EXTRACTED #community/fake_pkgs/_drop-in_fake_SDKs

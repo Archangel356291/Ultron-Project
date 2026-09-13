@@ -1,18 +1,17 @@
 ---
-source_file: "app.py"
+source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "Legacy App Status Functions"
-location: "L235"
+community: "route"
+location: "L535"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Legacy_App_Status_Functions
+  - community/route
 ---
 
 # Count of pending OS updates. Real implementation on both platforms: Windows…
 
 ## Connections
-- [[pending_os_updates()_1]] - `rationale_for` [EXTRACTED]
 - [[pending_os_updates()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Legacy_App_Status_Functions
+#graphify/rationale #graphify/EXTRACTED #community/route

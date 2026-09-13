@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-discord-bot/README.md"
 type: "rationale"
-community: "Preview-Confirm Action Pattern"
+community: "Preview-then-confirm action pattern"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Preview-Confirm_Action_Pattern
+  - community/Preview-then-confirm_action_pattern
 ---
 
 # Confirm/Cancel button flow (bot action commands)
@@ -15,4 +15,4 @@ tags:
 - [[deploy command]] - `rationale_for` [EXTRACTED]
 - [[Preview-then-confirm action pattern]] - `references` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Preview-Confirm_Action_Pattern
+#graphify/rationale #graphify/EXTRACTED #community/Preview-then-confirm_action_pattern

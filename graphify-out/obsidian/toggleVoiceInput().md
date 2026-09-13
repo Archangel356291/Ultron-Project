@@ -1,13 +1,13 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "Voice Input Toggle"
+community: "toggleVoiceInput"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Voice_Input_Toggle
+  - community/toggleVoiceInput
 ---
 
 # toggleVoiceInput()
 
-#graphify/code #graphify/EXTRACTED #community/Voice_Input_Toggle
+#graphify/code #graphify/EXTRACTED #community/toggleVoiceInput

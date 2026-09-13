@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "Host Status Functions"
-location: "L493"
+community: "route"
+location: "L534"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Host_Status_Functions
+  - community/route
 ---
 
 # pending_os_updates()
@@ -16,4 +16,4 @@ tags:
 - [[_systems_data()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Host_Status_Functions
+#graphify/code #graphify/EXTRACTED #community/route

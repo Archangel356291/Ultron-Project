@@ -1,18 +1,18 @@
 ---
 source_file: "dev-tools/fake_pkgs/discord/__init__.py"
 type: "code"
-community: "Discord Test Fakes"
+community: "bot.py"
 location: "L89"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Discord_Test_Fakes
+  - community/botpy
 ---
 
 # Interaction
 
 ## Connections
-- [[dot-__init__()_6]] - `method` [EXTRACTED]
+- [[dot-__init__()_4]] - `method` [EXTRACTED]
 - [[dot-cancel()]] - `references` [EXTRACTED]
 - [[dot-confirm()]] - `references` [EXTRACTED]
 - [[dot-interaction_check()]] - `references` [EXTRACTED]
@@ -34,4 +34,4 @@ tags:
 - [[trades_command()]] - `references` [EXTRACTED]
 - [[usage_command()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Discord_Test_Fakes
+#graphify/code #graphify/EXTRACTED #community/botpy

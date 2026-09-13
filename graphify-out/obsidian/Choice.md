@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/discord/__init__.py"
 type: "code"
-community: "Discord UI Component Fakes"
+community: "View"
 location: "L179"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Discord_UI_Component_Fakes
+  - community/View
 ---
 
 # Choice
@@ -17,4 +17,4 @@ tags:
 - [[app_commands]] - `contains` [EXTRACTED]
 - [[export_command()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Discord_UI_Component_Fakes
+#graphify/code #graphify/EXTRACTED #community/View

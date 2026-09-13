@@ -1,13 +1,13 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "rationale"
-community: "Discord Error-Text Bug"
+community: "Discord backend_get Raw-Error-Text Bug"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Discord_Error-Text_Bug
+  - community/Discord_backend_get_Raw-Error-Text_Bug
 ---
 
 # Discord backend_get Raw-Error-Text Bug
 
-#graphify/rationale #graphify/EXTRACTED #community/Discord_Error-Text_Bug
+#graphify/rationale #graphify/EXTRACTED #community/Discord_backend_get_Raw-Error-Text_Bug

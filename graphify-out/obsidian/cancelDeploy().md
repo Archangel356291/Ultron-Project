@@ -1,13 +1,13 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "Cancel Deploy Function"
+community: "cancelDeploy"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Cancel_Deploy_Function
+  - community/cancelDeploy
 ---
 
 # cancelDeploy()
 
-#graphify/code #graphify/EXTRACTED #community/Cancel_Deploy_Function
+#graphify/code #graphify/EXTRACTED #community/cancelDeploy

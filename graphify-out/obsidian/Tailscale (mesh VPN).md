@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/REMOTE-ACCESS.md"
 type: "document"
-community: "Test Infra & MCP Security"
+community: "fake_pkgs/ (drop-in fake SDKs)"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Test_Infra__MCP_Security
+  - community/fake_pkgs/_drop-in_fake_SDKs
 ---
 
 # Tailscale (mesh VPN)
@@ -15,4 +15,4 @@ tags:
 - [[Tailscale grantsACLs (tailnet policy)]] - `references` [EXTRACTED]
 - [[WireGuard]] - `references` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Test_Infra__MCP_Security
+#graphify/document #graphify/EXTRACTED #community/fake_pkgs/_drop-in_fake_SDKs

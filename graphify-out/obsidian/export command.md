@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-discord-bot/README.md"
 type: "document"
-community: "Trade Export Endpoint"
+community: "GET /api/trades/export"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Trade_Export_Endpoint
+  - community/GET_/api/trades/export
 ---
 
 # /export command
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[GET apitradesexport]] - `references` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Trade_Export_Endpoint
+#graphify/document #graphify/EXTRACTED #community/GET_/api/trades/export

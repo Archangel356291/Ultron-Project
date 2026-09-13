@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "Backend Read Routes"
-location: "L1608"
+community: "_fifo_engine"
+location: "L1651"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Backend_Read_Routes
+  - community/_fifo_engine
 ---
 
 # trades_summary()
@@ -14,8 +14,8 @@ tags:
 ## Connections
 - [[_json_result()]] - `calls` [EXTRACTED]
 - [[get_trade_summary()]] - `calls` [EXTRACTED]
-- [[require_token()]] - `references` [EXTRACTED]
-- [[route_1]] - `references` [EXTRACTED]
+- [[require_role()]] - `references` [EXTRACTED]
+- [[route]] - `references` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Backend_Read_Routes
+#graphify/code #graphify/EXTRACTED #community/_fifo_engine

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "Legacy App Status Functions"
+community: "app.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Legacy_App_Status_Functions
+  - community/apppy
 ---
 
 # route
@@ -17,4 +17,4 @@ tags:
 - [[storage()_1]] - `references` [EXTRACTED]
 - [[systems()_1]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Legacy_App_Status_Functions
+#graphify/code #graphify/EXTRACTED #community/apppy

@@ -1,332 +1,339 @@
 {
   "colorGroups": [
     {
-      "query": "tag:#community/Discord_Test_Fakes",
+      "query": "tag:#community/botpy",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/Discord_Bot_Core",
+      "query": "tag:#community/discord/__init__py",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/Anthropic_Client_Fakes",
+      "query": "tag:#community/anthropic/__init__py",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/Backend_API__Principles",
+      "query": "tag:#community/POST_/api/chat_Ultrons_brain",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/Discord_UI_Component_Fakes",
+      "query": "tag:#community/View",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/Backend_Read_Routes",
+      "query": "tag:#community/_json_result",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/Host_Status_Functions",
+      "query": "tag:#community/docker_ps",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/Legacy_App_Status_Functions",
+      "query": "tag:#community/apppy",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/MCP_Tool_Dispatch",
+      "query": "tag:#community/run_ultron_chat",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/aiohttp_Client_Fake",
+      "query": "tag:#community/ClientSession",
       "color": {
         "a": 1,
         "rgb": 12234924
       }
     },
     {
-      "query": "tag:#community/Dashboard_Live_Data_Fetch",
+      "query": "tag:#community/apiGet",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/Development_Tab__Docs",
+      "query": "tag:#community/Ultron_personal_AI_home_lab_system",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/Trade_FIFO_Engine",
+      "query": "tag:#community/trades",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/Test_Infra__MCP_Security",
+      "query": "tag:#community/fake_pkgs/_drop-in_fake_SDKs",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/Safety_Boundaries__MCP_Bugs",
+      "query": "tag:#community/MCP_external_tool/plugin_Support",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/Cost_Controls__Beta_Config",
+      "query": "tag:#community/start-ultronps1",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/Backup/Deploy_Action_Tokens",
+      "query": "tag:#community/ultron-backend/apppy",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/Architecture_Overview",
+      "query": "tag:#community/Flask_Backend_apppy",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/MCP_JSON-RPC_Client",
+      "query": "tag:#community/route",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/Voice__Chat_Dashboard_JS",
+      "query": "tag:#community/authHeaders",
       "color": {
         "a": 1,
         "rgb": 12234924
       }
     },
     {
-      "query": "tag:#community/MCP_Test_Server",
+      "query": "tag:#community/test_mcp_serverpy",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/Trade_Export__Bot_Parity",
+      "query": "tag:#community/_fifo_engine",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/CVE_Scanning",
+      "query": "tag:#community/log_activity",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/Preview-Confirm_Action_Pattern",
+      "query": "tag:#community/Preview-then-confirm_action_pattern",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/Git_Repo_Diff",
+      "query": "tag:#community/require_token",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/Chat_Rate_Limiting",
+      "query": "tag:#community/require_role",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/Fish_Audio_TTS",
+      "query": "tag:#community/Crypto/Trade_Record__Tax_Agent",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/Config_Value_Hardening",
+      "query": "tag:#community/Config_Value_Floor_Hardening",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/Financial_Disclaimer_Boundary",
+      "query": "tag:#community/Financial_and_legal_boundaries_are_explicit_not_implied",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/Tailscale_Address_Script",
+      "query": "tag:#community/get-tailscale-addressps1",
       "color": {
         "a": 1,
         "rgb": 12234924
       }
     },
     {
-      "query": "tag:#community/Trade_Export_Endpoint",
+      "query": "tag:#community/GET_/api/trades/export",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/Obsidian_Vault_Notes",
+      "query": "tag:#community/The_Importer_Obsidian_plugin",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/CORS_After-Request_Hook",
+      "query": "tag:#community/__init__",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/Discord_Error-Text_Bug",
+      "query": "tag:#community/Discord_backend_get_Raw-Error-Text_Bug",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/Discord_Truncation_Bug",
+      "query": "tag:#community/Discord_Field_Truncation_Off-by-N_Bug",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/Tool_Registration_Bug",
+      "query": "tag:#community/get_llm_usage_Tool_Registration_Ordering_Bug",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/Configured-By-Default_Principle",
+      "query": "tag:#community/Nothing_works_until_explicitly_configured",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/Isolated_Exception_Node",
+      "query": "tag:#community/GET_/api/security/cve-scan",
+      "color": {
+        "a": 1,
+        "rgb": 10253663
+      }
+    },
+    {
+      "query": "tag:#community/Running_permanently_at_startup_Task_Scheduler/NSSM",
+      "color": {
+        "a": 1,
+        "rgb": 12234924
+      }
+    },
+    {
+      "query": "tag:#community/cancelBackup",
+      "color": {
+        "a": 1,
+        "rgb": 5142951
+      }
+    },
+    {
+      "query": "tag:#community/cancelDeploy",
+      "color": {
+        "a": 1,
+        "rgb": 15896107
+      }
+    },
+    {
+      "query": "tag:#community/toggleVoiceInput",
+      "color": {
+        "a": 1,
+        "rgb": 14767961
+      }
+    },
+    {
+      "query": "tag:#community/updateClock",
+      "color": {
+        "a": 1,
+        "rgb": 7780274
+      }
+    },
+    {
+      "query": "tag:#community//forget_command",
+      "color": {
+        "a": 1,
+        "rgb": 5873999
+      }
+    },
+    {
+      "query": "tag:#community/require_auth_Discord_ID_allowlist_check",
+      "color": {
+        "a": 1,
+        "rgb": 15583560
+      }
+    },
+    {
+      "query": "tag:#community/start-botps1",
+      "color": {
+        "a": 1,
+        "rgb": 11565729
+      }
+    },
+    {
+      "query": "tag:#community/_indexmd",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/CVE_Scan_Endpoint",
+      "query": "tag:#community/CLAUDEmd",
       "color": {
         "a": 1,
         "rgb": 10253663
-      }
-    },
-    {
-      "query": "tag:#community/Startup/Task_Scheduler_Doc",
-      "color": {
-        "a": 1,
-        "rgb": 12234924
-      }
-    },
-    {
-      "query": "tag:#community/Cancel_Backup_Function",
-      "color": {
-        "a": 1,
-        "rgb": 5142951
-      }
-    },
-    {
-      "query": "tag:#community/Cancel_Deploy_Function",
-      "color": {
-        "a": 1,
-        "rgb": 15896107
-      }
-    },
-    {
-      "query": "tag:#community/Voice_Input_Toggle",
-      "color": {
-        "a": 1,
-        "rgb": 14767961
-      }
-    },
-    {
-      "query": "tag:#community/Dashboard_Clock_Update",
-      "color": {
-        "a": 1,
-        "rgb": 7780274
-      }
-    },
-    {
-      "query": "tag:#community/Forget_Command_Doc",
-      "color": {
-        "a": 1,
-        "rgb": 5873999
-      }
-    },
-    {
-      "query": "tag:#community/Discord_Auth_Allowlist",
-      "color": {
-        "a": 1,
-        "rgb": 15583560
-      }
-    },
-    {
-      "query": "tag:#community/Bot_Startup_Script",
-      "color": {
-        "a": 1,
-        "rgb": 11565729
       }
     }
   ]

@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/README.md"
 type: "document"
-community: "Trade Export Endpoint"
+community: "GET /api/trades/export"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Trade_Export_Endpoint
+  - community/GET_/api/trades/export
 ---
 
 # GET /api/trades/export
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[export command]] - `references` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Trade_Export_Endpoint
+#graphify/document #graphify/EXTRACTED #community/GET_/api/trades/export

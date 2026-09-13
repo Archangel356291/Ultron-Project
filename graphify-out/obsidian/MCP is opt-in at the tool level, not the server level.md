@@ -1,11 +1,11 @@
 ---
 source_file: "README.md"
 type: "rationale"
-community: "Test Infra & MCP Security"
+community: "fake_pkgs/ (drop-in fake SDKs)"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Test_Infra__MCP_Security
+  - community/fake_pkgs/_drop-in_fake_SDKs
 ---
 
 # MCP is opt-in at the tool level, not the server level
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[External tools (MCP) security model]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Test_Infra__MCP_Security
+#graphify/rationale #graphify/EXTRACTED #community/fake_pkgs/_drop-in_fake_SDKs

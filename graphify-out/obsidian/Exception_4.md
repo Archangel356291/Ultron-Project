@@ -1,13 +1,16 @@
 ---
 source_file: ""
 type: "code"
-community: "Isolated Exception Node"
+community: "ClientSession"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Isolated_Exception_Node
+  - community/ClientSession
 ---
 
 # Exception
 
-#graphify/code #graphify/EXTRACTED #community/Isolated_Exception_Node
+## Connections
+- [[ClientError]] - `inherits` [EXTRACTED]
+
+#graphify/code #graphify/EXTRACTED #community/ClientSession

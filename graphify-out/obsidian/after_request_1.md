@@ -1,16 +1,16 @@
 ---
 source_file: ""
 type: "code"
-community: "Host Status Functions"
+community: "app.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Host_Status_Functions
+  - community/apppy
 ---
 
 # after_request
 
 ## Connections
-- [[add_cors_headers()]] - `references` [EXTRACTED]
+- [[add_cors_headers()_1]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Host_Status_Functions
+#graphify/code #graphify/EXTRACTED #community/apppy

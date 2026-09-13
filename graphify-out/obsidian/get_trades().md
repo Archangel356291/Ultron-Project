@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "Trade FIFO Engine"
-location: "L1227"
+community: "trades"
+location: "L1268"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Trade_FIFO_Engine
+  - community/trades
 ---
 
 # get_trades()
@@ -17,4 +17,4 @@ tags:
 - [[trades()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Trade_FIFO_Engine
+#graphify/code #graphify/EXTRACTED #community/trades

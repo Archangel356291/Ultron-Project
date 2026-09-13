@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "Trade FIFO Engine"
-location: "L1283"
+community: "_fifo_engine"
+location: "L1324"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Trade_FIFO_Engine
+  - community/_fifo_engine
 ---
 
 # The one place FIFO matching happens. Returns both an aggregated per-asset view…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_fifo_engine()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Trade_FIFO_Engine
+#graphify/rationale #graphify/EXTRACTED #community/_fifo_engine

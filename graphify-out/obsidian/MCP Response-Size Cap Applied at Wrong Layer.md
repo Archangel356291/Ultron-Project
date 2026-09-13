@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "rationale"
-community: "Safety Boundaries & MCP Bugs"
+community: "MCP (external tool/plugin) Support"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Safety_Boundaries__MCP_Bugs
+  - community/MCP_external_tool/plugin_Support
 ---
 
 # MCP Response-Size Cap Applied at Wrong Layer
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[MCP (external toolplugin) Support]] - `conceptually_related_to` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Safety_Boundaries__MCP_Bugs
+#graphify/rationale #graphify/EXTRACTED #community/MCP_external_tool/plugin_Support

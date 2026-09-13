@@ -1,11 +1,11 @@
 ---
 source_file: "Welcome.md"
 type: "document"
-community: "Obsidian Vault Notes"
+community: "The Importer (Obsidian plugin)"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Obsidian_Vault_Notes
+  - community/The_Importer_Obsidian_plugin
 ---
 
 # Obsidian vault (default welcome note)
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[The Importer (Obsidian plugin)]] - `references` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Obsidian_Vault_Notes
+#graphify/document #graphify/EXTRACTED #community/The_Importer_Obsidian_plugin

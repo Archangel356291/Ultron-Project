@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "Safety Boundaries & MCP Bugs"
+community: "MCP (external tool/plugin) Support"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Safety_Boundaries__MCP_Bugs
+  - community/MCP_external_tool/plugin_Support
 ---
 
 # previewBackup()
@@ -15,4 +15,4 @@ tags:
 - [[apiPost()]] - `calls` [EXTRACTED]
 - [[escapeHtml()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Safety_Boundaries__MCP_Bugs
+#graphify/code #graphify/EXTRACTED #community/MCP_external_tool/plugin_Support

@@ -1,13 +1,13 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "Dashboard Clock Update"
+community: "updateClock"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Dashboard_Clock_Update
+  - community/updateClock
 ---
 
 # updateClock()
 
-#graphify/code #graphify/EXTRACTED #community/Dashboard_Clock_Update
+#graphify/code #graphify/EXTRACTED #community/updateClock

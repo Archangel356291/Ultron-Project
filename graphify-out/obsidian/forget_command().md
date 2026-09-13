@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-discord-bot/bot.py"
 type: "code"
-community: "Discord Test Fakes"
+community: "bot.py"
 location: "L810"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Discord_Test_Fakes
+  - community/botpy
 ---
 
 # forget_command()
@@ -17,4 +17,4 @@ tags:
 - [[command]] - `references` [EXTRACTED]
 - [[require_auth()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Discord_Test_Fakes
+#graphify/code #graphify/EXTRACTED #community/botpy

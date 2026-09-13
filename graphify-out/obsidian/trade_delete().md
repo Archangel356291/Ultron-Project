@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "Backend Read Routes"
-location: "L1602"
+community: "_json_result"
+location: "L1645"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Backend_Read_Routes
+  - community/_json_result
 ---
 
 # trade_delete()
@@ -15,7 +15,7 @@ tags:
 - [[_json_result()]] - `calls` [EXTRACTED]
 - [[delete_trade()]] - `calls` [EXTRACTED]
 - [[require_token()]] - `references` [EXTRACTED]
-- [[route_1]] - `references` [EXTRACTED]
+- [[route]] - `references` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Backend_Read_Routes
+#graphify/code #graphify/EXTRACTED #community/_json_result

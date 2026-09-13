@@ -1,17 +1,19 @@
 ---
-source_file: "app.py"
+source_file: "ultron-backend/app.py"
 type: "code"
-community: "Legacy App Status Functions"
-location: "L112"
+community: "require_role"
+location: "L392"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Legacy_App_Status_Functions
+  - community/require_role
 ---
 
 # wrapper()
 
 ## Connections
-- [[require_token()_1]] - `indirect_call` [INFERRED]
+- [[_resolve_role()]] - `calls` [EXTRACTED]
+- [[require_role()]] - `indirect_call` [INFERRED]
+- [[require_token()]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Legacy_App_Status_Functions
+#graphify/code #graphify/INFERRED #community/require_role

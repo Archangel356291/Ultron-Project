@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "rationale"
-community: "Config Value Hardening"
+community: "Config Value Floor Hardening"
 tags:
   - graphify/rationale
   - graphify/INFERRED
-  - community/Config_Value_Hardening
+  - community/Config_Value_Floor_Hardening
 ---
 
 # Config Value Floor Hardening
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[ANTHROPIC_API_KEY Startup Script UX Trap]] - `semantically_similar_to` [INFERRED]
 
-#graphify/rationale #graphify/INFERRED #community/Config_Value_Hardening
+#graphify/rationale #graphify/INFERRED #community/Config_Value_Floor_Hardening

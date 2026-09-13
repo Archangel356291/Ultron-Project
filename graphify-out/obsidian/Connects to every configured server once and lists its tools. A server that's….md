@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "MCP JSON-RPC Client"
-location: "L2017"
+community: "run_ultron_chat"
+location: "L2060"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/MCP_JSON-RPC_Client
+  - community/run_ultron_chat
 ---
 
 # Connects to every configured server once and lists its tools. A server that's…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_mcp_discover_all()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/MCP_JSON-RPC_Client
+#graphify/rationale #graphify/EXTRACTED #community/run_ultron_chat

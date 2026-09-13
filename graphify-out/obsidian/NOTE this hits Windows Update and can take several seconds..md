@@ -1,18 +1,17 @@
 ---
-source_file: "app.py"
+source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "Legacy App Status Functions"
-location: "L245"
+community: "ultron-backend/app.py"
+location: "L545"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Legacy_App_Status_Functions
+  - community/ultron-backend/apppy
 ---
 
 # # NOTE: this hits Windows Update and can take several seconds.
 
 ## Connections
-- [[app.py]] - `rationale_for` [EXTRACTED]
 - [[ultron-backendapp.py]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Legacy_App_Status_Functions
+#graphify/rationale #graphify/EXTRACTED #community/ultron-backend/apppy

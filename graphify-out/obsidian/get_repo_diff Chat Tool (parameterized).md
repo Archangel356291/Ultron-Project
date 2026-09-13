@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "concept"
-community: "Development Tab & Docs"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Development_Tab__Docs
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # get_repo_diff Chat Tool (parameterized)
@@ -14,4 +14,4 @@ tags:
 - [[Coding Sub-Agent  Development Tab (git data)]] - `conceptually_related_to` [EXTRACTED]
 - [[fetchDevRepos()]] - `shares_data_with` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Development_Tab__Docs
+#graphify/concept #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system

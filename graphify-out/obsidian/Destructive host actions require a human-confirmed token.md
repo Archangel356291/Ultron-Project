@@ -1,11 +1,11 @@
 ---
 source_file: "README.md"
 type: "rationale"
-community: "Preview-Confirm Action Pattern"
+community: "Preview-then-confirm action pattern"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Preview-Confirm_Action_Pattern
+  - community/Preview-then-confirm_action_pattern
 ---
 
 # Destructive host actions require a human-confirmed token
@@ -14,4 +14,4 @@ tags:
 - [[POST apiactionsbackup]] - `rationale_for` [EXTRACTED]
 - [[POST apiactionsdeploy-container]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Preview-Confirm_Action_Pattern
+#graphify/rationale #graphify/EXTRACTED #community/Preview-then-confirm_action_pattern

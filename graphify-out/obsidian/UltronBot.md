@@ -1,20 +1,20 @@
 ---
 source_file: "ultron-discord-bot/bot.py"
 type: "code"
-community: "Discord Test Fakes"
+community: ".__init__"
 location: "L474"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Discord_Test_Fakes
+  - community/__init__
 ---
 
 # UltronBot
 
 ## Connections
-- [[dot-__init__()_1]] - `method` [EXTRACTED]
-- [[dot-close()]] - `method` [EXTRACTED]
-- [[dot-setup_hook()]] - `method` [EXTRACTED]
+- [[dot-__init__()_22]] - `method` [EXTRACTED]
+- [[dot-close()_1]] - `method` [EXTRACTED]
+- [[dot-setup_hook()_1]] - `method` [EXTRACTED]
 - [[bot.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Discord_Test_Fakes
+#graphify/code #graphify/EXTRACTED #community/__init__

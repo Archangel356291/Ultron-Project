@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/BETA-LAUNCH-CHECKLIST.md"
 type: "rationale"
-community: "Cost Controls & Beta Config"
+community: "start-ultron.ps1"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Cost_Controls__Beta_Config
+  - community/start-ultronps1
 ---
 
 # Known By-Design Beta Behaviors
@@ -14,4 +14,4 @@ tags:
 - [[Backup Feature (ULTRON_BACKUP_SOURCES  DEST)]] - `rationale_for` [EXTRACTED]
 - [[ULTRON_MCP_CONFIG (optional MCP feature)]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Cost_Controls__Beta_Config
+#graphify/rationale #graphify/EXTRACTED #community/start-ultronps1

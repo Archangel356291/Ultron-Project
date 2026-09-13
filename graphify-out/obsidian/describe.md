@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "Discord Test Fakes"
+community: "bot.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Discord_Test_Fakes
+  - community/botpy
 ---
 
 # describe
@@ -17,4 +17,4 @@ tags:
 - [[export_command()]] - `references` [EXTRACTED]
 - [[trades_command()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Discord_Test_Fakes
+#graphify/code #graphify/EXTRACTED #community/botpy

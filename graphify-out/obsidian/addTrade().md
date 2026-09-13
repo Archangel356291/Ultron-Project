@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "Trade Export & Bot Parity"
+community: "Crypto/Trade Record & Tax Agent"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Trade_Export__Bot_Parity
+  - community/Crypto/Trade_Record__Tax_Agent
 ---
 
 # addTrade()
@@ -15,4 +15,4 @@ tags:
 - [[apiPost()]] - `calls` [EXTRACTED]
 - [[fetchTrades()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Trade_Export__Bot_Parity
+#graphify/code #graphify/EXTRACTED #community/Crypto/Trade_Record__Tax_Agent

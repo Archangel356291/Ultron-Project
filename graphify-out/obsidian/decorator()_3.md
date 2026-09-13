@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/discord/__init__.py"
 type: "code"
-community: "Discord UI Component Fakes"
+community: "View"
 location: "L142"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/Discord_UI_Component_Fakes
+  - community/View
 ---
 
 # decorator()
@@ -17,4 +17,4 @@ tags:
 - [[dot-command()]] - `indirect_call` [INFERRED]
 - [[dot-describe()]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/Discord_UI_Component_Fakes
+#graphify/code #graphify/INFERRED #community/View

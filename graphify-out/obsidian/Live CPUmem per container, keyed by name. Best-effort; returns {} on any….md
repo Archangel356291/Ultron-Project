@@ -1,18 +1,17 @@
 ---
-source_file: "app.py"
+source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "Legacy App Status Functions"
-location: "L213"
+community: "docker_ps"
+location: "L513"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Legacy_App_Status_Functions
+  - community/docker_ps
 ---
 
 # Live CPU/mem per container, keyed by name. Best-effort; returns {} on any…
 
 ## Connections
-- [[docker_stats()_1]] - `rationale_for` [EXTRACTED]
 - [[docker_stats()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Legacy_App_Status_Functions
+#graphify/rationale #graphify/EXTRACTED #community/docker_ps

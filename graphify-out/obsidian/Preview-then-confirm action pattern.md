@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/README.md"
 type: "rationale"
-community: "Preview-Confirm Action Pattern"
+community: "Preview-then-confirm action pattern"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Preview-Confirm_Action_Pattern
+  - community/Preview-then-confirm_action_pattern
 ---
 
 # Preview-then-confirm action pattern
@@ -17,4 +17,4 @@ tags:
 - [[POST apiactionsbackup]] - `implements` [EXTRACTED]
 - [[POST apiactionsdeploy-container]] - `implements` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Preview-Confirm_Action_Pattern
+#graphify/rationale #graphify/EXTRACTED #community/Preview-then-confirm_action_pattern

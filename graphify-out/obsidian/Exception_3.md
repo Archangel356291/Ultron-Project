@@ -1,16 +1,16 @@
 ---
 source_file: ""
 type: "code"
-community: "Anthropic Client Fakes"
+community: "run_ultron_chat"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Anthropic_Client_Fakes
+  - community/run_ultron_chat
 ---
 
 # Exception
 
 ## Connections
-- [[APIError]] - `inherits` [EXTRACTED]
+- [[MCPError]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Anthropic_Client_Fakes
+#graphify/code #graphify/EXTRACTED #community/run_ultron_chat

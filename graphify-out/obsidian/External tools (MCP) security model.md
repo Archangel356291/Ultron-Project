@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/README.md"
 type: "rationale"
-community: "Test Infra & MCP Security"
+community: "fake_pkgs/ (drop-in fake SDKs)"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Test_Infra__MCP_Security
+  - community/fake_pkgs/_drop-in_fake_SDKs
 ---
 
 # External tools (MCP) security model
@@ -16,4 +16,4 @@ tags:
 - [[Tailscale grantsACLs (tailnet policy)]] - `semantically_similar_to` [INFERRED]
 - [[test_mcp_server.py (real protocol-compliant local MCP server)]] - `references` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Test_Infra__MCP_Security
+#graphify/rationale #graphify/EXTRACTED #community/fake_pkgs/_drop-in_fake_SDKs

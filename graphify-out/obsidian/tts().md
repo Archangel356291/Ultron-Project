@@ -1,20 +1,20 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "Fish Audio TTS"
-location: "L2523"
+community: "require_role"
+location: "L2589"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Fish_Audio_TTS
+  - community/require_role
 ---
 
 # tts()
 
 ## Connections
 - [[_fish_audio_tts()]] - `calls` [EXTRACTED]
-- [[require_token()]] - `references` [EXTRACTED]
-- [[route_1]] - `references` [EXTRACTED]
+- [[require_role()]] - `references` [EXTRACTED]
+- [[route]] - `references` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Fish_Audio_TTS
+#graphify/code #graphify/EXTRACTED #community/require_role

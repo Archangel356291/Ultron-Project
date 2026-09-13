@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "rationale"
-community: "Safety Boundaries & MCP Bugs"
+community: "MCP (external tool/plugin) Support"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Safety_Boundaries__MCP_Bugs
+  - community/MCP_external_tool/plugin_Support
 ---
 
 # MCP (external tool/plugin) Support
@@ -21,4 +21,4 @@ tags:
 - [[loadMcpServers()]] - `shares_data_with` [INFERRED]
 - [[test_mcp_server.py]] - `references` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Safety_Boundaries__MCP_Bugs
+#graphify/rationale #graphify/EXTRACTED #community/MCP_external_tool/plugin_Support

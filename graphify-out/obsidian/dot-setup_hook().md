@@ -1,17 +1,17 @@
 ---
-source_file: "ultron-discord-bot/bot.py"
+source_file: "dev-tools/fake_pkgs/discord/ext/commands.py"
 type: "code"
-community: "Discord Test Fakes"
-location: "L484"
+community: "discord/__init__.py"
+location: "L12"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Discord_Test_Fakes
+  - community/discord/__init__py
 ---
 
 # .setup_hook()
 
 ## Connections
-- [[UltronBot]] - `method` [EXTRACTED]
+- [[Bot]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Discord_Test_Fakes
+#graphify/code #graphify/EXTRACTED #community/discord/__init__py

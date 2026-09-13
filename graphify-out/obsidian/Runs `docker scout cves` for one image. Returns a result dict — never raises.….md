@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "CVE Scanning"
-location: "L684"
+community: "log_activity"
+location: "L725"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/CVE_Scanning
+  - community/log_activity
 ---
 
 # Runs `docker scout cves` for one image. Returns a result dict — never raises.…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_scan_image_cves()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/CVE_Scanning
+#graphify/rationale #graphify/EXTRACTED #community/log_activity

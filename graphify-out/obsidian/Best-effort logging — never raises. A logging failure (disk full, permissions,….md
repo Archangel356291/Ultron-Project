@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "Backup/Deploy Action Tokens"
-location: "L210"
+community: "log_activity"
+location: "L215"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Backup/Deploy_Action_Tokens
+  - community/log_activity
 ---
 
 # Best-effort logging — never raises. A logging failure (disk full, permissions,…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[log_activity()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Backup/Deploy_Action_Tokens
+#graphify/rationale #graphify/EXTRACTED #community/log_activity

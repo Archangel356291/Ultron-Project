@@ -1,11 +1,11 @@
 ---
 source_file: "README.md"
 type: "concept"
-community: "Development Tab & Docs"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Development_Tab__Docs
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # Ultron (personal AI home lab system)
@@ -25,4 +25,4 @@ tags:
 - [[ultron-dashboard.html]] - `references` [EXTRACTED]
 - [[ultron-discord-bot]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Development_Tab__Docs
+#graphify/concept #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system

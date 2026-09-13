@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/discord/ext/commands.py"
 type: "code"
-community: "Discord Bot Core"
+community: "discord/__init__.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Discord_Bot_Core
+  - community/discord/__init__py
 ---
 
 # commands.py
@@ -15,4 +15,4 @@ tags:
 - [[Bot]] - `contains` [EXTRACTED]
 - [[discord__init__.py]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Discord_Bot_Core
+#graphify/code #graphify/EXTRACTED #community/discord/__init__py

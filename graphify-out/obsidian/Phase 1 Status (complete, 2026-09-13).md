@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/BETA-LAUNCH-CHECKLIST.md"
 type: "document"
-community: "Cost Controls & Beta Config"
+community: "start-ultron.ps1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Cost_Controls__Beta_Config
+  - community/start-ultronps1
 ---
 
 # Phase 1 Status (complete, 2026-09-13)
@@ -16,6 +16,7 @@ tags:
 - [[ULTRON_API_TOKEN (required env var)]] - `references` [EXTRACTED]
 - [[Ultron (personal AI home lab system)]] - `references` [EXTRACTED]
 - [[Voice  TTS (Fish Audio, apitts)]] - `references` [EXTRACTED]
+- [[_index]] - `references` [EXTRACTED]
 - [[start-ultron.ps1]] - `references` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Cost_Controls__Beta_Config
+#graphify/document #graphify/EXTRACTED #community/start-ultronps1

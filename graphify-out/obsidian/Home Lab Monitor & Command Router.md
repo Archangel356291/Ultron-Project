@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "concept"
-community: "Development Tab & Docs"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/concept
   - graphify/AMBIGUOUS
-  - community/Development_Tab__Docs
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # Home Lab Monitor & Command Router
@@ -15,4 +15,4 @@ tags:
 - [[Ultron (personal AI home lab system)]] - `conceptually_related_to` [EXTRACTED]
 - [[psutil (=6.0,7.0)]] - `shares_data_with` [INFERRED]
 
-#graphify/concept #graphify/AMBIGUOUS #community/Development_Tab__Docs
+#graphify/concept #graphify/AMBIGUOUS #community/Ultron_personal_AI_home_lab_system

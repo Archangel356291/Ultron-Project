@@ -1,17 +1,18 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "Backend Read Routes"
-location: "L371"
+community: "require_role"
+location: "L410"
 tags:
   - graphify/code
-  - graphify/INFERRED
-  - community/Backend_Read_Routes
+  - graphify/EXTRACTED
+  - community/require_role
 ---
 
 # wrapper()
 
 ## Connections
-- [[require_token()]] - `indirect_call` [INFERRED]
+- [[_resolve_role()]] - `calls` [EXTRACTED]
+- [[require_role()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/Backend_Read_Routes
+#graphify/code #graphify/EXTRACTED #community/require_role

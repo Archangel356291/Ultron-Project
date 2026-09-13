@@ -1,18 +1,17 @@
 ---
 source_file: "dev-tools/fake_pkgs/anthropic/__init__.py"
 type: "code"
-community: "Anthropic Client Fakes"
-location: "L33"
+community: "anthropic/__init__.py"
+location: "L58"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Anthropic_Client_Fakes
+  - community/anthropic/__init__py
 ---
 
 # .__init__()
 
 ## Connections
-- [[dot-__init__()_11]] - `calls` [EXTRACTED]
-- [[AuthenticationError]] - `method` [EXTRACTED]
+- [[ContentBlock]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Anthropic_Client_Fakes
+#graphify/code #graphify/EXTRACTED #community/anthropic/__init__py

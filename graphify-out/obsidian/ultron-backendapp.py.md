@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "Host Status Functions"
+community: "ultron-backend/app.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Host_Status_Functions
+  - community/ultron-backend/apppy
 ---
 
 # ultron-backend/app.py
@@ -41,6 +41,7 @@ tags:
 - [[_parse_scout_sarif()]] - `contains` [EXTRACTED]
 - [[_prune_expired_tokens_locked()]] - `contains` [EXTRACTED]
 - [[_repo_status()]] - `contains` [EXTRACTED]
+- [[_resolve_role()]] - `contains` [EXTRACTED]
 - [[_run_backup()]] - `contains` [EXTRACTED]
 - [[_run_deploy_container()]] - `contains` [EXTRACTED]
 - [[_run_git()]] - `contains` [EXTRACTED]
@@ -67,6 +68,7 @@ tags:
 - [[activity()]] - `contains` [EXTRACTED]
 - [[add_cors_headers()]] - `contains` [EXTRACTED]
 - [[add_trade()]] - `contains` [EXTRACTED]
+- [[anthropic__init__.py]] - `imports` [EXTRACTED]
 - [[chat()]] - `contains` [EXTRACTED]
 - [[chat_usage()]] - `contains` [EXTRACTED]
 - [[containers()]] - `contains` [EXTRACTED]
@@ -91,6 +93,7 @@ tags:
 - [[log_activity()]] - `contains` [EXTRACTED]
 - [[mcp_servers()]] - `contains` [EXTRACTED]
 - [[pending_os_updates()]] - `contains` [EXTRACTED]
+- [[require_role()]] - `contains` [EXTRACTED]
 - [[require_token()]] - `contains` [EXTRACTED]
 - [[run_ultron_chat()]] - `contains` [EXTRACTED]
 - [[scan_container_cves()]] - `contains` [EXTRACTED]
@@ -105,5 +108,6 @@ tags:
 - [[trades_summary()]] - `contains` [EXTRACTED]
 - [[trades_tax_lots()]] - `contains` [EXTRACTED]
 - [[tts()]] - `contains` [EXTRACTED]
+- [[whoami()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Host_Status_Functions
+#graphify/code #graphify/EXTRACTED #community/ultron-backend/apppy

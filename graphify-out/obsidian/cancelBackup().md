@@ -1,13 +1,13 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "Cancel Backup Function"
+community: "cancelBackup"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Cancel_Backup_Function
+  - community/cancelBackup
 ---
 
 # cancelBackup()
 
-#graphify/code #graphify/EXTRACTED #community/Cancel_Backup_Function
+#graphify/code #graphify/EXTRACTED #community/cancelBackup

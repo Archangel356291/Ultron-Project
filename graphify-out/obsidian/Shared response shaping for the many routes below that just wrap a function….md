@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "Backend Read Routes"
-location: "L1528"
+community: "_json_result"
+location: "L1569"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Backend_Read_Routes
+  - community/_json_result
 ---
 
 # Shared response shaping for the many routes below that just wrap a function…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_json_result()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Backend_Read_Routes
+#graphify/rationale #graphify/EXTRACTED #community/_json_result

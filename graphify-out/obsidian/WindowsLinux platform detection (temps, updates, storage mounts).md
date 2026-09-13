@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/README.md"
 type: "document"
-community: "Architecture Overview"
+community: "Flask Backend (app.py)"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Architecture_Overview
+  - community/Flask_Backend_apppy
 ---
 
 # Windows/Linux platform detection (temps, updates, storage mounts)
@@ -15,4 +15,4 @@ tags:
 - [[WMI (==1.5.1, Windows only)]] - `references` [EXTRACTED]
 - [[pywin32 (==306, Windows only)]] - `references` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Architecture_Overview
+#graphify/document #graphify/EXTRACTED #community/Flask_Backend_apppy

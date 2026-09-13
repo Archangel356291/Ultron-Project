@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "Dashboard Live Data Fetch"
+community: "apiGet"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Dashboard_Live_Data_Fetch
+  - community/apiGet
 ---
 
 # escapeHtml()
@@ -21,4 +21,4 @@ tags:
 - [[previewDeploy()]] - `calls` [EXTRACTED]
 - [[runCveScan()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Dashboard_Live_Data_Fetch
+#graphify/code #graphify/EXTRACTED #community/apiGet

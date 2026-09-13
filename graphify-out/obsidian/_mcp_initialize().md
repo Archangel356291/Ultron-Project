@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "MCP JSON-RPC Client"
-location: "L1981"
+community: "run_ultron_chat"
+location: "L2024"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MCP_JSON-RPC_Client
+  - community/run_ultron_chat
 ---
 
 # _mcp_initialize()
@@ -16,4 +16,4 @@ tags:
 - [[_mcp_jsonrpc_call()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MCP_JSON-RPC_Client
+#graphify/code #graphify/EXTRACTED #community/run_ultron_chat

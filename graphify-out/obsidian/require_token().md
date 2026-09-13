@@ -1,21 +1,21 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "Backend Read Routes"
-location: "L369"
+community: "require_token"
+location: "L386"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Backend_Read_Routes
+  - community/require_token
 ---
 
 # require_token()
 
 ## Connections
+- [[Admin-only. Existing routes are unchanged a valid beta token is a real…]] - `rationale_for` [EXTRACTED]
 - [[action_backup()]] - `references` [EXTRACTED]
 - [[action_deploy_container()]] - `references` [EXTRACTED]
 - [[activity()]] - `references` [EXTRACTED]
-- [[chat()]] - `references` [EXTRACTED]
 - [[chat_usage()]] - `references` [EXTRACTED]
 - [[containers()]] - `references` [EXTRACTED]
 - [[dev_repo_diff()]] - `references` [EXTRACTED]
@@ -27,12 +27,8 @@ tags:
 - [[storage()]] - `references` [EXTRACTED]
 - [[systems()]] - `references` [EXTRACTED]
 - [[trade_delete()]] - `references` [EXTRACTED]
-- [[trades()]] - `references` [EXTRACTED]
 - [[trades_export()]] - `references` [EXTRACTED]
-- [[trades_summary()]] - `references` [EXTRACTED]
-- [[trades_tax_lots()]] - `references` [EXTRACTED]
-- [[tts()]] - `references` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
-- [[wrapper()]] - `indirect_call` [INFERRED]
+- [[wrapper()_1]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/Backend_Read_Routes
+#graphify/code #graphify/EXTRACTED #community/require_token

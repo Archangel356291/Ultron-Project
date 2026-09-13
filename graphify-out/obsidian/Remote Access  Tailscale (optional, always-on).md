@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/BETA-LAUNCH-CHECKLIST.md"
 type: "concept"
-community: "Development Tab & Docs"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Development_Tab__Docs
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # Remote Access / Tailscale (optional, always-on)
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[REMOTE-ACCESS.md (Tailscale setup)]] - `conceptually_related_to` [INFERRED]
 
-#graphify/concept #graphify/INFERRED #community/Development_Tab__Docs
+#graphify/concept #graphify/INFERRED #community/Ultron_personal_AI_home_lab_system

@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/BETA-LAUNCH-CHECKLIST.md"
 type: "concept"
-community: "Voice & Chat Dashboard JS"
+community: "authHeaders"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Voice__Chat_Dashboard_JS
+  - community/authHeaders
 ---
 
 # Voice / TTS (Fish Audio, /api/tts)
@@ -14,4 +14,4 @@ tags:
 - [[Phase 1 Status (complete, 2026-09-13)]] - `references` [EXTRACTED]
 - [[speakReply()]] - `shares_data_with` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Voice__Chat_Dashboard_JS
+#graphify/concept #graphify/EXTRACTED #community/authHeaders

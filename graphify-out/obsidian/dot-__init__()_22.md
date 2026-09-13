@@ -1,17 +1,18 @@
 ---
-source_file: "dev-tools/fake_pkgs/anthropic/__init__.py"
+source_file: "ultron-discord-bot/bot.py"
 type: "code"
-community: "Anthropic Client Fakes"
-location: "L74"
+community: ".__init__"
+location: "L475"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Anthropic_Client_Fakes
+  - community/__init__
 ---
 
 # .__init__()
 
 ## Connections
-- [[Usage]] - `method` [EXTRACTED]
+- [[dot-__init__()_21]] - `calls` [EXTRACTED]
+- [[UltronBot]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Anthropic_Client_Fakes
+#graphify/code #graphify/EXTRACTED #community/__init__

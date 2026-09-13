@@ -1,13 +1,16 @@
 ---
 source_file: ""
 type: "code"
-community: "CORS After-Request Hook"
+community: "ultron-backend/app.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/CORS_After-Request_Hook
+  - community/ultron-backend/apppy
 ---
 
 # after_request
 
-#graphify/code #graphify/EXTRACTED #community/CORS_After-Request_Hook
+## Connections
+- [[add_cors_headers()]] - `references` [EXTRACTED]
+
+#graphify/code #graphify/EXTRACTED #community/ultron-backend/apppy

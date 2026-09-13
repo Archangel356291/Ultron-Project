@@ -1,17 +1,18 @@
 ---
-source_file: "dev-tools/fake_pkgs/discord/ext/commands.py"
+source_file: "ultron-discord-bot/bot.py"
 type: "code"
-community: "Discord Bot Core"
-location: "L15"
+community: ".__init__"
+location: "L493"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Discord_Bot_Core
+  - community/__init__
 ---
 
 # .close()
 
 ## Connections
-- [[Bot]] - `method` [EXTRACTED]
+- [[dot-close()_1]] - `calls` [EXTRACTED]
+- [[UltronBot]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Discord_Bot_Core
+#graphify/code #graphify/EXTRACTED #community/__init__

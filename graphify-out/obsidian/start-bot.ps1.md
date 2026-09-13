@@ -1,14 +1,14 @@
 ---
 source_file: "ultron-discord-bot/start-bot.ps1"
 type: "code"
-community: "Bot Startup Script"
+community: "start-bot.ps1"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Bot_Startup_Script
+  - community/start-botps1
 ---
 
 # start-bot.ps1
 
-#graphify/code #graphify/EXTRACTED #community/Bot_Startup_Script
+#graphify/code #graphify/EXTRACTED #community/start-botps1

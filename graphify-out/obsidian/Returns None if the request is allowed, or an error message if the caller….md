@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "Chat Rate Limiting"
-location: "L1718"
+community: "require_role"
+location: "L1761"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Chat_Rate_Limiting
+  - community/require_role
 ---
 
 # Returns None if the request is allowed, or an error message if the caller…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_check_rate_limit()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Chat_Rate_Limiting
+#graphify/rationale #graphify/EXTRACTED #community/require_role

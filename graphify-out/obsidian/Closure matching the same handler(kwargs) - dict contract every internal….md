@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "MCP Tool Dispatch"
-location: "L2083"
+community: "run_ultron_chat"
+location: "L2126"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/MCP_Tool_Dispatch
+  - community/run_ultron_chat
 ---
 
 # Closure matching the same handler(**kwargs) -> dict contract every internal…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_make_mcp_tool_handler()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/MCP_Tool_Dispatch
+#graphify/rationale #graphify/EXTRACTED #community/run_ultron_chat

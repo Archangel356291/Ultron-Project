@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "Trade FIFO Engine"
-location: "L158"
+community: "_json_result"
+location: "L163"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Trade_FIFO_Engine
+  - community/_json_result
 ---
 
 # _get_db_connection()
@@ -24,4 +24,4 @@ tags:
 - [[log_activity()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Trade_FIFO_Engine
+#graphify/code #graphify/EXTRACTED #community/_json_result
