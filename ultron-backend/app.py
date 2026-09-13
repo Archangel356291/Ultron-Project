@@ -97,7 +97,7 @@ import urllib.request
 from functools import wraps
 
 import psutil
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, g
 
 app = Flask(__name__)
 
@@ -107,6 +107,11 @@ if not API_TOKEN:
         "ULTRON_API_TOKEN is not set. Refusing to start with no auth token.\n"
         "Set it with (PowerShell): $env:ULTRON_API_TOKEN = '<a long random string>'"
     )
+
+# Optional second, weaker token for beta testers — a restricted role, not a
+# second admin. Unset by default, so the beta_tester role doesn't exist
+# unless you deliberately turn it on.
+BETA_TOKEN = os.environ.get("ULTRON_BETA_TOKEN")
 
 # Origin the dashboard is served from, for CORS. Set this to your actual
 # dashboard origin (e.g. "http://192.168.1.50:8080") in production — the "*"
@@ -366,13 +371,49 @@ def add_cors_headers(response):
 # --------------------------------------------------------------------------
 # auth
 # --------------------------------------------------------------------------
+def _resolve_role(token):
+    """Constant-time-ish token check against both roles. Returns
+    'admin', 'beta', or None. BETA_TOKEN is optional, so a beta token
+    check is skipped entirely (not just always-false) when it's unset —
+    there's no shared secret to time against in that case anyway."""
+    if hmac.compare_digest(token, API_TOKEN):
+        return "admin"
+    if BETA_TOKEN and hmac.compare_digest(token, BETA_TOKEN):
+        return "beta"
+    return None
+
+
 def require_token(fn):
+    """Admin-only. Existing routes are unchanged: a valid beta token is a
+    real identity, just not one this route accepts, so it's a 403 (forbidden)
+    rather than a 401 (unauthenticated) — the beta_tester role is meant to
+    get a clear "not for you" here, not a generic auth failure."""
     @wraps(fn)
     def wrapper(*args, **kwargs):
         auth = request.headers.get("Authorization", "")
         token = auth[7:] if auth.startswith("Bearer ") else ""
-        if not hmac.compare_digest(token, API_TOKEN):
+        role = _resolve_role(token)
+        if role == "admin":
+            g.role = role
+            return fn(*args, **kwargs)
+        if role == "beta":
+            return jsonify({"error": "forbidden"}), 403
+        return jsonify({"error": "unauthorized"}), 401
+    return wrapper
+
+
+def require_role(fn):
+    """Admin or beta_tester. Use only on endpoints in the beta tester's
+    allowed scope (chat, view-only trading data) — everything else must
+    stay on the admin-only @require_token above."""
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        auth = request.headers.get("Authorization", "")
+        token = auth[7:] if auth.startswith("Bearer ") else ""
+        role = _resolve_role(token)
+        if role is None:
             return jsonify({"error": "unauthorized"}), 401
+        g.role = role
         return fn(*args, **kwargs)
     return wrapper
 
@@ -1583,9 +1624,11 @@ def dev_repo_diff(repo):
 
 
 @app.route("/api/trades", methods=["GET", "POST"])
-@require_token
+@require_role
 def trades():
     if request.method == "POST":
+        if g.role != "admin":
+            return jsonify({"error": "forbidden"}), 403
         body = request.get_json(silent=True) or {}
         trade, err = add_trade(body)
         if err:
@@ -1604,13 +1647,13 @@ def trade_delete(trade_id):
 
 
 @app.route("/api/trades/summary")
-@require_token
+@require_role
 def trades_summary():
     return _json_result(get_trade_summary())
 
 
 @app.route("/api/trades/tax-lots")
-@require_token
+@require_role
 def trades_tax_lots():
     return _json_result(get_trade_tax_lots())
 
@@ -2324,6 +2367,12 @@ TOOL_DISPATCH = {
     "get_mcp_servers": get_mcp_servers,
 }
 
+# Tools a beta_tester's chat may use — view-only trading data, nothing that
+# touches home lab, security, dev, or usage/MCP internals. No MCP tools
+# either: those are arbitrary externally-configured servers, admin-only by
+# the same reasoning as the backend README's MCP security note.
+BETA_ALLOWED_TOOLS = {"get_trades", "get_trade_summary", "get_trade_tax_lots"}
+
 MAX_TOOL_ITERATIONS = 5   # hard cap so a confused loop can't run up API spend
 MAX_HISTORY_MESSAGES = 40  # ~20 turns; keeps context (and cost) bounded
 MAX_MESSAGE_CHARS = 4000
@@ -2362,7 +2411,7 @@ def _add_cache_breakpoint(msg):
     return {**msg, "content": new_content}
 
 
-def run_ultron_chat(user_message, history):
+def run_ultron_chat(user_message, history, role="admin"):
     """Runs the tool-use loop against the Claude API and returns
     (reply_text, updated_history, tools_used).
 
@@ -2389,8 +2438,16 @@ def run_ultron_chat(user_message, history):
     # cached after the first ever call, so this is cheap) and merged in
     # alongside the internal tools — same tool-use loop, same dispatch
     # pattern, just a different source and a namespaced prefix.
-    mcp_schemas, mcp_dispatch = get_mcp_tools_and_dispatch()
-    effective_tools = TOOLS + mcp_schemas
+    # beta_tester gets none of the MCP tools (arbitrary external servers,
+    # admin-only) and only the view-only trading tools from the internal set
+    # — this mirrors the HTTP-level scope so chat can't be used to route
+    # around it.
+    if role == "beta":
+        mcp_schemas, mcp_dispatch = [], {}
+        effective_tools = [t for t in TOOLS if t["name"] in BETA_ALLOWED_TOOLS]
+    else:
+        mcp_schemas, mcp_dispatch = get_mcp_tools_and_dispatch()
+        effective_tools = TOOLS + mcp_schemas
 
     for _ in range(MAX_TOOL_ITERATIONS):
         response = anthropic_client.messages.create(
@@ -2413,14 +2470,17 @@ def run_ultron_chat(user_message, history):
             if block.type != "tool_use":
                 continue
             tools_used.append(block.name)
-            handler = TOOL_DISPATCH.get(block.name) or mcp_dispatch.get(block.name)
-            if handler is None:
-                result = {"error": "unknown tool: " + block.name}
+            if role == "beta" and block.name not in BETA_ALLOWED_TOOLS:
+                result = {"error": "forbidden"}
             else:
-                try:
-                    result = handler(**(block.input or {}))
-                except Exception as e:
-                    result = {"error": "tool execution failed: " + str(e)}
+                handler = TOOL_DISPATCH.get(block.name) or mcp_dispatch.get(block.name)
+                if handler is None:
+                    result = {"error": "unknown tool: " + block.name}
+                else:
+                    try:
+                        result = handler(**(block.input or {}))
+                    except Exception as e:
+                        result = {"error": "tool execution failed: " + str(e)}
             tool_result_blocks.append({
                 "type": "tool_result",
                 "tool_use_id": block.id,
@@ -2452,8 +2512,14 @@ def run_ultron_chat(user_message, history):
     return reply_text, messages, tools_used
 
 
+@app.route("/api/whoami")
+@require_role
+def whoami():
+    return jsonify({"role": g.role})
+
+
 @app.route("/api/chat", methods=["POST"])
-@require_token
+@require_role
 def chat():
     if anthropic_client is None:
         return jsonify({
@@ -2488,7 +2554,7 @@ def chat():
             return jsonify({"error": "invalid history format"}), 400
 
     try:
-        reply, new_history, tools_used = run_ultron_chat(user_message, history)
+        reply, new_history, tools_used = run_ultron_chat(user_message, history, role=g.role)
     except anthropic.AuthenticationError:
         # Server misconfiguration, not the caller's fault — but surfacing it
         # clearly here saves a confusing debugging session once the real key
@@ -2519,7 +2585,7 @@ def chat_usage():
 
 
 @app.route("/api/tts", methods=["POST"])
-@require_token
+@require_role
 def tts():
     if not (FISH_AUDIO_API_KEY and FISH_VOICE_ID):
         return jsonify({

@@ -42,6 +42,17 @@ if (-not $env:ULTRON_API_TOKEN) {
 # Write-Host "Generated token (save this to .env):" $generated
 
 # ============================================================
+# Beta testers — optional, restricted role
+# ============================================================
+# A SEPARATE token for beta_tester access: chat (full) + trading data
+# (view-only). Everything else 403s for this role, at the API level, not
+# just hidden in the dashboard. Leave unset (default) and the beta_tester
+# role doesn't exist at all — no one can use it, whatever token they try.
+# if (-not $env:ULTRON_BETA_TOKEN) {
+#     $env:ULTRON_BETA_TOKEN = "PASTE-A-DIFFERENT-TOKEN-HERE"
+# }
+
+# ============================================================
 # Chat — optional, but this is almost certainly why you're here
 # ============================================================
 # Without this, every panel except AI Assistant chat still works, and

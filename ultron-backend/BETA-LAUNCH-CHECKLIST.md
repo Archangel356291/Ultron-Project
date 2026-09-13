@@ -27,6 +27,26 @@ started), MCP servers (none configured), CVE scanning, actual human
 confirmation that TTS audio is audible (network-level success confirmed,
 not ear-confirmed).
 
+## Beta tester role — built, not yet deployed (2026-09-13)
+
+Added a `beta_tester` role, separate from your admin login: chat (full
+input) plus view-only trading data (`/api/trades`, `/api/trades/summary`,
+`/api/trades/tax-lots` — no create/delete/export). Everything else 403s,
+enforced at the Flask route level *and* inside chat's own tool-use loop
+(the tool schemas offered to the model are filtered by role, so chat can't
+be used to route around the same boundary). See `README.md`'s auth section
+and `start-ultron.ps1`'s `ULTRON_BETA_TOKEN` block.
+
+Not yet done / not tested against a real instance:
+- No hard login screen before the dashboard loads — Settings → Connection
+  is the only gate today. Fine for LAN/dev use; needed before anything is
+  exposed publicly (see Funnel note below).
+- Raspberry Pi deployment, Tailscale Funnel, and Pi resource monitoring —
+  postponed (no Pi access yet as of this write-up). `REMOTE-ACCESS.md`
+  covers personal Tailscale access only, not Funnel.
+- Not verified end-to-end with a real second token against a running
+  instance — only read against the code.
+
 ---
 
 Everything below is pulled fresh from the actual code as of this write-up

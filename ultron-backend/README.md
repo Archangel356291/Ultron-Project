@@ -38,6 +38,17 @@ The token above is only set for the current PowerShell session. Save it
 somewhere (password manager) so you can reuse it — you'll need it in every
 `Authorization: Bearer <token>` request, including from the dashboard.
 
+**Beta testers get a second, weaker token** — set `ULTRON_BETA_TOKEN` to a
+*different* random value (same command as above, run again) and hand that
+one out instead of your real `ULTRON_API_TOKEN`. It authenticates as the
+`beta_tester` role: chat (full) plus view-only trading data
+(`/api/trades`, `/api/trades/summary`, `/api/trades/tax-lots`) — everything
+else 403s, including via chat's own tool use, not just the raw HTTP routes.
+Leave `ULTRON_BETA_TOKEN` unset and the role doesn't exist at all. The
+dashboard hides admin-only nav/controls automatically once it detects this
+role via `/api/whoami`, but that's convenience — the 403s are what actually
+enforce it.
+
 Optionally, to enable the AI Assistant chat panel, also set an Anthropic API
 key before starting the server:
 
