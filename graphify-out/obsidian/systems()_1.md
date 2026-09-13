@@ -1,0 +1,22 @@
+---
+source_file: "app.py"
+type: "code"
+community: "Legacy App Status Functions"
+location: "L325"
+tags:
+  - graphify/code
+  - graphify/EXTRACTED
+  - community/Legacy_App_Status_Functions
+---
+
+# systems()
+
+## Connections
+- [[app.py]] - `contains` [EXTRACTED]
+- [[get_cpu_temp_c()_1]] - `calls` [EXTRACTED]
+- [[get_uptime_str()_1]] - `calls` [EXTRACTED]
+- [[pending_os_updates()_1]] - `calls` [EXTRACTED]
+- [[require_token()_1]] - `references` [EXTRACTED]
+- [[route_2]] - `references` [EXTRACTED]
+
+#graphify/code #graphify/EXTRACTED #community/Legacy_App_Status_Functions
