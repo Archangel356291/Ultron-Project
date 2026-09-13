@@ -309,6 +309,10 @@ else:
 # --------------------------------------------------------------------------
 FISH_AUDIO_API_KEY = os.environ.get("ULTRON_FISH_AUDIO_API_KEY", "").strip()
 FISH_VOICE_ID = os.environ.get("ULTRON_FISH_VOICE_ID", "").strip()
+# Fish Audio's default model (s2.1-pro) is paid-tier and 402s without the
+# right plan — s2.1-pro-free is the included tier. Overridable once a
+# higher tier is worth it for better quality.
+FISH_AUDIO_MODEL = os.environ.get("ULTRON_FISH_AUDIO_MODEL", "s2.1-pro-free").strip()
 FISH_AUDIO_TIMEOUT_SECONDS = 20
 FISH_AUDIO_TTS_URL = "https://api.fish.audio/v1/tts"
 TTS_MAX_CHARS = 2000  # keep one reply from turning into an unbounded paid TTS call
@@ -333,6 +337,7 @@ def _fish_audio_tts(text):
         headers={
             "Authorization": "Bearer " + FISH_AUDIO_API_KEY,
             "Content-Type": "application/json",
+            "model": FISH_AUDIO_MODEL,
         },
         method="POST",
     )
