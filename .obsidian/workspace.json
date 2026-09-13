@@ -133,7 +133,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "C:\\Windows\\System32\\conhost.exe"
+              "title": "cmd"
             }
           }
         ],
