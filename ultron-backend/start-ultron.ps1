@@ -1,4 +1,4 @@
-# start-ultron.ps1
+﻿# start-ultron.ps1
 #
 # Fill in the values below once, save this file, and from then on
 # ".\start-ultron.ps1" is the entire startup process instead of retyping
@@ -9,16 +9,37 @@
 # for a feature that doesn't exist yet.
 
 # ============================================================
+# Secrets — loaded from ..\.env (KEY=value per line) if it exists, instead
+# of being pasted into this file. This file is git-tracked; .env is
+# gitignored. This is how a real token/API key should get here — the
+# manual fallback lines below exist only for people not using a .env file,
+# and are commented out by default so nothing real ever lands in git by
+# accident (this is exactly the mistake this project already made once).
+# ============================================================
+$envFile = Join-Path $PSScriptRoot "..\.env"
+if (Test-Path $envFile) {
+    Get-Content $envFile | ForEach-Object {
+        if ($_ -match '^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$') {
+            [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2], "Process")
+        }
+    }
+    Write-Host "Loaded secrets from $envFile" -ForegroundColor DarkGray
+}
+
+# ============================================================
 # REQUIRED — the backend will not start without this one
 # ============================================================
-# Generate once, save it in a password manager, and reuse the SAME value
-# here every time — this is the token the dashboard and bot both need.
-$env:ULTRON_API_TOKEN = "PASTE-YOUR-TOKEN-HERE"
+# Generate once, save it (in .env above, or a password manager), and reuse
+# the SAME value every time — this is the token the dashboard and bot both
+# need. Only applied if .env didn't already supply one.
+if (-not $env:ULTRON_API_TOKEN) {
+    $env:ULTRON_API_TOKEN = "PASTE-YOUR-TOKEN-HERE"
+}
 
 # Need to generate one? Uncomment the next two lines, run this script once,
-# copy the printed token into the line above, then re-comment these two:
+# copy the printed token into .env as ULTRON_API_TOKEN=..., then re-comment:
 # $generated = -join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_})
-# Write-Host "Generated token (save this, then paste it above):" $generated
+# Write-Host "Generated token (save this to .env):" $generated
 
 # ============================================================
 # Chat — optional, but this is almost certainly why you're here
@@ -41,14 +62,23 @@ $env:ULTRON_API_TOKEN = "PASTE-YOUR-TOKEN-HERE"
 # tokens) — lower for tighter cost control, raise if replies feel cut off:
 # $env:ULTRON_LLM_MAX_TOKENS = "1024"
 
-# Uncomment to set a real daily hard spend cap, in total tokens
-# (input + output). Unset by default = no limit. Worth turning on during
-# a beta specifically, while you're finding out how much you actually use:
-# $env:ULTRON_LLM_DAILY_TOKEN_BUDGET = "100000"
+# Daily hard spend cap, in total tokens (input + output). ON by default
+# during beta — a real ceiling while you're finding out how much you
+# actually use. Raise it or comment it out once you trust your usage:
+$env:ULTRON_LLM_DAILY_TOKEN_BUDGET = "50000"
 
 # Uncomment to change the chat rate limit (defaults to 20 requests/minute
 # already — only touch this if you're actually hitting it):
 # $env:ULTRON_CHAT_RATE_LIMIT_PER_MINUTE = "20"
+
+# ============================================================
+# Voice replies — optional. Both must be set together for the feature to
+# work; requires a Fish Audio account (fish.audio) and API key. Both the
+# key AND the voice ID belong in .env — this one points at a private
+# cloned voice, not a public library one, so it's a secret too.
+# ============================================================
+# ULTRON_FISH_AUDIO_API_KEY and ULTRON_FISH_VOICE_ID both come from .env —
+# nothing to add here.
 
 # ============================================================
 # Backups — optional. Both must be set together for the feature to work.

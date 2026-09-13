@@ -301,6 +301,8 @@
     background:var(--panel-raised); color:var(--text-faint); opacity:0.55; cursor:default;
     display:flex; align-items:center; justify-content:center;
   }
+  .talk-mic:not(:disabled){ opacity:1; cursor:pointer; color:var(--text); }
+  .talk-mic.listening{ color:var(--oxide); border-color:var(--oxide); }
   .talk-send{
     width:42px; flex-shrink:0; border-radius:7px; border:none;
     background:var(--oxide); color:var(--void); display:flex; align-items:center; justify-content:center; cursor:pointer;
@@ -626,7 +628,7 @@
                 </div>
                 <div class="talk-row">
                   <input type="text" id="home-talk-input" placeholder="Type your request, question, or command…">
-                  <button class="talk-mic" title="Voice input isn't implemented yet" disabled>
+                  <button class="talk-mic" id="home-talk-mic" title="Voice input" onclick="toggleVoiceInput()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3"/></svg>
                   </button>
                   <button class="talk-send" id="home-talk-send" onclick="sendFromHome()">
@@ -1091,6 +1093,10 @@
           <div class="set-row">
             <div><div class="stitle">Auto-refresh live data</div><div class="sdesc">Poll the backend every 15 seconds once connected</div></div>
             <div class="switch on" id="cfg-autorefresh" onclick="toggleAutoRefresh(this)"></div>
+          </div>
+          <div class="set-row">
+            <div><div class="stitle">Speak replies aloud</div><div class="sdesc">Requires ULTRON_FISH_AUDIO_API_KEY + ULTRON_FISH_VOICE_ID configured on the backend</div></div>
+            <div class="switch" id="cfg-voice-reply" onclick="this.classList.toggle('on')"></div>
           </div>
         </div>
       </section>
@@ -1967,6 +1973,53 @@
     return div;
   }
 
+  // --- voice input: browser SpeechRecognition, free, entirely client-side ---
+  const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognizer = null;
+  function toggleVoiceInput() {
+    const micBtn = document.getElementById('home-talk-mic');
+    if (!SpeechRecognitionCtor) {
+      appendChatBubble('ultron', "This browser doesn't support voice input — try Chrome.", { isError: true });
+      return;
+    }
+    if (recognizer) {
+      recognizer.stop();
+      return;
+    }
+    recognizer = new SpeechRecognitionCtor();
+    recognizer.lang = 'en-US';
+    recognizer.interimResults = false;
+    recognizer.maxAlternatives = 1;
+    recognizer.onstart = () => micBtn.classList.add('listening');
+    recognizer.onresult = (e) => {
+      document.getElementById('home-talk-input').value = e.results[0][0].transcript;
+    };
+    recognizer.onend = () => {
+      micBtn.classList.remove('listening');
+      recognizer = null;
+    };
+    recognizer.start();
+  }
+
+  // --- voice output: Fish Audio TTS via the backend (key stays server-side), opt-in ---
+  async function speakReply(text) {
+    const toggle = document.getElementById('cfg-voice-reply');
+    if (!toggle || !toggle.classList.contains('on')) return;
+    if (!state.connected || !text) return;
+    try {
+      const res = await fetch(state.baseUrl + '/api/tts', {
+        method: 'POST',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+        body: JSON.stringify({ text: text }),
+      });
+      if (!res.ok) return; // not configured on the backend, or a transient error — chat itself already worked, fail silently
+      const url = URL.createObjectURL(await res.blob());
+      const audio = new Audio(url);
+      audio.onended = () => URL.revokeObjectURL(url);
+      audio.play();
+    } catch (e) { /* voice is best-effort — never break chat over it */ }
+  }
+
   async function sendChatMessage() {
     const input = document.getElementById('chat-input-field');
     const btn = document.getElementById('chat-send-btn');
@@ -1988,6 +2041,7 @@
       const data = await postChat(text, state.chatHistory || []);
       thinkingEl.remove();
       appendChatBubble('ultron', data.reply, { tools: data.tools_used });
+      speakReply(data.reply);
       state.chatHistory = data.history || state.chatHistory;
     } catch (err) {
       thinkingEl.remove();

@@ -18,6 +18,7 @@ Endpoints:
     POST /api/actions/backup             -> MUTATES THE HOST. Two-step confirm — see below.
     POST /api/actions/deploy-container    -> MUTATES THE HOST. Two-step confirm — see below.
     POST /api/chat                         -> chat with Ultron (Claude API, tool-grounded)
+    POST /api/tts                           -> speak text aloud (Fish Audio, returns mp3 bytes)
     GET  /api/health                        -> simple liveness check, no auth required
 
 Auth:
@@ -28,6 +29,10 @@ Auth:
 
     /api/chat additionally requires ANTHROPIC_API_KEY to be set. Without it,
     every other endpoint still works — /api/chat just returns 503.
+
+    /api/tts additionally requires ULTRON_FISH_AUDIO_API_KEY and
+    ULTRON_FISH_VOICE_ID to be set. Without them, it returns 503 — every
+    other endpoint, including chat, works fine without voice configured.
 
 Run (PowerShell):
     pip install -r requirements.txt
@@ -293,6 +298,56 @@ else:
         "This is expected before the beta key is plugged in.",
         file=sys.stderr,
     )
+
+# --------------------------------------------------------------------------
+# Voice replies — optional text-to-speech via Fish Audio for /api/tts.
+# Same "inert until configured" pattern as everything else here: without
+# both env vars set, /api/tts returns a clear 503 rather than guessing.
+# The API key never reaches the browser — the dashboard calls this backend
+# route, which holds the real Fish Audio credential server-side, the same
+# reasoning as keeping ANTHROPIC_API_KEY out of client-side JS.
+# --------------------------------------------------------------------------
+FISH_AUDIO_API_KEY = os.environ.get("ULTRON_FISH_AUDIO_API_KEY", "").strip()
+FISH_VOICE_ID = os.environ.get("ULTRON_FISH_VOICE_ID", "").strip()
+FISH_AUDIO_TIMEOUT_SECONDS = 20
+FISH_AUDIO_TTS_URL = "https://api.fish.audio/v1/tts"
+TTS_MAX_CHARS = 2000  # keep one reply from turning into an unbounded paid TTS call
+
+
+def _fish_audio_tts(text):
+    """One TTS request to Fish Audio. Returns (audio_bytes, content_type, error)."""
+    text = (text or "").strip()
+    if not text:
+        return None, None, "no text to speak"
+    if len(text) > TTS_MAX_CHARS:
+        text = text[:TTS_MAX_CHARS]
+
+    body = json.dumps({
+        "text": text,
+        "reference_id": FISH_VOICE_ID,
+        "format": "mp3",
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        FISH_AUDIO_TTS_URL,
+        data=body,
+        headers={
+            "Authorization": "Bearer " + FISH_AUDIO_API_KEY,
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=FISH_AUDIO_TIMEOUT_SECONDS) as resp:
+            audio = resp.read()
+            content_type = resp.headers.get("Content-Type", "audio/mpeg")
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            return None, None, "Fish Audio rejected the configured API key"
+        return None, None, f"Fish Audio API error (HTTP {e.code})"
+    except urllib.error.URLError as e:
+        return None, None, f"could not reach Fish Audio: {e.reason}"
+
+    return audio, content_type, None
 
 
 @app.after_request
@@ -2456,6 +2511,21 @@ def chat():
 @require_token
 def chat_usage():
     return _json_result(get_llm_usage())
+
+
+@app.route("/api/tts", methods=["POST"])
+@require_token
+def tts():
+    if not (FISH_AUDIO_API_KEY and FISH_VOICE_ID):
+        return jsonify({
+            "error": "voice replies aren't configured on this host. Set "
+                     "ULTRON_FISH_AUDIO_API_KEY and ULTRON_FISH_VOICE_ID and restart."
+        }), 503
+    body = request.get_json(silent=True) or {}
+    audio, content_type, err = _fish_audio_tts(body.get("text", ""))
+    if err:
+        return jsonify({"error": err}), 502
+    return Response(audio, mimetype=content_type or "audio/mpeg")
 
 
 @app.route("/api/mcp/servers")
