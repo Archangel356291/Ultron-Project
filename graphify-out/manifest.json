@@ -1,0 +1,128 @@
+{
+  "dev-tools/fake_pkgs/aiohttp/__init__.py": {
+    "mtime": 1789267608.0,
+    "seen": 1789275279.5472374,
+    "ast_hash": "3a85c4afe7e8fe9d326daf2b4e998d21",
+    "semantic_hash": "3a85c4afe7e8fe9d326daf2b4e998d21"
+  },
+  "dev-tools/fake_pkgs/anthropic/__init__.py": {
+    "mtime": 1789267608.0,
+    "seen": 1789275279.5472412,
+    "ast_hash": "8b48d20302d94c9a8b9d9f76cf9f8a38",
+    "semantic_hash": "8b48d20302d94c9a8b9d9f76cf9f8a38"
+  },
+  "dev-tools/fake_pkgs/discord/__init__.py": {
+    "mtime": 1789267608.0,
+    "seen": 1789275279.547243,
+    "ast_hash": "b00ba9cd8ab0dc53bc7becccbe21e7f1",
+    "semantic_hash": "b00ba9cd8ab0dc53bc7becccbe21e7f1"
+  },
+  "dev-tools/fake_pkgs/discord/ext/__init__.py": {
+    "mtime": 1789267608.0,
+    "seen": 1789275279.5472438,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "dev-tools/fake_pkgs/discord/ext/commands.py": {
+    "mtime": 1789267608.0,
+    "seen": 1789275279.5472445,
+    "ast_hash": "c2e39765b523cb385cf9382213519606",
+    "semantic_hash": "c2e39765b523cb385cf9382213519606"
+  },
+  "dev-tools/test_mcp_server.py": {
+    "mtime": 1789267608.0,
+    "seen": 1789275279.5472453,
+    "ast_hash": "0cc3dc786cac971cfbdaf4340c89f428",
+    "semantic_hash": "0cc3dc786cac971cfbdaf4340c89f428"
+  },
+  "ultron-backend/app.py": {
+    "mtime": 1789272955.8680985,
+    "seen": 1789275279.547246,
+    "ast_hash": "7c845e8cee8def732c64047f0994cbb4",
+    "semantic_hash": "7c845e8cee8def732c64047f0994cbb4"
+  },
+  "ultron-backend/get-tailscale-address.ps1": {
+    "mtime": 1789267670.0,
+    "seen": 1789275279.547247,
+    "ast_hash": "2effbf406fdc0f17e75b312da01c3bd4",
+    "semantic_hash": "2effbf406fdc0f17e75b312da01c3bd4"
+  },
+  "ultron-backend/start-ultron.ps1": {
+    "mtime": 1789267670.0,
+    "seen": 1789275279.5472474,
+    "ast_hash": "1fe34eb7b331bed2184f7b59da43abb8",
+    "semantic_hash": "1fe34eb7b331bed2184f7b59da43abb8"
+  },
+  "ultron-discord-bot/bot.py": {
+    "mtime": 1789272963.583943,
+    "seen": 1789275279.5472481,
+    "ast_hash": "fa4ba8bb0514e12e7e6ac101b2b668e9",
+    "semantic_hash": "fa4ba8bb0514e12e7e6ac101b2b668e9"
+  },
+  "ultron-discord-bot/start-bot.ps1": {
+    "mtime": 1789267671.0,
+    "seen": 1789275279.5472486,
+    "ast_hash": "f45575fce50f13504c584b79d8efab90",
+    "semantic_hash": "f45575fce50f13504c584b79d8efab90"
+  },
+  "README.md": {
+    "mtime": 1789267662.0,
+    "seen": 1789275279.5472496,
+    "ast_hash": "46053521cd7760fb354f0e0b5e1f362a",
+    "semantic_hash": "46053521cd7760fb354f0e0b5e1f362a"
+  },
+  "Welcome.md": {
+    "mtime": 1789267423.6562016,
+    "seen": 1789275279.5472503,
+    "ast_hash": "5dce4937496ad2d20178a7578f1a1368",
+    "semantic_hash": "5dce4937496ad2d20178a7578f1a1368"
+  },
+  "dev-tools/README.md": {
+    "mtime": 1789267629.0,
+    "seen": 1789275279.5472507,
+    "ast_hash": "83626a5a42d97f30d8116be227a9ec32",
+    "semantic_hash": "83626a5a42d97f30d8116be227a9ec32"
+  },
+  "ultron-backend/BETA-LAUNCH-CHECKLIST.md": {
+    "mtime": 1789267670.0,
+    "seen": 1789275279.5472515,
+    "ast_hash": "c570046eba521299bec4adb73e0561ec",
+    "semantic_hash": "c570046eba521299bec4adb73e0561ec"
+  },
+  "ultron-backend/README.md": {
+    "mtime": 1789267670.0,
+    "seen": 1789275279.5472522,
+    "ast_hash": "6a1ac44b96ff5e9db954d324dee55097",
+    "semantic_hash": "6a1ac44b96ff5e9db954d324dee55097"
+  },
+  "ultron-backend/REMOTE-ACCESS.md": {
+    "mtime": 1789267670.0,
+    "seen": 1789275279.547253,
+    "ast_hash": "11657ce03494e2228f5abef5e5696041",
+    "semantic_hash": "11657ce03494e2228f5abef5e5696041"
+  },
+  "ultron-backend/requirements.txt": {
+    "mtime": 1789267670.0,
+    "seen": 1789275279.5472536,
+    "ast_hash": "23ad6593803712e7b58c2a6840651cc6",
+    "semantic_hash": "23ad6593803712e7b58c2a6840651cc6"
+  },
+  "ultron-dashboard.html": {
+    "mtime": 1789272920.3630407,
+    "seen": 1789275279.5472543,
+    "ast_hash": "c63dde97e0f70e124529d261af2f5c7f",
+    "semantic_hash": "c63dde97e0f70e124529d261af2f5c7f"
+  },
+  "ultron-discord-bot/README.md": {
+    "mtime": 1789267671.0,
+    "seen": 1789275279.5472548,
+    "ast_hash": "c810342405bb0ad656561ccaa26b640c",
+    "semantic_hash": "c810342405bb0ad656561ccaa26b640c"
+  },
+  "ultron-discord-bot/requirements.txt": {
+    "mtime": 1789267671.0,
+    "seen": 1789275279.5472555,
+    "ast_hash": "eac40f9fec242a85719cbb87659e841d",
+    "semantic_hash": "eac40f9fec242a85719cbb87659e841d"
+  }
+}
