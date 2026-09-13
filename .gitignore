@@ -1,5 +1,52 @@
-venv/
-__pycache__/
-*.pyc
-*.db
+# Custom AI & Claude Code
+.claude/
+claude-code.log
+*.log
 .env
+.env.*
+!.env.example
+
+# Secrets & data (this project's SQLite DB holds trade/financial records)
+*.db*
+*.pem
+*.key
+*.pfx
+id_rsa
+id_ed25519
+credentials.json
+
+# Python (3.10)
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.next/
+dist/
+build/
+
+# Windows 11 System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
