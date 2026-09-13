@@ -1,5 +1,34 @@
 # Beta launch checklist
 
+## Phase 1 status: complete (2026-09-13)
+
+Core backend + dashboard + chat + voice, verified against a real running
+instance (not just "should work"):
+
+- Backend boots clean via `start-ultron.ps1`, secrets auto-loaded from
+  `.env`, real `ULTRON_API_TOKEN` + `ANTHROPIC_API_KEY` in place
+- Auth gating confirmed (401 with no/wrong token, 200 with the right one)
+- Dashboard connects and shows real data, not mock — CPU/memory/status
+- AI Assistant chat verified end-to-end: real tool calls
+  (`get_system_status`), real answers, not guesses
+- Usage/cost tracking confirmed accurate against actual API responses;
+  daily token budget (50k) enforced by default
+- Voice added and verified: `/api/tts` (Fish Audio) returns real,
+  playable MP3 through the actual backend route; mic input wired to the
+  browser's native speech recognition
+- Security pass: gitignore hardened (a real gap — `*.db` had been
+  dropped), a hardcoded bearer token found and scrubbed from git history
+  before it was ever pushed, a SAST pass (bandit) came back clean, no
+  secrets confirmed anywhere in git history or GitHub
+
+**Not yet tested this phase** — still open for Phase 2: backup
+preview/confirm flow, trade record entry + FIFO calc, Discord bot (never
+started), MCP servers (none configured), CVE scanning, actual human
+confirmation that TTS audio is audible (network-level success confirmed,
+not ear-confirmed).
+
+---
+
 Everything below is pulled fresh from the actual code as of this write-up
 (env var names, defaults, and what's required vs. optional were all
 re-verified against `app.py` and `bot.py` directly, not recalled from
