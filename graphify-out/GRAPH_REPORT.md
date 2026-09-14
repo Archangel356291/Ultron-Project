@@ -88,15 +88,15 @@
 10. `APIStatusError` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `ultron-discord-bot Service (Docker Compose)` --shares_data_with--> `ultron-discord-bot (Thin Remote-Control Layer)`  [INFERRED]
-  docker-compose.yml → README.md
 - `ultron-backend Service (Docker Compose)` --shares_data_with--> `ultron-backend README (Backend API Reference)`  [INFERRED]
   docker-compose.yml → ultron-backend/README.md
+- `ultron-discord-bot Service (Docker Compose)` --shares_data_with--> `ultron-discord-bot (Thin Remote-Control Layer)`  [INFERRED]
+  docker-compose.yml → README.md
 - `export_command()` --references--> `Choice`  [EXTRACTED]
   ultron-discord-bot/bot.py → dev-tools/fake_pkgs/discord/__init__.py
+- `ultron-backend Service (Docker Compose)` --conceptually_related_to--> `beta_tester RBAC Role`  [INFERRED]
+  docker-compose.yml → ultron-backend/README.md
 - `ultron-dashboard.html (Single-file Dashboard)` --shares_data_with--> `POST /api/chat (Claude Chat Tool-Use Loop)`  [INFERRED]
-  README.md → ultron-backend/README.md
-- `ultron-discord-bot (Thin Remote-Control Layer)` --shares_data_with--> `POST /api/chat (Claude Chat Tool-Use Loop)`  [INFERRED]
   README.md → ultron-backend/README.md
 
 ## Import Cycles
@@ -215,14 +215,14 @@ Cohesion: 0.67
 Nodes (3): main(), make_safe_labels(), Regenerates graph.json's community_name field, GRAPH_REPORT.md, and graph.html…
 
 ## Knowledge Gaps
-- **44 isolated node(s):** `ButtonStyle`, `Full workflow after a graphify rebuild`, `Known limitations — not solved tonight`, `Schema additions (per node)`, `Visibility: classification and enforcement` (+39 more)
+- **44 isolated node(s):** `ButtonStyle`, `1. Beta test results already recorded — pulled in as ground truth`, `2. Graphify's actual output format, verified from the real files`, `3. Ponytail — what it actually limits/strips`, `4. The gap — what Module 4 actually needs to add` (+39 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 242 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **38 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What connects `ButtonStyle`, `Full workflow after a graphify rebuild`, `Known limitations — not solved tonight` to the rest of the system?**
+- **What connects `ButtonStyle`, `1. Beta test results already recorded — pulled in as ground truth`, `2. Graphify's actual output format, verified from the real files` to the rest of the system?**
   _44 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Private/Mixed Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.08755760368663594 - nodes in this community are weakly interconnected._
