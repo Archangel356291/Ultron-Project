@@ -51,3 +51,9 @@ $RECYCLE.BIN/
 *.njsproj
 *.sln
 *.swp
+
+# Obsidian — local app state (workspace layout, installed plugin bundles,
+# recently-opened file paths), not project source. Root-anchored on
+# purpose: graphify-out/obsidian/.obsidian/ is graphify's own generated
+# vault config and stays tracked.
+/.obsidian/

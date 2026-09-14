@@ -21,6 +21,12 @@ dev-tools/            Testing infrastructure (fake SDKs, a real local
 - **Setting this up for the first time?** →
   `ultron-backend/BETA-LAUNCH-CHECKLIST.md` — the consolidated,
   step-by-step path from files to a running, verified system.
+- **Are you a beta tester, not the developer?** →
+  `ultron-backend/BETA-TESTER-GUIDE.md` — written for you directly, no
+  dev background assumed. This is the one to actually send someone.
+- **Onboarding a beta tester, or want to see who's helped test this?** →
+  `ultron-backend/BETA-TESTERS.md` — the add/remove process and the
+  credits roster.
 - **Backend API reference, every endpoint and env var?** →
   `ultron-backend/README.md`
 - **Discord bot commands and setup?** →
@@ -123,3 +129,12 @@ oversights — are called out in each README's own "Not included here" or
 equivalent section (e.g. no stdio/local-subprocess MCP transport, no
 exchange API integration for trades, no CI integration for the
 Development tab).
+
+## Beta testers
+
+Full credits roster lives in `ultron-backend/BETA-TESTERS.md`, along with
+how someone gets added (each tester gets their own distinct,
+independently-revocable token — nobody shares credentials) and what to
+send them (`ultron-backend/BETA-TESTER-GUIDE.md`). Empty for now — no
+third-party testers yet, just the owner's own devices verifying the role
+itself works.
