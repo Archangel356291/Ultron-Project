@@ -138,3 +138,8 @@ independently-revocable token — nobody shares credentials) and what to
 send them (`ultron-backend/BETA-TESTER-GUIDE.md`). Empty for now — no
 third-party testers yet, just the owner's own devices verifying the role
 itself works.
+
+**Inviting someone?** `ultron-backend/BETA-INVITE-MESSAGE.md` has a
+ready-to-send, copy/paste invite — the first ask, sent before the guide
+and token above. Once they say yes, add their name to the roster in
+`BETA-TESTERS.md`.
