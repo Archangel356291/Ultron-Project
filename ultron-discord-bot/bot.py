@@ -55,6 +55,7 @@ Run:
     python bot.py
 """
 
+import asyncio
 import io
 import os
 import re
@@ -387,8 +388,13 @@ async def backend_get(session, path):
                 data = await resp.json()
                 raise BackendError(data.get("error", f"backend returned {resp.status}"))
             return await resp.json()
-    except aiohttp.ClientError as e:
-        raise BackendError(f"Could not reach the backend at {BACKEND_URL}: {e}")
+    except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+        # asyncio.TimeoutError is what ClientTimeout actually raises on
+        # expiry -- it is NOT an aiohttp.ClientError subclass, so a slow
+        # backend call (a long multi-tool chat turn, a big deploy) used to
+        # propagate uncaught here, leaving a deferred Discord interaction
+        # stuck on "thinking..." forever instead of showing this error.
+        raise BackendError(f"Could not reach the backend at {BACKEND_URL}: {e or 'timed out'}")
 
 
 async def backend_chat(session, message, history):
@@ -403,8 +409,13 @@ async def backend_chat(session, message, history):
             if resp.status != 200:
                 raise BackendError(data.get("error", f"backend returned {resp.status}"))
             return data
-    except aiohttp.ClientError as e:
-        raise BackendError(f"Could not reach the backend at {BACKEND_URL}: {e}")
+    except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+        # asyncio.TimeoutError is what ClientTimeout actually raises on
+        # expiry -- it is NOT an aiohttp.ClientError subclass, so a slow
+        # backend call (a long multi-tool chat turn, a big deploy) used to
+        # propagate uncaught here, leaving a deferred Discord interaction
+        # stuck on "thinking..." forever instead of showing this error.
+        raise BackendError(f"Could not reach the backend at {BACKEND_URL}: {e or 'timed out'}")
 
 
 async def backend_post(session, path, body):
@@ -422,8 +433,13 @@ async def backend_post(session, path, body):
             if resp.status >= 400:
                 raise BackendError(data.get("error", f"backend returned {resp.status}"))
             return data
-    except aiohttp.ClientError as e:
-        raise BackendError(f"Could not reach the backend at {BACKEND_URL}: {e}")
+    except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+        # asyncio.TimeoutError is what ClientTimeout actually raises on
+        # expiry -- it is NOT an aiohttp.ClientError subclass, so a slow
+        # backend call (a long multi-tool chat turn, a big deploy) used to
+        # propagate uncaught here, leaving a deferred Discord interaction
+        # stuck on "thinking..." forever instead of showing this error.
+        raise BackendError(f"Could not reach the backend at {BACKEND_URL}: {e or 'timed out'}")
 
 
 async def backend_get_csv(session, path):
@@ -444,8 +460,13 @@ async def backend_get_csv(session, path):
             match = re.search(r'filename="([^"]+)"', disposition)
             filename = match.group(1) if match else "ultron-export.csv"
             return content_text, filename
-    except aiohttp.ClientError as e:
-        raise BackendError(f"Could not reach the backend at {BACKEND_URL}: {e}")
+    except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+        # asyncio.TimeoutError is what ClientTimeout actually raises on
+        # expiry -- it is NOT an aiohttp.ClientError subclass, so a slow
+        # backend call (a long multi-tool chat turn, a big deploy) used to
+        # propagate uncaught here, leaving a deferred Discord interaction
+        # stuck on "thinking..." forever instead of showing this error.
+        raise BackendError(f"Could not reach the backend at {BACKEND_URL}: {e or 'timed out'}")
 
 
 def format_backup_preview_embed(preview, expires_in_seconds):
@@ -497,6 +518,19 @@ class UltronBot(commands.Bot):
         # clears it — there's no persistence layer here, same as the
         # dashboard's in-browser-memory chat history.
         self.chat_histories = {}
+        # One lock per user, serializing that user's own /ask and /forget
+        # calls so a double-fired /ask (two devices, an impatient re-run
+        # before the first reply lands) can't race on chat_histories --
+        # without it, whichever backend_chat() call resolved last silently
+        # overwrote the other's turn.
+        self.chat_locks = {}
+
+    def _chat_lock(self, user_id):
+        lock = self.chat_locks.get(user_id)
+        if lock is None:
+            lock = asyncio.Lock()
+            self.chat_locks[user_id] = lock
+        return lock
 
     async def setup_hook(self):
         self.http_session = aiohttp.ClientSession()
@@ -826,20 +860,22 @@ async def ask_command(interaction: discord.Interaction, message: str):
         return
 
     await interaction.response.defer()
-    history = bot.chat_histories.get(interaction.user.id, [])
-    try:
-        data = await backend_chat(bot.http_session, message, history)
-        bot.chat_histories[interaction.user.id] = data.get("history", history)
-        await interaction.followup.send(embed=format_chat_embed(data["reply"], data.get("tools_used", [])))
-    except BackendError as e:
-        await interaction.followup.send(embed=format_error_embed(str(e)))
+    async with bot._chat_lock(interaction.user.id):
+        history = bot.chat_histories.get(interaction.user.id, [])
+        try:
+            data = await backend_chat(bot.http_session, message, history)
+            bot.chat_histories[interaction.user.id] = data.get("history", history)
+            await interaction.followup.send(embed=format_chat_embed(data["reply"], data.get("tools_used", [])))
+        except BackendError as e:
+            await interaction.followup.send(embed=format_error_embed(str(e)))
 
 
 @bot.tree.command(name="forget", description="Clear your conversation history with Ultron")
 async def forget_command(interaction: discord.Interaction):
     if not await require_auth(interaction):
         return
-    bot.chat_histories.pop(interaction.user.id, None)
+    async with bot._chat_lock(interaction.user.id):
+        bot.chat_histories.pop(interaction.user.id, None)
     await interaction.response.send_message("Conversation history cleared.", ephemeral=True)
 
 

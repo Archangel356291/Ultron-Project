@@ -550,13 +550,28 @@ called** for that request. Admin chat (the real `ULTRON_API_TOKEN`) is
 never subject to this; it's a beta-tester-only restriction, enforced
 alongside the beta role's existing tool restrictions
 (`BETA_ALLOWED_TOOLS`). A tester can see their own running total via
-`/api/whoami`; the admin sees every tester's spend via `/api/chat/usage`'s
+`/api/whoami` and the dashboard's beta-only "Your spend" card in
+Settings; the admin sees every tester's spend via `/api/chat/usage`'s
 `beta_testers` field and the dashboard's Settings → Usage & cost controls
-card. Verified in `dev-tools/test_beta_spend_cap.py` — drives real
-`/api/chat` calls through a scripted fake Anthropic client until a
-tester's computed spend crosses the cap, then asserts the next call is
-genuinely refused (not just that the setting exists), and that an admin
-token making the same call is unaffected.
+card.
+
+The cap covers more than `/api/chat` itself, closing three gaps a
+2026-09-14 pre-launch review found (full detail in `CODE-AUDIT.md`):
+`/api/tts` (voice replies) checks the same cap before calling Fish
+Audio, since that's real cost too, not just chat tokens; each history
+entry is capped at `MAX_HISTORY_MESSAGE_CHARS` (20,000 chars) on top of
+the existing 40-entry count cap, so one oversized entry can't blow past
+the whole budget in a single request; and `BETA_SPEND_LOCKS` (one lock
+per beta tester) serializes that tester's own check-then-act sequence,
+so two genuinely concurrent requests from the same identity can't both
+read "under cap" before either logs its usage. Verified in
+`dev-tools/test_beta_spend_cap.py` — drives real `/api/chat` and
+`/api/tts` calls through a scripted fake Anthropic client until a
+tester's computed spend crosses the cap, asserts the next call on either
+endpoint is genuinely refused, fires two truly concurrent same-tester
+requests to prove the lock serializes them (and confirms this by
+temporarily removing the lock and watching the same test fail), and
+confirms an admin token is unaffected throughout.
 
 **Connection/device tracking.** `/api/connections` (admin-only) reports
 every identity (admin, or a beta tester by name) that has made an

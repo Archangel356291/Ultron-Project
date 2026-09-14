@@ -133,6 +133,7 @@
 
   nav{ flex:1; padding:18px 12px; overflow-y:auto; }
   [data-role="admin"][hidden]{ display:none !important; }
+  [data-role="beta"][hidden]{ display:none !important; }
   .nav-item{
     display:flex; align-items:center; gap:12px;
     padding:11px 14px;
@@ -1132,6 +1133,11 @@
           </div>
         </div>
 
+        <div class="panel-label" data-role="beta">Your spend</div>
+        <div class="card" style="margin-bottom:20px" data-role="beta">
+          <div id="beta-spend-body" style="font-size:13px; color:var(--text-dim);">—</div>
+        </div>
+
         <div class="panel-label" data-role="admin">Usage &amp; cost controls</div>
         <div class="card" style="margin-bottom:20px" data-role="admin">
           <div id="llm-usage-body" style="font-size:13px; color:var(--text-dim);">Connect the backend to see real token usage.</div>
@@ -1245,6 +1251,9 @@
   function applyRoleUI() {
     document.querySelectorAll('[data-role="admin"]').forEach(function (el) {
       el.hidden = state.role !== 'admin';
+    });
+    document.querySelectorAll('[data-role="beta"]').forEach(function (el) {
+      el.hidden = state.role !== 'beta';
     });
     if (state.role !== 'admin') {
       switchSection('assistant');
@@ -1387,7 +1396,7 @@
       // already catch their own errors), these don't, so calling them here
       // would fail the whole Promise.all and read as "lost connection".
       const calls = state.role === 'beta'
-        ? [fetchTrades()]
+        ? [fetchTrades(), fetchBetaSpend()]
         : [
           fetchStatus(),
           fetchContainers(),
@@ -1716,6 +1725,27 @@
       '<div style="font-family:var(--font-mono); font-size:12px;">' +
       data.online_count + ' online now · ' + data.device_count + ' device(s) total' +
       '</div>' + rows;
+  }
+
+  async function fetchBetaSpend() {
+    const el = document.getElementById('beta-spend-body');
+    if (!el) return;
+    let data;
+    try {
+      data = await apiGet('/api/whoami');
+    } catch (err) {
+      return;
+    }
+    if (typeof data.spend_usd !== 'number') return;
+    const pct = data.spend_limit_usd > 0 ? (data.spend_usd / data.spend_limit_usd * 100) : 0;
+    const color = pct >= 90 ? 'var(--oxide)' : (pct >= 70 ? 'var(--amber)' : 'var(--signal)');
+    el.innerHTML =
+      '<div style="font-family:var(--font-mono); font-size:12px;">' +
+      '$' + data.spend_usd.toFixed(2) + ' / $' + data.spend_limit_usd.toFixed(2) +
+      ' used <span style="color:' + color + '">(' + pct.toFixed(0) + '%)</span></div>' +
+      '<div style="margin-top:4px; color:var(--text-faint); font-size:11.5px;">' +
+      '$' + data.spend_remaining_usd.toFixed(2) + ' remaining — a lifetime cap for your whole ' +
+      'time testing, not a daily one.</div>';
   }
 
   async function addTrade() {
@@ -2198,17 +2228,28 @@
     } catch (e) { /* voice is best-effort — never break chat over it */ }
   }
 
+  let chatSending = false;
+
   async function sendChatMessage() {
     const input = document.getElementById('chat-input-field');
     const btn = document.getElementById('chat-send-btn');
     const text = (input.value || '').trim();
     if (!text) return;
+    // Guards every caller (Assistant tab, Home talk-bar, Enter key), not
+    // just the visually-disabled input/button -- sendFromHome() sets the
+    // field and calls this directly, a plain JS call the `disabled`
+    // attribute never blocks, so without this a send from Home while an
+    // Assistant-tab reply is still in flight ran two concurrent chats and
+    // whichever's response resolved last silently clobbered the other's
+    // turn in state.chatHistory.
+    if (chatSending) return;
 
     if (!state.connected) {
       appendChatBubble('ultron', 'Not connected — set the backend URL and token in Settings → Connection first.', { isError: true });
       return;
     }
 
+    chatSending = true;
     appendChatBubble('user', text);
     input.value = '';
     input.disabled = true;
@@ -2227,6 +2268,7 @@
     } finally {
       input.disabled = false;
       btn.disabled = false;
+      chatSending = false;
     }
   }
 

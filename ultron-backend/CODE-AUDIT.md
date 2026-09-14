@@ -125,3 +125,101 @@ dashboard card (Settings → Connections) reuse the existing `require_auth`
 / admin-gating patterns rather than introducing new ones — checked for
 whether either added a second gate to keep in sync with the backend's,
 and neither does; both are thin callers of the one backend endpoint.
+
+## 2026-09-14 — full pre-launch review: 9 real bugs found and fixed
+
+A full read-through of all three production files (`app.py`, `bot.py`,
+`ultron-dashboard.html`), explicitly ahead of a live multi-device beta.
+SQL injection, subprocess/shell injection, and the core admin/beta_tester
+RBAC boundary (route level and chat tool-dispatch level) all came back
+clean — no changes needed there. Nine real issues found, all fixed and
+re-verified:
+
+1. **`/api/tts` had no spend-cap check.** A beta tester already at the
+   $1.00 cap could still generate unlimited Fish Audio speech, entirely
+   outside the cost control built for chat. Fixed: `/api/tts` now checks
+   the same `BETA_MAX_SPEND_USD` gate as `/api/chat` before calling Fish
+   Audio.
+2. **No per-history-message size cap.** `MAX_HISTORY_MESSAGES` (40)
+   capped entry *count* but not each entry's *content size* — one
+   multi-megabyte history entry could blow past the whole $1 budget in a
+   single request, before the cap ever had a chance to trigger. Fixed:
+   added `MAX_HISTORY_MESSAGE_CHARS` (20,000) checked per entry, plus a
+   blanket `app.config["MAX_CONTENT_LENGTH"]` (2MB) as a framework-level
+   backstop independent of any one route's own checks.
+3. **The spend-cap check was read-then-act with no lock.** Two genuinely
+   concurrent `/api/chat` requests from the *same* beta identity (two
+   devices, a double-click) could both read "under cap" before either
+   logged its usage, letting combined spend land well past $1.00 — beyond
+   the single-extra-call overshoot the design and the original test
+   suite explicitly accounted for. Fixed: `BETA_SPEND_LOCKS`, one
+   `threading.Lock` per known beta tester (built once from the fixed
+   `BETA_TOKENS` set), held across the check + LLM call + usage log for
+   that identity. Different testers are unaffected — this only closes
+   the same-identity race, verified by actually sabotaging the fix
+   (swapping in a no-op lock) and confirming the test then fails with
+   two `200`s and $2.10 combined spend, before confirming the real fix
+   passes.
+4. **`_PRESENCE` (the connection-tracking dict) had no lock.** Mutated
+   on every authenticated request via `.setdefault()` while
+   `/api/connections` iterated it directly with `.items()` — a new
+   identity's first request landing mid-poll could raise `RuntimeError:
+   dictionary changed size during iteration`, 500ing that endpoint.
+   Fixed: `_PRESENCE_LOCK` around both the mutation and a snapshot-copy
+   read in `/api/connections`.
+5. **Beta testers couldn't see their own spend.** `/api/whoami` already
+   returned `spend_usd`/`spend_remaining_usd`/`spend_limit_usd` for a
+   beta tester, but the dashboard never displayed them — the first
+   warning a tester got was the hard 429 refusal, with no proactive
+   heads-up as they approached the cap. Fixed: a beta-only "Your spend"
+   card in Settings, refreshed on the existing poll cycle.
+6. **Discord bot only caught `aiohttp.ClientError`, not
+   `asyncio.TimeoutError`.** `ClientTimeout` actually raises
+   `asyncio.TimeoutError` on expiry, which is *not* a `ClientError`
+   subclass — a slow multi-tool chat turn or a big deploy exceeding its
+   timeout raised uncaught, leaving a deferred Discord interaction stuck
+   on "thinking..." forever. Fixed: all four backend-call helpers
+   (`backend_get`, `backend_chat`, `backend_post`, `backend_get_csv`) now
+   catch both.
+7. **`bot.chat_histories` raced on a double-fired `/ask`.** Two
+   concurrent `/ask` calls from the same Discord user (impatience, two
+   devices) read the same starting history, and whichever response
+   resolved last silently overwrote the other's turn. Fixed: one
+   `asyncio.Lock` per Discord user (`bot._chat_lock`), serializing that
+   user's own `/ask` and `/forget` calls — different users are
+   unaffected.
+8. **Dashboard's `sendFromHome()` bypassed the disabled-input guard.**
+   The Assistant tab's input/button are visually disabled while a reply
+   is in flight, but `sendFromHome()` set the chat field's value and
+   called `sendChatMessage()` directly — a plain JS call the `disabled`
+   attribute never blocks — so switching to Home and sending while an
+   Assistant-tab reply was still pending fired two concurrent chats,
+   clobbering `state.chatHistory`. Fixed: a `chatSending` re-entrancy
+   guard inside `sendChatMessage()` itself, covering every caller
+   (Assistant tab, Home talk-bar, Enter key) rather than patching
+   `sendFromHome()` alone.
+9. **`_run_backup()` lacked the collision recheck `_run_deploy_container()`
+   already has.** Two concurrently confirmed backups compute an
+   identical second-resolution timestamp and archive path, racing
+   `shutil.make_archive()` on the same file. Unlike deploy (where two
+   *different* concurrent deploys are legitimate and the fix is a
+   recheck), concurrent backups aren't independent operations, so the
+   simpler correct fix is mutual exclusion: `_BACKUP_LOCK` around the
+   whole run — a second confirmed backup just waits its turn.
+
+**Live-verified, not just read:** `dev-tools/test_beta_spend_cap.py` was
+extended to cover findings 1–4 end-to-end — the oversized-history
+rejection, the `/api/tts` cap, and the concurrency race (including the
+sabotage check for #3 above) — and re-run clean after every fix. Findings
+5, 6, 7, 8, 9 were verified by direct code inspection and, for 5 and 8,
+a JS syntax check of the modified dashboard script blocks; none of these
+five have an automated regression test yet (bot.py and the dashboard
+have no test harness comparable to the Flask test client used for
+app.py) — worth adding if this project's test infrastructure grows to
+cover them.
+
+**Already known, not new:** MCP discovery caching for the life of the
+process and blocking sequentially on first use are both already listed
+in the root `README.md`'s "Known, deliberate gaps" — the review surfaced
+the same limitation with sharper detail (an `auto_approve` edit doesn't
+take effect until restart) but this wasn't treated as a new finding.

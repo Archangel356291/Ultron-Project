@@ -80,6 +80,7 @@ Action endpoints — read this before using either one:
     directly, not through chat.
 """
 
+import contextlib
 import csv
 import hmac
 import io
@@ -102,6 +103,10 @@ import psutil
 from flask import Flask, jsonify, request, Response, g, send_from_directory
 
 app = Flask(__name__)
+# Blanket backstop on request body size, independent of any per-field check
+# a route does itself (e.g. /api/chat's history-length/content checks) --
+# Flask/Werkzeug reject anything over this before a route even runs.
+app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2MB
 
 API_TOKEN = os.environ.get("ULTRON_API_TOKEN")
 if not API_TOKEN:
@@ -134,6 +139,15 @@ def _parse_beta_tokens(raw):
 
 
 BETA_TOKENS = _parse_beta_tokens(os.environ.get("ULTRON_BETA_TOKENS", ""))
+
+# One lock per beta tester, built once from the fixed set of names above --
+# serializes a single tester's own concurrent /api/chat calls around the
+# spend-cap check so two requests from the same person (two devices, a
+# double-click) can't both read "under cap" before either logs its usage
+# and slip past BETA_MAX_SPEND_USD together. Different testers still run
+# fully in parallel -- this only narrows the existing verified concurrency
+# guarantee for the one case it doesn't already cover.
+BETA_SPEND_LOCKS = {name: threading.Lock() for name in set(BETA_TOKENS.values())}
 
 # Origin the dashboard is served from, for CORS. Set this to your actual
 # dashboard origin (e.g. "http://192.168.1.50:8080") in production — the "*"
@@ -456,15 +470,17 @@ def _resolve_role(token):
 # its own view. Fine for a single `python app.py` home-lab process; move to
 # the DB (like llm_usage) if this ever runs multi-process.
 _PRESENCE = {}
+_PRESENCE_LOCK = threading.Lock()
 _PRESENCE_ONLINE_WINDOW_SECONDS = 5 * 60
 
 
 def _touch_presence(role, beta_name):
     identity = beta_name if role == "beta" else "admin"
-    entry = _PRESENCE.setdefault(identity, {"role": role, "devices": set()})
-    entry["role"] = role
-    entry["devices"].add(request.remote_addr or "unknown")
-    entry["last_seen"] = time.time()
+    with _PRESENCE_LOCK:
+        entry = _PRESENCE.setdefault(identity, {"role": role, "devices": set()})
+        entry["role"] = role
+        entry["devices"].add(request.remote_addr or "unknown")
+        entry["last_seen"] = time.time()
 
 
 def require_token(fn):
@@ -1099,7 +1115,21 @@ def _backup_preview():
     }, None
 
 
+_BACKUP_LOCK = threading.Lock()
+
+
 def _run_backup():
+    # Unlike deploy-container (where two different concurrent deploys are
+    # both legitimate), two concurrent backups aren't independent -- they'd
+    # archive the same source dirs to the same destination and can compute
+    # an identical second-resolution timestamp, racing shutil.make_archive
+    # on the same path. A second confirmed backup while one is already
+    # running just waits its turn rather than colliding.
+    with _BACKUP_LOCK:
+        return _run_backup_locked()
+
+
+def _run_backup_locked():
     err = _validate_backup_config()
     if err:
         log_activity("backup", "Backup not run — " + err, status="error")
@@ -2532,6 +2562,11 @@ BETA_ALLOWED_TOOLS = {"get_trades", "get_trade_summary", "get_trade_tax_lots"}
 MAX_TOOL_ITERATIONS = 5   # hard cap so a confused loop can't run up API spend
 MAX_HISTORY_MESSAGES = 40  # ~20 turns; keeps context (and cost) bounded
 MAX_MESSAGE_CHARS = 4000
+# Caps each individual history entry's content, on top of the message-count
+# cap above — MAX_HISTORY_MESSAGES alone still allowed one oversized entry
+# (megabytes of text) to reach the API in a single call, bypassing the
+# spend cap in one shot rather than needing many requests to reach it.
+MAX_HISTORY_MESSAGE_CHARS = 20000
 
 
 def _serialize_block(block):
@@ -2691,7 +2726,9 @@ def connections():
     this file holds to, but for visibility rather than a limit."""
     now = time.time()
     people = []
-    for identity, entry in _PRESENCE.items():
+    with _PRESENCE_LOCK:
+        snapshot = [(identity, dict(entry)) for identity, entry in _PRESENCE.items()]
+    for identity, entry in snapshot:
         last_seen = entry.get("last_seen", 0)
         people.append({
             "name": identity,
@@ -2729,15 +2766,6 @@ def chat():
                          "resets at midnight, or raise ULTRON_LLM_DAILY_TOKEN_BUDGET"
             }), 429
 
-    if g.role == "beta":
-        spent = _beta_tester_spend_usd(g.beta_name)
-        if spent >= BETA_MAX_SPEND_USD:
-            return jsonify({
-                "error": f"beta testing spend limit reached (${spent:.2f}/${BETA_MAX_SPEND_USD:.2f}) — "
-                         "this is a total cap for the whole beta, not a daily one; "
-                         "contact whoever invited you if you need more"
-            }), 429
-
     body = request.get_json(silent=True) or {}
     user_message = (body.get("message") or "").strip()
     history = body.get("history") or []
@@ -2751,28 +2779,48 @@ def chat():
     for m in history:
         if not isinstance(m, dict) or "role" not in m or "content" not in m:
             return jsonify({"error": "invalid history format"}), 400
+        content = m["content"]
+        content_len = len(content) if isinstance(content, str) else len(json.dumps(content))
+        if content_len > MAX_HISTORY_MESSAGE_CHARS:
+            return jsonify({"error": f"a history message exceeds the {MAX_HISTORY_MESSAGE_CHARS}-char limit"}), 400
 
-    try:
-        reply, new_history, tools_used = run_ultron_chat(user_message, history, role=g.role, beta_name=g.beta_name)
-    except anthropic.AuthenticationError:
-        # Server misconfiguration, not the caller's fault — but surfacing it
-        # clearly here saves a confusing debugging session once the real key
-        # goes in for the beta.
-        return jsonify({
-            "error": "the Anthropic API rejected the configured API key — "
-                     "check ANTHROPIC_API_KEY on this host"
-        }), 502
-    except anthropic.PermissionDeniedError:
-        return jsonify({"error": "Anthropic API key lacks permission for this request"}), 502
-    except anthropic.RateLimitError:
-        return jsonify({"error": "rate-limited by the Anthropic API — try again shortly"}), 429
-    except anthropic.APIConnectionError:
-        return jsonify({"error": "could not reach the Anthropic API — check network connectivity"}), 502
-    except anthropic.APIStatusError as e:
-        return jsonify({"error": f"Anthropic API error ({e.status_code}): {str(e)}"}), 502
-    except Exception as e:
-        # Anything else — malformed tool result, unexpected SDK behavior, etc.
-        return jsonify({"error": "unexpected error: " + str(e)}), 500
+    # Beta spend-cap check and the LLM call that follows are held under this
+    # tester's own lock (a no-op for admin) so a second concurrent request
+    # from the same identity can't read "under cap" before the first has
+    # logged its usage -- see BETA_SPEND_LOCKS above. Scoped per-identity,
+    # so this never serializes different testers against each other.
+    lock = BETA_SPEND_LOCKS.get(g.beta_name) if g.role == "beta" else None
+    with lock if lock is not None else contextlib.nullcontext():
+        if g.role == "beta":
+            spent = _beta_tester_spend_usd(g.beta_name)
+            if spent >= BETA_MAX_SPEND_USD:
+                return jsonify({
+                    "error": f"beta testing spend limit reached (${spent:.2f}/${BETA_MAX_SPEND_USD:.2f}) — "
+                             "this is a total cap for the whole beta, not a daily one; "
+                             "contact whoever invited you if you need more"
+                }), 429
+
+        try:
+            reply, new_history, tools_used = run_ultron_chat(user_message, history, role=g.role, beta_name=g.beta_name)
+        except anthropic.AuthenticationError:
+            # Server misconfiguration, not the caller's fault — but surfacing it
+            # clearly here saves a confusing debugging session once the real key
+            # goes in for the beta.
+            return jsonify({
+                "error": "the Anthropic API rejected the configured API key — "
+                         "check ANTHROPIC_API_KEY on this host"
+            }), 502
+        except anthropic.PermissionDeniedError:
+            return jsonify({"error": "Anthropic API key lacks permission for this request"}), 502
+        except anthropic.RateLimitError:
+            return jsonify({"error": "rate-limited by the Anthropic API — try again shortly"}), 429
+        except anthropic.APIConnectionError:
+            return jsonify({"error": "could not reach the Anthropic API — check network connectivity"}), 502
+        except anthropic.APIStatusError as e:
+            return jsonify({"error": f"Anthropic API error ({e.status_code}): {str(e)}"}), 502
+        except Exception as e:
+            # Anything else — malformed tool result, unexpected SDK behavior, etc.
+            return jsonify({"error": "unexpected error: " + str(e)}), 500
 
     return jsonify({"reply": reply, "history": new_history, "tools_used": tools_used})
 
@@ -2791,6 +2839,17 @@ def tts():
             "error": "voice replies aren't configured on this host. Set "
                      "ULTRON_FISH_AUDIO_API_KEY and ULTRON_FISH_VOICE_ID and restart."
         }), 503
+    # Fish Audio is real cost too, same as chat -- without this, a beta
+    # tester who'd already hit BETA_MAX_SPEND_USD on /api/chat could still
+    # run up unbounded TTS usage, entirely outside the cap that exists
+    # specifically to bound their total cost.
+    if g.role == "beta":
+        spent = _beta_tester_spend_usd(g.beta_name)
+        if spent >= BETA_MAX_SPEND_USD:
+            return jsonify({
+                "error": f"beta testing spend limit reached (${spent:.2f}/${BETA_MAX_SPEND_USD:.2f}) — "
+                         "voice replies are paused along with chat until this is raised"
+            }), 429
     body = request.get_json(silent=True) or {}
     audio, content_type, err = _fish_audio_tts(body.get("text", ""))
     if err:
