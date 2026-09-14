@@ -2,7 +2,7 @@
 source_file: "ultron-backend/app.py"
 type: "rationale"
 community: "scan_container_cves"
-location: "L683"
+location: "L706"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED

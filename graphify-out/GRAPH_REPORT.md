@@ -1,17 +1,17 @@
 # Graph Report - Ultron Project  (2026-09-13)
 
 ## Corpus Check
-- 27 files · ~44,615 words
+- 27 files · ~44,928 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 2 file(s) not represented in the graph (top: (none) 2)
 
 ## Summary
-- 536 nodes · 890 edges · 49 communities (28 shown, 14 thin omitted)
+- 537 nodes · 891 edges · 49 communities (28 shown, 14 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 58 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `00719190`
+- Built from commit: `cbb935ac`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,15 +22,15 @@
 - POST /api/chat (Ultron's brain)
 - View
 - route
-- ultron-backend/app.py
+- action_backup
 - app.py
 - run_ultron_chat
 - ClientSession
 - apiGet
+- dev_repo_diff
 - _get_db_connection
-- trades
 - fake_pkgs/ (drop-in fake SDKs)
-- docker_ps
+- ultron-backend/app.py
 - start-ultron.ps1
 - _status_data
 - Ultron (personal AI home lab system)
@@ -117,12 +117,12 @@ Cohesion: 0.08
 Nodes (8): app_commands, Button, Choice, CommandTree, Matches @discord.ui.button(...). The fake doesn't need the full component-…, ui, decorator(), View
 
 ### Community 5 - "route"
-Cohesion: 0.10
-Nodes (28): activity(), dashboard(), delete_trade(), dev_repo_diff(), dev_repos(), _find_repo_dir(), get_auth_log(), get_mcp_servers() (+20 more)
+Cohesion: 0.14
+Nodes (21): activity(), chat_usage(), dashboard(), delete_trade(), dev_repos(), get_auth_log(), get_llm_usage(), get_recent_activity() (+13 more)
 
-### Community 6 - "ultron-backend/app.py"
-Cohesion: 0.13
-Nodes (26): action_backup(), action_deploy_container(), add_cors_headers(), _backup_preview(), _consume_action_token(), _dir_size_bytes(), _load_mcp_config(), log_activity() (+18 more)
+### Community 6 - "action_backup"
+Cohesion: 0.22
+Nodes (13): action_backup(), action_deploy_container(), _backup_preview(), _consume_action_token(), _dir_size_bytes(), log_activity(), _new_action_token(), _prune_expired_tokens_locked() (+5 more)
 
 ### Community 7 - "app.py"
 Cohesion: 0.16
@@ -140,21 +140,21 @@ Nodes (7): ClientError, ClientSession, ClientTimeout, _MockResponse, Exception, 
 Cohesion: 0.21
 Nodes (16): Real Activity Log (SQLite-backed), apiGet(), connectBackend(), escapeHtml(), fetchActivity(), fetchContainers(), fetchStatus(), fetchStorage() (+8 more)
 
-### Community 11 - "_get_db_connection"
-Cohesion: 0.20
-Nodes (10): chat(), chat_usage(), _check_rate_limit(), _get_db_connection(), get_llm_usage(), _init_db(), Returns None if the request is allowed, or an error message if the caller…, Sums input+output tokens (real spend) for calls logged today (local date,… (+2 more)
+### Community 11 - "dev_repo_diff"
+Cohesion: 0.29
+Nodes (7): dev_repo_diff(), _find_repo_dir(), get_repo_diff(), Runs a read-only git command in repo_path. Returns (stdout, error) — never…, Matches only against the pre-configured repo basenames — a caller can never…, _repo_status(), _run_git()
 
-### Community 12 - "trades"
-Cohesion: 0.20
-Nodes (10): add_trade(), get_trades(), Returns (normalized_dict, None) or (None, error_message)., Raw transaction ledger as CSV text., Per-disposal FIFO tax report as CSV text — one row per sell-vs-buy-lot match,…, _tax_lots_to_csv(), trades(), trades_export() (+2 more)
+### Community 12 - "_get_db_connection"
+Cohesion: 0.25
+Nodes (9): add_trade(), _get_db_connection(), get_trades(), _init_db(), Returns (normalized_dict, None) or (None, error_message)., Raw transaction ledger as CSV text., trades(), _trades_to_csv() (+1 more)
 
 ### Community 13 - "fake_pkgs/ (drop-in fake SDKs)"
 Cohesion: 0.15
 Nodes (14): fake_pkgs/aiohttp (aiohttp client fake), fake_pkgs/discord (Discord SDK fake), fake_pkgs/ (drop-in fake SDKs), test_mcp_server.py (real protocol-compliant local MCP server), Why this exists as a separate folder (test against real-like dependencies), MCP is opt-in at the tool level, not the server level, Testing approach (test against real dependency behavior), External tools (MCP) security model (+6 more)
 
-### Community 14 - "docker_ps"
-Cohesion: 0.33
-Nodes (6): containers(), _containers_data(), docker_ps(), docker_stats(), Return container info via the Docker CLI, avoiding a hard dependency on the…, Live CPU/mem per container, keyed by name. Best-effort; returns {} on any…
+### Community 14 - "ultron-backend/app.py"
+Cohesion: 0.11
+Nodes (22): add_cors_headers(), containers(), _containers_data(), docker_ps(), docker_stats(), get_mcp_servers(), _load_mcp_config(), mcp_servers() (+14 more)
 
 ### Community 15 - "start-ultron.ps1"
 Cohesion: 0.21
@@ -181,8 +181,8 @@ Cohesion: 0.32
 Nodes (7): jsonrpc_error(), jsonrpc_result(), mcp_endpoint(), route, A real MCP server for testing app.py's MCP client against genuine JSON-RPC…, dev-tools/fake_pkgs/ (anthropic/discord/aiohttp fakes), Testing Philosophy (real services + scriptable fakes)
 
 ### Community 21 - "_fifo_engine"
-Cohesion: 0.20
-Nodes (10): _fifo_engine(), get_trade_summary(), get_trade_tax_lots(), Best-effort date -> integer day count, for holding-period math. Never raises;…, The one place FIFO matching happens. Returns both an aggregated per-asset view…, Simplified FIFO realized gain/loss per asset — the aggregated view. See…, Per-disposal detail: each row is one sell matched against one consumed buy lot,…, _trade_date_to_epoch_days() (+2 more)
+Cohesion: 0.15
+Nodes (13): _fifo_engine(), get_trade_summary(), get_trade_tax_lots(), Best-effort date -> integer day count, for holding-period math. Never raises;…, The one place FIFO matching happens. Returns both an aggregated per-asset view…, Simplified FIFO realized gain/loss per asset — the aggregated view. See…, Per-disposal detail: each row is one sell matched against one consumed buy lot,…, Per-disposal FIFO tax report as CSV text — one row per sell-vs-buy-lot match,… (+5 more)
 
 ### Community 22 - "scan_container_cves"
 Cohesion: 0.25
@@ -193,12 +193,12 @@ Cohesion: 0.52
 Nodes (7): Destructive host actions require a human-confirmed token, POST /api/actions/backup, POST /api/actions/deploy-container, Preview-then-confirm action pattern, /backup command, /deploy command, Confirm/Cancel button flow (bot action commands)
 
 ### Community 25 - "require_role"
-Cohesion: 0.22
-Nodes (10): _fish_audio_tts(), One TTS request to Fish Audio. Returns (audio_bytes, content_type, error)., Constant-time-ish token check against both roles. Returns 'admin', 'beta', or…, Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope…, require_role(), wrapper(), wrapper(), _resolve_role() (+2 more)
+Cohesion: 0.14
+Nodes (15): chat(), _check_rate_limit(), _fish_audio_tts(), Returns None if the request is allowed, or an error message if the caller…, Sums input+output tokens (real spend) for calls logged today (local date,…, One TTS request to Fish Audio. Returns (audio_bytes, content_type, error)., Constant-time-ish token check against admin and every registered beta tester.…, Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope… (+7 more)
 
 ### Community 26 - "_index.md"
 Cohesion: 0.14
-Nodes (10): Folders, Master Index, Root notes, A real limitation, not yet fixed, Beta testers, How someone gets added, Roster, 2026-09-13 — clean pass, no bugs found (+2 more)
+Nodes (10): Folders, Master Index, Root notes, Beta testers, How someone gets added, Roster, What's still not covered, 2026-09-13 — clean pass, no bugs found (+2 more)
 
 ### Community 47 - "authHeaders"
 Cohesion: 0.25
@@ -214,7 +214,7 @@ Nodes (8): Trade CSV Export (transactions + tax-lots), Discord Bot (bot.py), Dis
 
 ## Knowledge Gaps
 - **44 isolated node(s):** `ButtonStyle`, `graphify`, `Hand-written notes (vault)`, `Folders`, `Root notes` (+39 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 196 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 197 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -223,11 +223,11 @@ _Questions this graph is uniquely positioned to answer:_
 - **What is the exact relationship between `Coding Sub-Agent / Development Tab (git data)` and `Home Lab Monitor & Command Router`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
 - **Why does `anthropic (>=1.0.0,<2.0.0)` connect `Flask Backend (app.py)` to `POST /api/chat (Ultron's brain)`, `start-ultron.ps1`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
+  _High betweenness centrality (0.035) - this node is a cross-community bridge._
 - **Why does `POST /api/chat (Ultron's brain)` connect `POST /api/chat (Ultron's brain)` to `Flask Backend (app.py)`, `fake_pkgs/ (drop-in fake SDKs)`?**
   _High betweenness centrality (0.033) - this node is a cross-community bridge._
 - **Why does `Phase 1 Status (complete, 2026-09-13)` connect `start-ultron.ps1` to `Ultron (personal AI home lab system)`, `_index.md`, `authHeaders`?**
-  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+  _High betweenness centrality (0.024) - this node is a cross-community bridge._
 - **What connects `ButtonStyle`, `graphify`, `Hand-written notes (vault)` to the rest of the system?**
   _44 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `bot.py` be split into smaller, more focused modules?**

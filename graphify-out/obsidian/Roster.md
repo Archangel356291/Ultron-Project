@@ -2,7 +2,7 @@
 source_file: "ultron-backend/BETA-TESTERS.md"
 type: "document"
 community: "_index.md"
-location: "L18"
+location: "L34"
 tags:
   - graphify/document
   - graphify/EXTRACTED

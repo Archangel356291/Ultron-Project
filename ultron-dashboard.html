@@ -1303,11 +1303,13 @@
       state.connected = true;
 
       state.role = 'admin';
+      state.betaName = '';
       try {
         const whoRes = await fetch(state.baseUrl + '/api/whoami', { headers: authHeaders() });
         if (whoRes.ok) {
           const who = await whoRes.json();
           state.role = who.role === 'beta' ? 'beta' : 'admin';
+          state.betaName = who.name || '';
         }
       } catch (err) {
         // whoami not reachable — stay on the safe default (admin UI, but
@@ -1315,7 +1317,8 @@
       }
       applyRoleUI();
 
-      setConnStatus('connected · live data' + (state.role === 'beta' ? ' · beta tester' : ''), 'ok');
+      const betaLabel = state.role === 'beta' ? (' · beta tester' + (state.betaName ? ' (' + state.betaName + ')' : '')) : '';
+      setConnStatus('connected · live data' + betaLabel, 'ok');
       setTopbar('live · connected to backend', true);
       state.chatHistory = [];
       const hostLabel = document.getElementById('hlo-host-label');

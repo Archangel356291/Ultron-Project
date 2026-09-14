@@ -2,14 +2,14 @@
 source_file: "ultron-backend/BETA-TESTERS.md"
 type: "document"
 community: "_index.md"
-location: "L29"
+location: "L45"
 tags:
   - graphify/document
   - graphify/EXTRACTED
   - community/_indexmd
 ---
 
-# A real limitation, not yet fixed
+# What's still not covered
 
 ## Connections
 - [[Beta testers]] - `contains` [EXTRACTED]

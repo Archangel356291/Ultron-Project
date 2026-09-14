@@ -35,7 +35,9 @@ input) plus view-only trading data (`/api/trades`, `/api/trades/summary`,
 enforced at the Flask route level *and* inside chat's own tool-use loop
 (the tool schemas offered to the model are filtered by role, so chat can't
 be used to route around the same boundary). See `README.md`'s auth section
-and `start-ultron.ps1`'s `ULTRON_BETA_TOKEN` block.
+and `start-ultron.ps1`'s `ULTRON_BETA_TOKENS` block (originally a single
+shared token; see `BETA-TESTERS.md` for the per-tester version this
+became on 2026-09-13).
 
 Not yet done / not tested against a real instance:
 - No hard login screen before the dashboard loads — Settings → Connection

@@ -44,12 +44,13 @@ SORT file.name ASC
 
 ## Connections to other communities
 - 16 edges to [[_COMMUNITY_ultron-backendapp.py]]
-- 2 edges to [[_COMMUNITY__get_db_connection]]
-- 1 edge to [[_COMMUNITY_route]]
+- 1 edge to [[_COMMUNITY__get_db_connection]]
+- 1 edge to [[_COMMUNITY_require_role]]
+- 1 edge to [[_COMMUNITY_action_backup]]
 
 ## Top bridge nodes
 - [[run_ultron_chat()]] - degree 8, connects to 2 communities
-- [[_ensure_mcp_discovered()]] - degree 5, connects to 2 communities
 - [[_log_llm_usage()]] - degree 4, connects to 2 communities
 - [[_mcp_jsonrpc_call()]] - degree 6, connects to 1 community
+- [[_ensure_mcp_discovered()]] - degree 5, connects to 1 community
 - [[get_mcp_tools_and_dispatch()]] - degree 5, connects to 1 community

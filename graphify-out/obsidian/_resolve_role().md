@@ -2,7 +2,7 @@
 source_file: "ultron-backend/app.py"
 type: "code"
 community: "require_role"
-location: "L374"
+location: "L394"
 tags:
   - graphify/code
   - graphify/EXTRACTED
@@ -12,7 +12,7 @@ tags:
 # _resolve_role()
 
 ## Connections
-- [[Constant-time-ish token check against both roles. Returns 'admin', 'beta', or…]] - `rationale_for` [EXTRACTED]
+- [[Constant-time-ish token check against admin and every registered beta tester.…]] - `rationale_for` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 - [[wrapper()]] - `calls` [EXTRACTED]
 - [[wrapper()_1]] - `calls` [EXTRACTED]

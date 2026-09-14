@@ -43,7 +43,7 @@
       }
     },
     {
-      "query": "tag:#community/ultron-backend/apppy",
+      "query": "tag:#community/action_backup",
       "color": {
         "a": 1,
         "rgb": 11565729
@@ -78,14 +78,14 @@
       }
     },
     {
-      "query": "tag:#community/_get_db_connection",
+      "query": "tag:#community/dev_repo_diff",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/trades",
+      "query": "tag:#community/_get_db_connection",
       "color": {
         "a": 1,
         "rgb": 14767961
@@ -99,7 +99,7 @@
       }
     },
     {
-      "query": "tag:#community/docker_ps",
+      "query": "tag:#community/ultron-backend/apppy",
       "color": {
         "a": 1,
         "rgb": 5873999

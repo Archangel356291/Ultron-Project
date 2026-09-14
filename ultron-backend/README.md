@@ -38,15 +38,26 @@ The token above is only set for the current PowerShell session. Save it
 somewhere (password manager) so you can reuse it — you'll need it in every
 `Authorization: Bearer <token>` request, including from the dashboard.
 
-**Beta testers get a second, weaker token** — set `ULTRON_BETA_TOKEN` to a
-*different* random value (same command as above, run again) and hand that
-one out instead of your real `ULTRON_API_TOKEN`. It authenticates as the
-`beta_tester` role: chat (full) plus view-only trading data
-(`/api/trades`, `/api/trades/summary`, `/api/trades/tax-lots`) — everything
-else 403s, including via chat's own tool use, not just the raw HTTP routes.
-Leave `ULTRON_BETA_TOKEN` unset and the role doesn't exist at all. The
-dashboard hides admin-only nav/controls automatically once it detects this
-role via `/api/whoami`, but that's convenience — the 403s are what actually
+**Beta testers each get their own, weaker token** — never your real
+`ULTRON_API_TOKEN`, and never one token shared between people. Set
+`ULTRON_BETA_TOKENS` to a comma-separated list of `name:token` pairs
+(generate each token the same way as above, run once per person):
+
+```powershell
+$env:ULTRON_BETA_TOKENS = "alice:$(-join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_})),bob:$(-join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_}))"
+```
+
+Any of those tokens authenticates as the `beta_tester` role: chat (full)
+plus view-only trading data (`/api/trades`, `/api/trades/summary`,
+`/api/trades/tax-lots`) — everything else 403s, including via chat's own
+tool use, not just the raw HTTP routes. Because each person has their own
+token, removing one entry revokes just that person, and `/api/whoami`
+reports back which tester is connected (`{"role": "beta", "name": "alice"}`)
+so requests aren't anonymous within the role. Leave `ULTRON_BETA_TOKENS`
+unset and the role doesn't exist at all — see `BETA-TESTERS.md` for the
+full add/remove process and the credits roster. The dashboard hides
+admin-only nav/controls automatically once it detects this role via
+`/api/whoami`, but that's convenience — the 403s are what actually
 enforce it.
 
 Optionally, to enable the AI Assistant chat panel, also set an Anthropic API
@@ -609,8 +620,9 @@ dashboard, not the static file. (`ultron-dashboard.html` still exists and
 still works if you double-click it locally, but for any *other* device,
 use the URL instead of copying the file around — see the note below on
 why.) It has a **Settings → Connection** panel where you enter this
-backend's URL and your `ULTRON_API_TOKEN` (or `ULTRON_BETA_TOKEN`,
-see the beta_tester section above) — once connected it polls
+backend's URL and your `ULTRON_API_TOKEN` (or one of the
+`ULTRON_BETA_TOKENS` entries, see the beta_tester section above) — once
+connected it polls
 `/api/status`, `/api/containers`, `/api/storage`, and `/api/systems`
 every 15 seconds and replaces the mock numbers with real ones. On the
 same Wi-Fi, use the LAN address (e.g. `http://192.168.1.50:5000`, found

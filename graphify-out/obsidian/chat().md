@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_get_db_connection"
-location: "L2538"
+community: "require_role"
+location: "L2561"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_get_db_connection
+  - community/require_role
 ---
 
 # chat()
@@ -19,4 +19,4 @@ tags:
 - [[run_ultron_chat()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_get_db_connection
+#graphify/code #graphify/EXTRACTED #community/require_role

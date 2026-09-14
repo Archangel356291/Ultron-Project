@@ -44,12 +44,17 @@ if (-not $env:ULTRON_API_TOKEN) {
 # ============================================================
 # Beta testers — optional, restricted role
 # ============================================================
-# A SEPARATE token for beta_tester access: chat (full) + trading data
-# (view-only). Everything else 403s for this role, at the API level, not
-# just hidden in the dashboard. Leave unset (default) and the beta_tester
-# role doesn't exist at all — no one can use it, whatever token they try.
-# if (-not $env:ULTRON_BETA_TOKEN) {
-#     $env:ULTRON_BETA_TOKEN = "PASTE-A-DIFFERENT-TOKEN-HERE"
+# One SEPARATE, DISTINCT token per beta tester — never your own
+# ULTRON_API_TOKEN, and never one token shared between people. Each gets
+# chat (full) + trading data (view-only); everything else 403s for this
+# role, at the API level, not just hidden in the dashboard. Leave unset
+# (default) and the beta_tester role doesn't exist at all — no one can
+# use it, whatever token they try.
+#
+# Format: "name:token,name:token,..." — see BETA-TESTERS.md for how to
+# generate a token and add someone to the roster.
+# if (-not $env:ULTRON_BETA_TOKENS) {
+#     $env:ULTRON_BETA_TOKENS = "alice:PASTE-ALICES-TOKEN-HERE,bob:PASTE-BOBS-TOKEN-HERE"
 # }
 
 # ============================================================

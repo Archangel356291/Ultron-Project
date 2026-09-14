@@ -2,7 +2,7 @@
 source_file: "ultron-backend/app.py"
 type: "code"
 community: "scan_container_cves"
-location: "L1707"
+location: "L1730"
 tags:
   - graphify/code
   - graphify/EXTRACTED

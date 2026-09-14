@@ -2,14 +2,14 @@
 source_file: "ultron-backend/app.py"
 type: "rationale"
 community: "require_role"
-location: "L375"
+location: "L395"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
   - community/require_role
 ---
 
-# Constant-time-ish token check against both roles. Returns 'admin', 'beta', or…
+# Constant-time-ish token check against admin and every registered beta tester.…
 
 ## Connections
 - [[_resolve_role()]] - `rationale_for` [EXTRACTED]

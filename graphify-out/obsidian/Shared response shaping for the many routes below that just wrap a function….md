@@ -2,7 +2,7 @@
 source_file: "ultron-backend/app.py"
 type: "rationale"
 community: "route"
-location: "L1569"
+location: "L1592"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED

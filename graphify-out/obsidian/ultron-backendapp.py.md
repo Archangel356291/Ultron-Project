@@ -38,6 +38,7 @@ tags:
 - [[_mcp_jsonrpc_call()]] - `contains` [EXTRACTED]
 - [[_mcp_list_tools()]] - `contains` [EXTRACTED]
 - [[_new_action_token()]] - `contains` [EXTRACTED]
+- [[_parse_beta_tokens()]] - `contains` [EXTRACTED]
 - [[_parse_scout_sarif()]] - `contains` [EXTRACTED]
 - [[_prune_expired_tokens_locked()]] - `contains` [EXTRACTED]
 - [[_repo_status()]] - `contains` [EXTRACTED]

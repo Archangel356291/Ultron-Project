@@ -1730,12 +1730,12 @@
       "label": "route",
       "x": 7660,
       "y": 0,
-      "width": 1320,
+      "width": 1100,
       "height": 620,
       "color": "6"
     },
     {
-      "id": "n_ultron_backend_app_rationale_387",
+      "id": "n_ultron_backend_app_rationale_408",
       "type": "file",
       "file": "Admin-only. Existing routes are unchanged a valid beta token is a real\u2026.md",
       "x": 7680,
@@ -1744,56 +1744,29 @@
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_1124",
+      "id": "n_ultron_backend_app_rationale_1872",
       "type": "file",
-      "file": "Matches only against the pre-configured repo basenames \u2014 a caller can never\u2026.md",
+      "file": "Real usage summary for today \u2014 inputoutputcache tokens, request count, and\u2026.md",
       "x": 7880,
       "y": 80,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_2119",
+      "id": "n_ultron_backend_app_rationale_594",
       "type": "file",
-      "file": "Read-only view of every configured server and everything it offers \u2014 approved\u2026.md",
+      "file": "Recent login attempts. Platform-aware - Windows Security event log (IDs\u2026.md",
       "x": 8080,
       "y": 80,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_571",
-      "type": "file",
-      "file": "Recent login attempts. Platform-aware - Windows Security event log (IDs\u2026.md",
-      "x": 8280,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_rationale_1070",
-      "type": "file",
-      "file": "Runs a read-only git command in repo_path. Returns (stdout, error) \u2014 never\u2026.md",
-      "x": 8480,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_rationale_1569",
+      "id": "n_ultron_backend_app_rationale_1592",
       "type": "file",
       "file": "Shared response shaping for the many routes below that just wrap a function\u2026.md",
-      "x": 8680,
+      "x": 8280,
       "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_find_repo_dir",
-      "type": "file",
-      "file": "_find_repo_dir().md",
-      "x": 7680,
-      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -1801,26 +1774,8 @@
       "id": "n_ultron_backend_app_json_result",
       "type": "file",
       "file": "_json_result().md",
-      "x": 7880,
-      "y": 160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_repo_status",
-      "type": "file",
-      "file": "_repo_status().md",
-      "x": 8080,
-      "y": 160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_run_git",
-      "type": "file",
-      "file": "_run_git().md",
-      "x": 8280,
-      "y": 160,
+      "x": 8480,
+      "y": 80,
       "width": 180,
       "height": 60
     },
@@ -1828,7 +1783,7 @@
       "id": "n_ultron_backend_app_storage_data",
       "type": "file",
       "file": "_storage_data().md",
-      "x": 8480,
+      "x": 7680,
       "y": 160,
       "width": 180,
       "height": 60
@@ -1837,7 +1792,16 @@
       "id": "n_ultron_backend_app_activity",
       "type": "file",
       "file": "activity().md",
-      "x": 8680,
+      "x": 7880,
+      "y": 160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_chat_usage",
+      "type": "file",
+      "file": "chat_usage().md",
+      "x": 8080,
       "y": 160,
       "width": 180,
       "height": 60
@@ -1846,8 +1810,8 @@
       "id": "n_ultron_backend_app_dashboard",
       "type": "file",
       "file": "dashboard().md",
-      "x": 7680,
-      "y": 240,
+      "x": 8280,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -1855,17 +1819,8 @@
       "id": "n_ultron_backend_app_delete_trade",
       "type": "file",
       "file": "delete_trade().md",
-      "x": 7880,
-      "y": 240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_dev_repo_diff",
-      "type": "file",
-      "file": "dev_repo_diff().md",
-      "x": 8080,
-      "y": 240,
+      "x": 8480,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -1873,7 +1828,7 @@
       "id": "n_ultron_backend_app_dev_repos",
       "type": "file",
       "file": "dev_repos().md",
-      "x": 8280,
+      "x": 7680,
       "y": 240,
       "width": 180,
       "height": 60
@@ -1882,16 +1837,16 @@
       "id": "n_ultron_backend_app_get_auth_log",
       "type": "file",
       "file": "get_auth_log().md",
-      "x": 8480,
+      "x": 7880,
       "y": 240,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_get_mcp_servers",
+      "id": "n_ultron_backend_app_get_llm_usage",
       "type": "file",
-      "file": "get_mcp_servers().md",
-      "x": 8680,
+      "file": "get_llm_usage().md",
+      "x": 8080,
       "y": 240,
       "width": 180,
       "height": 60
@@ -1900,17 +1855,8 @@
       "id": "n_ultron_backend_app_get_recent_activity",
       "type": "file",
       "file": "get_recent_activity().md",
-      "x": 7680,
-      "y": 320,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_get_repo_diff",
-      "type": "file",
-      "file": "get_repo_diff().md",
-      "x": 7880,
-      "y": 320,
+      "x": 8280,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1918,8 +1864,8 @@
       "id": "n_ultron_backend_app_get_repo_status",
       "type": "file",
       "file": "get_repo_status().md",
-      "x": 8080,
-      "y": 320,
+      "x": 8480,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -1927,16 +1873,7 @@
       "id": "n_ultron_backend_app_health",
       "type": "file",
       "file": "health().md",
-      "x": 8280,
-      "y": 320,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_mcp_servers",
-      "type": "file",
-      "file": "mcp_servers().md",
-      "x": 8480,
+      "x": 7680,
       "y": 320,
       "width": 180,
       "height": 60
@@ -1945,7 +1882,7 @@
       "id": "n_ultron_backend_app_require_token",
       "type": "file",
       "file": "require_token().md",
-      "x": 8680,
+      "x": 7880,
       "y": 320,
       "width": 180,
       "height": 60
@@ -1954,8 +1891,8 @@
       "id": "n_ultron_backend_app_py_route",
       "type": "file",
       "file": "route_1.md",
-      "x": 7680,
-      "y": 400,
+      "x": 8080,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1963,8 +1900,8 @@
       "id": "n_ultron_backend_app_security_auth_log",
       "type": "file",
       "file": "security_auth_log().md",
-      "x": 7880,
-      "y": 400,
+      "x": 8280,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1972,8 +1909,8 @@
       "id": "n_ultron_backend_app_storage",
       "type": "file",
       "file": "storage().md",
-      "x": 8080,
-      "y": 400,
+      "x": 8480,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -1981,7 +1918,7 @@
       "id": "n_ultron_backend_app_trade_delete",
       "type": "file",
       "file": "trade_delete().md",
-      "x": 8280,
+      "x": 7680,
       "y": 400,
       "width": 180,
       "height": 60
@@ -1989,73 +1926,28 @@
     {
       "id": "g6",
       "type": "group",
-      "label": "ultron-backend/app.py",
-      "x": 9060,
+      "label": "action_backup",
+      "x": 8840,
       "y": 0,
-      "width": 1320,
-      "height": 620,
+      "width": 880,
+      "height": 520,
       "color": "1"
     },
     {
-      "id": "n_ultron_backend_app_rationale_545",
-      "type": "file",
-      "file": "NOTE this hits Windows Update and can take several seconds..md",
-      "x": 9080,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_rationale_215",
+      "id": "n_ultron_backend_app_rationale_235",
       "type": "file",
       "file": "Best-effort logging \u2014 never raises. A logging failure (disk full, permissions,\u2026.md",
-      "x": 9280,
+      "x": 8860,
       "y": 80,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_1918",
-      "type": "file",
-      "file": "Loads and validates the MCP server list from ULTRON_MCP_CONFIG (a path to a\u2026.md",
-      "x": 9480,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_rationale_846",
+      "id": "n_ultron_backend_app_rationale_869",
       "type": "file",
       "file": "Pops and returns (params, None) on success, or (None, error_message). Tokens\u2026.md",
-      "x": 9680,
+      "x": 9060,
       "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_rationale_132",
-      "type": "file",
-      "file": "Splits a multi-path env var into a clean list of paths. Windows uses ';' as the\u2026.md",
-      "x": 9880,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_rationale_1",
-      "type": "file",
-      "file": "Ultron home lab monitoring backend. Exposes a small JSON API that the dashboard\u2026.md",
-      "x": 10080,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_rationale_894",
-      "type": "file",
-      "file": "Validates and normalizes a deploy-container request body. Returns (params,\u2026.md",
-      "x": 9080,
-      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -2063,8 +1955,8 @@
       "id": "n_ultron_backend_app_backup_preview",
       "type": "file",
       "file": "_backup_preview().md",
-      "x": 9280,
-      "y": 160,
+      "x": 9260,
+      "y": 80,
       "width": 180,
       "height": 60
     },
@@ -2072,8 +1964,8 @@
       "id": "n_ultron_backend_app_consume_action_token",
       "type": "file",
       "file": "_consume_action_token().md",
-      "x": 9480,
-      "y": 160,
+      "x": 9460,
+      "y": 80,
       "width": 180,
       "height": 60
     },
@@ -2081,16 +1973,7 @@
       "id": "n_ultron_backend_app_dir_size_bytes",
       "type": "file",
       "file": "_dir_size_bytes().md",
-      "x": 9680,
-      "y": 160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_load_mcp_config",
-      "type": "file",
-      "file": "_load_mcp_config().md",
-      "x": 9880,
+      "x": 8860,
       "y": 160,
       "width": 180,
       "height": 60
@@ -2099,7 +1982,7 @@
       "id": "n_ultron_backend_app_new_action_token",
       "type": "file",
       "file": "_new_action_token().md",
-      "x": 10080,
+      "x": 9060,
       "y": 160,
       "width": 180,
       "height": 60
@@ -2108,8 +1991,8 @@
       "id": "n_ultron_backend_app_prune_expired_tokens_locked",
       "type": "file",
       "file": "_prune_expired_tokens_locked().md",
-      "x": 9080,
-      "y": 240,
+      "x": 9260,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -2117,8 +2000,8 @@
       "id": "n_ultron_backend_app_run_backup",
       "type": "file",
       "file": "_run_backup().md",
-      "x": 9280,
-      "y": 240,
+      "x": 9460,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -2126,16 +2009,7 @@
       "id": "n_ultron_backend_app_run_deploy_container",
       "type": "file",
       "file": "_run_deploy_container().md",
-      "x": 9480,
-      "y": 240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_split_platform_paths",
-      "type": "file",
-      "file": "_split_platform_paths().md",
-      "x": 9680,
+      "x": 8860,
       "y": 240,
       "width": 180,
       "height": 60
@@ -2144,44 +2018,8 @@
       "id": "n_ultron_backend_app_validate_backup_config",
       "type": "file",
       "file": "_validate_backup_config().md",
-      "x": 9880,
+      "x": 9060,
       "y": 240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_validate_container_name",
-      "type": "file",
-      "file": "_validate_container_name().md",
-      "x": 10080,
-      "y": 240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_validate_deploy_params",
-      "type": "file",
-      "file": "_validate_deploy_params().md",
-      "x": 9080,
-      "y": 320,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_validate_image_ref",
-      "type": "file",
-      "file": "_validate_image_ref().md",
-      "x": 9280,
-      "y": 320,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_validate_port",
-      "type": "file",
-      "file": "_validate_port().md",
-      "x": 9480,
-      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -2189,8 +2027,8 @@
       "id": "n_ultron_backend_app_action_backup",
       "type": "file",
       "file": "action_backup().md",
-      "x": 9680,
-      "y": 320,
+      "x": 9260,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -2198,26 +2036,8 @@
       "id": "n_ultron_backend_app_action_deploy_container",
       "type": "file",
       "file": "action_deploy_container().md",
-      "x": 9880,
-      "y": 320,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_add_cors_headers",
-      "type": "file",
-      "file": "add_cors_headers().md",
-      "x": 10080,
-      "y": 320,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_py_after_request",
-      "type": "file",
-      "file": "after_request.md",
-      "x": 9080,
-      "y": 400,
+      "x": 9460,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -2225,17 +2045,8 @@
       "id": "n_ultron_backend_app_log_activity",
       "type": "file",
       "file": "log_activity().md",
-      "x": 9280,
-      "y": 400,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app",
-      "type": "file",
-      "file": "ultron-backendapp.py.md",
-      "x": 9480,
-      "y": 400,
+      "x": 8860,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -2458,7 +2269,7 @@
       "color": "3"
     },
     {
-      "id": "n_ultron_backend_app_rationale_1801",
+      "id": "n_ultron_backend_app_rationale_1824",
       "type": "file",
       "file": "Best-effort \u2014 never raises. A logging failure must not break the chat response\u2026.md",
       "x": 1860,
@@ -2467,7 +2278,7 @@
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_2141",
+      "id": "n_ultron_backend_app_rationale_2164",
       "type": "file",
       "file": "Closure matching the same handler(kwargs) - dict contract every internal\u2026.md",
       "x": 2060,
@@ -2476,7 +2287,7 @@
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_2075",
+      "id": "n_ultron_backend_app_rationale_2098",
       "type": "file",
       "file": "Connects to every configured server once and lists its tools. A server that's\u2026.md",
       "x": 2260,
@@ -2485,7 +2296,7 @@
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_2166",
+      "id": "n_ultron_backend_app_rationale_2189",
       "type": "file",
       "file": "Ensures discovery has run, then returns (schemas, dispatch) for every APPROVED\u2026.md",
       "x": 2460,
@@ -2512,7 +2323,7 @@
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_1969",
+      "id": "n_ultron_backend_app_rationale_1992",
       "type": "file",
       "file": "One raw JSON-RPC POST. Hard timeout, hard response-size cap. Handles both a\u2026.md",
       "x": 1860,
@@ -2521,7 +2332,7 @@
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_2411",
+      "id": "n_ultron_backend_app_rationale_2434",
       "type": "file",
       "file": "Returns a NEW message dict with a cache_control breakpoint on its last content\u2026.md",
       "x": 2060,
@@ -2530,7 +2341,7 @@
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_2102",
+      "id": "n_ultron_backend_app_rationale_2125",
       "type": "file",
       "file": "Runs discovery at most once, lazily, on first use \u2014 not at module import time.\u2026.md",
       "x": 2260,
@@ -2539,7 +2350,7 @@
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_2430",
+      "id": "n_ultron_backend_app_rationale_2453",
       "type": "file",
       "file": "Runs the tool-use loop against the Claude API and returns (reply_text,\u2026.md",
       "x": 2460,
@@ -2548,7 +2359,7 @@
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_2397",
+      "id": "n_ultron_backend_app_rationale_2420",
       "type": "file",
       "file": "Turn an SDK content-block object into a plain dict so it can be JSON-returned\u2026.md",
       "x": 2660,
@@ -3038,45 +2849,100 @@
     {
       "id": "g11",
       "type": "group",
-      "label": "_get_db_connection",
+      "label": "dev_repo_diff",
       "x": 6260,
       "y": 1000,
-      "width": 880,
+      "width": 660,
       "height": 420,
       "color": "6"
     },
     {
-      "id": "n_ultron_backend_app_rationale_1849",
+      "id": "n_ultron_backend_app_rationale_1147",
       "type": "file",
-      "file": "Real usage summary for today \u2014 inputoutputcache tokens, request count, and\u2026.md",
+      "file": "Matches only against the pre-configured repo basenames \u2014 a caller can never\u2026.md",
       "x": 6280,
       "y": 1080,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_1776",
+      "id": "n_ultron_backend_app_rationale_1093",
       "type": "file",
-      "file": "Returns None if the request is allowed, or an error message if the caller\u2026.md",
+      "file": "Runs a read-only git command in repo_path. Returns (stdout, error) \u2014 never\u2026.md",
       "x": 6480,
       "y": 1080,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_1825",
+      "id": "n_ultron_backend_app_find_repo_dir",
       "type": "file",
-      "file": "Sums input+output tokens (real spend) for calls logged today (local date,\u2026.md",
+      "file": "_find_repo_dir().md",
       "x": 6680,
       "y": 1080,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_check_rate_limit",
+      "id": "n_ultron_backend_app_repo_status",
       "type": "file",
-      "file": "_check_rate_limit().md",
-      "x": 6880,
+      "file": "_repo_status().md",
+      "x": 6280,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_run_git",
+      "type": "file",
+      "file": "_run_git().md",
+      "x": 6480,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_dev_repo_diff",
+      "type": "file",
+      "file": "dev_repo_diff().md",
+      "x": 6680,
+      "y": 1160,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_get_repo_diff",
+      "type": "file",
+      "file": "get_repo_diff().md",
+      "x": 6280,
+      "y": 1240,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g12",
+      "type": "group",
+      "label": "_get_db_connection",
+      "x": 7660,
+      "y": 1000,
+      "width": 660,
+      "height": 420,
+      "color": "1"
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_1474",
+      "type": "file",
+      "file": "Raw transaction ledger as CSV text..md",
+      "x": 7680,
+      "y": 1080,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_1208",
+      "type": "file",
+      "file": "Returns (normalized_dict, None) or (None, error_message)..md",
+      "x": 7880,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -3085,8 +2951,8 @@
       "id": "n_ultron_backend_app_get_db_connection",
       "type": "file",
       "file": "_get_db_connection().md",
-      "x": 6280,
-      "y": 1160,
+      "x": 8080,
+      "y": 1080,
       "width": 180,
       "height": 60
     },
@@ -3094,90 +2960,8 @@
       "id": "n_ultron_backend_app_init_db",
       "type": "file",
       "file": "_init_db().md",
-      "x": 6480,
-      "y": 1160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_todays_token_usage",
-      "type": "file",
-      "file": "_todays_token_usage().md",
-      "x": 6680,
-      "y": 1160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_chat",
-      "type": "file",
-      "file": "chat().md",
-      "x": 6880,
-      "y": 1160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_chat_usage",
-      "type": "file",
-      "file": "chat_usage().md",
-      "x": 6280,
-      "y": 1240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_get_llm_usage",
-      "type": "file",
-      "file": "get_llm_usage().md",
-      "x": 6480,
-      "y": 1240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "g12",
-      "type": "group",
-      "label": "trades",
-      "x": 7660,
-      "y": 1000,
-      "width": 880,
-      "height": 420,
-      "color": "1"
-    },
-    {
-      "id": "n_ultron_backend_app_rationale_1472",
-      "type": "file",
-      "file": "Per-disposal FIFO tax report as CSV text \u2014 one row per sell-vs-buy-lot match,\u2026.md",
       "x": 7680,
-      "y": 1080,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_rationale_1451",
-      "type": "file",
-      "file": "Raw transaction ledger as CSV text..md",
-      "x": 7880,
-      "y": 1080,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_rationale_1185",
-      "type": "file",
-      "file": "Returns (normalized_dict, None) or (None, error_message)..md",
-      "x": 8080,
-      "y": 1080,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_tax_lots_to_csv",
-      "type": "file",
-      "file": "_tax_lots_to_csv().md",
-      "x": 8280,
-      "y": 1080,
+      "y": 1160,
       "width": 180,
       "height": 60
     },
@@ -3185,7 +2969,7 @@
       "id": "n_ultron_backend_app_trades_to_csv",
       "type": "file",
       "file": "_trades_to_csv().md",
-      "x": 7680,
+      "x": 7880,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -3194,7 +2978,7 @@
       "id": "n_ultron_backend_app_validate_trade_input",
       "type": "file",
       "file": "_validate_trade_input().md",
-      "x": 7880,
+      "x": 8080,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -3203,8 +2987,8 @@
       "id": "n_ultron_backend_app_add_trade",
       "type": "file",
       "file": "add_trade().md",
-      "x": 8080,
-      "y": 1160,
+      "x": 7680,
+      "y": 1240,
       "width": 180,
       "height": 60
     },
@@ -3212,8 +2996,8 @@
       "id": "n_ultron_backend_app_get_trades",
       "type": "file",
       "file": "get_trades().md",
-      "x": 8280,
-      "y": 1160,
+      "x": 7880,
+      "y": 1240,
       "width": 180,
       "height": 60
     },
@@ -3221,16 +3005,7 @@
       "id": "n_ultron_backend_app_trades",
       "type": "file",
       "file": "trades().md",
-      "x": 7680,
-      "y": 1240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_app_trades_export",
-      "type": "file",
-      "file": "trades_export().md",
-      "x": 7880,
+      "x": 8080,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -3239,7 +3014,7 @@
       "id": "g13",
       "type": "group",
       "label": "fake_pkgs/ (drop-in fake SDKs)",
-      "x": 9060,
+      "x": 8840,
       "y": 1000,
       "width": 880,
       "height": 520,
@@ -3249,7 +3024,7 @@
       "id": "n_ultron_backend_readme_mcp_security_model",
       "type": "file",
       "file": "External tools (MCP) security model.md",
-      "x": 9080,
+      "x": 8860,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -3258,7 +3033,7 @@
       "id": "n_readme_mcp_opt_in",
       "type": "file",
       "file": "MCP is opt-in at the tool level, not the server level.md",
-      "x": 9280,
+      "x": 9060,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -3267,7 +3042,7 @@
       "id": "n_ultron_backend_remote_access_magicdns",
       "type": "file",
       "file": "MagicDNS hostname.md",
-      "x": 9480,
+      "x": 9260,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -3276,7 +3051,7 @@
       "id": "n_ultron_backend_remote_access_tailscale",
       "type": "file",
       "file": "Tailscale (mesh VPN).md",
-      "x": 9680,
+      "x": 9460,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -3285,7 +3060,7 @@
       "id": "n_ultron_backend_remote_access_grants_acls",
       "type": "file",
       "file": "Tailscale grantsACLs (tailnet policy).md",
-      "x": 9080,
+      "x": 8860,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -3294,7 +3069,7 @@
       "id": "n_readme_testing_approach",
       "type": "file",
       "file": "Testing approach (test against real dependency behavior).md",
-      "x": 9280,
+      "x": 9060,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -3303,7 +3078,7 @@
       "id": "n_dev_tools_readme_testing_philosophy",
       "type": "file",
       "file": "Why this exists as a separate folder (test against real-like dependencies).md",
-      "x": 9480,
+      "x": 9260,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -3312,7 +3087,7 @@
       "id": "n_ultron_backend_remote_access_wireguard",
       "type": "file",
       "file": "WireGuard.md",
-      "x": 9680,
+      "x": 9460,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -3321,7 +3096,7 @@
       "id": "n_ultron_discord_bot_requirements_aiohttp",
       "type": "file",
       "file": "aiohttp.md",
-      "x": 9080,
+      "x": 8860,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -3330,7 +3105,7 @@
       "id": "n_ultron_discord_bot_requirements_discordpy",
       "type": "file",
       "file": "discord.py.md",
-      "x": 9280,
+      "x": 9060,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -3339,7 +3114,7 @@
       "id": "n_dev_tools_readme_fake_pkgs",
       "type": "file",
       "file": "fake_pkgs (drop-in fake SDKs).md",
-      "x": 9480,
+      "x": 9260,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -3348,7 +3123,7 @@
       "id": "n_dev_tools_readme_fake_aiohttp",
       "type": "file",
       "file": "fake_pkgsaiohttp (aiohttp client fake).md",
-      "x": 9680,
+      "x": 9460,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -3357,7 +3132,7 @@
       "id": "n_dev_tools_readme_fake_discord",
       "type": "file",
       "file": "fake_pkgsdiscord (Discord SDK fake).md",
-      "x": 9080,
+      "x": 8860,
       "y": 1320,
       "width": 180,
       "height": 60
@@ -3366,7 +3141,7 @@
       "id": "n_dev_tools_readme_test_mcp_server",
       "type": "file",
       "file": "test_mcp_server.py (real protocol-compliant local MCP server).md",
-      "x": 9280,
+      "x": 9060,
       "y": 1320,
       "width": 180,
       "height": 60
@@ -3374,28 +3149,82 @@
     {
       "id": "g14",
       "type": "group",
-      "label": "docker_ps",
+      "label": "ultron-backend/app.py",
       "x": 0,
       "y": 1700,
-      "width": 660,
-      "height": 400,
+      "width": 1100,
+      "height": 620,
       "color": "3"
     },
     {
-      "id": "n_ultron_backend_app_rationale_513",
+      "id": "n_ultron_backend_app_rationale_568",
       "type": "file",
-      "file": "Live CPUmem per container, keyed by name. Best-effort; returns {} on any\u2026.md",
+      "file": "NOTE this hits Windows Update and can take several seconds..md",
       "x": 20,
       "y": 1780,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_479",
+      "id": "n_ultron_backend_app_rationale_536",
       "type": "file",
-      "file": "Return container info via the Docker CLI, avoiding a hard dependency on the\u2026.md",
+      "file": "Live CPUmem per container, keyed by name. Best-effort; returns {} on any\u2026.md",
       "x": 220,
       "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_1941",
+      "type": "file",
+      "file": "Loads and validates the MCP server list from ULTRON_MCP_CONFIG (a path to a\u2026.md",
+      "x": 420,
+      "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_2142",
+      "type": "file",
+      "file": "Read-only view of every configured server and everything it offers \u2014 approved\u2026.md",
+      "x": 620,
+      "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_502",
+      "type": "file",
+      "file": "Return container info via the Docker CLI, avoiding a hard dependency on the\u2026.md",
+      "x": 820,
+      "y": 1780,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_152",
+      "type": "file",
+      "file": "Splits a multi-path env var into a clean list of paths. Windows uses ';' as the\u2026.md",
+      "x": 20,
+      "y": 1860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_1",
+      "type": "file",
+      "file": "Ultron home lab monitoring backend. Exposes a small JSON API that the dashboard\u2026.md",
+      "x": 220,
+      "y": 1860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_917",
+      "type": "file",
+      "file": "Validates and normalizes a deploy-container request body. Returns (params,\u2026.md",
+      "x": 420,
+      "y": 1860,
       "width": 180,
       "height": 60
     },
@@ -3403,8 +3232,89 @@
       "id": "n_ultron_backend_app_containers_data",
       "type": "file",
       "file": "_containers_data().md",
+      "x": 620,
+      "y": 1860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_load_mcp_config",
+      "type": "file",
+      "file": "_load_mcp_config().md",
+      "x": 820,
+      "y": 1860,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_parse_beta_tokens",
+      "type": "file",
+      "file": "_parse_beta_tokens().md",
+      "x": 20,
+      "y": 1940,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_split_platform_paths",
+      "type": "file",
+      "file": "_split_platform_paths().md",
+      "x": 220,
+      "y": 1940,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_validate_container_name",
+      "type": "file",
+      "file": "_validate_container_name().md",
       "x": 420,
-      "y": 1780,
+      "y": 1940,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_validate_deploy_params",
+      "type": "file",
+      "file": "_validate_deploy_params().md",
+      "x": 620,
+      "y": 1940,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_validate_image_ref",
+      "type": "file",
+      "file": "_validate_image_ref().md",
+      "x": 820,
+      "y": 1940,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_validate_port",
+      "type": "file",
+      "file": "_validate_port().md",
+      "x": 20,
+      "y": 2020,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_add_cors_headers",
+      "type": "file",
+      "file": "add_cors_headers().md",
+      "x": 220,
+      "y": 2020,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_py_after_request",
+      "type": "file",
+      "file": "after_request.md",
+      "x": 420,
+      "y": 2020,
       "width": 180,
       "height": 60
     },
@@ -3412,8 +3322,8 @@
       "id": "n_ultron_backend_app_containers",
       "type": "file",
       "file": "containers().md",
-      "x": 20,
-      "y": 1860,
+      "x": 620,
+      "y": 2020,
       "width": 180,
       "height": 60
     },
@@ -3421,8 +3331,8 @@
       "id": "n_ultron_backend_app_docker_ps",
       "type": "file",
       "file": "docker_ps().md",
-      "x": 220,
-      "y": 1860,
+      "x": 820,
+      "y": 2020,
       "width": 180,
       "height": 60
     },
@@ -3430,8 +3340,35 @@
       "id": "n_ultron_backend_app_docker_stats",
       "type": "file",
       "file": "docker_stats().md",
+      "x": 20,
+      "y": 2100,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_get_mcp_servers",
+      "type": "file",
+      "file": "get_mcp_servers().md",
+      "x": 220,
+      "y": 2100,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_mcp_servers",
+      "type": "file",
+      "file": "mcp_servers().md",
       "x": 420,
-      "y": 1860,
+      "y": 2100,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app",
+      "type": "file",
+      "file": "ultron-backendapp.py.md",
+      "x": 620,
+      "y": 2100,
       "width": 180,
       "height": 60
     },
@@ -3582,7 +3519,7 @@
       "color": "5"
     },
     {
-      "id": "n_ultron_backend_app_rationale_425",
+      "id": "n_ultron_backend_app_rationale_448",
       "type": "file",
       "file": "Best-effort CPU temperature read. Returns None if unavailable \u2014 which, on\u2026.md",
       "x": 3480,
@@ -3591,7 +3528,7 @@
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_535",
+      "id": "n_ultron_backend_app_rationale_558",
       "type": "file",
       "file": "Count of pending OS updates. Real implementation on both platforms Windows\u2026.md",
       "x": 3680,
@@ -4074,7 +4011,7 @@
       "id": "g20",
       "type": "group",
       "label": "test_mcp_server.py",
-      "x": 9060,
+      "x": 8840,
       "y": 1700,
       "width": 660,
       "height": 420,
@@ -4084,7 +4021,7 @@
       "id": "n_dev_tools_test_mcp_server_rationale_1",
       "type": "file",
       "file": "A real MCP server for testing app.py's MCP client against genuine JSON-RPC\u2026.md",
-      "x": 9080,
+      "x": 8860,
       "y": 1780,
       "width": 180,
       "height": 60
@@ -4093,7 +4030,7 @@
       "id": "n_project_summary_for_claude_code_testing_philosophy",
       "type": "file",
       "file": "Testing Philosophy (real services + scriptable fakes).md",
-      "x": 9280,
+      "x": 9060,
       "y": 1780,
       "width": 180,
       "height": 60
@@ -4102,7 +4039,7 @@
       "id": "n_project_summary_for_claude_code_fake_pkgs",
       "type": "file",
       "file": "dev-toolsfake_pkgs (anthropicdiscordaiohttp fakes).md",
-      "x": 9480,
+      "x": 9260,
       "y": 1780,
       "width": 180,
       "height": 60
@@ -4111,7 +4048,7 @@
       "id": "n_dev_tools_test_mcp_server_jsonrpc_error",
       "type": "file",
       "file": "jsonrpc_error().md",
-      "x": 9080,
+      "x": 8860,
       "y": 1860,
       "width": 180,
       "height": 60
@@ -4120,7 +4057,7 @@
       "id": "n_dev_tools_test_mcp_server_jsonrpc_result",
       "type": "file",
       "file": "jsonrpc_result().md",
-      "x": 9280,
+      "x": 9060,
       "y": 1860,
       "width": 180,
       "height": 60
@@ -4129,7 +4066,7 @@
       "id": "n_dev_tools_test_mcp_server_mcp_endpoint",
       "type": "file",
       "file": "mcp_endpoint().md",
-      "x": 9480,
+      "x": 9260,
       "y": 1860,
       "width": 180,
       "height": 60
@@ -4138,7 +4075,7 @@
       "id": "n_dev_tools_test_mcp_server_py_route",
       "type": "file",
       "file": "route.md",
-      "x": 9080,
+      "x": 8860,
       "y": 1940,
       "width": 180,
       "height": 60
@@ -4147,7 +4084,7 @@
       "id": "n_dev_tools_test_mcp_server",
       "type": "file",
       "file": "test_mcp_server.py.md",
-      "x": 9280,
+      "x": 9060,
       "y": 1940,
       "width": 180,
       "height": 60
@@ -4157,44 +4094,53 @@
       "type": "group",
       "label": "_fifo_engine",
       "x": 0,
-      "y": 2300,
+      "y": 2400,
       "width": 880,
-      "height": 420,
+      "height": 520,
       "color": "4"
     },
     {
-      "id": "n_ultron_backend_app_rationale_1312",
+      "id": "n_ultron_backend_app_rationale_1335",
       "type": "file",
       "file": "Best-effort date - integer day count, for holding-period math. Never raises;\u2026.md",
       "x": 20,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_1434",
+      "id": "n_ultron_backend_app_rationale_1495",
+      "type": "file",
+      "file": "Per-disposal FIFO tax report as CSV text \u2014 one row per sell-vs-buy-lot match,\u2026.md",
+      "x": 220,
+      "y": 2480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_1457",
       "type": "file",
       "file": "Per-disposal detail each row is one sell matched against one consumed buy lot,\u2026.md",
-      "x": 220,
-      "y": 2380,
+      "x": 420,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_1418",
+      "id": "n_ultron_backend_app_rationale_1441",
       "type": "file",
       "file": "Simplified FIFO realized gainloss per asset \u2014 the aggregated view. See\u2026.md",
-      "x": 420,
-      "y": 2380,
+      "x": 620,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_1324",
+      "id": "n_ultron_backend_app_rationale_1347",
       "type": "file",
       "file": "The one place FIFO matching happens. Returns both an aggregated per-asset view\u2026.md",
-      "x": 620,
-      "y": 2380,
+      "x": 20,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4202,8 +4148,17 @@
       "id": "n_ultron_backend_app_fifo_engine",
       "type": "file",
       "file": "_fifo_engine().md",
-      "x": 20,
-      "y": 2460,
+      "x": 220,
+      "y": 2560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_tax_lots_to_csv",
+      "type": "file",
+      "file": "_tax_lots_to_csv().md",
+      "x": 420,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4211,8 +4166,8 @@
       "id": "n_ultron_backend_app_trade_date_to_epoch_days",
       "type": "file",
       "file": "_trade_date_to_epoch_days().md",
-      "x": 220,
-      "y": 2460,
+      "x": 620,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4220,8 +4175,8 @@
       "id": "n_ultron_backend_app_get_trade_summary",
       "type": "file",
       "file": "get_trade_summary().md",
-      "x": 420,
-      "y": 2460,
+      "x": 20,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4229,8 +4184,17 @@
       "id": "n_ultron_backend_app_get_trade_tax_lots",
       "type": "file",
       "file": "get_trade_tax_lots().md",
-      "x": 620,
-      "y": 2460,
+      "x": 220,
+      "y": 2640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_trades_export",
+      "type": "file",
+      "file": "trades_export().md",
+      "x": 420,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4238,8 +4202,8 @@
       "id": "n_ultron_backend_app_trades_summary",
       "type": "file",
       "file": "trades_summary().md",
-      "x": 20,
-      "y": 2540,
+      "x": 620,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4247,8 +4211,8 @@
       "id": "n_ultron_backend_app_trades_tax_lots",
       "type": "file",
       "file": "trades_tax_lots().md",
-      "x": 220,
-      "y": 2540,
+      "x": 20,
+      "y": 2720,
       "width": 180,
       "height": 60
     },
@@ -4257,35 +4221,35 @@
       "type": "group",
       "label": "scan_container_cves",
       "x": 1840,
-      "y": 2300,
+      "y": 2400,
       "width": 660,
       "height": 420,
       "color": "5"
     },
     {
-      "id": "n_ultron_backend_app_rationale_683",
+      "id": "n_ultron_backend_app_rationale_706",
       "type": "file",
       "file": "Defensive SARIF parser Docker Scout's exact SARIF property layout isn't\u2026.md",
       "x": 1860,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_725",
+      "id": "n_ultron_backend_app_rationale_748",
       "type": "file",
       "file": "Runs `docker scout cves` for one image. Returns a result dict \u2014 never raises.\u2026.md",
       "x": 2060,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_778",
+      "id": "n_ultron_backend_app_rationale_801",
       "type": "file",
       "file": "Scans the images of currently running containers. Capped to CVE_SCAN_MAX_IMAGES\u2026.md",
       "x": 2260,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4294,7 +4258,7 @@
       "type": "file",
       "file": "_parse_scout_sarif().md",
       "x": 1860,
-      "y": 2460,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4303,7 +4267,7 @@
       "type": "file",
       "file": "_scan_image_cves().md",
       "x": 2060,
-      "y": 2460,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4312,7 +4276,7 @@
       "type": "file",
       "file": "_severity_from_score().md",
       "x": 2260,
-      "y": 2460,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4321,7 +4285,7 @@
       "type": "file",
       "file": "scan_container_cves().md",
       "x": 1860,
-      "y": 2540,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4330,7 +4294,7 @@
       "type": "file",
       "file": "security_cve_scan().md",
       "x": 2060,
-      "y": 2540,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4339,7 +4303,7 @@
       "type": "group",
       "label": "Preview-then-confirm action pattern",
       "x": 3460,
-      "y": 2300,
+      "y": 2400,
       "width": 660,
       "height": 420,
       "color": "6"
@@ -4349,7 +4313,7 @@
       "type": "file",
       "file": "backup command.md",
       "x": 3480,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4358,7 +4322,7 @@
       "type": "file",
       "file": "deploy command.md",
       "x": 3680,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4367,7 +4331,7 @@
       "type": "file",
       "file": "ConfirmCancel button flow (bot action commands).md",
       "x": 3880,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4376,7 +4340,7 @@
       "type": "file",
       "file": "Destructive host actions require a human-confirmed token.md",
       "x": 3480,
-      "y": 2460,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4385,7 +4349,7 @@
       "type": "file",
       "file": "POST apiactionsbackup.md",
       "x": 3680,
-      "y": 2460,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4394,7 +4358,7 @@
       "type": "file",
       "file": "POST apiactionsdeploy-container.md",
       "x": 3880,
-      "y": 2460,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4403,7 +4367,7 @@
       "type": "file",
       "file": "Preview-then-confirm action pattern.md",
       "x": 3480,
-      "y": 2540,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4412,35 +4376,62 @@
       "type": "group",
       "label": "require_role",
       "x": 4860,
-      "y": 2300,
+      "y": 2400,
       "width": 880,
-      "height": 420,
+      "height": 520,
       "color": "1"
     },
     {
-      "id": "n_ultron_backend_app_rationale_406",
+      "id": "n_ultron_backend_app_rationale_428",
       "type": "file",
       "file": "Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope\u2026.md",
       "x": 4880,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_375",
+      "id": "n_ultron_backend_app_rationale_395",
       "type": "file",
-      "file": "Constant-time-ish token check against both roles. Returns 'admin', 'beta', or\u2026.md",
+      "file": "Constant-time-ish token check against admin and every registered beta tester.\u2026.md",
       "x": 5080,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
     {
-      "id": "n_ultron_backend_app_rationale_327",
+      "id": "n_ultron_backend_app_rationale_347",
       "type": "file",
       "file": "One TTS request to Fish Audio. Returns (audio_bytes, content_type, error)..md",
       "x": 5280,
-      "y": 2380,
+      "y": 2480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_1799",
+      "type": "file",
+      "file": "Returns None if the request is allowed, or an error message if the caller\u2026.md",
+      "x": 5480,
+      "y": 2480,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_rationale_1848",
+      "type": "file",
+      "file": "Sums input+output tokens (real spend) for calls logged today (local date,\u2026.md",
+      "x": 4880,
+      "y": 2560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_check_rate_limit",
+      "type": "file",
+      "file": "_check_rate_limit().md",
+      "x": 5080,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4448,8 +4439,8 @@
       "id": "n_ultron_backend_app_fish_audio_tts",
       "type": "file",
       "file": "_fish_audio_tts().md",
-      "x": 5480,
-      "y": 2380,
+      "x": 5280,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4457,8 +4448,26 @@
       "id": "n_ultron_backend_app_resolve_role",
       "type": "file",
       "file": "_resolve_role().md",
+      "x": 5480,
+      "y": 2560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_todays_token_usage",
+      "type": "file",
+      "file": "_todays_token_usage().md",
       "x": 4880,
-      "y": 2460,
+      "y": 2640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_app_chat",
+      "type": "file",
+      "file": "chat().md",
+      "x": 5080,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4466,8 +4475,8 @@
       "id": "n_ultron_backend_app_require_role",
       "type": "file",
       "file": "require_role().md",
-      "x": 5080,
-      "y": 2460,
+      "x": 5280,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4475,8 +4484,8 @@
       "id": "n_ultron_backend_app_tts",
       "type": "file",
       "file": "tts().md",
-      "x": 5280,
-      "y": 2460,
+      "x": 5480,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4484,8 +4493,8 @@
       "id": "n_ultron_backend_app_whoami",
       "type": "file",
       "file": "whoami().md",
-      "x": 5480,
-      "y": 2460,
+      "x": 4880,
+      "y": 2720,
       "width": 180,
       "height": 60
     },
@@ -4493,8 +4502,8 @@
       "id": "n_ultron_backend_app_require_role_wrapper",
       "type": "file",
       "file": "wrapper().md",
-      "x": 4880,
-      "y": 2540,
+      "x": 5080,
+      "y": 2720,
       "width": 180,
       "height": 60
     },
@@ -4502,8 +4511,8 @@
       "id": "n_ultron_backend_app_require_token_wrapper",
       "type": "file",
       "file": "wrapper()_1.md",
-      "x": 5080,
-      "y": 2540,
+      "x": 5280,
+      "y": 2720,
       "width": 180,
       "height": 60
     },
@@ -4512,7 +4521,7 @@
       "type": "group",
       "label": "_index.md",
       "x": 6260,
-      "y": 2300,
+      "y": 2400,
       "width": 880,
       "height": 520,
       "color": "2"
@@ -4522,16 +4531,7 @@
       "type": "file",
       "file": "2026-09-13 \u2014 clean pass, no bugs found.md",
       "x": 6280,
-      "y": 2380,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_ultron_backend_beta_testers_a_real_limitation_not_yet_fixed",
-      "type": "file",
-      "file": "A real limitation, not yet fixed.md",
-      "x": 6480,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4539,8 +4539,8 @@
       "id": "n_ultron_backend_beta_testers",
       "type": "file",
       "file": "BETA-TESTERS.md",
-      "x": 6680,
-      "y": 2380,
+      "x": 6480,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4548,8 +4548,8 @@
       "id": "n_ultron_backend_beta_testers_beta_testers",
       "type": "file",
       "file": "Beta testers.md",
-      "x": 6880,
-      "y": 2380,
+      "x": 6680,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4557,8 +4557,8 @@
       "id": "n_ultron_backend_code_audit",
       "type": "file",
       "file": "CODE-AUDIT.md",
-      "x": 6280,
-      "y": 2460,
+      "x": 6880,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4566,8 +4566,8 @@
       "id": "n_ultron_backend_code_audit_code_audit_log",
       "type": "file",
       "file": "Code audit log.md",
-      "x": 6480,
-      "y": 2460,
+      "x": 6280,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4575,8 +4575,8 @@
       "id": "n_master_index_folders",
       "type": "file",
       "file": "Folders.md",
-      "x": 6680,
-      "y": 2460,
+      "x": 6480,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4584,8 +4584,8 @@
       "id": "n_ultron_backend_beta_testers_how_someone_gets_added",
       "type": "file",
       "file": "How someone gets added.md",
-      "x": 6880,
-      "y": 2460,
+      "x": 6680,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4593,8 +4593,8 @@
       "id": "n_master_index_master_index",
       "type": "file",
       "file": "Master Index.md",
-      "x": 6280,
-      "y": 2540,
+      "x": 6880,
+      "y": 2560,
       "width": 180,
       "height": 60
     },
@@ -4602,8 +4602,8 @@
       "id": "n_master_index_root_notes",
       "type": "file",
       "file": "Root notes.md",
-      "x": 6480,
-      "y": 2540,
+      "x": 6280,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4611,8 +4611,17 @@
       "id": "n_ultron_backend_beta_testers_roster",
       "type": "file",
       "file": "Roster.md",
+      "x": 6480,
+      "y": 2640,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "n_ultron_backend_beta_testers_what_s_still_not_covered",
+      "type": "file",
+      "file": "What's still not covered.md",
       "x": 6680,
-      "y": 2540,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4621,7 +4630,7 @@
       "type": "file",
       "file": "_index.md",
       "x": 6880,
-      "y": 2540,
+      "y": 2640,
       "width": 180,
       "height": 60
     },
@@ -4630,7 +4639,7 @@
       "type": "file",
       "file": "_master-index.md",
       "x": 6280,
-      "y": 2620,
+      "y": 2720,
       "width": 180,
       "height": 60
     },
@@ -4639,7 +4648,7 @@
       "type": "file",
       "file": "ultron-backend index.md",
       "x": 6480,
-      "y": 2620,
+      "y": 2720,
       "width": 180,
       "height": 60
     },
@@ -4648,7 +4657,7 @@
       "type": "group",
       "label": "Config Value Floor Hardening",
       "x": 7660,
-      "y": 2300,
+      "y": 2400,
       "width": 600,
       "height": 400,
       "color": "3"
@@ -4658,7 +4667,7 @@
       "type": "file",
       "file": "ANTHROPIC_API_KEY Startup Script UX Trap.md",
       "x": 7680,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4667,7 +4676,7 @@
       "type": "file",
       "file": "Config Value Floor Hardening.md",
       "x": 7880,
-      "y": 2380,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4675,8 +4684,8 @@
       "id": "g28",
       "type": "group",
       "label": "Financial and legal boundaries are explicit, not implied",
-      "x": 9060,
-      "y": 2300,
+      "x": 8840,
+      "y": 2400,
       "width": 600,
       "height": 400,
       "color": "4"
@@ -4685,8 +4694,8 @@
       "id": "n_readme_financial_legal_boundaries",
       "type": "file",
       "file": "Financial and legal boundaries are explicit, not implied.md",
-      "x": 9080,
-      "y": 2380,
+      "x": 8860,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4694,8 +4703,8 @@
       "id": "n_ultron_backend_readme_trade_disclaimer",
       "type": "file",
       "file": "Trade ledger disclaimer (not taxlegalfinancial advice).md",
-      "x": 9280,
-      "y": 2380,
+      "x": 9060,
+      "y": 2480,
       "width": 180,
       "height": 60
     },
@@ -4704,7 +4713,7 @@
       "type": "group",
       "label": "get-tailscale-address.ps1",
       "x": 0,
-      "y": 2900,
+      "y": 3000,
       "width": 600,
       "height": 400,
       "color": "5"
@@ -4714,7 +4723,7 @@
       "type": "file",
       "file": "Test-TailscaleInstalled().md",
       "x": 20,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4723,7 +4732,7 @@
       "type": "file",
       "file": "get-tailscale-address.ps1.md",
       "x": 220,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4732,7 +4741,7 @@
       "type": "group",
       "label": "GET /api/trades/export",
       "x": 1840,
-      "y": 2900,
+      "y": 3000,
       "width": 600,
       "height": 400,
       "color": "6"
@@ -4742,7 +4751,7 @@
       "type": "file",
       "file": "export command.md",
       "x": 1860,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4751,7 +4760,7 @@
       "type": "file",
       "file": "GET apitradesexport.md",
       "x": 2060,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4760,7 +4769,7 @@
       "type": "group",
       "label": "The Importer (Obsidian plugin)",
       "x": 3460,
-      "y": 2900,
+      "y": 3000,
       "width": 600,
       "height": 400,
       "color": "1"
@@ -4770,7 +4779,7 @@
       "type": "file",
       "file": "Obsidian vault (default welcome note).md",
       "x": 3480,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4779,7 +4788,7 @@
       "type": "file",
       "file": "The Importer (Obsidian plugin).md",
       "x": 3680,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4788,7 +4797,7 @@
       "type": "group",
       "label": ".__init__",
       "x": 4860,
-      "y": 2900,
+      "y": 3000,
       "width": 660,
       "height": 400,
       "color": "2"
@@ -4798,7 +4807,7 @@
       "type": "file",
       "file": "dot-__init__()_21.md",
       "x": 4880,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4807,7 +4816,7 @@
       "type": "file",
       "file": "dot-__init__()_22.md",
       "x": 5080,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4816,7 +4825,7 @@
       "type": "file",
       "file": "dot-close()_1.md",
       "x": 5280,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4825,7 +4834,7 @@
       "type": "file",
       "file": "dot-setup_hook()_1.md",
       "x": 4880,
-      "y": 3060,
+      "y": 3160,
       "width": 180,
       "height": 60
     },
@@ -4834,7 +4843,7 @@
       "type": "file",
       "file": "UltronBot.md",
       "x": 5080,
-      "y": 3060,
+      "y": 3160,
       "width": 180,
       "height": 60
     },
@@ -4843,7 +4852,7 @@
       "type": "group",
       "label": "Discord backend_get Raw-Error-Text Bug",
       "x": 6260,
-      "y": 2900,
+      "y": 3000,
       "width": 600,
       "height": 400,
       "color": "3"
@@ -4853,7 +4862,7 @@
       "type": "file",
       "file": "Discord backend_get Raw-Error-Text Bug.md",
       "x": 6280,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4862,7 +4871,7 @@
       "type": "group",
       "label": "Discord Field Truncation Off-by-N Bug",
       "x": 7660,
-      "y": 2900,
+      "y": 3000,
       "width": 600,
       "height": 400,
       "color": "4"
@@ -4872,7 +4881,7 @@
       "type": "file",
       "file": "Discord Field Truncation Off-by-N Bug.md",
       "x": 7680,
-      "y": 2980,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4880,8 +4889,8 @@
       "id": "g35",
       "type": "group",
       "label": "get_llm_usage Tool Registration Ordering Bug",
-      "x": 9060,
-      "y": 2900,
+      "x": 8840,
+      "y": 3000,
       "width": 600,
       "height": 400,
       "color": "5"
@@ -4890,8 +4899,8 @@
       "id": "n_project_summary_for_claude_code_tool_registration_ordering_bug",
       "type": "file",
       "file": "get_llm_usage Tool Registration Ordering Bug.md",
-      "x": 9080,
-      "y": 2980,
+      "x": 8860,
+      "y": 3080,
       "width": 180,
       "height": 60
     },
@@ -4900,7 +4909,7 @@
       "type": "group",
       "label": "Nothing works until explicitly configured",
       "x": 0,
-      "y": 3380,
+      "y": 3480,
       "width": 600,
       "height": 400,
       "color": "6"
@@ -4910,7 +4919,7 @@
       "type": "file",
       "file": "Nothing works until explicitly configured.md",
       "x": 20,
-      "y": 3460,
+      "y": 3560,
       "width": 180,
       "height": 60
     },
@@ -4919,7 +4928,7 @@
       "type": "group",
       "label": "run-beta.ps1",
       "x": 1840,
-      "y": 3380,
+      "y": 3480,
       "width": 600,
       "height": 400,
       "color": "1"
@@ -4929,7 +4938,7 @@
       "type": "file",
       "file": "run-beta.ps1.md",
       "x": 1860,
-      "y": 3460,
+      "y": 3560,
       "width": 180,
       "height": 60
     },
@@ -4938,7 +4947,7 @@
       "type": "group",
       "label": "GET /api/security/cve-scan",
       "x": 3460,
-      "y": 3380,
+      "y": 3480,
       "width": 600,
       "height": 400,
       "color": "2"
@@ -4948,7 +4957,7 @@
       "type": "file",
       "file": "GET apisecuritycve-scan.md",
       "x": 3480,
-      "y": 3460,
+      "y": 3560,
       "width": 180,
       "height": 60
     },
@@ -4957,7 +4966,7 @@
       "type": "group",
       "label": "Running permanently at startup (Task Scheduler/NSSM)",
       "x": 4860,
-      "y": 3380,
+      "y": 3480,
       "width": 600,
       "height": 400,
       "color": "3"
@@ -4967,7 +4976,7 @@
       "type": "file",
       "file": "Running permanently at startup (Task SchedulerNSSM).md",
       "x": 4880,
-      "y": 3460,
+      "y": 3560,
       "width": 180,
       "height": 60
     },
@@ -4976,7 +4985,7 @@
       "type": "group",
       "label": "cancelBackup",
       "x": 6260,
-      "y": 3380,
+      "y": 3480,
       "width": 600,
       "height": 400,
       "color": "4"
@@ -4986,7 +4995,7 @@
       "type": "file",
       "file": "cancelBackup().md",
       "x": 6280,
-      "y": 3460,
+      "y": 3560,
       "width": 180,
       "height": 60
     },
@@ -4995,7 +5004,7 @@
       "type": "group",
       "label": "cancelDeploy",
       "x": 7660,
-      "y": 3380,
+      "y": 3480,
       "width": 600,
       "height": 400,
       "color": "5"
@@ -5005,7 +5014,7 @@
       "type": "file",
       "file": "cancelDeploy().md",
       "x": 7680,
-      "y": 3460,
+      "y": 3560,
       "width": 180,
       "height": 60
     },
@@ -5013,8 +5022,8 @@
       "id": "g42",
       "type": "group",
       "label": "toggleVoiceInput",
-      "x": 9060,
-      "y": 3380,
+      "x": 8840,
+      "y": 3480,
       "width": 600,
       "height": 400,
       "color": "6"
@@ -5023,8 +5032,8 @@
       "id": "n_ultron_dashboard_togglevoiceinput",
       "type": "file",
       "file": "toggleVoiceInput().md",
-      "x": 9080,
-      "y": 3460,
+      "x": 8860,
+      "y": 3560,
       "width": 180,
       "height": 60
     },
@@ -5033,7 +5042,7 @@
       "type": "group",
       "label": "updateClock",
       "x": 0,
-      "y": 3860,
+      "y": 3960,
       "width": 600,
       "height": 400,
       "color": "1"
@@ -5043,7 +5052,7 @@
       "type": "file",
       "file": "updateClock().md",
       "x": 20,
-      "y": 3940,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5052,7 +5061,7 @@
       "type": "group",
       "label": "/forget command",
       "x": 1840,
-      "y": 3860,
+      "y": 3960,
       "width": 600,
       "height": 400,
       "color": "2"
@@ -5062,7 +5071,7 @@
       "type": "file",
       "file": "forget command.md",
       "x": 1860,
-      "y": 3940,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5071,7 +5080,7 @@
       "type": "group",
       "label": "require_auth (Discord ID allowlist check)",
       "x": 3460,
-      "y": 3860,
+      "y": 3960,
       "width": 600,
       "height": 400,
       "color": "3"
@@ -5081,7 +5090,7 @@
       "type": "file",
       "file": "require_auth (Discord ID allowlist check).md",
       "x": 3480,
-      "y": 3940,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5090,7 +5099,7 @@
       "type": "group",
       "label": "start-bot.ps1",
       "x": 4860,
-      "y": 3860,
+      "y": 3960,
       "width": 600,
       "height": 400,
       "color": "4"
@@ -5100,7 +5109,7 @@
       "type": "file",
       "file": "start-bot.ps1.md",
       "x": 4880,
-      "y": 3940,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5109,7 +5118,7 @@
       "type": "group",
       "label": "authHeaders",
       "x": 6260,
-      "y": 3860,
+      "y": 3960,
       "width": 660,
       "height": 420,
       "color": "5"
@@ -5119,7 +5128,7 @@
       "type": "file",
       "file": "Voice  TTS (Fish Audio, apitts).md",
       "x": 6280,
-      "y": 3940,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5128,7 +5137,7 @@
       "type": "file",
       "file": "appendChatBubble().md",
       "x": 6480,
-      "y": 3940,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5137,7 +5146,7 @@
       "type": "file",
       "file": "authHeaders().md",
       "x": 6680,
-      "y": 3940,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5146,7 +5155,7 @@
       "type": "file",
       "file": "deleteTradeRow().md",
       "x": 6280,
-      "y": 4020,
+      "y": 4120,
       "width": 180,
       "height": 60
     },
@@ -5155,7 +5164,7 @@
       "type": "file",
       "file": "postChat().md",
       "x": 6480,
-      "y": 4020,
+      "y": 4120,
       "width": 180,
       "height": 60
     },
@@ -5164,7 +5173,7 @@
       "type": "file",
       "file": "sendChatMessage().md",
       "x": 6680,
-      "y": 4020,
+      "y": 4120,
       "width": 180,
       "height": 60
     },
@@ -5173,7 +5182,7 @@
       "type": "file",
       "file": "sendFromHome().md",
       "x": 6280,
-      "y": 4100,
+      "y": 4200,
       "width": 180,
       "height": 60
     },
@@ -5182,7 +5191,7 @@
       "type": "file",
       "file": "speakReply().md",
       "x": 6480,
-      "y": 4100,
+      "y": 4200,
       "width": 180,
       "height": 60
     },
@@ -5191,7 +5200,7 @@
       "type": "file",
       "file": "switchSection().md",
       "x": 6680,
-      "y": 4100,
+      "y": 4200,
       "width": 180,
       "height": 60
     },
@@ -5200,7 +5209,7 @@
       "type": "group",
       "label": "CLAUDE.md",
       "x": 7660,
-      "y": 3860,
+      "y": 3960,
       "width": 600,
       "height": 400,
       "color": "6"
@@ -5210,7 +5219,7 @@
       "type": "file",
       "file": "CLAUDE.md",
       "x": 7680,
-      "y": 3940,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5219,7 +5228,7 @@
       "type": "file",
       "file": "Hand-written notes (vault).md",
       "x": 7880,
-      "y": 3940,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5228,7 +5237,7 @@
       "type": "file",
       "file": "graphify.md",
       "x": 7680,
-      "y": 4020,
+      "y": 4120,
       "width": 180,
       "height": 60
     },
@@ -5236,8 +5245,8 @@
       "id": "g49",
       "type": "group",
       "label": "Crypto/Trade Record & Tax Agent",
-      "x": 9060,
-      "y": 3860,
+      "x": 8840,
+      "y": 3960,
       "width": 660,
       "height": 420,
       "color": "1"
@@ -5246,8 +5255,8 @@
       "id": "n_project_summary_for_claude_code_trade_record_agent",
       "type": "file",
       "file": "CryptoTrade Record & Tax Agent.md",
-      "x": 9080,
-      "y": 3940,
+      "x": 8860,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5255,8 +5264,8 @@
       "id": "n_project_summary_for_claude_code_discord_bot",
       "type": "file",
       "file": "Discord Bot (bot.py).md",
-      "x": 9280,
-      "y": 3940,
+      "x": 9060,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5264,8 +5273,8 @@
       "id": "n_project_summary_for_claude_code_discord_bot_parity",
       "type": "file",
       "file": "Discord Bot Feature Parity.md",
-      "x": 9480,
-      "y": 3940,
+      "x": 9260,
+      "y": 4040,
       "width": 180,
       "height": 60
     },
@@ -5273,8 +5282,8 @@
       "id": "n_project_summary_for_claude_code_csv_export",
       "type": "file",
       "file": "Trade CSV Export (transactions + tax-lots).md",
-      "x": 9080,
-      "y": 4020,
+      "x": 8860,
+      "y": 4120,
       "width": 180,
       "height": 60
     },
@@ -5282,8 +5291,8 @@
       "id": "n_project_summary_for_claude_code_fifo_engine",
       "type": "file",
       "file": "_fifo_engine() Shared Trade Calculation.md",
-      "x": 9280,
-      "y": 4020,
+      "x": 9060,
+      "y": 4120,
       "width": 180,
       "height": 60
     },
@@ -5291,8 +5300,8 @@
       "id": "n_ultron_dashboard_addtrade",
       "type": "file",
       "file": "addTrade().md",
-      "x": 9480,
-      "y": 4020,
+      "x": 9260,
+      "y": 4120,
       "width": 180,
       "height": 60
     },
@@ -5300,8 +5309,8 @@
       "id": "n_ultron_dashboard_downloadtradeexport",
       "type": "file",
       "file": "downloadTradeExport().md",
-      "x": 9080,
-      "y": 4100,
+      "x": 8860,
+      "y": 4200,
       "width": 180,
       "height": 60
     },
@@ -5309,8 +5318,8 @@
       "id": "n_ultron_dashboard_fetchtrades",
       "type": "file",
       "file": "fetchTrades().md",
-      "x": 9280,
-      "y": 4100,
+      "x": 9060,
+      "y": 4200,
       "width": 180,
       "height": 60
     }

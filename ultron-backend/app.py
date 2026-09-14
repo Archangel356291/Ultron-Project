@@ -108,10 +108,30 @@ if not API_TOKEN:
         "Set it with (PowerShell): $env:ULTRON_API_TOKEN = '<a long random string>'"
     )
 
-# Optional second, weaker token for beta testers — a restricted role, not a
+# Optional, weaker tokens for beta testers — a restricted role, not a
 # second admin. Unset by default, so the beta_tester role doesn't exist
-# unless you deliberately turn it on.
-BETA_TOKEN = os.environ.get("ULTRON_BETA_TOKEN")
+# unless you deliberately turn it on. Format: "name:token,name:token,...",
+# one entry per person, so each tester can be identified (via /api/whoami)
+# and revoked individually — pulling one entry out doesn't affect anyone
+# else's access, unlike a single token shared by everyone.
+def _parse_beta_tokens(raw):
+    tokens = {}
+    for entry in raw.split(","):
+        entry = entry.strip()
+        if not entry:
+            continue
+        name, sep, token = entry.partition(":")
+        if not sep or not name.strip() or not token.strip():
+            sys.exit(
+                f"ULTRON_BETA_TOKENS has a malformed entry: '{entry}'.\n"
+                "Expected 'name:token' pairs separated by commas, e.g. "
+                "'alice:abc123,bob:def456'."
+            )
+        tokens[token.strip()] = name.strip()
+    return tokens
+
+
+BETA_TOKENS = _parse_beta_tokens(os.environ.get("ULTRON_BETA_TOKENS", ""))
 
 # Origin the dashboard is served from, for CORS. Set this to your actual
 # dashboard origin (e.g. "http://192.168.1.50:8080") in production — the "*"
@@ -372,15 +392,16 @@ def add_cors_headers(response):
 # auth
 # --------------------------------------------------------------------------
 def _resolve_role(token):
-    """Constant-time-ish token check against both roles. Returns
-    'admin', 'beta', or None. BETA_TOKEN is optional, so a beta token
-    check is skipped entirely (not just always-false) when it's unset —
-    there's no shared secret to time against in that case anyway."""
+    """Constant-time-ish token check against admin and every registered
+    beta tester. Returns (role, beta_name) — ('admin', None), ('beta',
+    '<tester name>'), or (None, None). BETA_TOKENS being empty just means
+    the loop below never runs — no shared secret to time against either."""
     if hmac.compare_digest(token, API_TOKEN):
-        return "admin"
-    if BETA_TOKEN and hmac.compare_digest(token, BETA_TOKEN):
-        return "beta"
-    return None
+        return "admin", None
+    for beta_token, name in BETA_TOKENS.items():
+        if hmac.compare_digest(token, beta_token):
+            return "beta", name
+    return None, None
 
 
 def require_token(fn):
@@ -392,9 +413,10 @@ def require_token(fn):
     def wrapper(*args, **kwargs):
         auth = request.headers.get("Authorization", "")
         token = auth[7:] if auth.startswith("Bearer ") else ""
-        role = _resolve_role(token)
+        role, beta_name = _resolve_role(token)
         if role == "admin":
             g.role = role
+            g.beta_name = None
             return fn(*args, **kwargs)
         if role == "beta":
             return jsonify({"error": "forbidden"}), 403
@@ -410,10 +432,11 @@ def require_role(fn):
     def wrapper(*args, **kwargs):
         auth = request.headers.get("Authorization", "")
         token = auth[7:] if auth.startswith("Bearer ") else ""
-        role = _resolve_role(token)
+        role, beta_name = _resolve_role(token)
         if role is None:
             return jsonify({"error": "unauthorized"}), 401
         g.role = role
+        g.beta_name = beta_name
         return fn(*args, **kwargs)
     return wrapper
 
@@ -2530,7 +2553,7 @@ def run_ultron_chat(user_message, history, role="admin"):
 @app.route("/api/whoami")
 @require_role
 def whoami():
-    return jsonify({"role": g.role})
+    return jsonify({"role": g.role, "name": g.beta_name})
 
 
 @app.route("/api/chat", methods=["POST"])

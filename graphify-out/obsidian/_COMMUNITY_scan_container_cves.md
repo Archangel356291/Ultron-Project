@@ -27,11 +27,11 @@ SORT file.name ASC
 ## Connections to other communities
 - 6 edges to [[_COMMUNITY_ultron-backendapp.py]]
 - 3 edges to [[_COMMUNITY_route]]
-- 1 edge to [[_COMMUNITY_docker_ps]]
+- 1 edge to [[_COMMUNITY_action_backup]]
 
 ## Top bridge nodes
-- [[scan_container_cves()]] - degree 5, connects to 2 communities
+- [[_scan_image_cves()]] - degree 5, connects to 2 communities
 - [[security_cve_scan()]] - degree 5, connects to 2 communities
-- [[_scan_image_cves()]] - degree 5, connects to 1 community
+- [[scan_container_cves()]] - degree 5, connects to 1 community
 - [[_parse_scout_sarif()]] - degree 4, connects to 1 community
 - [[_severity_from_score()]] - degree 2, connects to 1 community

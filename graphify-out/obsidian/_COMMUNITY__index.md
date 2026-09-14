@@ -9,7 +9,6 @@ members: 14
 
 ## Members
 - [[2026-09-13 — clean pass, no bugs found]] - document - ultron-backend/CODE-AUDIT.md
-- [[A real limitation, not yet fixed]] - document - ultron-backend/BETA-TESTERS.md
 - [[BETA-TESTERS]] - document - ultron-backend/BETA-TESTERS.md
 - [[Beta testers]] - document - ultron-backend/BETA-TESTERS.md
 - [[CODE-AUDIT]] - document - ultron-backend/CODE-AUDIT.md
@@ -19,6 +18,7 @@ members: 14
 - [[Master Index]] - document - _master-index.md
 - [[Root notes]] - document - _master-index.md
 - [[Roster]] - document - ultron-backend/BETA-TESTERS.md
+- [[What's still not covered]] - document - ultron-backend/BETA-TESTERS.md
 - [[_index]] - document - ultron-backend/_index.md
 - [[_master-index]] - document - _master-index.md
 - [[ultron-backend index]] - document - ultron-backend/_index.md

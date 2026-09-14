@@ -12,9 +12,9 @@ tags:
 # Beta testers
 
 ## Connections
-- [[A real limitation, not yet fixed]] - `contains` [EXTRACTED]
 - [[BETA-TESTERS]] - `contains` [EXTRACTED]
 - [[How someone gets added]] - `contains` [EXTRACTED]
 - [[Roster]] - `contains` [EXTRACTED]
+- [[What's still not covered]] - `contains` [EXTRACTED]
 
 #graphify/document #graphify/EXTRACTED #community/_indexmd
