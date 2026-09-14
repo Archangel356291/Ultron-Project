@@ -12,6 +12,7 @@ tags:
 # _index.md
 
 ## Connections
+- [[BETA-INVITE-MESSAGE]] - `references` [EXTRACTED]
 - [[BETA-TESTER-GUIDE]] - `references` [EXTRACTED]
 - [[BETA-TESTERS]] - `references` [EXTRACTED]
 - [[CODE-AUDIT]] - `references` [EXTRACTED]

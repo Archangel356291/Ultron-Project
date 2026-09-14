@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "docker_ps"
+community: "scan_container_cves"
 location: "L705"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/docker_ps
+  - community/scan_container_cves
 ---
 
 # _parse_scout_sarif()
@@ -17,4 +17,4 @@ tags:
 - [[_severity_from_score()]] - `calls` [EXTRACTED]
 - [[app.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/docker_ps
+#graphify/code #graphify/EXTRACTED #community/scan_container_cves

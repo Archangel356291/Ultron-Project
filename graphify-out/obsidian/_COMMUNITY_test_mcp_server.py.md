@@ -14,7 +14,7 @@ members: 8
 - [[jsonrpc_error()]] - code - dev-tools/test_mcp_server.py
 - [[jsonrpc_result()]] - code - dev-tools/test_mcp_server.py
 - [[mcp_endpoint()]] - code - dev-tools/test_mcp_server.py
-- [[route_1]] - code
+- [[route]] - code
 - [[test_mcp_server.py]] - code - dev-tools/test_mcp_server.py
 
 ## Live Query (requires Dataview plugin)

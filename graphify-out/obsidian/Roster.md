@@ -2,7 +2,7 @@
 source_file: "ultron-backend/BETA-TESTERS.md"
 type: "document"
 community: "Testing Ultron — a quick guide"
-location: "L36"
+location: "L39"
 tags:
   - graphify/document
   - graphify/EXTRACTED

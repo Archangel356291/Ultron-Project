@@ -36,7 +36,7 @@
       }
     },
     {
-      "query": "tag:#community/_json_result",
+      "query": "tag:#community/route",
       "color": {
         "a": 1,
         "rgb": 15583560
@@ -113,7 +113,7 @@
       }
     },
     {
-      "query": "tag:#community/route",
+      "query": "tag:#community/_status_data",
       "color": {
         "a": 1,
         "rgb": 11565729
@@ -155,7 +155,7 @@
       }
     },
     {
-      "query": "tag:#community/docker_ps",
+      "query": "tag:#community/scan_container_cves",
       "color": {
         "a": 1,
         "rgb": 14767961
@@ -166,6 +166,13 @@
       "color": {
         "a": 1,
         "rgb": 7780274
+      }
+    },
+    {
+      "query": "tag:#community/action_backup",
+      "color": {
+        "a": 1,
+        "rgb": 5873999
       }
     },
     {
@@ -323,17 +330,17 @@
       }
     },
     {
+      "query": "tag:#community/_get_db_connection",
+      "color": {
+        "a": 1,
+        "rgb": 16752039
+      }
+    },
+    {
       "query": "tag:#community/CLAUDEmd",
       "color": {
         "a": 1,
         "rgb": 10253663
-      }
-    },
-    {
-      "query": "tag:#community/_mcp_jsonrpc_call",
-      "color": {
-        "a": 1,
-        "rgb": 15896107
       }
     }
   ]

@@ -35,7 +35,7 @@ SORT file.name ASC
 - 8 edges to [[_COMMUNITY_app.py]]
 - 4 edges to [[_COMMUNITY_route]]
 - 2 edges to [[_COMMUNITY__fifo_engine]]
-- 2 edges to [[_COMMUNITY__json_result]]
+- 2 edges to [[_COMMUNITY__get_db_connection]]
 - 1 edge to [[_COMMUNITY_run_ultron_chat]]
 
 ## Top bridge nodes

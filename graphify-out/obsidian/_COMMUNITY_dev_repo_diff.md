@@ -1,11 +1,11 @@
 ---
 type: community
-members: 9
+members: 7
 ---
 
 # dev_repo_diff
 
-**Members:** 9 nodes
+**Members:** 7 nodes
 
 ## Members
 - [[Matches only against the pre-configured repo basenames — a caller can never…]] - rationale - ultron-backend/app.py
@@ -14,9 +14,7 @@ members: 9
 - [[_repo_status()]] - code - ultron-backend/app.py
 - [[_run_git()]] - code - ultron-backend/app.py
 - [[dev_repo_diff()]] - code - ultron-backend/app.py
-- [[dev_repos()]] - code - ultron-backend/app.py
 - [[get_repo_diff()]] - code - ultron-backend/app.py
-- [[get_repo_status()]] - code - ultron-backend/app.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -26,13 +24,12 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 7 edges to [[_COMMUNITY_app.py]]
+- 5 edges to [[_COMMUNITY_app.py]]
 - 4 edges to [[_COMMUNITY_route]]
-- 2 edges to [[_COMMUNITY__json_result]]
 
 ## Top bridge nodes
-- [[dev_repo_diff()]] - degree 5, connects to 3 communities
-- [[dev_repos()]] - degree 5, connects to 3 communities
+- [[dev_repo_diff()]] - degree 5, connects to 2 communities
+- [[_repo_status()]] - degree 3, connects to 2 communities
 - [[get_repo_diff()]] - degree 4, connects to 1 community
 - [[_run_git()]] - degree 4, connects to 1 community
 - [[_find_repo_dir()]] - degree 3, connects to 1 community

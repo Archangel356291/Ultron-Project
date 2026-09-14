@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "_mcp_jsonrpc_call"
+community: "route"
 location: "L2142"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/_mcp_jsonrpc_call
+  - community/route
 ---
 
 # Read-only view of every configured server and everything it offers — approved…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_mcp_servers()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/_mcp_jsonrpc_call
+#graphify/rationale #graphify/EXTRACTED #community/route

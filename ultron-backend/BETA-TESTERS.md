@@ -14,6 +14,9 @@ holds all of them at once, as `name:token` pairs:
 ULTRON_BETA_TOKENS=alice:3f9a1c7e2b8d4056a1f2e3c4b5a69788,bob:9c2e5f81a4b7301dc6e9f0a2b3c4d5e6
 ```
 
+0. **Ask first.** `BETA-INVITE-MESSAGE.md` has a ready-to-send invite —
+   copy/paste it in, fill in their name, send. The steps below are for
+   once they've said yes.
 1. **Generate a token** for the new person (PowerShell):
    ```powershell
    -join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_})

@@ -31,13 +31,13 @@ SORT file.name ASC
 
 ## Connections to other communities
 - 8 edges to [[_COMMUNITY_app.py]]
-- 4 edges to [[_COMMUNITY_route]]
-- 4 edges to [[_COMMUNITY__json_result]]
+- 6 edges to [[_COMMUNITY_route]]
+- 2 edges to [[_COMMUNITY__get_db_connection]]
 - 2 edges to [[_COMMUNITY_require_role]]
 
 ## Top bridge nodes
-- [[trades_summary()]] - degree 5, connects to 4 communities
-- [[trades_tax_lots()]] - degree 5, connects to 4 communities
 - [[trades_export()]] - degree 5, connects to 3 communities
+- [[trades_summary()]] - degree 5, connects to 3 communities
+- [[trades_tax_lots()]] - degree 5, connects to 3 communities
 - [[_fifo_engine()]] - degree 7, connects to 2 communities
 - [[get_trade_summary()]] - degree 4, connects to 1 community

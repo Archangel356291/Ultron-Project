@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "app.py"
+community: "run_ultron_chat"
 location: "L2419"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/apppy
+  - community/run_ultron_chat
 ---
 
 # _serialize_block()
@@ -16,4 +16,4 @@ tags:
 - [[_serialize_content()]] - `calls` [EXTRACTED]
 - [[app.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/apppy
+#graphify/code #graphify/EXTRACTED #community/run_ultron_chat

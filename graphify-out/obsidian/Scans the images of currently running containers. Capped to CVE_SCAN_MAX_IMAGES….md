@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "docker_ps"
+community: "scan_container_cves"
 location: "L801"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/docker_ps
+  - community/scan_container_cves
 ---
 
 # Scans the images of currently running containers. Capped to CVE_SCAN_MAX_IMAGES…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[scan_container_cves()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/docker_ps
+#graphify/rationale #graphify/EXTRACTED #community/scan_container_cves

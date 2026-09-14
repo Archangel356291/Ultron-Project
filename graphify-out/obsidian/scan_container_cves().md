@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "docker_ps"
+community: "scan_container_cves"
 location: "L800"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/docker_ps
+  - community/scan_container_cves
 ---
 
 # scan_container_cves()
@@ -18,4 +18,4 @@ tags:
 - [[docker_ps()]] - `calls` [EXTRACTED]
 - [[security_cve_scan()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/docker_ps
+#graphify/code #graphify/EXTRACTED #community/scan_container_cves

@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_json_result"
+community: "_get_db_connection"
 location: "L1666"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_json_result
+  - community/_get_db_connection
 ---
 
 # trades()
@@ -17,6 +17,6 @@ tags:
 - [[app.py]] - `contains` [EXTRACTED]
 - [[get_trades()]] - `calls` [EXTRACTED]
 - [[require_role()]] - `references` [EXTRACTED]
-- [[route]] - `references` [EXTRACTED]
+- [[route_1]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_json_result
+#graphify/code #graphify/EXTRACTED #community/_get_db_connection

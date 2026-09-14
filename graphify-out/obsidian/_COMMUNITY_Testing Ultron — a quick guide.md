@@ -1,17 +1,19 @@
 ---
 type: community
-members: 31
+members: 33
 ---
 
 # Testing Ultron — a quick guide
 
-**Members:** 31 nodes
+**Members:** 33 nodes
 
 ## Members
 - [[2026-09-13 (later) — Discord bot actually launched for real, plus a genuine bug found and fixed]] - document - ultron-backend/CODE-AUDIT.md
 - [[2026-09-13 — clean pass, no bugs found]] - document - ultron-backend/CODE-AUDIT.md
+- [[BETA-INVITE-MESSAGE]] - document - ultron-backend/BETA-INVITE-MESSAGE.md
 - [[BETA-TESTER-GUIDE]] - document - ultron-backend/BETA-TESTER-GUIDE.md
 - [[BETA-TESTERS]] - document - ultron-backend/BETA-TESTERS.md
+- [[Beta tester invite message]] - document - ultron-backend/BETA-INVITE-MESSAGE.md
 - [[Beta testers]] - document - ultron-backend/BETA-TESTERS.md
 - [[CODE-AUDIT]] - document - ultron-backend/CODE-AUDIT.md
 - [[Code audit log]] - document - ultron-backend/CODE-AUDIT.md
@@ -51,4 +53,4 @@ SORT file.name ASC
 - 1 edge to [[_COMMUNITY_start-ultron.ps1]]
 
 ## Top bridge nodes
-- [[_index]] - degree 6, connects to 1 community
+- [[_index]] - degree 7, connects to 1 community

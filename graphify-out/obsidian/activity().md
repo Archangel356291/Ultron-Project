@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_json_result"
+community: "route"
 location: "L1647"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_json_result
+  - community/route
 ---
 
 # activity()
@@ -16,6 +16,6 @@ tags:
 - [[app.py]] - `contains` [EXTRACTED]
 - [[get_recent_activity()]] - `calls` [EXTRACTED]
 - [[require_token()]] - `references` [EXTRACTED]
-- [[route]] - `references` [EXTRACTED]
+- [[route_1]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_json_result
+#graphify/code #graphify/EXTRACTED #community/route
