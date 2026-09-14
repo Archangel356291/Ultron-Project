@@ -21,6 +21,12 @@ credentials.json
 # encryption is defense in depth, not a license to commit it anyway.
 graphify-out/private-nodes.enc.json
 
+# Module 7 write-path: an un-reviewed draft session-summary node.
+# Ephemeral working state (like graphify's own .graphify_* temp files),
+# never a deliverable -- see session-write/README.md. Approving it moves
+# the real content into graphify-out/graph.json, which IS committed.
+session-write/pending-review.json
+
 # Python (3.10)
 __pycache__/
 *.py[cod]
