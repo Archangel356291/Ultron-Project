@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "run_ultron_chat"
+community: "_mcp_jsonrpc_call"
 location: "L2098"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/run_ultron_chat
+  - community/_mcp_jsonrpc_call
 ---
 
 # Connects to every configured server once and lists its tools. A server that's…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_mcp_discover_all()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/run_ultron_chat
+#graphify/rationale #graphify/EXTRACTED #community/_mcp_jsonrpc_call

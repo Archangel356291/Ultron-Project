@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "ultron-backend/app.py"
+community: "app.py"
 location: "L152"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/ultron-backend/apppy
+  - community/apppy
 ---
 
 # Splits a multi-path env var into a clean list of paths. Windows uses ';' as the…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_split_platform_paths()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/ultron-backend/apppy
+#graphify/rationale #graphify/EXTRACTED #community/apppy

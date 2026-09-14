@@ -29,6 +29,9 @@ dev-tools/            Testing infrastructure (fake SDKs, a real local
   `ultron-backend/REMOTE-ACCESS.md`
 - **Continuing development / writing tests?** →
   `dev-tools/README.md`
+- **Dashboard's visual design, pixel-sampled against the reference
+  image?** → `ULTRON-DASHBOARD-DESIGN-SPEC.md` (mostly historical — see
+  its status note at the top)
 
 ## Design principles this codebase has held to throughout
 

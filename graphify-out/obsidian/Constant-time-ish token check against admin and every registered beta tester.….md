@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "require_role"
+community: "route"
 location: "L395"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/require_role
+  - community/route
 ---
 
 # Constant-time-ish token check against admin and every registered beta tester.…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_resolve_role()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/require_role
+#graphify/rationale #graphify/EXTRACTED #community/route

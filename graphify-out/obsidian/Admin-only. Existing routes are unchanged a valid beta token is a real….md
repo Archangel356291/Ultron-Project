@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "route"
+community: "require_token"
 location: "L408"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/route
+  - community/require_token
 ---
 
 # Admin-only. Existing routes are unchanged: a valid beta token is a real…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[require_token()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/route
+#graphify/rationale #graphify/EXTRACTED #community/require_token

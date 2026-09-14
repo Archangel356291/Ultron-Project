@@ -46,8 +46,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
+- 1 edge to [[_COMMUNITY_apiGet]]
 - 1 edge to [[_COMMUNITY_fake_pkgs (drop-in fake SDKs)]]
-- 1 edge to [[_COMMUNITY_Flask Backend (app.py)]]
 
 ## Top bridge nodes
 - [[POST apichat (Ultron's brain)]] - degree 18, connects to 2 communities

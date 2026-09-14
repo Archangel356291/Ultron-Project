@@ -17,11 +17,11 @@ tags:
 - [[_log_llm_usage()]] - `calls` [EXTRACTED]
 - [[_todays_token_usage()]] - `calls` [EXTRACTED]
 - [[add_trade()]] - `calls` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 - [[delete_trade()]] - `calls` [EXTRACTED]
 - [[get_llm_usage()]] - `calls` [EXTRACTED]
 - [[get_recent_activity()]] - `calls` [EXTRACTED]
 - [[get_trades()]] - `calls` [EXTRACTED]
 - [[log_activity()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/_get_db_connection

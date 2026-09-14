@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "MCP (external tool/plugin) Support"
+community: "apiGet"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MCP_external_tool/plugin_Support
+  - community/apiGet
 ---
 
 # previewBackup()
@@ -15,4 +15,4 @@ tags:
 - [[apiPost()]] - `calls` [EXTRACTED]
 - [[escapeHtml()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MCP_external_tool/plugin_Support
+#graphify/code #graphify/EXTRACTED #community/apiGet

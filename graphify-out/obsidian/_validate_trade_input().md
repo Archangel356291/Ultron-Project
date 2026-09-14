@@ -14,6 +14,6 @@ tags:
 ## Connections
 - [[Returns (normalized_dict, None) or (None, error_message).]] - `rationale_for` [EXTRACTED]
 - [[add_trade()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/_get_db_connection

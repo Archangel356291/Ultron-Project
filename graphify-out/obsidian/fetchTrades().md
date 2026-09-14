@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "Crypto/Trade Record & Tax Agent"
+community: "apiGet"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Crypto/Trade_Record__Tax_Agent
+  - community/apiGet
 ---
 
 # fetchTrades()
@@ -18,4 +18,4 @@ tags:
 - [[escapeHtml()]] - `calls` [EXTRACTED]
 - [[refreshAll()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Crypto/Trade_Record__Tax_Agent
+#graphify/code #graphify/EXTRACTED #community/apiGet

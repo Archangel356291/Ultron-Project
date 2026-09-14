@@ -12,7 +12,7 @@ tags:
 # _storage_data()
 
 ## Connections
+- [[app.py]] - `indirect_call` [INFERRED]
 - [[storage()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `indirect_call` [INFERRED]
 
 #graphify/code #graphify/EXTRACTED #community/route

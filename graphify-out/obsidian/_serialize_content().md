@@ -13,7 +13,7 @@ tags:
 
 ## Connections
 - [[_serialize_block()]] - `calls` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 - [[run_ultron_chat()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/run_ultron_chat

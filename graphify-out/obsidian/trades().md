@@ -14,9 +14,9 @@ tags:
 ## Connections
 - [[_json_result()]] - `calls` [EXTRACTED]
 - [[add_trade()]] - `calls` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 - [[get_trades()]] - `calls` [EXTRACTED]
 - [[require_role()]] - `references` [EXTRACTED]
 - [[route_1]] - `references` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/_get_db_connection

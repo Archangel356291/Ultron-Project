@@ -49,7 +49,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_ultron-backendapp.py]]
+- 1 edge to [[_COMMUNITY_app.py]]
 
 ## Top bridge nodes
 - [[anthropic__init__.py]] - degree 17, connects to 1 community

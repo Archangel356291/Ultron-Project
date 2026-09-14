@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "concept"
-community: "Crypto/Trade Record & Tax Agent"
+community: "apiGet"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Crypto/Trade_Record__Tax_Agent
+  - community/apiGet
 ---
 
 # Crypto/Trade Record & Tax Agent
@@ -19,4 +19,4 @@ tags:
 - [[_fifo_engine() Shared Trade Calculation]] - `conceptually_related_to` [EXTRACTED]
 - [[addTrade()]] - `shares_data_with` [INFERRED]
 
-#graphify/concept #graphify/EXTRACTED #community/Crypto/Trade_Record__Tax_Agent
+#graphify/concept #graphify/EXTRACTED #community/apiGet

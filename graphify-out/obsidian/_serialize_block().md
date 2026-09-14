@@ -14,6 +14,6 @@ tags:
 ## Connections
 - [[Turn an SDK content-block object into a plain dict so it can be JSON-returned…]] - `rationale_for` [EXTRACTED]
 - [[_serialize_content()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/run_ultron_chat

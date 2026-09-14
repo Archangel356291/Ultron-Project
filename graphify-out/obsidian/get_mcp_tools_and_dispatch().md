@@ -15,7 +15,7 @@ tags:
 - [[Ensures discovery has run, then returns (schemas, dispatch) for every APPROVED…]] - `rationale_for` [EXTRACTED]
 - [[_ensure_mcp_discovered()]] - `calls` [EXTRACTED]
 - [[_make_mcp_tool_handler()]] - `calls` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 - [[run_ultron_chat()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/run_ultron_chat

@@ -12,6 +12,7 @@ Vault root. Read this first, then only the folder `_index.md` you need, then onl
 
 - [[README|README]] — architecture and design principles: Flask backend + dashboard + Discord bot, one shared implementation.
 - [[PROJECT-SUMMARY-FOR-CLAUDE-CODE|PROJECT-SUMMARY-FOR-CLAUDE-CODE]] — the history/why behind the build, for judgment calls not covered in README.
+- [[ULTRON-DASHBOARD-DESIGN-SPEC|ULTRON-DASHBOARD-DESIGN-SPEC]] — pixel-sampled design analysis of the dashboard against the reference image. Recovered (2026-09-13) from an untracked backup zip after going missing pre-repo; mostly historical, its one open recommendation is now applied.
 - [[Welcome|Welcome]] — unedited default Obsidian starter note.
 
 `graphify-out/` is excluded here — it's Graphify's own auto-generated graph output, browse it directly or via `graphify query`.

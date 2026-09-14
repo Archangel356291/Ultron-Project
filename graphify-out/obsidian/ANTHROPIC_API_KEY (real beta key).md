@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/BETA-LAUNCH-CHECKLIST.md"
 type: "concept"
-community: "start-ultron.ps1"
+community: "apiGet"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/start-ultronps1
+  - community/apiGet
 ---
 
 # ANTHROPIC_API_KEY (real beta key)
@@ -15,4 +15,4 @@ tags:
 - [[anthropic (=1.0.0,2.0.0)]] - `shares_data_with` [INFERRED]
 - [[start-ultron.ps1]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/start-ultronps1
+#graphify/concept #graphify/EXTRACTED #community/apiGet

@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "route"
+community: "require_token"
 location: "L1591"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/route
+  - community/require_token
 ---
 
 # _json_result()
@@ -14,6 +14,7 @@ tags:
 ## Connections
 - [[Shared response shaping for the many routes below that just wrap a function…]] - `rationale_for` [EXTRACTED]
 - [[activity()]] - `calls` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 - [[chat_usage()]] - `calls` [EXTRACTED]
 - [[containers()]] - `calls` [EXTRACTED]
 - [[dev_repo_diff()]] - `calls` [EXTRACTED]
@@ -24,6 +25,5 @@ tags:
 - [[trades()]] - `calls` [EXTRACTED]
 - [[trades_summary()]] - `calls` [EXTRACTED]
 - [[trades_tax_lots()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/route
+#graphify/code #graphify/EXTRACTED #community/require_token

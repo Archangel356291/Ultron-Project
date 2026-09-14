@@ -12,10 +12,10 @@ tags:
 # _status_data()
 
 ## Connections
+- [[app.py]] - `indirect_call` [INFERRED]
 - [[docker_ps()]] - `calls` [EXTRACTED]
 - [[get_cpu_temp_c()]] - `calls` [EXTRACTED]
 - [[get_uptime_str()]] - `calls` [EXTRACTED]
 - [[status()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `indirect_call` [INFERRED]
 
 #graphify/code #graphify/EXTRACTED #community/_status_data

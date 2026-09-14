@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/BETA-LAUNCH-CHECKLIST.md"
 type: "document"
-community: "start-ultron.ps1"
+community: "apiGet"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/start-ultronps1
+  - community/apiGet
 ---
 
 # Phase 1 Status (complete, 2026-09-13)
@@ -19,4 +19,4 @@ tags:
 - [[_index]] - `references` [EXTRACTED]
 - [[start-ultron.ps1]] - `references` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/start-ultronps1
+#graphify/document #graphify/EXTRACTED #community/apiGet

@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "dev_repo_diff"
+community: "require_token"
 location: "L1147"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/dev_repo_diff
+  - community/require_token
 ---
 
 # Matches only against the pre-configured repo basenames — a caller can never…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_find_repo_dir()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/dev_repo_diff
+#graphify/rationale #graphify/EXTRACTED #community/require_token

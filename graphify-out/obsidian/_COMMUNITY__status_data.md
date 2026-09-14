@@ -26,12 +26,14 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 8 edges to [[_COMMUNITY_ultron-backendapp.py]]
-- 4 edges to [[_COMMUNITY_route]]
+- 7 edges to [[_COMMUNITY_app.py]]
+- 2 edges to [[_COMMUNITY_route]]
+- 2 edges to [[_COMMUNITY_require_token]]
+- 1 edge to [[_COMMUNITY_docker_ps]]
 
 ## Top bridge nodes
-- [[status()]] - degree 4, connects to 2 communities
-- [[systems()]] - degree 4, connects to 2 communities
-- [[_status_data()]] - degree 5, connects to 1 community
+- [[status()]] - degree 4, connects to 3 communities
+- [[systems()]] - degree 4, connects to 3 communities
+- [[_status_data()]] - degree 5, connects to 2 communities
 - [[_systems_data()]] - degree 5, connects to 1 community
 - [[get_cpu_temp_c()]] - degree 4, connects to 1 community

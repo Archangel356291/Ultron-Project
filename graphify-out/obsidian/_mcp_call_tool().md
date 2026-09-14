@@ -13,7 +13,7 @@ tags:
 
 ## Connections
 - [[_mcp_jsonrpc_call()]] - `calls` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 - [[handler()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/run_ultron_chat

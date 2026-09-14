@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[Simplified FIFO realized gainloss per asset — the aggregated view. See…]] - `rationale_for` [EXTRACTED]
 - [[_fifo_engine()]] - `calls` [EXTRACTED]
+- [[app.py]] - `indirect_call` [INFERRED]
 - [[trades_summary()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `indirect_call` [INFERRED]
 
 #graphify/code #graphify/EXTRACTED #community/_fifo_engine

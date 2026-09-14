@@ -14,6 +14,6 @@ tags:
 ## Connections
 - [[Count of pending OS updates. Real implementation on both platforms Windows…]] - `rationale_for` [EXTRACTED]
 - [[_systems_data()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/_status_data

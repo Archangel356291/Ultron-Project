@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "concept"
-community: "test_mcp_server.py"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/test_mcp_serverpy
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # dev-tools/fake_pkgs/ (anthropic/discord/aiohttp fakes)
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Testing Philosophy (real services + scriptable fakes)]] - `references` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/test_mcp_serverpy
+#graphify/concept #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system

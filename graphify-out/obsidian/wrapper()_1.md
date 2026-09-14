@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "require_role"
+community: "route"
 location: "L413"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/require_role
+  - community/route
 ---
 
 # wrapper()
@@ -16,4 +16,4 @@ tags:
 - [[require_role()]] - `indirect_call` [INFERRED]
 - [[require_token()]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/require_role
+#graphify/code #graphify/INFERRED #community/route

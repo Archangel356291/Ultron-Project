@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "rationale"
-community: "MCP (external tool/plugin) Support"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/MCP_external_tool/plugin_Support
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # Explicit Safety Boundaries Maintained
@@ -17,4 +17,4 @@ tags:
 - [[MCP (external toolplugin) Support]] - `rationale_for` [EXTRACTED]
 - [[Real Action Endpoints (backup, deploy-container)]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/MCP_external_tool/plugin_Support
+#graphify/rationale #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system

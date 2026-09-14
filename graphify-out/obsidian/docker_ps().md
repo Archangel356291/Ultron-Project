@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "ultron-backend/app.py"
+community: "docker_ps"
 location: "L501"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/ultron-backend/apppy
+  - community/docker_ps
 ---
 
 # docker_ps()
@@ -17,7 +17,7 @@ tags:
 - [[_run_deploy_container()]] - `calls` [EXTRACTED]
 - [[_status_data()]] - `calls` [EXTRACTED]
 - [[_validate_deploy_params()]] - `calls` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 - [[scan_container_cves()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/ultron-backend/apppy
+#graphify/code #graphify/EXTRACTED #community/docker_ps

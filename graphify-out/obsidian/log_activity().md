@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "action_backup"
+community: "app.py"
 location: "L234"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/action_backup
+  - community/apppy
 ---
 
 # log_activity()
@@ -17,7 +17,7 @@ tags:
 - [[_run_backup()]] - `calls` [EXTRACTED]
 - [[_run_deploy_container()]] - `calls` [EXTRACTED]
 - [[_scan_image_cves()]] - `calls` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 - [[handler()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/action_backup
+#graphify/code #graphify/EXTRACTED #community/apppy

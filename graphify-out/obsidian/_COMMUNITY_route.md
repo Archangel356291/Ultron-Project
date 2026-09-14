@@ -1,34 +1,31 @@
 ---
 type: community
-members: 21
+members: 18
 ---
 
 # route
 
-**Members:** 21 nodes
+**Members:** 18 nodes
 
 ## Members
-- [[Admin-only. Existing routes are unchanged a valid beta token is a real…]] - rationale - ultron-backend/app.py
-- [[Real usage summary for today — inputoutputcache tokens, request count, and…]] - rationale - ultron-backend/app.py
-- [[Recent login attempts. Platform-aware - Windows Security event log (IDs…]] - rationale - ultron-backend/app.py
-- [[Shared response shaping for the many routes below that just wrap a function…]] - rationale - ultron-backend/app.py
-- [[_json_result()]] - code - ultron-backend/app.py
+- [[Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope…]] - rationale - ultron-backend/app.py
+- [[Constant-time-ish token check against admin and every registered beta tester.…]] - rationale - ultron-backend/app.py
+- [[One TTS request to Fish Audio. Returns (audio_bytes, content_type, error).]] - rationale - ultron-backend/app.py
+- [[Per-disposal detail each row is one sell matched against one consumed buy lot,…]] - rationale - ultron-backend/app.py
+- [[_fish_audio_tts()]] - code - ultron-backend/app.py
+- [[_resolve_role()]] - code - ultron-backend/app.py
 - [[_storage_data()]] - code - ultron-backend/app.py
-- [[activity()]] - code - ultron-backend/app.py
-- [[chat_usage()]] - code - ultron-backend/app.py
 - [[dashboard()]] - code - ultron-backend/app.py
-- [[delete_trade()]] - code - ultron-backend/app.py
-- [[dev_repos()]] - code - ultron-backend/app.py
-- [[get_auth_log()]] - code - ultron-backend/app.py
-- [[get_llm_usage()]] - code - ultron-backend/app.py
-- [[get_recent_activity()]] - code - ultron-backend/app.py
-- [[get_repo_status()]] - code - ultron-backend/app.py
+- [[get_trade_tax_lots()]] - code - ultron-backend/app.py
 - [[health()]] - code - ultron-backend/app.py
-- [[require_token()]] - code - ultron-backend/app.py
+- [[require_role()]] - code - ultron-backend/app.py
 - [[route_1]] - code
-- [[security_auth_log()]] - code - ultron-backend/app.py
 - [[storage()]] - code - ultron-backend/app.py
-- [[trade_delete()]] - code - ultron-backend/app.py
+- [[trades_tax_lots()]] - code - ultron-backend/app.py
+- [[tts()]] - code - ultron-backend/app.py
+- [[whoami()]] - code - ultron-backend/app.py
+- [[wrapper()]] - code - ultron-backend/app.py
+- [[wrapper()_1]] - code - ultron-backend/app.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -38,18 +35,17 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 21 edges to [[_COMMUNITY_ultron-backendapp.py]]
-- 6 edges to [[_COMMUNITY__fifo_engine]]
-- 5 edges to [[_COMMUNITY__get_db_connection]]
-- 4 edges to [[_COMMUNITY_dev_repo_diff]]
-- 4 edges to [[_COMMUNITY__status_data]]
-- 4 edges to [[_COMMUNITY_require_role]]
-- 4 edges to [[_COMMUNITY_action_backup]]
-- 3 edges to [[_COMMUNITY_scan_container_cves]]
+- 13 edges to [[_COMMUNITY_app.py]]
+- 9 edges to [[_COMMUNITY_require_token]]
+- 4 edges to [[_COMMUNITY__get_db_connection]]
+- 4 edges to [[_COMMUNITY__fifo_engine]]
+- 2 edges to [[_COMMUNITY__status_data]]
+- 2 edges to [[_COMMUNITY_docker_ps]]
+- 1 edge to [[_COMMUNITY__ensure_mcp_discovered]]
 
 ## Top bridge nodes
-- [[route_1]] - degree 23, connects to 8 communities
-- [[require_token()]] - degree 18, connects to 7 communities
-- [[_json_result()]] - degree 13, connects to 5 communities
-- [[get_llm_usage()]] - degree 4, connects to 2 communities
-- [[delete_trade()]] - degree 3, connects to 2 communities
+- [[route_1]] - degree 23, connects to 7 communities
+- [[require_role()]] - degree 10, connects to 3 communities
+- [[trades_tax_lots()]] - degree 5, connects to 2 communities
+- [[get_trade_tax_lots()]] - degree 4, connects to 2 communities
+- [[storage()]] - degree 4, connects to 2 communities

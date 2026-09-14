@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "require_role"
+community: "route"
 location: "L428"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/require_role
+  - community/route
 ---
 
 # Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[require_role()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/require_role
+#graphify/rationale #graphify/EXTRACTED #community/route

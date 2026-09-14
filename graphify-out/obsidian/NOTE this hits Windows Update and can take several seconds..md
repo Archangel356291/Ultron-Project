@@ -1,17 +1,17 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "ultron-backend/app.py"
+community: "app.py"
 location: "L568"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/ultron-backend/apppy
+  - community/apppy
 ---
 
 # # NOTE: this hits Windows Update and can take several seconds.
 
 ## Connections
-- [[ultron-backendapp.py]] - `rationale_for` [EXTRACTED]
+- [[app.py]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/ultron-backend/apppy
+#graphify/rationale #graphify/EXTRACTED #community/apppy

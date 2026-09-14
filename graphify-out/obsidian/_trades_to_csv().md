@@ -13,8 +13,8 @@ tags:
 
 ## Connections
 - [[Raw transaction ledger as CSV text.]] - `rationale_for` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 - [[get_trades()]] - `calls` [EXTRACTED]
 - [[trades_export()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/_get_db_connection

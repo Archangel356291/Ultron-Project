@@ -13,8 +13,8 @@ tags:
 
 ## Connections
 - [[Closure matching the same handler(kwargs) - dict contract every internal…]] - `rationale_for` [EXTRACTED]
+- [[app.py]] - `contains` [EXTRACTED]
 - [[get_mcp_tools_and_dispatch()]] - `calls` [EXTRACTED]
 - [[handler()]] - `indirect_call` [INFERRED]
-- [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/run_ultron_chat

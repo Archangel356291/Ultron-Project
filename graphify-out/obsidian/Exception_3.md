@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "run_ultron_chat"
+community: "_mcp_jsonrpc_call"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/run_ultron_chat
+  - community/_mcp_jsonrpc_call
 ---
 
 # Exception
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[MCPError]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/run_ultron_chat
+#graphify/code #graphify/EXTRACTED #community/_mcp_jsonrpc_call

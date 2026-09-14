@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/REMOTE-ACCESS.md"
 type: "document"
-community: "Flask Backend (app.py)"
+community: "apiGet"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Flask_Backend_apppy
+  - community/apiGet
 ---
 
 # "Ultron Backend" Windows Firewall rule
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[WindowsLinux platform detection (temps, updates, storage mounts)]] - `references` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Flask_Backend_apppy
+#graphify/document #graphify/EXTRACTED #community/apiGet

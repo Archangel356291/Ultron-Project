@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/README.md"
 type: "document"
-community: "Flask Backend (app.py)"
+community: "apiGet"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Flask_Backend_apppy
+  - community/apiGet
 ---
 
 # GET /api/health
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Flask (=3.0,4.0)]] - `implements` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Flask_Backend_apppy
+#graphify/document #graphify/EXTRACTED #community/apiGet

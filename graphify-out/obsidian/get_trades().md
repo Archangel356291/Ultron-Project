@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[_get_db_connection()]] - `calls` [EXTRACTED]
 - [[_trades_to_csv()]] - `calls` [EXTRACTED]
+- [[app.py]] - `indirect_call` [INFERRED]
 - [[trades()]] - `calls` [EXTRACTED]
-- [[ultron-backendapp.py]] - `indirect_call` [INFERRED]
 
 #graphify/code #graphify/EXTRACTED #community/_get_db_connection

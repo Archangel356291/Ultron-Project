@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "test_mcp_server.py"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/test_mcp_serverpy
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # route
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[mcp_endpoint()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/test_mcp_serverpy
+#graphify/code #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system
