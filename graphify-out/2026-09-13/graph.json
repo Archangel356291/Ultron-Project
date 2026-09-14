@@ -585,7 +585,7 @@
       "file_type": "code",
       "norm_label": "mcperror",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1913"
+      "source_location": "L1936"
     },
     {
       "id": "dev_tools_fake_pkgs_aiohttp_init_clienterror",
@@ -1408,88 +1408,64 @@
       "source_location": "L34"
     },
     {
-      "id": "ultron_backend_app_chat",
-      "label": "chat()",
+      "id": "ultron_backend_app_dev_repo_diff",
+      "label": "dev_repo_diff()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "_get_db_connection",
+      "community_name": "dev_repo_diff",
       "file_type": "code",
-      "norm_label": "chat()",
+      "norm_label": "dev_repo_diff()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2538"
+      "source_location": "L1660"
     },
     {
-      "id": "ultron_backend_app_chat_usage",
-      "label": "chat_usage()",
+      "id": "ultron_backend_app_find_repo_dir",
+      "label": "_find_repo_dir()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "_get_db_connection",
+      "community_name": "dev_repo_diff",
       "file_type": "code",
-      "norm_label": "chat_usage()",
+      "norm_label": "_find_repo_dir()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2598"
+      "source_location": "L1146"
     },
     {
-      "id": "ultron_backend_app_check_rate_limit",
-      "label": "_check_rate_limit()",
+      "id": "ultron_backend_app_get_repo_diff",
+      "label": "get_repo_diff()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "_get_db_connection",
+      "community_name": "dev_repo_diff",
       "file_type": "code",
-      "norm_label": "_check_rate_limit()",
+      "norm_label": "get_repo_diff()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1775"
+      "source_location": "L1156"
     },
     {
-      "id": "ultron_backend_app_get_db_connection",
-      "label": "_get_db_connection()",
+      "id": "ultron_backend_app_repo_status",
+      "label": "_repo_status()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "_get_db_connection",
+      "community_name": "dev_repo_diff",
       "file_type": "code",
-      "norm_label": "_get_db_connection()",
+      "norm_label": "_repo_status()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L163"
+      "source_location": "L1112"
     },
     {
-      "id": "ultron_backend_app_get_llm_usage",
-      "label": "get_llm_usage()",
+      "id": "ultron_backend_app_run_git",
+      "label": "_run_git()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "_get_db_connection",
+      "community_name": "dev_repo_diff",
       "file_type": "code",
-      "norm_label": "get_llm_usage()",
+      "norm_label": "_run_git()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1848"
-    },
-    {
-      "id": "ultron_backend_app_init_db",
-      "label": "_init_db()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "_get_db_connection",
-      "file_type": "code",
-      "norm_label": "_init_db()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L169"
-    },
-    {
-      "id": "ultron_backend_app_todays_token_usage",
-      "label": "_todays_token_usage()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "_get_db_connection",
-      "file_type": "code",
-      "norm_label": "_todays_token_usage()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1824"
+      "source_location": "L1092"
     },
     {
       "id": "ultron_backend_app_add_trade",
@@ -1497,11 +1473,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "trades",
+      "community_name": "_get_db_connection",
       "file_type": "code",
       "norm_label": "add_trade()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1241"
+      "source_location": "L1264"
+    },
+    {
+      "id": "ultron_backend_app_get_db_connection",
+      "label": "_get_db_connection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 12,
+      "community_name": "_get_db_connection",
+      "file_type": "code",
+      "norm_label": "_get_db_connection()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L183"
     },
     {
       "id": "ultron_backend_app_get_trades",
@@ -1509,23 +1497,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "trades",
+      "community_name": "_get_db_connection",
       "file_type": "code",
       "norm_label": "get_trades()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1268"
+      "source_location": "L1291"
     },
     {
-      "id": "ultron_backend_app_tax_lots_to_csv",
-      "label": "_tax_lots_to_csv()",
+      "id": "ultron_backend_app_init_db",
+      "label": "_init_db()",
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "trades",
+      "community_name": "_get_db_connection",
       "file_type": "code",
-      "norm_label": "_tax_lots_to_csv()",
+      "norm_label": "_init_db()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1471"
+      "source_location": "L189"
     },
     {
       "id": "ultron_backend_app_trades",
@@ -1533,23 +1521,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "trades",
+      "community_name": "_get_db_connection",
       "file_type": "code",
       "norm_label": "trades()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1643"
-    },
-    {
-      "id": "ultron_backend_app_trades_export",
-      "label": "trades_export()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "trades",
-      "file_type": "code",
-      "norm_label": "trades_export()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1678"
+      "source_location": "L1666"
     },
     {
       "id": "ultron_backend_app_trades_to_csv",
@@ -1557,11 +1533,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "trades",
+      "community_name": "_get_db_connection",
       "file_type": "code",
       "norm_label": "_trades_to_csv()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1450"
+      "source_location": "L1473"
     },
     {
       "id": "ultron_backend_app_validate_trade_input",
@@ -1569,11 +1545,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "trades",
+      "community_name": "_get_db_connection",
       "file_type": "code",
       "norm_label": "_validate_trade_input()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1184"
+      "source_location": "L1207"
+    },
+    {
+      "id": "ultron_backend_app_add_cors_headers",
+      "label": "add_cors_headers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "add_cors_headers()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L384"
     },
     {
       "id": "ultron_backend_app_containers",
@@ -1581,11 +1569,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "docker_ps",
+      "community_name": "ultron-backend/app.py",
       "file_type": "code",
       "norm_label": "containers()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1606"
+      "source_location": "L1629"
     },
     {
       "id": "ultron_backend_app_containers_data",
@@ -1593,11 +1581,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "docker_ps",
+      "community_name": "ultron-backend/app.py",
       "file_type": "code",
       "norm_label": "_containers_data()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1527"
+      "source_location": "L1550"
     },
     {
       "id": "ultron_backend_app_docker_ps",
@@ -1605,11 +1593,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "docker_ps",
+      "community_name": "ultron-backend/app.py",
       "file_type": "code",
       "norm_label": "docker_ps()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L478"
+      "source_location": "L501"
     },
     {
       "id": "ultron_backend_app_docker_stats",
@@ -1617,11 +1605,119 @@
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "docker_ps",
+      "community_name": "ultron-backend/app.py",
       "file_type": "code",
       "norm_label": "docker_stats()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L512"
+      "source_location": "L535"
+    },
+    {
+      "id": "ultron_backend_app_get_mcp_servers",
+      "label": "get_mcp_servers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "get_mcp_servers()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2141"
+    },
+    {
+      "id": "ultron_backend_app_load_mcp_config",
+      "label": "_load_mcp_config()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "_load_mcp_config()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1940"
+    },
+    {
+      "id": "ultron_backend_app_mcp_servers",
+      "label": "mcp_servers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "mcp_servers()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2642"
+    },
+    {
+      "id": "ultron_backend_app_parse_beta_tokens",
+      "label": "_parse_beta_tokens()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "_parse_beta_tokens()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L117"
+    },
+    {
+      "id": "ultron_backend_app_split_platform_paths",
+      "label": "_split_platform_paths()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "_split_platform_paths()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L151"
+    },
+    {
+      "id": "ultron_backend_app_validate_container_name",
+      "label": "_validate_container_name()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "_validate_container_name()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L892"
+    },
+    {
+      "id": "ultron_backend_app_validate_deploy_params",
+      "label": "_validate_deploy_params()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "_validate_deploy_params()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L916"
+    },
+    {
+      "id": "ultron_backend_app_validate_image_ref",
+      "label": "_validate_image_ref()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "_validate_image_ref()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L898"
+    },
+    {
+      "id": "ultron_backend_app_validate_port",
+      "label": "_validate_port()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "_validate_port()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L906"
     },
     {
       "id": "ultron_backend_app_get_cpu_temp_c",
@@ -1633,7 +1729,7 @@
       "file_type": "code",
       "norm_label": "get_cpu_temp_c()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L424"
+      "source_location": "L447"
     },
     {
       "id": "ultron_backend_app_get_uptime_str",
@@ -1645,7 +1741,7 @@
       "file_type": "code",
       "norm_label": "get_uptime_str()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L465"
+      "source_location": "L488"
     },
     {
       "id": "ultron_backend_app_pending_os_updates",
@@ -1657,7 +1753,7 @@
       "file_type": "code",
       "norm_label": "pending_os_updates()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L534"
+      "source_location": "L557"
     },
     {
       "id": "ultron_backend_app_status",
@@ -1669,7 +1765,7 @@
       "file_type": "code",
       "norm_label": "status()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1600"
+      "source_location": "L1623"
     },
     {
       "id": "ultron_backend_app_status_data",
@@ -1681,7 +1777,7 @@
       "file_type": "code",
       "norm_label": "_status_data()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1512"
+      "source_location": "L1535"
     },
     {
       "id": "ultron_backend_app_systems",
@@ -1693,7 +1789,7 @@
       "file_type": "code",
       "norm_label": "systems()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1618"
+      "source_location": "L1641"
     },
     {
       "id": "ultron_backend_app_systems_data",
@@ -1705,7 +1801,7 @@
       "file_type": "code",
       "norm_label": "_systems_data()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1556"
+      "source_location": "L1579"
     },
     {
       "id": "dev_tools_fake_pkgs_anthropic_init_anthropic_init",
@@ -1921,7 +2017,7 @@
       "file_type": "code",
       "norm_label": "_fifo_engine()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1323"
+      "source_location": "L1346"
     },
     {
       "id": "ultron_backend_app_get_trade_summary",
@@ -1933,7 +2029,7 @@
       "file_type": "code",
       "norm_label": "get_trade_summary()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1417"
+      "source_location": "L1440"
     },
     {
       "id": "ultron_backend_app_get_trade_tax_lots",
@@ -1945,7 +2041,19 @@
       "file_type": "code",
       "norm_label": "get_trade_tax_lots()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1433"
+      "source_location": "L1456"
+    },
+    {
+      "id": "ultron_backend_app_tax_lots_to_csv",
+      "label": "_tax_lots_to_csv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "_fifo_engine",
+      "file_type": "code",
+      "norm_label": "_tax_lots_to_csv()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1494"
     },
     {
       "id": "ultron_backend_app_trade_date_to_epoch_days",
@@ -1957,7 +2065,19 @@
       "file_type": "code",
       "norm_label": "_trade_date_to_epoch_days()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1311"
+      "source_location": "L1334"
+    },
+    {
+      "id": "ultron_backend_app_trades_export",
+      "label": "trades_export()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "_fifo_engine",
+      "file_type": "code",
+      "norm_label": "trades_export()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1701"
     },
     {
       "id": "ultron_backend_app_trades_summary",
@@ -1969,7 +2089,7 @@
       "file_type": "code",
       "norm_label": "trades_summary()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1666"
+      "source_location": "L1689"
     },
     {
       "id": "ultron_backend_app_trades_tax_lots",
@@ -1981,7 +2101,7 @@
       "file_type": "code",
       "norm_label": "trades_tax_lots()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1672"
+      "source_location": "L1695"
     },
     {
       "id": "ultron_backend_app_parse_scout_sarif",
@@ -1993,7 +2113,7 @@
       "file_type": "code",
       "norm_label": "_parse_scout_sarif()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L682"
+      "source_location": "L705"
     },
     {
       "id": "ultron_backend_app_scan_container_cves",
@@ -2005,7 +2125,7 @@
       "file_type": "code",
       "norm_label": "scan_container_cves()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L777"
+      "source_location": "L800"
     },
     {
       "id": "ultron_backend_app_scan_image_cves",
@@ -2017,7 +2137,7 @@
       "file_type": "code",
       "norm_label": "_scan_image_cves()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L724"
+      "source_location": "L747"
     },
     {
       "id": "ultron_backend_app_security_cve_scan",
@@ -2029,7 +2149,7 @@
       "file_type": "code",
       "norm_label": "security_cve_scan()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1707"
+      "source_location": "L1730"
     },
     {
       "id": "ultron_backend_app_severity_from_score",
@@ -2041,7 +2161,31 @@
       "file_type": "code",
       "norm_label": "_severity_from_score()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L668"
+      "source_location": "L691"
+    },
+    {
+      "id": "ultron_backend_app_chat",
+      "label": "chat()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 25,
+      "community_name": "require_role",
+      "file_type": "code",
+      "norm_label": "chat()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2561"
+    },
+    {
+      "id": "ultron_backend_app_check_rate_limit",
+      "label": "_check_rate_limit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 25,
+      "community_name": "require_role",
+      "file_type": "code",
+      "norm_label": "_check_rate_limit()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1798"
     },
     {
       "id": "ultron_backend_app_fish_audio_tts",
@@ -2053,7 +2197,7 @@
       "file_type": "code",
       "norm_label": "_fish_audio_tts()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L326"
+      "source_location": "L346"
     },
     {
       "id": "ultron_backend_app_require_role",
@@ -2065,7 +2209,7 @@
       "file_type": "code",
       "norm_label": "require_role()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L405"
+      "source_location": "L427"
     },
     {
       "id": "ultron_backend_app_require_role_wrapper",
@@ -2077,7 +2221,7 @@
       "file_type": "code",
       "norm_label": "wrapper()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L410"
+      "source_location": "L432"
     },
     {
       "id": "ultron_backend_app_require_token_wrapper",
@@ -2089,7 +2233,7 @@
       "file_type": "code",
       "norm_label": "wrapper()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L392"
+      "source_location": "L413"
     },
     {
       "id": "ultron_backend_app_resolve_role",
@@ -2101,7 +2245,19 @@
       "file_type": "code",
       "norm_label": "_resolve_role()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L374"
+      "source_location": "L394"
+    },
+    {
+      "id": "ultron_backend_app_todays_token_usage",
+      "label": "_todays_token_usage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 25,
+      "community_name": "require_role",
+      "file_type": "code",
+      "norm_label": "_todays_token_usage()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1847"
     },
     {
       "id": "ultron_backend_app_tts",
@@ -2113,7 +2269,7 @@
       "file_type": "code",
       "norm_label": "tts()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2604"
+      "source_location": "L2627"
     },
     {
       "id": "ultron_backend_app_whoami",
@@ -2125,7 +2281,7 @@
       "file_type": "code",
       "norm_label": "whoami()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2532"
+      "source_location": "L2555"
     },
     {
       "id": "ultron_discord_bot_bot_confirmactionview_init",
@@ -2413,7 +2569,19 @@
       "file_type": "code",
       "norm_label": "activity()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1624"
+      "source_location": "L1647"
+    },
+    {
+      "id": "ultron_backend_app_chat_usage",
+      "label": "chat_usage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "route",
+      "file_type": "code",
+      "norm_label": "chat_usage()",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2621"
     },
     {
       "id": "ultron_backend_app_dashboard",
@@ -2425,7 +2593,7 @@
       "file_type": "code",
       "norm_label": "dashboard()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1589"
+      "source_location": "L1612"
     },
     {
       "id": "ultron_backend_app_delete_trade",
@@ -2437,19 +2605,7 @@
       "file_type": "code",
       "norm_label": "delete_trade()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1292"
-    },
-    {
-      "id": "ultron_backend_app_dev_repo_diff",
-      "label": "dev_repo_diff()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "route",
-      "file_type": "code",
-      "norm_label": "dev_repo_diff()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1637"
+      "source_location": "L1315"
     },
     {
       "id": "ultron_backend_app_dev_repos",
@@ -2461,19 +2617,7 @@
       "file_type": "code",
       "norm_label": "dev_repos()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1631"
-    },
-    {
-      "id": "ultron_backend_app_find_repo_dir",
-      "label": "_find_repo_dir()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "route",
-      "file_type": "code",
-      "norm_label": "_find_repo_dir()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1123"
+      "source_location": "L1654"
     },
     {
       "id": "ultron_backend_app_get_auth_log",
@@ -2485,19 +2629,19 @@
       "file_type": "code",
       "norm_label": "get_auth_log()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L570"
+      "source_location": "L593"
     },
     {
-      "id": "ultron_backend_app_get_mcp_servers",
-      "label": "get_mcp_servers()",
+      "id": "ultron_backend_app_get_llm_usage",
+      "label": "get_llm_usage()",
       "_callable": true,
       "_origin": "ast",
       "community": 5,
       "community_name": "route",
       "file_type": "code",
-      "norm_label": "get_mcp_servers()",
+      "norm_label": "get_llm_usage()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2118"
+      "source_location": "L1871"
     },
     {
       "id": "ultron_backend_app_get_recent_activity",
@@ -2509,19 +2653,7 @@
       "file_type": "code",
       "norm_label": "get_recent_activity()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L233"
-    },
-    {
-      "id": "ultron_backend_app_get_repo_diff",
-      "label": "get_repo_diff()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "route",
-      "file_type": "code",
-      "norm_label": "get_repo_diff()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1133"
+      "source_location": "L253"
     },
     {
       "id": "ultron_backend_app_get_repo_status",
@@ -2533,7 +2665,7 @@
       "file_type": "code",
       "norm_label": "get_repo_status()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1117"
+      "source_location": "L1140"
     },
     {
       "id": "ultron_backend_app_health",
@@ -2545,7 +2677,7 @@
       "file_type": "code",
       "norm_label": "health()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1594"
+      "source_location": "L1617"
     },
     {
       "id": "ultron_backend_app_json_result",
@@ -2557,31 +2689,7 @@
       "file_type": "code",
       "norm_label": "_json_result()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1568"
-    },
-    {
-      "id": "ultron_backend_app_mcp_servers",
-      "label": "mcp_servers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "route",
-      "file_type": "code",
-      "norm_label": "mcp_servers()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2619"
-    },
-    {
-      "id": "ultron_backend_app_repo_status",
-      "label": "_repo_status()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "route",
-      "file_type": "code",
-      "norm_label": "_repo_status()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1089"
+      "source_location": "L1591"
     },
     {
       "id": "ultron_backend_app_require_token",
@@ -2593,19 +2701,7 @@
       "file_type": "code",
       "norm_label": "require_token()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L386"
-    },
-    {
-      "id": "ultron_backend_app_run_git",
-      "label": "_run_git()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "route",
-      "file_type": "code",
-      "norm_label": "_run_git()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1069"
+      "source_location": "L407"
     },
     {
       "id": "ultron_backend_app_security_auth_log",
@@ -2617,7 +2713,7 @@
       "file_type": "code",
       "norm_label": "security_auth_log()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1701"
+      "source_location": "L1724"
     },
     {
       "id": "ultron_backend_app_storage",
@@ -2629,7 +2725,7 @@
       "file_type": "code",
       "norm_label": "storage()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1612"
+      "source_location": "L1635"
     },
     {
       "id": "ultron_backend_app_storage_data",
@@ -2641,7 +2737,7 @@
       "file_type": "code",
       "norm_label": "_storage_data()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1540"
+      "source_location": "L1563"
     },
     {
       "id": "ultron_backend_app_trade_delete",
@@ -2653,7 +2749,7 @@
       "file_type": "code",
       "norm_label": "trade_delete()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1660"
+      "source_location": "L1683"
     },
     {
       "id": "ultron_backend_app_action_backup",
@@ -2661,11 +2757,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "action_backup()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1714"
+      "source_location": "L1737"
     },
     {
       "id": "ultron_backend_app_action_deploy_container",
@@ -2673,23 +2769,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "action_deploy_container()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1741"
-    },
-    {
-      "id": "ultron_backend_app_add_cors_headers",
-      "label": "add_cors_headers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "code",
-      "norm_label": "add_cors_headers()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L364"
+      "source_location": "L1764"
     },
     {
       "id": "ultron_backend_app_backup_preview",
@@ -2697,11 +2781,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "_backup_preview()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1002"
+      "source_location": "L1025"
     },
     {
       "id": "ultron_backend_app_consume_action_token",
@@ -2709,11 +2793,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "_consume_action_token()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L845"
+      "source_location": "L868"
     },
     {
       "id": "ultron_backend_app_dir_size_bytes",
@@ -2721,23 +2805,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "_dir_size_bytes()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L991"
-    },
-    {
-      "id": "ultron_backend_app_load_mcp_config",
-      "label": "_load_mcp_config()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "code",
-      "norm_label": "_load_mcp_config()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1917"
+      "source_location": "L1014"
     },
     {
       "id": "ultron_backend_app_log_activity",
@@ -2745,11 +2817,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "log_activity()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L214"
+      "source_location": "L234"
     },
     {
       "id": "ultron_backend_app_new_action_token",
@@ -2757,11 +2829,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "_new_action_token()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L833"
+      "source_location": "L856"
     },
     {
       "id": "ultron_backend_app_prune_expired_tokens_locked",
@@ -2769,11 +2841,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "_prune_expired_tokens_locked()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L827"
+      "source_location": "L850"
     },
     {
       "id": "ultron_backend_app_run_backup",
@@ -2781,11 +2853,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "_run_backup()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1014"
+      "source_location": "L1037"
     },
     {
       "id": "ultron_backend_app_run_deploy_container",
@@ -2793,23 +2865,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "_run_deploy_container()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L944"
-    },
-    {
-      "id": "ultron_backend_app_split_platform_paths",
-      "label": "_split_platform_paths()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "code",
-      "norm_label": "_split_platform_paths()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L131"
+      "source_location": "L967"
     },
     {
       "id": "ultron_backend_app_validate_backup_config",
@@ -2817,59 +2877,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "code",
       "norm_label": "_validate_backup_config()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L980"
-    },
-    {
-      "id": "ultron_backend_app_validate_container_name",
-      "label": "_validate_container_name()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "code",
-      "norm_label": "_validate_container_name()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L869"
-    },
-    {
-      "id": "ultron_backend_app_validate_deploy_params",
-      "label": "_validate_deploy_params()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "code",
-      "norm_label": "_validate_deploy_params()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L893"
-    },
-    {
-      "id": "ultron_backend_app_validate_image_ref",
-      "label": "_validate_image_ref()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "code",
-      "norm_label": "_validate_image_ref()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L875"
-    },
-    {
-      "id": "ultron_backend_app_validate_port",
-      "label": "_validate_port()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "code",
-      "norm_label": "_validate_port()",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L883"
+      "source_location": "L1003"
     },
     {
       "id": "app_add_cors_headers",
@@ -3037,7 +3049,7 @@
       "file_type": "code",
       "norm_label": "_add_cache_breakpoint()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2410"
+      "source_location": "L2433"
     },
     {
       "id": "ultron_backend_app_ensure_mcp_discovered",
@@ -3049,7 +3061,7 @@
       "file_type": "code",
       "norm_label": "_ensure_mcp_discovered()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2101"
+      "source_location": "L2124"
     },
     {
       "id": "ultron_backend_app_get_mcp_tools_and_dispatch",
@@ -3061,7 +3073,7 @@
       "file_type": "code",
       "norm_label": "get_mcp_tools_and_dispatch()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2165"
+      "source_location": "L2188"
     },
     {
       "id": "ultron_backend_app_log_llm_usage",
@@ -3073,7 +3085,7 @@
       "file_type": "code",
       "norm_label": "_log_llm_usage()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1800"
+      "source_location": "L1823"
     },
     {
       "id": "ultron_backend_app_make_mcp_tool_handler",
@@ -3085,7 +3097,7 @@
       "file_type": "code",
       "norm_label": "_make_mcp_tool_handler()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2140"
+      "source_location": "L2163"
     },
     {
       "id": "ultron_backend_app_make_mcp_tool_handler_handler",
@@ -3097,7 +3109,7 @@
       "file_type": "code",
       "norm_label": "handler()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2145"
+      "source_location": "L2168"
     },
     {
       "id": "ultron_backend_app_mcp_call_tool",
@@ -3109,7 +3121,7 @@
       "file_type": "code",
       "norm_label": "_mcp_call_tool()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2061"
+      "source_location": "L2084"
     },
     {
       "id": "ultron_backend_app_mcp_discover_all",
@@ -3121,7 +3133,7 @@
       "file_type": "code",
       "norm_label": "_mcp_discover_all()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2074"
+      "source_location": "L2097"
     },
     {
       "id": "ultron_backend_app_mcp_http_post",
@@ -3133,7 +3145,7 @@
       "file_type": "code",
       "norm_label": "_mcp_http_post()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1968"
+      "source_location": "L1991"
     },
     {
       "id": "ultron_backend_app_mcp_initialize",
@@ -3145,7 +3157,7 @@
       "file_type": "code",
       "norm_label": "_mcp_initialize()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2039"
+      "source_location": "L2062"
     },
     {
       "id": "ultron_backend_app_mcp_jsonrpc_call",
@@ -3157,7 +3169,7 @@
       "file_type": "code",
       "norm_label": "_mcp_jsonrpc_call()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2011"
+      "source_location": "L2034"
     },
     {
       "id": "ultron_backend_app_mcp_list_tools",
@@ -3169,7 +3181,7 @@
       "file_type": "code",
       "norm_label": "_mcp_list_tools()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2050"
+      "source_location": "L2073"
     },
     {
       "id": "ultron_backend_app_run_ultron_chat",
@@ -3181,7 +3193,7 @@
       "file_type": "code",
       "norm_label": "run_ultron_chat()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2429"
+      "source_location": "L2452"
     },
     {
       "id": "ultron_backend_app_serialize_block",
@@ -3193,7 +3205,7 @@
       "file_type": "code",
       "norm_label": "_serialize_block()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2396"
+      "source_location": "L2419"
     },
     {
       "id": "ultron_backend_app_serialize_content",
@@ -3205,7 +3217,7 @@
       "file_type": "code",
       "norm_label": "_serialize_content()",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2404"
+      "source_location": "L2427"
     },
     {
       "id": "dev_tools_fake_pkgs_aiohttp_init_clientsession_close",
@@ -3571,92 +3583,158 @@
       "source_location": "L66"
     },
     {
-      "id": "ultron_backend_app_rationale_1776",
-      "label": "Returns None if the request is allowed, or an error message if the caller\u2026",
+      "id": "ultron_backend_app_rationale_1093",
+      "label": "Runs a read-only git command in repo_path. Returns (stdout, error) \u2014 never\u2026",
       "_origin": "ast",
       "community": 11,
-      "community_name": "_get_db_connection",
+      "community_name": "dev_repo_diff",
       "file_type": "rationale",
-      "norm_label": "returns none if the request is allowed, or an error message if the caller...",
+      "norm_label": "runs a read-only git command in repo_path. returns (stdout, error) \u2014 never...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1776"
+      "source_location": "L1093"
     },
     {
-      "id": "ultron_backend_app_rationale_1825",
-      "label": "Sums input+output tokens (real spend) for calls logged today (local date,\u2026",
+      "id": "ultron_backend_app_rationale_1147",
+      "label": "Matches only against the pre-configured repo basenames \u2014 a caller can never\u2026",
       "_origin": "ast",
       "community": 11,
-      "community_name": "_get_db_connection",
+      "community_name": "dev_repo_diff",
       "file_type": "rationale",
-      "norm_label": "sums input+output tokens (real spend) for calls logged today (local date,...",
+      "norm_label": "matches only against the pre-configured repo basenames \u2014 a caller can never...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1825"
+      "source_location": "L1147"
     },
     {
-      "id": "ultron_backend_app_rationale_1849",
-      "label": "Real usage summary for today \u2014 input/output/cache tokens, request count, and\u2026",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "_get_db_connection",
-      "file_type": "rationale",
-      "norm_label": "real usage summary for today \u2014 input/output/cache tokens, request count, and...",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1849"
-    },
-    {
-      "id": "ultron_backend_app_rationale_1185",
+      "id": "ultron_backend_app_rationale_1208",
       "label": "Returns (normalized_dict, None) or (None, error_message).",
       "_origin": "ast",
       "community": 12,
-      "community_name": "trades",
+      "community_name": "_get_db_connection",
       "file_type": "rationale",
       "norm_label": "returns (normalized_dict, none) or (none, error_message).",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1185"
+      "source_location": "L1208"
     },
     {
-      "id": "ultron_backend_app_rationale_1451",
+      "id": "ultron_backend_app_rationale_1474",
       "label": "Raw transaction ledger as CSV text.",
       "_origin": "ast",
       "community": 12,
-      "community_name": "trades",
+      "community_name": "_get_db_connection",
       "file_type": "rationale",
       "norm_label": "raw transaction ledger as csv text.",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1451"
+      "source_location": "L1474"
     },
     {
-      "id": "ultron_backend_app_rationale_1472",
-      "label": "Per-disposal FIFO tax report as CSV text \u2014 one row per sell-vs-buy-lot match,\u2026",
+      "id": "ultron_backend_app",
+      "label": "ultron-backend/app.py",
       "_origin": "ast",
-      "community": 12,
-      "community_name": "trades",
-      "file_type": "rationale",
-      "norm_label": "per-disposal fifo tax report as csv text \u2014 one row per sell-vs-buy-lot match,...",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "ultron-backend/app.py",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1472"
+      "source_location": "L1"
     },
     {
-      "id": "ultron_backend_app_rationale_479",
+      "id": "ultron_backend_app_py_after_request",
+      "label": "after_request",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "code",
+      "norm_label": "after_request",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "ultron_backend_app_rationale_1",
+      "label": "Ultron home lab monitoring backend. Exposes a small JSON API that the dashboard\u2026",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "rationale",
+      "norm_label": "ultron home lab monitoring backend. exposes a small json api that the dashboard...",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "ultron_backend_app_rationale_152",
+      "label": "Splits a multi-path env var into a clean list of paths. Windows uses ';' as the\u2026",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "rationale",
+      "norm_label": "splits a multi-path env var into a clean list of paths. windows uses ';' as the...",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L152"
+    },
+    {
+      "id": "ultron_backend_app_rationale_1941",
+      "label": "Loads and validates the MCP server list from ULTRON_MCP_CONFIG (a path to a\u2026",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "rationale",
+      "norm_label": "loads and validates the mcp server list from ultron_mcp_config (a path to a...",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1941"
+    },
+    {
+      "id": "ultron_backend_app_rationale_2142",
+      "label": "Read-only view of every configured server and everything it offers \u2014 approved\u2026",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "rationale",
+      "norm_label": "read-only view of every configured server and everything it offers \u2014 approved...",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2142"
+    },
+    {
+      "id": "ultron_backend_app_rationale_502",
       "label": "Return container info via the Docker CLI, avoiding a hard dependency on the\u2026",
       "_origin": "ast",
       "community": 14,
-      "community_name": "docker_ps",
+      "community_name": "ultron-backend/app.py",
       "file_type": "rationale",
       "norm_label": "return container info via the docker cli, avoiding a hard dependency on the...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L479"
+      "source_location": "L502"
     },
     {
-      "id": "ultron_backend_app_rationale_513",
+      "id": "ultron_backend_app_rationale_536",
       "label": "Live CPU/mem per container, keyed by name. Best-effort; returns {} on any\u2026",
       "_origin": "ast",
       "community": 14,
-      "community_name": "docker_ps",
+      "community_name": "ultron-backend/app.py",
       "file_type": "rationale",
       "norm_label": "live cpu/mem per container, keyed by name. best-effort; returns {} on any...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L513"
+      "source_location": "L536"
+    },
+    {
+      "id": "ultron_backend_app_rationale_568",
+      "label": "# NOTE: this hits Windows Update and can take several seconds.",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "rationale",
+      "norm_label": "# note: this hits windows update and can take several seconds.",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L568"
+    },
+    {
+      "id": "ultron_backend_app_rationale_917",
+      "label": "Validates and normalizes a deploy-container request body. Returns (params,\u2026",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "ultron-backend/app.py",
+      "file_type": "rationale",
+      "norm_label": "validates and normalizes a deploy-container request body. returns (params,...",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L917"
     },
     {
       "id": "ultron_backend_start_ultron",
@@ -3670,7 +3748,7 @@
       "source_location": "L1"
     },
     {
-      "id": "ultron_backend_app_rationale_425",
+      "id": "ultron_backend_app_rationale_448",
       "label": "Best-effort CPU temperature read. Returns None if unavailable \u2014 which, on\u2026",
       "_origin": "ast",
       "community": 16,
@@ -3678,10 +3756,10 @@
       "file_type": "rationale",
       "norm_label": "best-effort cpu temperature read. returns none if unavailable \u2014 which, on...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L425"
+      "source_location": "L448"
     },
     {
-      "id": "ultron_backend_app_rationale_535",
+      "id": "ultron_backend_app_rationale_558",
       "label": "Count of pending OS updates. Real implementation on both platforms: Windows\u2026",
       "_origin": "ast",
       "community": 16,
@@ -3689,7 +3767,7 @@
       "file_type": "rationale",
       "norm_label": "count of pending os updates. real implementation on both platforms: windows...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L535"
+      "source_location": "L558"
     },
     {
       "id": "dev_tools_fake_pkgs_anthropic_init",
@@ -3758,7 +3836,7 @@
       "source_location": "L1"
     },
     {
-      "id": "ultron_backend_app_rationale_1312",
+      "id": "ultron_backend_app_rationale_1335",
       "label": "Best-effort date -> integer day count, for holding-period math. Never raises;\u2026",
       "_origin": "ast",
       "community": 21,
@@ -3766,10 +3844,10 @@
       "file_type": "rationale",
       "norm_label": "best-effort date -> integer day count, for holding-period math. never raises;...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1312"
+      "source_location": "L1335"
     },
     {
-      "id": "ultron_backend_app_rationale_1324",
+      "id": "ultron_backend_app_rationale_1347",
       "label": "The one place FIFO matching happens. Returns both an aggregated per-asset view\u2026",
       "_origin": "ast",
       "community": 21,
@@ -3777,10 +3855,10 @@
       "file_type": "rationale",
       "norm_label": "the one place fifo matching happens. returns both an aggregated per-asset view...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1324"
+      "source_location": "L1347"
     },
     {
-      "id": "ultron_backend_app_rationale_1418",
+      "id": "ultron_backend_app_rationale_1441",
       "label": "Simplified FIFO realized gain/loss per asset \u2014 the aggregated view. See\u2026",
       "_origin": "ast",
       "community": 21,
@@ -3788,10 +3866,10 @@
       "file_type": "rationale",
       "norm_label": "simplified fifo realized gain/loss per asset \u2014 the aggregated view. see...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1418"
+      "source_location": "L1441"
     },
     {
-      "id": "ultron_backend_app_rationale_1434",
+      "id": "ultron_backend_app_rationale_1457",
       "label": "Per-disposal detail: each row is one sell matched against one consumed buy lot,\u2026",
       "_origin": "ast",
       "community": 21,
@@ -3799,10 +3877,21 @@
       "file_type": "rationale",
       "norm_label": "per-disposal detail: each row is one sell matched against one consumed buy lot,...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1434"
+      "source_location": "L1457"
     },
     {
-      "id": "ultron_backend_app_rationale_683",
+      "id": "ultron_backend_app_rationale_1495",
+      "label": "Per-disposal FIFO tax report as CSV text \u2014 one row per sell-vs-buy-lot match,\u2026",
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "_fifo_engine",
+      "file_type": "rationale",
+      "norm_label": "per-disposal fifo tax report as csv text \u2014 one row per sell-vs-buy-lot match,...",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1495"
+    },
+    {
+      "id": "ultron_backend_app_rationale_706",
       "label": "Defensive SARIF parser: Docker Scout's exact SARIF property layout isn't\u2026",
       "_origin": "ast",
       "community": 22,
@@ -3810,10 +3899,10 @@
       "file_type": "rationale",
       "norm_label": "defensive sarif parser: docker scout's exact sarif property layout isn't...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L683"
+      "source_location": "L706"
     },
     {
-      "id": "ultron_backend_app_rationale_725",
+      "id": "ultron_backend_app_rationale_748",
       "label": "Runs `docker scout cves` for one image. Returns a result dict \u2014 never raises.\u2026",
       "_origin": "ast",
       "community": 22,
@@ -3821,10 +3910,10 @@
       "file_type": "rationale",
       "norm_label": "runs `docker scout cves` for one image. returns a result dict \u2014 never raises....",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L725"
+      "source_location": "L748"
     },
     {
-      "id": "ultron_backend_app_rationale_778",
+      "id": "ultron_backend_app_rationale_801",
       "label": "Scans the images of currently running containers. Capped to CVE_SCAN_MAX_IMAGES\u2026",
       "_origin": "ast",
       "community": 22,
@@ -3832,10 +3921,32 @@
       "file_type": "rationale",
       "norm_label": "scans the images of currently running containers. capped to cve_scan_max_images...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L778"
+      "source_location": "L801"
     },
     {
-      "id": "ultron_backend_app_rationale_327",
+      "id": "ultron_backend_app_rationale_1799",
+      "label": "Returns None if the request is allowed, or an error message if the caller\u2026",
+      "_origin": "ast",
+      "community": 25,
+      "community_name": "require_role",
+      "file_type": "rationale",
+      "norm_label": "returns none if the request is allowed, or an error message if the caller...",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1799"
+    },
+    {
+      "id": "ultron_backend_app_rationale_1848",
+      "label": "Sums input+output tokens (real spend) for calls logged today (local date,\u2026",
+      "_origin": "ast",
+      "community": 25,
+      "community_name": "require_role",
+      "file_type": "rationale",
+      "norm_label": "sums input+output tokens (real spend) for calls logged today (local date,...",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1848"
+    },
+    {
+      "id": "ultron_backend_app_rationale_347",
       "label": "One TTS request to Fish Audio. Returns (audio_bytes, content_type, error).",
       "_origin": "ast",
       "community": 25,
@@ -3843,21 +3954,21 @@
       "file_type": "rationale",
       "norm_label": "one tts request to fish audio. returns (audio_bytes, content_type, error).",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L327"
+      "source_location": "L347"
     },
     {
-      "id": "ultron_backend_app_rationale_375",
-      "label": "Constant-time-ish token check against both roles. Returns 'admin', 'beta', or\u2026",
+      "id": "ultron_backend_app_rationale_395",
+      "label": "Constant-time-ish token check against admin and every registered beta tester.\u2026",
       "_origin": "ast",
       "community": 25,
       "community_name": "require_role",
       "file_type": "rationale",
-      "norm_label": "constant-time-ish token check against both roles. returns 'admin', 'beta', or...",
+      "norm_label": "constant-time-ish token check against admin and every registered beta tester....",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L375"
+      "source_location": "L395"
     },
     {
-      "id": "ultron_backend_app_rationale_406",
+      "id": "ultron_backend_app_rationale_428",
       "label": "Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope\u2026",
       "_origin": "ast",
       "community": 25,
@@ -3865,7 +3976,7 @@
       "file_type": "rationale",
       "norm_label": "admin or beta_tester. use only on endpoints in the beta tester's allowed scope...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L406"
+      "source_location": "L428"
     },
     {
       "id": "master_index",
@@ -3928,18 +4039,6 @@
       "source_location": "L1"
     },
     {
-      "id": "ultron_backend_beta_testers_a_real_limitation_not_yet_fixed",
-      "label": "A real limitation, not yet fixed",
-      "_origin": "ast",
-      "community": 26,
-      "community_name": "_index.md",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "a real limitation, not yet fixed",
-      "source_file": "ultron-backend/BETA-TESTERS.md",
-      "source_location": "L29"
-    },
-    {
       "id": "ultron_backend_beta_testers_beta_testers",
       "label": "Beta testers",
       "_origin": "ast",
@@ -3973,7 +4072,19 @@
       "node_kind": "heading",
       "norm_label": "roster",
       "source_file": "ultron-backend/BETA-TESTERS.md",
-      "source_location": "L18"
+      "source_location": "L34"
+    },
+    {
+      "id": "ultron_backend_beta_testers_what_s_still_not_covered",
+      "label": "What's still not covered",
+      "_origin": "ast",
+      "community": 26,
+      "community_name": "_index.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "what's still not covered",
+      "source_file": "ultron-backend/BETA-TESTERS.md",
+      "source_location": "L45"
     },
     {
       "id": "ultron_backend_code_audit",
@@ -4138,29 +4249,7 @@
       "source_location": ""
     },
     {
-      "id": "ultron_backend_app_rationale_1070",
-      "label": "Runs a read-only git command in repo_path. Returns (stdout, error) \u2014 never\u2026",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "route",
-      "file_type": "rationale",
-      "norm_label": "runs a read-only git command in repo_path. returns (stdout, error) \u2014 never...",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1070"
-    },
-    {
-      "id": "ultron_backend_app_rationale_1124",
-      "label": "Matches only against the pre-configured repo basenames \u2014 a caller can never\u2026",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "route",
-      "file_type": "rationale",
-      "norm_label": "matches only against the pre-configured repo basenames \u2014 a caller can never...",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1124"
-    },
-    {
-      "id": "ultron_backend_app_rationale_1569",
+      "id": "ultron_backend_app_rationale_1592",
       "label": "Shared response shaping for the many routes below that just wrap a function\u2026",
       "_origin": "ast",
       "community": 5,
@@ -4168,21 +4257,21 @@
       "file_type": "rationale",
       "norm_label": "shared response shaping for the many routes below that just wrap a function...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1569"
+      "source_location": "L1592"
     },
     {
-      "id": "ultron_backend_app_rationale_2119",
-      "label": "Read-only view of every configured server and everything it offers \u2014 approved\u2026",
+      "id": "ultron_backend_app_rationale_1872",
+      "label": "Real usage summary for today \u2014 input/output/cache tokens, request count, and\u2026",
       "_origin": "ast",
       "community": 5,
       "community_name": "route",
       "file_type": "rationale",
-      "norm_label": "read-only view of every configured server and everything it offers \u2014 approved...",
+      "norm_label": "real usage summary for today \u2014 input/output/cache tokens, request count, and...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2119"
+      "source_location": "L1872"
     },
     {
-      "id": "ultron_backend_app_rationale_387",
+      "id": "ultron_backend_app_rationale_408",
       "label": "Admin-only. Existing routes are unchanged: a valid beta token is a real\u2026",
       "_origin": "ast",
       "community": 5,
@@ -4190,10 +4279,10 @@
       "file_type": "rationale",
       "norm_label": "admin-only. existing routes are unchanged: a valid beta token is a real...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L387"
+      "source_location": "L408"
     },
     {
-      "id": "ultron_backend_app_rationale_571",
+      "id": "ultron_backend_app_rationale_594",
       "label": "Recent login attempts. Platform-aware: - Windows: Security event log (IDs\u2026",
       "_origin": "ast",
       "community": 5,
@@ -4201,106 +4290,29 @@
       "file_type": "rationale",
       "norm_label": "recent login attempts. platform-aware: - windows: security event log (ids...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L571"
+      "source_location": "L594"
     },
     {
-      "id": "ultron_backend_app",
-      "label": "ultron-backend/app.py",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "code",
-      "norm_label": "ultron-backend/app.py",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "ultron_backend_app_py_after_request",
-      "label": "after_request",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "code",
-      "norm_label": "after_request",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "ultron_backend_app_rationale_1",
-      "label": "Ultron home lab monitoring backend. Exposes a small JSON API that the dashboard\u2026",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "rationale",
-      "norm_label": "ultron home lab monitoring backend. exposes a small json api that the dashboard...",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "ultron_backend_app_rationale_132",
-      "label": "Splits a multi-path env var into a clean list of paths. Windows uses ';' as the\u2026",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "rationale",
-      "norm_label": "splits a multi-path env var into a clean list of paths. windows uses ';' as the...",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L132"
-    },
-    {
-      "id": "ultron_backend_app_rationale_1918",
-      "label": "Loads and validates the MCP server list from ULTRON_MCP_CONFIG (a path to a\u2026",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "rationale",
-      "norm_label": "loads and validates the mcp server list from ultron_mcp_config (a path to a...",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1918"
-    },
-    {
-      "id": "ultron_backend_app_rationale_215",
+      "id": "ultron_backend_app_rationale_235",
       "label": "Best-effort logging \u2014 never raises. A logging failure (disk full, permissions,\u2026",
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "rationale",
       "norm_label": "best-effort logging \u2014 never raises. a logging failure (disk full, permissions,...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L215"
+      "source_location": "L235"
     },
     {
-      "id": "ultron_backend_app_rationale_545",
-      "label": "# NOTE: this hits Windows Update and can take several seconds.",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "rationale",
-      "norm_label": "# note: this hits windows update and can take several seconds.",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L545"
-    },
-    {
-      "id": "ultron_backend_app_rationale_846",
+      "id": "ultron_backend_app_rationale_869",
       "label": "Pops and returns (params, None) on success, or (None, error_message). Tokens\u2026",
       "_origin": "ast",
       "community": 6,
-      "community_name": "ultron-backend/app.py",
+      "community_name": "action_backup",
       "file_type": "rationale",
       "norm_label": "pops and returns (params, none) on success, or (none, error_message). tokens...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L846"
-    },
-    {
-      "id": "ultron_backend_app_rationale_894",
-      "label": "Validates and normalizes a deploy-container request body. Returns (params,\u2026",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "ultron-backend/app.py",
-      "file_type": "rationale",
-      "norm_label": "validates and normalizes a deploy-container request body. returns (params,...",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L894"
+      "source_location": "L869"
     },
     {
       "id": "app",
@@ -4413,7 +4425,7 @@
       "source_location": ""
     },
     {
-      "id": "ultron_backend_app_rationale_1801",
+      "id": "ultron_backend_app_rationale_1824",
       "label": "Best-effort \u2014 never raises. A logging failure must not break the chat response\u2026",
       "_origin": "ast",
       "community": 8,
@@ -4421,10 +4433,10 @@
       "file_type": "rationale",
       "norm_label": "best-effort \u2014 never raises. a logging failure must not break the chat response...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1801"
+      "source_location": "L1824"
     },
     {
-      "id": "ultron_backend_app_rationale_1969",
+      "id": "ultron_backend_app_rationale_1992",
       "label": "One raw JSON-RPC POST. Hard timeout, hard response-size cap. Handles both a\u2026",
       "_origin": "ast",
       "community": 8,
@@ -4432,10 +4444,10 @@
       "file_type": "rationale",
       "norm_label": "one raw json-rpc post. hard timeout, hard response-size cap. handles both a...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1969"
+      "source_location": "L1992"
     },
     {
-      "id": "ultron_backend_app_rationale_2075",
+      "id": "ultron_backend_app_rationale_2098",
       "label": "Connects to every configured server once and lists its tools. A server that's\u2026",
       "_origin": "ast",
       "community": 8,
@@ -4443,10 +4455,10 @@
       "file_type": "rationale",
       "norm_label": "connects to every configured server once and lists its tools. a server that's...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2075"
+      "source_location": "L2098"
     },
     {
-      "id": "ultron_backend_app_rationale_2102",
+      "id": "ultron_backend_app_rationale_2125",
       "label": "Runs discovery at most once, lazily, on first use \u2014 not at module import time.\u2026",
       "_origin": "ast",
       "community": 8,
@@ -4454,10 +4466,10 @@
       "file_type": "rationale",
       "norm_label": "runs discovery at most once, lazily, on first use \u2014 not at module import time....",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2102"
+      "source_location": "L2125"
     },
     {
-      "id": "ultron_backend_app_rationale_2141",
+      "id": "ultron_backend_app_rationale_2164",
       "label": "Closure matching the same handler(**kwargs) -> dict contract every internal\u2026",
       "_origin": "ast",
       "community": 8,
@@ -4465,10 +4477,10 @@
       "file_type": "rationale",
       "norm_label": "closure matching the same handler(**kwargs) -> dict contract every internal...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2141"
+      "source_location": "L2164"
     },
     {
-      "id": "ultron_backend_app_rationale_2166",
+      "id": "ultron_backend_app_rationale_2189",
       "label": "Ensures discovery has run, then returns (schemas, dispatch) for every APPROVED\u2026",
       "_origin": "ast",
       "community": 8,
@@ -4476,10 +4488,10 @@
       "file_type": "rationale",
       "norm_label": "ensures discovery has run, then returns (schemas, dispatch) for every approved...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2166"
+      "source_location": "L2189"
     },
     {
-      "id": "ultron_backend_app_rationale_2397",
+      "id": "ultron_backend_app_rationale_2420",
       "label": "Turn an SDK content-block object into a plain dict so it can be JSON-returned\u2026",
       "_origin": "ast",
       "community": 8,
@@ -4487,10 +4499,10 @@
       "file_type": "rationale",
       "norm_label": "turn an sdk content-block object into a plain dict so it can be json-returned...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2397"
+      "source_location": "L2420"
     },
     {
-      "id": "ultron_backend_app_rationale_2411",
+      "id": "ultron_backend_app_rationale_2434",
       "label": "Returns a NEW message dict with a cache_control breakpoint on its last content\u2026",
       "_origin": "ast",
       "community": 8,
@@ -4498,10 +4510,10 @@
       "file_type": "rationale",
       "norm_label": "returns a new message dict with a cache_control breakpoint on its last content...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2411"
+      "source_location": "L2434"
     },
     {
-      "id": "ultron_backend_app_rationale_2430",
+      "id": "ultron_backend_app_rationale_2453",
       "label": "Runs the tool-use loop against the Claude API and returns (reply_text,\u2026",
       "_origin": "ast",
       "community": 8,
@@ -4509,7 +4521,7 @@
       "file_type": "rationale",
       "norm_label": "runs the tool-use loop against the claude api and returns (reply_text,...",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2430"
+      "source_location": "L2453"
     },
     {
       "id": "dev_tools_fake_pkgs_aiohttp_init",
@@ -7339,7 +7351,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1719",
+      "source_location": "L1742",
       "weight": 1.0
     },
     {
@@ -7351,7 +7363,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1722",
+      "source_location": "L1745",
       "weight": 1.0
     },
     {
@@ -7363,7 +7375,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1729",
+      "source_location": "L1752",
       "weight": 1.0
     },
     {
@@ -7375,7 +7387,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1733",
+      "source_location": "L1756",
       "weight": 1.0
     },
     {
@@ -7387,7 +7399,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1746",
+      "source_location": "L1769",
       "weight": 1.0
     },
     {
@@ -7399,7 +7411,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1749",
+      "source_location": "L1772",
       "weight": 1.0
     },
     {
@@ -7411,7 +7423,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1756",
+      "source_location": "L1779",
       "weight": 1.0
     },
     {
@@ -7423,7 +7435,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1760",
+      "source_location": "L1783",
       "weight": 1.0
     },
     {
@@ -7435,7 +7447,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1626",
+      "source_location": "L1649",
       "weight": 1.0
     },
     {
@@ -7447,7 +7459,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1626",
+      "source_location": "L1649",
       "weight": 1.0
     },
     {
@@ -7459,7 +7471,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1242",
+      "source_location": "L1265",
       "weight": 1.0
     },
     {
@@ -7471,7 +7483,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1246",
+      "source_location": "L1269",
       "weight": 1.0
     },
     {
@@ -7483,7 +7495,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1003",
+      "source_location": "L1026",
       "weight": 1.0
     },
     {
@@ -7495,7 +7507,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1006",
+      "source_location": "L1029",
       "weight": 1.0
     },
     {
@@ -7507,7 +7519,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2545",
+      "source_location": "L2568",
       "weight": 1.0
     },
     {
@@ -7519,7 +7531,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2550",
+      "source_location": "L2573",
       "weight": 1.0
     },
     {
@@ -7531,7 +7543,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2572",
+      "source_location": "L2595",
       "weight": 1.0
     },
     {
@@ -7543,7 +7555,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2599",
+      "source_location": "L2622",
       "weight": 1.0
     },
     {
@@ -7555,7 +7567,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2599",
+      "source_location": "L2622",
       "weight": 1.0
     },
     {
@@ -7567,7 +7579,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L850",
+      "source_location": "L873",
       "weight": 1.0
     },
     {
@@ -7579,7 +7591,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1607",
+      "source_location": "L1630",
       "weight": 1.0
     },
     {
@@ -7591,7 +7603,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1607",
+      "source_location": "L1630",
       "weight": 1.0
     },
     {
@@ -7603,7 +7615,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1528",
+      "source_location": "L1551",
       "weight": 1.0
     },
     {
@@ -7615,7 +7627,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1531",
+      "source_location": "L1554",
       "weight": 1.0
     },
     {
@@ -7627,7 +7639,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1294",
+      "source_location": "L1317",
       "weight": 1.0
     },
     {
@@ -7639,7 +7651,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1638",
+      "source_location": "L1661",
       "weight": 1.0
     },
     {
@@ -7651,7 +7663,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1638",
+      "source_location": "L1661",
       "weight": 1.0
     },
     {
@@ -7663,7 +7675,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1632",
+      "source_location": "L1655",
       "weight": 1.0
     },
     {
@@ -7675,7 +7687,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1632",
+      "source_location": "L1655",
       "weight": 1.0
     },
     {
@@ -7687,7 +7699,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2114",
+      "source_location": "L2137",
       "weight": 1.0
     },
     {
@@ -7699,7 +7711,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1331",
+      "source_location": "L1354",
       "weight": 1.0
     },
     {
@@ -7711,7 +7723,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1358",
+      "source_location": "L1381",
       "weight": 1.0
     },
     {
@@ -7723,7 +7735,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1854",
+      "source_location": "L1877",
       "weight": 1.0
     },
     {
@@ -7735,7 +7747,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2123",
+      "source_location": "L2146",
       "weight": 1.0
     },
     {
@@ -7747,7 +7759,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2170",
+      "source_location": "L2193",
       "weight": 1.0
     },
     {
@@ -7759,7 +7771,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2187",
+      "source_location": "L2210",
       "weight": 1.0
     },
     {
@@ -7771,7 +7783,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L239",
+      "source_location": "L259",
       "weight": 1.0
     },
     {
@@ -7783,7 +7795,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1138",
+      "source_location": "L1161",
       "weight": 1.0
     },
     {
@@ -7795,7 +7807,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1143",
+      "source_location": "L1166",
       "weight": 1.0
     },
     {
@@ -7807,7 +7819,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1120",
+      "source_location": "L1143",
       "weight": 1.0
     },
     {
@@ -7819,7 +7831,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1422",
+      "source_location": "L1445",
       "weight": 1.0
     },
     {
@@ -7831,7 +7843,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1440",
+      "source_location": "L1463",
       "weight": 1.0
     },
     {
@@ -7843,7 +7855,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1274",
+      "source_location": "L1297",
       "weight": 1.0
     },
     {
@@ -7855,7 +7867,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L170",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -7867,7 +7879,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L219",
+      "source_location": "L239",
       "weight": 1.0
     },
     {
@@ -7879,7 +7891,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1804",
+      "source_location": "L1827",
       "weight": 1.0
     },
     {
@@ -7891,7 +7903,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2147",
+      "source_location": "L2170",
       "weight": 1.0
     },
     {
@@ -7903,7 +7915,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2148",
+      "source_location": "L2171",
       "weight": 1.0
     },
     {
@@ -7915,7 +7927,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2062",
+      "source_location": "L2085",
       "weight": 1.0
     },
     {
@@ -7927,7 +7939,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2081",
+      "source_location": "L2104",
       "weight": 1.0
     },
     {
@@ -7939,7 +7951,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2082",
+      "source_location": "L2105",
       "weight": 1.0
     },
     {
@@ -7951,7 +7963,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1982",
+      "source_location": "L2005",
       "weight": 1.0
     },
     {
@@ -7963,7 +7975,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2040",
+      "source_location": "L2063",
       "weight": 1.0
     },
     {
@@ -7975,7 +7987,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2028",
+      "source_location": "L2051",
       "weight": 1.0
     },
     {
@@ -7987,7 +7999,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2035",
+      "source_location": "L2058",
       "weight": 1.0
     },
     {
@@ -7999,7 +8011,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2051",
+      "source_location": "L2074",
       "weight": 1.0
     },
     {
@@ -8011,7 +8023,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2620",
+      "source_location": "L2643",
       "weight": 1.0
     },
     {
@@ -8023,7 +8035,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L836",
+      "source_location": "L859",
       "weight": 1.0
     },
     {
@@ -8035,7 +8047,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L704",
+      "source_location": "L727",
       "weight": 1.0
     },
     {
@@ -8047,7 +8059,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1094",
+      "source_location": "L1117",
       "weight": 1.0
     },
     {
@@ -8059,7 +8071,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L413",
+      "source_location": "L435",
       "weight": 1.0
     },
     {
@@ -8071,7 +8083,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L395",
+      "source_location": "L416",
       "weight": 1.0
     },
     {
@@ -8083,7 +8095,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1015",
+      "source_location": "L1038",
       "weight": 1.0
     },
     {
@@ -8095,7 +8107,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1017",
+      "source_location": "L1040",
       "weight": 1.0
     },
     {
@@ -8107,7 +8119,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1027",
+      "source_location": "L1050",
       "weight": 1.0
     },
     {
@@ -8119,7 +8131,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L947",
+      "source_location": "L970",
       "weight": 1.0
     },
     {
@@ -8131,7 +8143,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L950",
+      "source_location": "L973",
       "weight": 1.0
     },
     {
@@ -8143,7 +8155,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2448",
+      "source_location": "L2471",
       "weight": 1.0
     },
     {
@@ -8155,7 +8167,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2464",
+      "source_location": "L2487",
       "weight": 1.0
     },
     {
@@ -8167,7 +8179,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2476",
+      "source_location": "L2499",
       "weight": 1.0
     },
     {
@@ -8179,7 +8191,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2478",
+      "source_location": "L2501",
       "weight": 1.0
     },
     {
@@ -8191,7 +8203,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2496",
+      "source_location": "L2519",
       "weight": 1.0
     },
     {
@@ -8203,7 +8215,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L786",
+      "source_location": "L809",
       "weight": 1.0
     },
     {
@@ -8215,7 +8227,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L805",
+      "source_location": "L828",
       "weight": 1.0
     },
     {
@@ -8227,7 +8239,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L737",
+      "source_location": "L760",
       "weight": 1.0
     },
     {
@@ -8239,7 +8251,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L762",
+      "source_location": "L785",
       "weight": 1.0
     },
     {
@@ -8251,7 +8263,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1702",
+      "source_location": "L1725",
       "weight": 1.0
     },
     {
@@ -8263,7 +8275,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1702",
+      "source_location": "L1725",
       "weight": 1.0
     },
     {
@@ -8275,7 +8287,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1709",
+      "source_location": "L1732",
       "weight": 1.0
     },
     {
@@ -8287,7 +8299,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1709",
+      "source_location": "L1732",
       "weight": 1.0
     },
     {
@@ -8299,7 +8311,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2407",
+      "source_location": "L2430",
       "weight": 1.0
     },
     {
@@ -8311,7 +8323,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1601",
+      "source_location": "L1624",
       "weight": 1.0
     },
     {
@@ -8323,7 +8335,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1513",
+      "source_location": "L1536",
       "weight": 1.0
     },
     {
@@ -8335,7 +8347,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1519",
+      "source_location": "L1542",
       "weight": 1.0
     },
     {
@@ -8347,7 +8359,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1520",
+      "source_location": "L1543",
       "weight": 1.0
     },
     {
@@ -8359,7 +8371,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1613",
+      "source_location": "L1636",
       "weight": 1.0
     },
     {
@@ -8371,7 +8383,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1619",
+      "source_location": "L1642",
       "weight": 1.0
     },
     {
@@ -8383,7 +8395,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1558",
+      "source_location": "L1581",
       "weight": 1.0
     },
     {
@@ -8395,7 +8407,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1559",
+      "source_location": "L1582",
       "weight": 1.0
     },
     {
@@ -8407,7 +8419,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1560",
+      "source_location": "L1583",
       "weight": 1.0
     },
     {
@@ -8419,7 +8431,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1477",
+      "source_location": "L1500",
       "weight": 1.0
     },
     {
@@ -8431,7 +8443,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1833",
+      "source_location": "L1856",
       "weight": 1.0
     },
     {
@@ -8443,7 +8455,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1661",
+      "source_location": "L1684",
       "weight": 1.0
     },
     {
@@ -8455,7 +8467,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1661",
+      "source_location": "L1684",
       "weight": 1.0
     },
     {
@@ -8467,7 +8479,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1648",
+      "source_location": "L1671",
       "weight": 1.0
     },
     {
@@ -8479,7 +8491,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1655",
+      "source_location": "L1678",
       "weight": 1.0
     },
     {
@@ -8491,7 +8503,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1655",
+      "source_location": "L1678",
       "weight": 1.0
     },
     {
@@ -8503,7 +8515,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1681",
+      "source_location": "L1704",
       "weight": 1.0
     },
     {
@@ -8515,7 +8527,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1684",
+      "source_location": "L1707",
       "weight": 1.0
     },
     {
@@ -8527,7 +8539,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1667",
+      "source_location": "L1690",
       "weight": 1.0
     },
     {
@@ -8539,7 +8551,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1667",
+      "source_location": "L1690",
       "weight": 1.0
     },
     {
@@ -8551,7 +8563,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1673",
+      "source_location": "L1696",
       "weight": 1.0
     },
     {
@@ -8563,7 +8575,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1673",
+      "source_location": "L1696",
       "weight": 1.0
     },
     {
@@ -8575,7 +8587,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1452",
+      "source_location": "L1475",
       "weight": 1.0
     },
     {
@@ -8587,7 +8599,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2611",
+      "source_location": "L2634",
       "weight": 1.0
     },
     {
@@ -8599,7 +8611,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L904",
+      "source_location": "L927",
       "weight": 1.0
     },
     {
@@ -8611,7 +8623,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L907",
+      "source_location": "L930",
       "weight": 1.0
     },
     {
@@ -8623,7 +8635,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L915",
+      "source_location": "L938",
       "weight": 1.0
     },
     {
@@ -8635,7 +8647,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L935",
+      "source_location": "L958",
       "weight": 1.0
     },
     {
@@ -9595,7 +9607,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1712",
+      "source_location": "L1735",
       "weight": 1.0
     },
     {
@@ -9607,7 +9619,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1713",
+      "source_location": "L1736",
       "weight": 1.0
     },
     {
@@ -9619,7 +9631,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1739",
+      "source_location": "L1762",
       "weight": 1.0
     },
     {
@@ -9631,7 +9643,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1740",
+      "source_location": "L1763",
       "weight": 1.0
     },
     {
@@ -9643,7 +9655,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1622",
+      "source_location": "L1645",
       "weight": 1.0
     },
     {
@@ -9655,7 +9667,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1623",
+      "source_location": "L1646",
       "weight": 1.0
     },
     {
@@ -9667,7 +9679,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L363",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -9679,7 +9691,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2536",
+      "source_location": "L2559",
       "weight": 1.0
     },
     {
@@ -9691,7 +9703,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2537",
+      "source_location": "L2560",
       "weight": 1.0
     },
     {
@@ -9703,7 +9715,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2596",
+      "source_location": "L2619",
       "weight": 1.0
     },
     {
@@ -9715,7 +9727,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2597",
+      "source_location": "L2620",
       "weight": 1.0
     },
     {
@@ -9727,7 +9739,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1604",
+      "source_location": "L1627",
       "weight": 1.0
     },
     {
@@ -9739,7 +9751,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1605",
+      "source_location": "L1628",
       "weight": 1.0
     },
     {
@@ -9751,215 +9763,11 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1588",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_dev_repo_diff",
-      "target": "ultron_backend_app_py_route",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1635",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_dev_repo_diff",
-      "target": "ultron_backend_app_require_token",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1636",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_dev_repos",
-      "target": "ultron_backend_app_py_route",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1629",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_dev_repos",
-      "target": "ultron_backend_app_require_token",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1630",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_health",
-      "target": "ultron_backend_app_py_route",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1593",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_mcp_servers",
-      "target": "ultron_backend_app_py_route",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2617",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_mcp_servers",
-      "target": "ultron_backend_app_require_token",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2618",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_security_auth_log",
-      "target": "ultron_backend_app_py_route",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1699",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_security_auth_log",
-      "target": "ultron_backend_app_require_token",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1700",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_security_cve_scan",
-      "target": "ultron_backend_app_py_route",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1705",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_security_cve_scan",
-      "target": "ultron_backend_app_require_token",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1706",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_status",
-      "target": "ultron_backend_app_py_route",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1598",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_status",
-      "target": "ultron_backend_app_require_token",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1599",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_storage",
-      "target": "ultron_backend_app_py_route",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1610",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_storage",
-      "target": "ultron_backend_app_require_token",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
       "source_location": "L1611",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_systems",
-      "target": "ultron_backend_app_py_route",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1616",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_systems",
-      "target": "ultron_backend_app_require_token",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1617",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_trade_delete",
+      "source": "ultron_backend_app_dev_repo_diff",
       "target": "ultron_backend_app_py_route",
       "relation": "references",
       "_origin": "ast",
@@ -9971,7 +9779,7 @@
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_trade_delete",
+      "source": "ultron_backend_app_dev_repo_diff",
       "target": "ultron_backend_app_require_token",
       "relation": "references",
       "_origin": "ast",
@@ -9983,7 +9791,7 @@
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_trades",
+      "source": "ultron_backend_app_dev_repos",
       "target": "ultron_backend_app_py_route",
       "relation": "references",
       "_origin": "ast",
@@ -9991,35 +9799,11 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1641",
+      "source_location": "L1652",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_trades",
-      "target": "ultron_backend_app_require_role",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1642",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_trades_export",
-      "target": "ultron_backend_app_py_route",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "decorator",
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1676",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_trades_export",
+      "source": "ultron_backend_app_dev_repos",
       "target": "ultron_backend_app_require_token",
       "relation": "references",
       "_origin": "ast",
@@ -10027,11 +9811,191 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1677",
+      "source_location": "L1653",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_trades_summary",
+      "source": "ultron_backend_app_health",
+      "target": "ultron_backend_app_py_route",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1616",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_mcp_servers",
+      "target": "ultron_backend_app_py_route",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2640",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_mcp_servers",
+      "target": "ultron_backend_app_require_token",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2641",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_security_auth_log",
+      "target": "ultron_backend_app_py_route",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1722",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_security_auth_log",
+      "target": "ultron_backend_app_require_token",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1723",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_security_cve_scan",
+      "target": "ultron_backend_app_py_route",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1728",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_security_cve_scan",
+      "target": "ultron_backend_app_require_token",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1729",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_status",
+      "target": "ultron_backend_app_py_route",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1621",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_status",
+      "target": "ultron_backend_app_require_token",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1622",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_storage",
+      "target": "ultron_backend_app_py_route",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1633",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_storage",
+      "target": "ultron_backend_app_require_token",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1634",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_systems",
+      "target": "ultron_backend_app_py_route",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1639",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_systems",
+      "target": "ultron_backend_app_require_token",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1640",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_trade_delete",
+      "target": "ultron_backend_app_py_route",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1681",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_trade_delete",
+      "target": "ultron_backend_app_require_token",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1682",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_trades",
       "target": "ultron_backend_app_py_route",
       "relation": "references",
       "_origin": "ast",
@@ -10043,7 +10007,7 @@
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_trades_summary",
+      "source": "ultron_backend_app_trades",
       "target": "ultron_backend_app_require_role",
       "relation": "references",
       "_origin": "ast",
@@ -10055,6 +10019,54 @@
       "weight": 1.0
     },
     {
+      "source": "ultron_backend_app_trades_export",
+      "target": "ultron_backend_app_py_route",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1699",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_trades_export",
+      "target": "ultron_backend_app_require_token",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1700",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_trades_summary",
+      "target": "ultron_backend_app_py_route",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1687",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_trades_summary",
+      "target": "ultron_backend_app_require_role",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1688",
+      "weight": 1.0
+    },
+    {
       "source": "ultron_backend_app_trades_tax_lots",
       "target": "ultron_backend_app_py_route",
       "relation": "references",
@@ -10063,7 +10075,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1670",
+      "source_location": "L1693",
       "weight": 1.0
     },
     {
@@ -10075,7 +10087,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1671",
+      "source_location": "L1694",
       "weight": 1.0
     },
     {
@@ -10087,7 +10099,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2602",
+      "source_location": "L2625",
       "weight": 1.0
     },
     {
@@ -10099,7 +10111,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2603",
+      "source_location": "L2626",
       "weight": 1.0
     },
     {
@@ -10111,7 +10123,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2530",
+      "source_location": "L2553",
       "weight": 1.0
     },
     {
@@ -10123,7 +10135,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2531",
+      "source_location": "L2554",
       "weight": 1.0
     },
     {
@@ -10423,7 +10435,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L260",
+      "source_location": "L280",
       "weight": 1.0
     },
     {
@@ -11364,893 +11376,13 @@
     },
     {
       "source": "ultron_backend_app",
-      "target": "ultron_backend_app_backup_preview",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1002",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_run_backup",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1014",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_run_git",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1069",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_repo_status",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1089",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_find_repo_dir",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1123",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_validate_trade_input",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1184",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_add_trade",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1241",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_delete_trade",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1292",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_split_platform_paths",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L131",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_trade_date_to_epoch_days",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1311",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_fifo_engine",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1323",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_trades_to_csv",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1450",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_tax_lots_to_csv",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1471",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_json_result",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1568",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_dashboard",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1589",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_health",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1594",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_status",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1600",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_containers",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1606",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_storage",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1612",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_systems",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1618",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_activity",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1624",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_get_db_connection",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L163",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_dev_repos",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1631",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_dev_repo_diff",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1637",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_trades",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1643",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_trade_delete",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1660",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_trades_summary",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1666",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_trades_tax_lots",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1672",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_trades_export",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1678",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_init_db",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L169",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_security_auth_log",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1701",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_security_cve_scan",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1707",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_action_backup",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1714",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_action_deploy_container",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1741",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_check_rate_limit",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1775",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_log_llm_usage",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1800",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_todays_token_usage",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1824",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_mcperror",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1913",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_load_mcp_config",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1917",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_mcp_http_post",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L1968",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_mcp_jsonrpc_call",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2011",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_mcp_initialize",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2039",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_mcp_list_tools",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2050",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_mcp_call_tool",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2061",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_mcp_discover_all",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2074",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_ensure_mcp_discovered",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2101",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_log_activity",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L214",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_make_mcp_tool_handler",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2140",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_get_mcp_tools_and_dispatch",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2165",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_serialize_block",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2396",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_serialize_content",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2404",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_add_cache_breakpoint",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2410",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_run_ultron_chat",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2429",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_whoami",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2532",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_chat",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2538",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_chat_usage",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2598",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_tts",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2604",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_mcp_servers",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L2619",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_fish_audio_tts",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L326",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_add_cors_headers",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L364",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_resolve_role",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L374",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_require_token",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L386",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_require_role",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L405",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_get_cpu_temp_c",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L424",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_get_uptime_str",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L465",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_docker_ps",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L478",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_docker_stats",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L512",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_pending_os_updates",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L534",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_severity_from_score",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L668",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_parse_scout_sarif",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L682",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_scan_image_cves",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L724",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_scan_container_cves",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L777",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_prune_expired_tokens_locked",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L827",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_new_action_token",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L833",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_consume_action_token",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L845",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_validate_container_name",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L869",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_validate_image_ref",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L875",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_validate_port",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L883",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_validate_deploy_params",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L893",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
-      "target": "ultron_backend_app_run_deploy_container",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L944",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app",
       "target": "ultron_backend_app_validate_backup_config",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L980",
+      "source_location": "L1003",
       "weight": 1.0
     },
     {
@@ -12261,7 +11393,898 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L991",
+      "source_location": "L1014",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_backup_preview",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1025",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_run_backup",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1037",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_run_git",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1092",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_repo_status",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1112",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_find_repo_dir",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1146",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_parse_beta_tokens",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L117",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_validate_trade_input",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1207",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_add_trade",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1264",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_delete_trade",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1315",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_trade_date_to_epoch_days",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1334",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_fifo_engine",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1346",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_trades_to_csv",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1473",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_tax_lots_to_csv",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1494",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_split_platform_paths",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_json_result",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1591",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_dashboard",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1612",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_health",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1617",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_status",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1623",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_containers",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1629",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_storage",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1635",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_systems",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1641",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_activity",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1647",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_dev_repos",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1654",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_dev_repo_diff",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1660",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_trades",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1666",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_trade_delete",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1683",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_trades_summary",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1689",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_trades_tax_lots",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1695",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_trades_export",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1701",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_security_auth_log",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1724",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_security_cve_scan",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1730",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_action_backup",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1737",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_action_deploy_container",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1764",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_check_rate_limit",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1798",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_log_llm_usage",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1823",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_get_db_connection",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L183",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_todays_token_usage",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1847",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_init_db",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_mcperror",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1936",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_load_mcp_config",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1940",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_mcp_http_post",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L1991",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_mcp_jsonrpc_call",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2034",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_mcp_initialize",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2062",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_mcp_list_tools",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2073",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_mcp_call_tool",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2084",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_mcp_discover_all",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2097",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_ensure_mcp_discovered",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2124",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_make_mcp_tool_handler",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2163",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_get_mcp_tools_and_dispatch",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2188",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_log_activity",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L234",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_serialize_block",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2419",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_serialize_content",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2427",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_add_cache_breakpoint",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2433",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_run_ultron_chat",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2452",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_whoami",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2555",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_chat",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2561",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_chat_usage",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2621",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_tts",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2627",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_mcp_servers",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L2642",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_fish_audio_tts",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L346",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_add_cors_headers",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L384",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_resolve_role",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L394",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_require_token",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L407",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_require_role",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L427",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_get_cpu_temp_c",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L447",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_get_uptime_str",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L488",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_docker_ps",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L501",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_docker_stats",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L535",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_pending_os_updates",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L557",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_severity_from_score",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L691",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_parse_scout_sarif",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L705",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_scan_image_cves",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L747",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_scan_container_cves",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L800",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_prune_expired_tokens_locked",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L850",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_new_action_token",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L856",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_consume_action_token",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L868",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_validate_container_name",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L892",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_validate_image_ref",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L898",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_validate_port",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L906",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_validate_deploy_params",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L916",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app",
+      "target": "ultron_backend_app_run_deploy_container",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L967",
       "weight": 1.0
     },
     {
@@ -12272,7 +12295,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L410",
+      "source_location": "L432",
       "weight": 1.0
     },
     {
@@ -12294,18 +12317,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/BETA-TESTERS.md",
-      "source_location": "L18",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
       "source": "ultron_backend_beta_testers_beta_testers",
-      "target": "ultron_backend_beta_testers_a_real_limitation_not_yet_fixed",
+      "target": "ultron_backend_beta_testers_what_s_still_not_covered",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/BETA-TESTERS.md",
-      "source_location": "L29",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -12965,7 +12988,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1913",
+      "source_location": "L1936",
       "weight": 1.0
     },
     {
@@ -13904,454 +13927,454 @@
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1070",
+      "source": "ultron_backend_app_rationale_1093",
       "target": "ultron_backend_app_run_git",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1070",
+      "source_location": "L1093",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1124",
+      "source": "ultron_backend_app_rationale_1147",
       "target": "ultron_backend_app_find_repo_dir",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1124",
+      "source_location": "L1147",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1185",
+      "source": "ultron_backend_app_rationale_1208",
       "target": "ultron_backend_app_validate_trade_input",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1185",
+      "source_location": "L1208",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1312",
+      "source": "ultron_backend_app_rationale_1335",
       "target": "ultron_backend_app_trade_date_to_epoch_days",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1312",
+      "source_location": "L1335",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_132",
-      "target": "ultron_backend_app_split_platform_paths",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L132",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_rationale_1324",
+      "source": "ultron_backend_app_rationale_1347",
       "target": "ultron_backend_app_fifo_engine",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1324",
+      "source_location": "L1347",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1418",
+      "source": "ultron_backend_app_rationale_1441",
       "target": "ultron_backend_app_get_trade_summary",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1418",
+      "source_location": "L1441",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1434",
+      "source": "ultron_backend_app_rationale_1457",
       "target": "ultron_backend_app_get_trade_tax_lots",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1434",
+      "source_location": "L1457",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1451",
+      "source": "ultron_backend_app_rationale_1474",
       "target": "ultron_backend_app_trades_to_csv",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1451",
+      "source_location": "L1474",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1472",
+      "source": "ultron_backend_app_rationale_1495",
       "target": "ultron_backend_app_tax_lots_to_csv",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1472",
+      "source_location": "L1495",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1569",
+      "source": "ultron_backend_app_rationale_152",
+      "target": "ultron_backend_app_split_platform_paths",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L152",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_rationale_1592",
       "target": "ultron_backend_app_json_result",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1569",
+      "source_location": "L1592",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1776",
+      "source": "ultron_backend_app_rationale_1799",
       "target": "ultron_backend_app_check_rate_limit",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1776",
+      "source_location": "L1799",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1801",
+      "source": "ultron_backend_app_rationale_1824",
       "target": "ultron_backend_app_log_llm_usage",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1801",
+      "source_location": "L1824",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1825",
+      "source": "ultron_backend_app_rationale_1848",
       "target": "ultron_backend_app_todays_token_usage",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1825",
+      "source_location": "L1848",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1849",
+      "source": "ultron_backend_app_rationale_1872",
       "target": "ultron_backend_app_get_llm_usage",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1849",
+      "source_location": "L1872",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1918",
+      "source": "ultron_backend_app_rationale_1941",
       "target": "ultron_backend_app_load_mcp_config",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1918",
+      "source_location": "L1941",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_1969",
+      "source": "ultron_backend_app_rationale_1992",
       "target": "ultron_backend_app_mcp_http_post",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L1969",
+      "source_location": "L1992",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_2075",
+      "source": "ultron_backend_app_rationale_2098",
       "target": "ultron_backend_app_mcp_discover_all",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2075",
+      "source_location": "L2098",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_2102",
+      "source": "ultron_backend_app_rationale_2125",
       "target": "ultron_backend_app_ensure_mcp_discovered",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2102",
+      "source_location": "L2125",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_2119",
+      "source": "ultron_backend_app_rationale_2142",
       "target": "ultron_backend_app_get_mcp_servers",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2119",
+      "source_location": "L2142",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_2141",
+      "source": "ultron_backend_app_rationale_2164",
       "target": "ultron_backend_app_make_mcp_tool_handler",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2141",
+      "source_location": "L2164",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_215",
-      "target": "ultron_backend_app_log_activity",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "ultron-backend/app.py",
-      "source_location": "L215",
-      "weight": 1.0
-    },
-    {
-      "source": "ultron_backend_app_rationale_2166",
+      "source": "ultron_backend_app_rationale_2189",
       "target": "ultron_backend_app_get_mcp_tools_and_dispatch",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2166",
+      "source_location": "L2189",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_2397",
+      "source": "ultron_backend_app_rationale_235",
+      "target": "ultron_backend_app_log_activity",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ultron-backend/app.py",
+      "source_location": "L235",
+      "weight": 1.0
+    },
+    {
+      "source": "ultron_backend_app_rationale_2420",
       "target": "ultron_backend_app_serialize_block",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2397",
+      "source_location": "L2420",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_2411",
+      "source": "ultron_backend_app_rationale_2434",
       "target": "ultron_backend_app_add_cache_breakpoint",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2411",
+      "source_location": "L2434",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_2430",
+      "source": "ultron_backend_app_rationale_2453",
       "target": "ultron_backend_app_run_ultron_chat",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2430",
+      "source_location": "L2453",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_327",
+      "source": "ultron_backend_app_rationale_347",
       "target": "ultron_backend_app_fish_audio_tts",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L327",
+      "source_location": "L347",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_375",
+      "source": "ultron_backend_app_rationale_395",
       "target": "ultron_backend_app_resolve_role",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L375",
+      "source_location": "L395",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_387",
+      "source": "ultron_backend_app_rationale_408",
       "target": "ultron_backend_app_require_token",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L387",
+      "source_location": "L408",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_406",
+      "source": "ultron_backend_app_rationale_428",
       "target": "ultron_backend_app_require_role",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L406",
+      "source_location": "L428",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_425",
+      "source": "ultron_backend_app_rationale_448",
       "target": "ultron_backend_app_get_cpu_temp_c",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L425",
+      "source_location": "L448",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_479",
+      "source": "ultron_backend_app_rationale_502",
       "target": "ultron_backend_app_docker_ps",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L479",
+      "source_location": "L502",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_513",
+      "source": "ultron_backend_app_rationale_536",
       "target": "ultron_backend_app_docker_stats",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L513",
+      "source_location": "L536",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_535",
+      "source": "ultron_backend_app_rationale_558",
       "target": "ultron_backend_app_pending_os_updates",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L535",
+      "source_location": "L558",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_545",
+      "source": "ultron_backend_app_rationale_568",
       "target": "ultron_backend_app",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L545",
+      "source_location": "L568",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_571",
+      "source": "ultron_backend_app_rationale_594",
       "target": "ultron_backend_app_get_auth_log",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L571",
+      "source_location": "L594",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_683",
+      "source": "ultron_backend_app_rationale_706",
       "target": "ultron_backend_app_parse_scout_sarif",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L683",
+      "source_location": "L706",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_725",
+      "source": "ultron_backend_app_rationale_748",
       "target": "ultron_backend_app_scan_image_cves",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L725",
+      "source_location": "L748",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_778",
+      "source": "ultron_backend_app_rationale_801",
       "target": "ultron_backend_app_scan_container_cves",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L778",
+      "source_location": "L801",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_846",
+      "source": "ultron_backend_app_rationale_869",
       "target": "ultron_backend_app_consume_action_token",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L846",
+      "source_location": "L869",
       "weight": 1.0
     },
     {
-      "source": "ultron_backend_app_rationale_894",
+      "source": "ultron_backend_app_rationale_917",
       "target": "ultron_backend_app_validate_deploy_params",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "ultron-backend/app.py",
-      "source_location": "L894",
+      "source_location": "L917",
       "weight": 1.0
     },
     {
@@ -14497,7 +14520,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2370",
+      "source_location": "L2393",
       "weight": 1.0
     },
     {
@@ -14509,7 +14532,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2371",
+      "source_location": "L2394",
       "weight": 1.0
     },
     {
@@ -14521,7 +14544,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2372",
+      "source_location": "L2395",
       "weight": 1.0
     },
     {
@@ -14533,7 +14556,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2373",
+      "source_location": "L2396",
       "weight": 1.0
     },
     {
@@ -14545,7 +14568,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2374",
+      "source_location": "L2397",
       "weight": 1.0
     },
     {
@@ -14557,7 +14580,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2375",
+      "source_location": "L2398",
       "weight": 1.0
     },
     {
@@ -14569,7 +14592,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2376",
+      "source_location": "L2399",
       "weight": 1.0
     },
     {
@@ -14581,7 +14604,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2377",
+      "source_location": "L2400",
       "weight": 1.0
     },
     {
@@ -14593,7 +14616,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2378",
+      "source_location": "L2401",
       "weight": 1.0
     },
     {
@@ -14605,7 +14628,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2379",
+      "source_location": "L2402",
       "weight": 1.0
     },
     {
@@ -14617,7 +14640,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2380",
+      "source_location": "L2403",
       "weight": 1.0
     },
     {
@@ -14629,7 +14652,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2381",
+      "source_location": "L2404",
       "weight": 1.0
     },
     {
@@ -14641,7 +14664,7 @@
       "confidence_score": 0.85,
       "context": "collection",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2382",
+      "source_location": "L2405",
       "weight": 1.0
     },
     {
@@ -14713,7 +14736,7 @@
       "confidence_score": 0.85,
       "context": "return",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L2162",
+      "source_location": "L2185",
       "weight": 1.0
     },
     {
@@ -14725,7 +14748,7 @@
       "confidence_score": 0.85,
       "context": "return",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L418",
+      "source_location": "L441",
       "weight": 1.0
     },
     {
@@ -14737,7 +14760,7 @@
       "confidence_score": 0.85,
       "context": "return",
       "source_file": "ultron-backend/app.py",
-      "source_location": "L402",
+      "source_location": "L424",
       "weight": 1.0
     },
     {
@@ -17241,5 +17264,5 @@
       "source_file": "ultron-dashboard.html"
     }
   ],
-  "built_at_commit": "00719190f03d54019d9e71da1cd148ad0b2da202"
+  "built_at_commit": "cbb935ac161ad7b7d4788c2220a902027f8beca0"
 }
