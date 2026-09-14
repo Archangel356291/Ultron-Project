@@ -1,0 +1,46 @@
+services:
+  ultron-backend:
+    build:
+      context: .
+      dockerfile: ultron-backend/Dockerfile
+    container_name: ultron-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      - ULTRON_DB_PATH=/data/ultron.db
+    volumes:
+      - ultron-data:/data
+      # Lets Ultron see/manage sibling containers on the host (docker_ps,
+      # docker_stats, CVE scan, deploy-container). Whoever can write to
+      # this socket has root-equivalent power over the whole Docker host —
+      # that's inherent to the socket, not something a non-root container
+      # user would meaningfully reduce, which is why this container runs
+      # as root. The app's own require_role() gate is what actually keeps
+      # beta-tester tokens away from the endpoints that use it.
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ultron
+
+  ultron-discord-bot:
+    build:
+      context: ultron-discord-bot
+    container_name: ultron-discord-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - ULTRON_BACKEND_URL=http://ultron-backend:5000
+    depends_on:
+      - ultron-backend
+    networks:
+      - ultron
+
+networks:
+  ultron:
+    driver: bridge
+
+volumes:
+  ultron-data:

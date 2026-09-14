@@ -1,0 +1,11 @@
+**/__pycache__/
+**/*.pyc
+**/venv/
+**/.venv/
+**/*.db
+.git/
+.obsidian/
+.vscode/
+graphify-out/
+*.zip
+_archive/
