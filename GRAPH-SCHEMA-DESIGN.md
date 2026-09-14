@@ -101,15 +101,28 @@ documented tradeoff above, not a re-opened leak of content).
 
 ```
 graphify update .   (or a full rebuild)               # graphify's own step
-python graph-schema/enrich_visibility.py               # redact + encrypt + tag (system Python, needs `cryptography`)
-<graphify's own interpreter> graph-schema/safe_report.py   # regenerate report/html without leaking via community names
+powershell -File graph-schema\run.ps1                  # both privacy-enforcement steps, right order, right interpreters
 ```
 
-Two different interpreters on purpose: `enrich_visibility.py` needs
-`cryptography`, which graphify's own isolated tool environment doesn't
-have; `safe_report.py` needs the `graphify` package itself, which a
-plain system Python doesn't have. Not auto-chained into one command
-tonight — see "not solved tonight" below.
+`run.ps1` just chains `enrich_visibility.py` (system Python, needs
+`cryptography`) then `safe_report.py` (graphify's own interpreter, needs
+the `graphify` package) — two different interpreters because neither
+environment has what the other step needs.
+
+**Confirmed live during development that this has to be re-run after
+graphify's own post-commit/post-checkout hook fires too, not just a
+manual rebuild** — committing Module 4 itself triggered the hook, which
+regenerated `GRAPH_REPORT.md`/`graph.html` with graphify's own
+(leaky) community-naming, silently reopening the exact community-name
+leak `safe_report.py` had just closed, with no warning printed anywhere.
+Re-running `run.ps1` closed it again. **There is currently no automatic
+trigger for this** — the hook fires on its own, this doesn't. Anyone
+(including a future session of me) touching this repo after graphify's
+hook has run needs to remember to run `graph-schema\run.ps1` before
+trusting or committing `graphify-out/GRAPH_REPORT.md` / `graph.html`.
+This is the single most important operational gotcha in this whole
+design — see the entry in "not solved tonight" below for why it isn't
+fixed at the source.
 
 ## What's committed to git vs. what never is
 
