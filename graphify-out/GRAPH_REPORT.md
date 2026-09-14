@@ -1,17 +1,17 @@
 # Graph Report - Ultron Project  (2026-09-13)
 
 ## Corpus Check
-- 25 files · ~43,196 words
+- 26 files · ~43,432 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 2 file(s) not represented in the graph (top: (none) 2)
 
 ## Summary
-- 529 nodes · 883 edges · 48 communities (28 shown, 14 thin omitted)
+- 530 nodes · 883 edges · 49 communities (28 shown, 14 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 58 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `083a3595`
+- Built from commit: `6801cdfb`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -74,13 +74,13 @@
 ## Surprising Connections (you probably didn't know these)
 - `connectBackend()` --shares_data_with--> `Flask Backend (app.py)`  [INFERRED]
   ultron-dashboard.html → PROJECT-SUMMARY-FOR-CLAUDE-CODE.md
+- `loadAuthLog()` --shares_data_with--> `Flask Backend (app.py)`  [INFERRED]
+  ultron-dashboard.html → PROJECT-SUMMARY-FOR-CLAUDE-CODE.md
 - `loadMcpServers()` --shares_data_with--> `MCP (external tool/plugin) Support`  [INFERRED]
   ultron-dashboard.html → PROJECT-SUMMARY-FOR-CLAUDE-CODE.md
-- `Ultron (personal AI home lab system)` --conceptually_related_to--> `Investment/Financial Predictive Agent (reinterpreted)`  [EXTRACTED]
-  README.md → PROJECT-SUMMARY-FOR-CLAUDE-CODE.md
-- `MCP (external tool/plugin) Support` --conceptually_related_to--> `ULTRON_MCP_CONFIG (optional MCP feature)`  [INFERRED]
-  PROJECT-SUMMARY-FOR-CLAUDE-CODE.md → ultron-backend/BETA-LAUNCH-CHECKLIST.md
-- `confirmBackup()` --shares_data_with--> `Real Action Endpoints (backup, deploy-container)`  [INFERRED]
+- `runCveScan()` --shares_data_with--> `Flask Backend (app.py)`  [INFERRED]
+  ultron-dashboard.html → PROJECT-SUMMARY-FOR-CLAUDE-CODE.md
+- `fetchDevRepos()` --shares_data_with--> `get_repo_diff Chat Tool (parameterized)`  [INFERRED]
   ultron-dashboard.html → PROJECT-SUMMARY-FOR-CLAUDE-CODE.md
 
 ## Import Cycles
@@ -94,7 +94,7 @@
 - **Dashboard Live Data Refresh Flow** — ultron_dashboard_refreshall, ultron_dashboard_fetchstatus, ultron_dashboard_fetchcontainers, ultron_dashboard_fetchstorage, ultron_dashboard_fetchsystems, ultron_dashboard_fetchactivity, ultron_dashboard_fetchdevrepos, ultron_dashboard_fetchtrades, ultron_dashboard_fetchllmusage [INFERRED 0.85]
 - **Preview-Confirm Action Flow (deploy & backup)** — ultron_dashboard_previewdeploy, ultron_dashboard_confirmdeploy, ultron_dashboard_canceldeploy, ultron_dashboard_previewbackup, ultron_dashboard_confirmbackup, ultron_dashboard_cancelbackup, project_summary_for_claude_code_action_endpoints [INFERRED 0.85]
 
-## Communities (48 total, 14 thin omitted)
+## Communities (49 total, 14 thin omitted)
 
 ### Community 0 - "bot.py"
 Cohesion: 0.09
@@ -214,7 +214,7 @@ Nodes (6): Folders, Master Index, Root notes, 2026-09-13 — clean pass, no bugs
 
 ## Knowledge Gaps
 - **41 isolated node(s):** `ButtonStyle`, `graphify`, `Hand-written notes (vault)`, `Folders`, `Root notes` (+36 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 192 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 193 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions

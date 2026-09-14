@@ -24,6 +24,7 @@ venv/
 ENV/
 pip-log.txt
 pip-delete-this-directory.txt
+*.pid
 
 # Node.js
 node_modules/

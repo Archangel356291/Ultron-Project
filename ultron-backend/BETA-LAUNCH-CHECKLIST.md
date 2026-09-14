@@ -44,8 +44,32 @@ Not yet done / not tested against a real instance:
 - Raspberry Pi deployment, Tailscale Funnel, and Pi resource monitoring —
   postponed (no Pi access yet as of this write-up). `REMOTE-ACCESS.md`
   covers personal Tailscale access only, not Funnel.
-- Not verified end-to-end with a real second token against a running
-  instance — only read against the code.
+
+## Beta test #1: launched locally (2026-09-13)
+
+First real beta_tester run, on this Windows machine (no Pi, no networking
+— same device, `http://127.0.0.1:5000`), superseding the "not verified
+end-to-end" gap above:
+
+- Real `ULTRON_BETA_TOKEN` generated and added to `.env`.
+- Backend launched via `start-ultron.ps1` with real secrets (not test
+  tokens) — real `ANTHROPIC_API_KEY`, real `ultron.db`.
+- Chat verified end-to-end with the beta token: real Claude reply, real
+  `get_trades` tool call, and — asked directly for system/CPU info, which
+  is out of beta scope — it correctly reported that tool isn't available
+  to it rather than guessing or leaking data.
+- Walked the actual dashboard UI (not just curl) connected as beta_tester:
+  nav correctly shows only AI Assistant, Crypto & Markets, and Settings;
+  Crypto & Markets shows prices/alerts/FIFO summary/trade history with no
+  add-trade form and no export buttons; Settings shows Connection and
+  Preferences only, Usage & Cost Controls and External Tools (MCP) both
+  hidden.
+- `run-beta.ps1` added alongside `start-ultron.ps1` — same startup, but
+  activates the venv itself first, for launching from a non-interactive
+  context.
+
+Still open before this goes beyond "same device": the login-screen and
+Pi/Funnel items above.
 
 ---
 

@@ -84,9 +84,9 @@
     "semantic_hash": "83626a5a42d97f30d8116be227a9ec32"
   },
   "ultron-backend/BETA-LAUNCH-CHECKLIST.md": {
-    "mtime": 1789339620.1187358,
-    "seen": 1789342702.8808246,
-    "ast_hash": "266f868696535d5dd1daaf3dacfc4b25",
+    "mtime": 1789344517.3669295,
+    "seen": 1789344528.489074,
+    "ast_hash": "eda5b9d997e117c9b6334de35363f76a",
     "semantic_hash": ""
   },
   "ultron-backend/README.md": {
@@ -165,6 +165,12 @@
     "mtime": 1789343349.8720658,
     "seen": 1789343366.2089412,
     "ast_hash": "f9bd10a462d6e433fe7f1dcab506b948",
+    "semantic_hash": ""
+  },
+  "ultron-backend/run-beta.ps1": {
+    "mtime": 1789344480.6248035,
+    "seen": 1789344528.4890625,
+    "ast_hash": "5f0029e3d3d2768923cfb92451492aa3",
     "semantic_hash": ""
   }
 }

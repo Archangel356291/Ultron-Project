@@ -36,6 +36,7 @@
   "34": "Discord Field Truncation Off-by-N Bug",
   "35": "get_llm_usage Tool Registration Ordering Bug",
   "36": "Nothing works until explicitly configured",
+  "37": "run-beta.ps1",
   "38": "GET /api/security/cve-scan",
   "39": "Running permanently at startup (Task Scheduler/NSSM)",
   "40": "cancelBackup",

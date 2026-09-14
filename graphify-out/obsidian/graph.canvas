@@ -4943,9 +4943,9 @@
       "height": 60
     },
     {
-      "id": "g38",
+      "id": "g37",
       "type": "group",
-      "label": "GET /api/security/cve-scan",
+      "label": "run-beta.ps1",
       "x": 3460,
       "y": 3480,
       "width": 600,
@@ -4953,10 +4953,29 @@
       "color": "2"
     },
     {
+      "id": "n_ultron_backend_run_beta",
+      "type": "file",
+      "file": "run-beta.ps1.md",
+      "x": 3480,
+      "y": 3560,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g38",
+      "type": "group",
+      "label": "GET /api/security/cve-scan",
+      "x": 4860,
+      "y": 3480,
+      "width": 600,
+      "height": 400,
+      "color": "3"
+    },
+    {
       "id": "n_ultron_backend_readme_api_security_cve_scan",
       "type": "file",
       "file": "GET apisecuritycve-scan.md",
-      "x": 3480,
+      "x": 4880,
       "y": 3560,
       "width": 180,
       "height": 60
@@ -4965,17 +4984,17 @@
       "id": "g39",
       "type": "group",
       "label": "Running permanently at startup (Task Scheduler/NSSM)",
-      "x": 4860,
+      "x": 6260,
       "y": 3480,
       "width": 600,
       "height": 400,
-      "color": "3"
+      "color": "4"
     },
     {
       "id": "n_ultron_backend_readme_task_scheduler_startup",
       "type": "file",
       "file": "Running permanently at startup (Task SchedulerNSSM).md",
-      "x": 4880,
+      "x": 6280,
       "y": 3560,
       "width": 180,
       "height": 60
@@ -4984,17 +5003,17 @@
       "id": "g40",
       "type": "group",
       "label": "cancelBackup",
-      "x": 6260,
+      "x": 7660,
       "y": 3480,
       "width": 600,
       "height": 400,
-      "color": "4"
+      "color": "5"
     },
     {
       "id": "n_ultron_dashboard_cancelbackup",
       "type": "file",
       "file": "cancelBackup().md",
-      "x": 6280,
+      "x": 7680,
       "y": 3560,
       "width": 180,
       "height": 60
@@ -5003,17 +5022,17 @@
       "id": "g41",
       "type": "group",
       "label": "cancelDeploy",
-      "x": 7660,
+      "x": 8620,
       "y": 3480,
       "width": 600,
       "height": 400,
-      "color": "5"
+      "color": "6"
     },
     {
       "id": "n_ultron_dashboard_canceldeploy",
       "type": "file",
       "file": "cancelDeploy().md",
-      "x": 7680,
+      "x": 8640,
       "y": 3560,
       "width": 180,
       "height": 60
@@ -5022,25 +5041,6 @@
       "id": "g42",
       "type": "group",
       "label": "toggleVoiceInput",
-      "x": 8620,
-      "y": 3480,
-      "width": 600,
-      "height": 400,
-      "color": "6"
-    },
-    {
-      "id": "n_ultron_dashboard_togglevoiceinput",
-      "type": "file",
-      "file": "toggleVoiceInput().md",
-      "x": 8640,
-      "y": 3560,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "g43",
-      "type": "group",
-      "label": "updateClock",
       "x": 0,
       "y": 3960,
       "width": 600,
@@ -5048,10 +5048,29 @@
       "color": "1"
     },
     {
+      "id": "n_ultron_dashboard_togglevoiceinput",
+      "type": "file",
+      "file": "toggleVoiceInput().md",
+      "x": 20,
+      "y": 4040,
+      "width": 180,
+      "height": 60
+    },
+    {
+      "id": "g43",
+      "type": "group",
+      "label": "updateClock",
+      "x": 1840,
+      "y": 3960,
+      "width": 600,
+      "height": 400,
+      "color": "2"
+    },
+    {
       "id": "n_ultron_dashboard_updateclock",
       "type": "file",
       "file": "updateClock().md",
-      "x": 20,
+      "x": 1860,
       "y": 4040,
       "width": 180,
       "height": 60
@@ -5060,17 +5079,17 @@
       "id": "g44",
       "type": "group",
       "label": "/forget command",
-      "x": 1840,
+      "x": 3460,
       "y": 3960,
       "width": 600,
       "height": 400,
-      "color": "2"
+      "color": "3"
     },
     {
       "id": "n_ultron_discord_bot_readme_forget_cmd",
       "type": "file",
       "file": "forget command.md",
-      "x": 1860,
+      "x": 3480,
       "y": 4040,
       "width": 180,
       "height": 60
@@ -5079,17 +5098,17 @@
       "id": "g45",
       "type": "group",
       "label": "require_auth (Discord ID allowlist check)",
-      "x": 3460,
+      "x": 4860,
       "y": 3960,
       "width": 600,
       "height": 400,
-      "color": "3"
+      "color": "4"
     },
     {
       "id": "n_ultron_discord_bot_readme_require_auth",
       "type": "file",
       "file": "require_auth (Discord ID allowlist check).md",
-      "x": 3480,
+      "x": 4880,
       "y": 4040,
       "width": 180,
       "height": 60
@@ -5098,17 +5117,17 @@
       "id": "g46",
       "type": "group",
       "label": "start-bot.ps1",
-      "x": 4860,
+      "x": 6260,
       "y": 3960,
       "width": 600,
       "height": 400,
-      "color": "4"
+      "color": "5"
     },
     {
       "id": "n_ultron_discord_bot_start_bot",
       "type": "file",
       "file": "start-bot.ps1.md",
-      "x": 4880,
+      "x": 6280,
       "y": 4040,
       "width": 180,
       "height": 60
@@ -5117,17 +5136,17 @@
       "id": "g47",
       "type": "group",
       "label": "_index.md",
-      "x": 6260,
+      "x": 7660,
       "y": 3960,
       "width": 660,
       "height": 420,
-      "color": "5"
+      "color": "6"
     },
     {
       "id": "n_ultron_backend_code_audit_2026_09_13_clean_pass_no_bugs_found",
       "type": "file",
       "file": "2026-09-13 \u2014 clean pass, no bugs found.md",
-      "x": 6280,
+      "x": 7680,
       "y": 4040,
       "width": 180,
       "height": 60
@@ -5136,7 +5155,7 @@
       "id": "n_ultron_backend_code_audit",
       "type": "file",
       "file": "CODE-AUDIT.md",
-      "x": 6480,
+      "x": 7880,
       "y": 4040,
       "width": 180,
       "height": 60
@@ -5145,7 +5164,7 @@
       "id": "n_ultron_backend_code_audit_code_audit_log",
       "type": "file",
       "file": "Code audit log.md",
-      "x": 6680,
+      "x": 8080,
       "y": 4040,
       "width": 180,
       "height": 60
@@ -5154,7 +5173,7 @@
       "id": "n_master_index_folders",
       "type": "file",
       "file": "Folders.md",
-      "x": 6280,
+      "x": 7680,
       "y": 4120,
       "width": 180,
       "height": 60
@@ -5163,7 +5182,7 @@
       "id": "n_master_index_master_index",
       "type": "file",
       "file": "Master Index.md",
-      "x": 6480,
+      "x": 7880,
       "y": 4120,
       "width": 180,
       "height": 60
@@ -5172,7 +5191,7 @@
       "id": "n_master_index_root_notes",
       "type": "file",
       "file": "Root notes.md",
-      "x": 6680,
+      "x": 8080,
       "y": 4120,
       "width": 180,
       "height": 60
@@ -5181,7 +5200,7 @@
       "id": "n_ultron_backend_index",
       "type": "file",
       "file": "_index.md",
-      "x": 6280,
+      "x": 7680,
       "y": 4200,
       "width": 180,
       "height": 60
@@ -5190,7 +5209,7 @@
       "id": "n_master_index",
       "type": "file",
       "file": "_master-index.md",
-      "x": 6480,
+      "x": 7880,
       "y": 4200,
       "width": 180,
       "height": 60
@@ -5199,7 +5218,7 @@
       "id": "n_ultron_backend_index_ultron_backend_index",
       "type": "file",
       "file": "ultron-backend index.md",
-      "x": 6680,
+      "x": 8080,
       "y": 4200,
       "width": 180,
       "height": 60
@@ -5208,17 +5227,17 @@
       "id": "g48",
       "type": "group",
       "label": "CLAUDE.md",
-      "x": 7660,
+      "x": 8620,
       "y": 3960,
       "width": 600,
       "height": 400,
-      "color": "6"
+      "color": "1"
     },
     {
       "id": "n_claude",
       "type": "file",
       "file": "CLAUDE.md",
-      "x": 7680,
+      "x": 8640,
       "y": 4040,
       "width": 180,
       "height": 60
@@ -5227,7 +5246,7 @@
       "id": "n_claude_hand_written_notes_vault",
       "type": "file",
       "file": "Hand-written notes (vault).md",
-      "x": 7880,
+      "x": 8840,
       "y": 4040,
       "width": 180,
       "height": 60
@@ -5236,7 +5255,7 @@
       "id": "n_claude_graphify",
       "type": "file",
       "file": "graphify.md",
-      "x": 7680,
+      "x": 8640,
       "y": 4120,
       "width": 180,
       "height": 60

@@ -260,6 +260,13 @@
       }
     },
     {
+      "query": "tag:#community/run-betaps1",
+      "color": {
+        "a": 1,
+        "rgb": 16752039
+      }
+    },
+    {
       "query": "tag:#community/GET_/api/security/cve-scan",
       "color": {
         "a": 1,
