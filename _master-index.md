@@ -16,3 +16,12 @@ Vault root. Read this first, then only the folder `_index.md` you need, then onl
 - [[Welcome|Welcome]] — unedited default Obsidian starter note.
 
 `graphify-out/` is excluded here — it's Graphify's own auto-generated graph output, browse it directly or via `graphify query`.
+
+## Slack channels
+
+External (not part of this vault) — the `aiultronproject` Slack workspace, for team communication:
+
+- `#all-ai-ultron-project` — team-wide announcements.
+- `#ultron-ai-personal-home-lab-assistant-` — project-specific discussion, technical implementation updates.
+- `#beta-testers` — for anyone helping test Ultron: access scope, voice-reply instructions, the $1.00 spend cap, and where to report issues.
+- `#contributors` — for anyone contributing beyond beta testing (code, docs, funding, infrastructure); mirrors the README's "Other contributors" table.
