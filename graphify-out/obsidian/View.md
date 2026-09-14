@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/discord/__init__.py"
 type: "code"
-community: "View"
+community: "Discord Slash-Command Framework"
 location: "L147"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/View
+  - community/Discord_Slash-Command_Framework
 ---
 
 # View
@@ -19,4 +19,4 @@ tags:
 - [[dot-stop()]] - `method` [EXTRACTED]
 - [[ui]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/View
+#graphify/code #graphify/EXTRACTED #community/Discord_Slash-Command_Framework

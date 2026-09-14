@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-discord-bot/bot.py"
 type: "rationale"
-community: "bot.py"
-location: "L394"
+community: "Discord Bot Command Tests"
+location: "L422"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/botpy
+  - community/Discord_Bot_Command_Tests
 ---
 
 # POST helper for the action endpoints. Used for both the initial preview call…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[backend_post()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/botpy
+#graphify/rationale #graphify/EXTRACTED #community/Discord_Bot_Command_Tests

@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_fifo_engine"
-location: "L1334"
+community: "FIFO Trade Engine"
+location: "L1580"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_fifo_engine
+  - community/FIFO_Trade_Engine
 ---
 
 # _trade_date_to_epoch_days()
@@ -16,4 +16,4 @@ tags:
 - [[_fifo_engine()]] - `calls` [EXTRACTED]
 - [[app.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_fifo_engine
+#graphify/code #graphify/EXTRACTED #community/FIFO_Trade_Engine

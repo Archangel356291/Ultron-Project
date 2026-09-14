@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/get-tailscale-address.ps1"
 type: "code"
-community: "get-tailscale-address.ps1"
+community: "Community 32"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/get-tailscale-addressps1
+  - community/Community_32
 ---
 
 # get-tailscale-address.ps1
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[Test-TailscaleInstalled()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/get-tailscale-addressps1
+#graphify/code #graphify/EXTRACTED #community/Community_32

@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_status_data"
-location: "L1623"
+community: "System Status & Updates"
+location: "L1869"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_status_data
+  - community/System_Status__Updates
 ---
 
 # status()
@@ -17,4 +17,4 @@ tags:
 - [[require_token()]] - `references` [EXTRACTED]
 - [[route_1]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_status_data
+#graphify/code #graphify/EXTRACTED #community/System_Status__Updates

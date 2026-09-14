@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "anthropic/__init__.py"
+community: "Anthropic SDK Fake"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/anthropic/__init__py
+  - community/Anthropic_SDK_Fake
 ---
 
 # Exception
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[APIError]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/anthropic/__init__py
+#graphify/code #graphify/EXTRACTED #community/Anthropic_SDK_Fake

@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "_fifo_engine"
-location: "L1335"
+community: "FIFO Trade Engine"
+location: "L1581"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/_fifo_engine
+  - community/FIFO_Trade_Engine
 ---
 
 # Best-effort date -> integer day count, for holding-period math. Never raises;…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_trade_date_to_epoch_days()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/_fifo_engine
+#graphify/rationale #graphify/EXTRACTED #community/FIFO_Trade_Engine

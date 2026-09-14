@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_get_db_connection"
-location: "L1207"
+community: "Backend Core (app.py, Trades)"
+location: "L1453"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_get_db_connection
+  - community/Backend_Core_apppy_Trades
 ---
 
 # _validate_trade_input()
@@ -16,4 +16,4 @@ tags:
 - [[add_trade()]] - `calls` [EXTRACTED]
 - [[app.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_get_db_connection
+#graphify/code #graphify/EXTRACTED #community/Backend_Core_apppy_Trades

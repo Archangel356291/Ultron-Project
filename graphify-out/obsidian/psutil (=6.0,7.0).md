@@ -1,16 +1,13 @@
 ---
 source_file: "ultron-backend/requirements.txt"
 type: "code"
-community: "Ultron (personal AI home lab system)"
+community: "Community 59"
 tags:
   - graphify/code
-  - graphify/INFERRED
-  - community/Ultron_personal_AI_home_lab_system
+  - graphify/EXTRACTED
+  - community/Community_59
 ---
 
 # psutil (>=6.0,<7.0)
 
-## Connections
-- [[Home Lab Monitor & Command Router]] - `shares_data_with` [INFERRED]
-
-#graphify/code #graphify/INFERRED #community/Ultron_personal_AI_home_lab_system
+#graphify/code #graphify/EXTRACTED #community/Community_59

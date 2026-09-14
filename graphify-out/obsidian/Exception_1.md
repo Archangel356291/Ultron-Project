@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "discord/__init__.py"
+community: "discord.py Bot Framework"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/discord/__init__py
+  - community/discordpy_Bot_Framework
 ---
 
 # Exception
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[HTTPException]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/discord/__init__py
+#graphify/code #graphify/EXTRACTED #community/discordpy_Bot_Framework

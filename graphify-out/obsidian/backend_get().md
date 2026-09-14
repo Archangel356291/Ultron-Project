@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-discord-bot/bot.py"
 type: "code"
-community: "bot.py"
-location: "L360"
+community: "Discord Bot Command Tests"
+location: "L378"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/botpy
+  - community/Discord_Bot_Command_Tests
 ---
 
 # backend_get()
@@ -14,6 +14,7 @@ tags:
 ## Connections
 - [[BackendError]] - `calls` [EXTRACTED]
 - [[bot.py]] - `contains` [EXTRACTED]
+- [[connections_command()]] - `calls` [EXTRACTED]
 - [[containers_command()]] - `calls` [EXTRACTED]
 - [[diff_command()]] - `calls` [EXTRACTED]
 - [[mcp_command()]] - `calls` [EXTRACTED]
@@ -25,4 +26,4 @@ tags:
 - [[trades_command()]] - `calls` [EXTRACTED]
 - [[usage_command()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/botpy
+#graphify/code #graphify/EXTRACTED #community/Discord_Bot_Command_Tests

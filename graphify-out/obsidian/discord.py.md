@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-discord-bot/requirements.txt"
 type: "code"
-community: "fake_pkgs/ (drop-in fake SDKs)"
+community: "Dev-Tools Fake SDKs"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/fake_pkgs/_drop-in_fake_SDKs
+  - community/Dev-Tools_Fake_SDKs
 ---
 
 # discord.py
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[fake_pkgsdiscord (Discord SDK fake)]] - `shares_data_with` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/fake_pkgs/_drop-in_fake_SDKs
+#graphify/code #graphify/EXTRACTED #community/Dev-Tools_Fake_SDKs

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "route"
+community: "Backend REST Routes"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/route
+  - community/Backend_REST_Routes
 ---
 
 # route
@@ -16,12 +16,14 @@ tags:
 - [[activity()]] - `references` [EXTRACTED]
 - [[chat()]] - `references` [EXTRACTED]
 - [[chat_usage()]] - `references` [EXTRACTED]
+- [[connections()]] - `references` [EXTRACTED]
 - [[containers()]] - `references` [EXTRACTED]
 - [[dashboard()]] - `references` [EXTRACTED]
 - [[dev_repo_diff()]] - `references` [EXTRACTED]
 - [[dev_repos()]] - `references` [EXTRACTED]
 - [[health()]] - `references` [EXTRACTED]
 - [[mcp_servers()]] - `references` [EXTRACTED]
+- [[memory()]] - `references` [EXTRACTED]
 - [[security_auth_log()]] - `references` [EXTRACTED]
 - [[security_cve_scan()]] - `references` [EXTRACTED]
 - [[status()]] - `references` [EXTRACTED]
@@ -35,4 +37,4 @@ tags:
 - [[tts()]] - `references` [EXTRACTED]
 - [[whoami()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/route
+#graphify/code #graphify/EXTRACTED #community/Backend_REST_Routes

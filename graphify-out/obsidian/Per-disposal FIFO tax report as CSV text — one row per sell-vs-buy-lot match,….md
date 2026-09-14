@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "_fifo_engine"
-location: "L1495"
+community: "Backend Core (app.py, Trades)"
+location: "L1741"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/_fifo_engine
+  - community/Backend_Core_apppy_Trades
 ---
 
 # Per-disposal FIFO tax report as CSV text — one row per sell-vs-buy-lot match,…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_tax_lots_to_csv()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/_fifo_engine
+#graphify/rationale #graphify/EXTRACTED #community/Backend_Core_apppy_Trades

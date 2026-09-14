@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "app.py"
-location: "L1940"
+community: "Community 30"
+location: "L2246"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/apppy
+  - community/Community_30
 ---
 
 # _load_mcp_config()
@@ -15,4 +15,4 @@ tags:
 - [[Loads and validates the MCP server list from ULTRON_MCP_CONFIG (a path to a…]] - `rationale_for` [EXTRACTED]
 - [[app.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/apppy
+#graphify/code #graphify/EXTRACTED #community/Community_30

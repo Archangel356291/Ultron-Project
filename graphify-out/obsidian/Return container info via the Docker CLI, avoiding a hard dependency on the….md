@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "app.py"
-location: "L502"
+community: "Docker Container Monitoring"
+location: "L734"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/apppy
+  - community/Docker_Container_Monitoring
 ---
 
 # Return container info via the Docker CLI, avoiding a hard dependency on the…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[docker_ps()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/apppy
+#graphify/rationale #graphify/EXTRACTED #community/Docker_Container_Monitoring

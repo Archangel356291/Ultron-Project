@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "run_ultron_chat"
-location: "L1992"
+community: "MCP Client & Dispatch"
+location: "L2298"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/run_ultron_chat
+  - community/MCP_Client__Dispatch
 ---
 
 # One raw JSON-RPC POST. Hard timeout, hard response-size cap. Handles both a…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_mcp_http_post()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/run_ultron_chat
+#graphify/rationale #graphify/EXTRACTED #community/MCP_Client__Dispatch

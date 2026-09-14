@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/aiohttp/__init__.py"
 type: "code"
-community: "ClientSession"
+community: "aiohttp Fake Client"
 location: "L5"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/ClientSession
+  - community/aiohttp_Fake_Client
 ---
 
 # ClientError
@@ -15,4 +15,4 @@ tags:
 - [[Exception_4]] - `inherits` [EXTRACTED]
 - [[aiohttp__init__.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/ClientSession
+#graphify/code #graphify/EXTRACTED #community/aiohttp_Fake_Client

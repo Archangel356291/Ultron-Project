@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "require_role"
-location: "L347"
+community: "Chat Auth, Rate Limit & TTS"
+location: "L555"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/require_role
+  - community/Chat_Auth_Rate_Limit__TTS
 ---
 
 # One TTS request to Fish Audio. Returns (audio_bytes, content_type, error).
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_fish_audio_tts()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/require_role
+#graphify/rationale #graphify/EXTRACTED #community/Chat_Auth_Rate_Limit__TTS

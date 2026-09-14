@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "run_ultron_chat"
-location: "L2434"
+community: "MCP Client & Dispatch"
+location: "L2794"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/run_ultron_chat
+  - community/MCP_Client__Dispatch
 ---
 
 # Returns a NEW message dict with a cache_control breakpoint on its last content…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_add_cache_breakpoint()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/run_ultron_chat
+#graphify/rationale #graphify/EXTRACTED #community/MCP_Client__Dispatch

@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "require_role"
-location: "L1847"
+community: "Memory & Trend Distillation"
+location: "L2130"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/require_role
+  - community/Memory__Trend_Distillation
 ---
 
 # _todays_token_usage()
@@ -17,4 +17,4 @@ tags:
 - [[app.py]] - `contains` [EXTRACTED]
 - [[chat()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/require_role
+#graphify/code #graphify/EXTRACTED #community/Memory__Trend_Distillation

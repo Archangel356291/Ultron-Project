@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-discord-bot/bot.py"
 type: "code"
-community: "bot.py"
-location: "L412"
+community: "Discord Bot Command Tests"
+location: "L445"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/botpy
+  - community/Discord_Bot_Command_Tests
 ---
 
 # backend_get_csv()
@@ -17,4 +17,4 @@ tags:
 - [[bot.py]] - `contains` [EXTRACTED]
 - [[export_command()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/botpy
+#graphify/code #graphify/EXTRACTED #community/Discord_Bot_Command_Tests

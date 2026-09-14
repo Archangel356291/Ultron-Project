@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/aiohttp/__init__.py"
 type: "code"
-community: "ClientSession"
+community: "aiohttp Fake Client"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/ClientSession
+  - community/aiohttp_Fake_Client
 ---
 
 # aiohttp/__init__.py
@@ -19,4 +19,4 @@ tags:
 - [[_MockResponse]] - `contains` [EXTRACTED]
 - [[bot.py]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/ClientSession
+#graphify/code #graphify/EXTRACTED #community/aiohttp_Fake_Client

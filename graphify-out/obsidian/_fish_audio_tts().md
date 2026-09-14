@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "require_role"
-location: "L346"
+community: "Chat Auth, Rate Limit & TTS"
+location: "L554"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/require_role
+  - community/Chat_Auth_Rate_Limit__TTS
 ---
 
 # _fish_audio_tts()
@@ -16,4 +16,4 @@ tags:
 - [[app.py]] - `contains` [EXTRACTED]
 - [[tts()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/require_role
+#graphify/code #graphify/EXTRACTED #community/Chat_Auth_Rate_Limit__TTS

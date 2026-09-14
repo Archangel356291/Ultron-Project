@@ -1,21 +1,16 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "MCP (external tool/plugin) Support"
+community: "Backup Concurrency Fix"
 tags:
   - graphify/code
-  - graphify/EXTRACTED
-  - community/MCP_external_tool/plugin_Support
+  - graphify/INFERRED
+  - community/Backup_Concurrency_Fix
 ---
 
 # apiPost()
 
 ## Connections
-- [[addTrade()]] - `calls` [EXTRACTED]
-- [[authHeaders()]] - `calls` [EXTRACTED]
-- [[confirmBackup()]] - `calls` [EXTRACTED]
-- [[confirmDeploy()]] - `calls` [EXTRACTED]
-- [[previewBackup()]] - `calls` [EXTRACTED]
-- [[previewDeploy()]] - `calls` [EXTRACTED]
+- [[Action Endpoints (backup, deploy-container)]] - `references` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/MCP_external_tool/plugin_Support
+#graphify/code #graphify/INFERRED #community/Backup_Concurrency_Fix

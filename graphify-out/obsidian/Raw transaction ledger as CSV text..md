@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "_get_db_connection"
-location: "L1474"
+community: "Backend Core (app.py, Trades)"
+location: "L1720"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/_get_db_connection
+  - community/Backend_Core_apppy_Trades
 ---
 
 # Raw transaction ledger as CSV text.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_trades_to_csv()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/_get_db_connection
+#graphify/rationale #graphify/EXTRACTED #community/Backend_Core_apppy_Trades

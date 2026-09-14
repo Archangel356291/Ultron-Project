@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_fifo_engine"
-location: "L1494"
+community: "Backend Core (app.py, Trades)"
+location: "L1740"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_fifo_engine
+  - community/Backend_Core_apppy_Trades
 ---
 
 # _tax_lots_to_csv()
@@ -17,4 +17,4 @@ tags:
 - [[app.py]] - `contains` [EXTRACTED]
 - [[trades_export()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_fifo_engine
+#graphify/code #graphify/EXTRACTED #community/Backend_Core_apppy_Trades

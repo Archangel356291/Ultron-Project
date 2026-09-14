@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/anthropic/__init__.py"
 type: "code"
-community: "anthropic/__init__.py"
+community: "Anthropic SDK Fake"
 location: "L94"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/anthropic/__init__py
+  - community/Anthropic_SDK_Fake
 ---
 
 # .create()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_MessagesAPI]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/anthropic/__init__py
+#graphify/code #graphify/EXTRACTED #community/Anthropic_SDK_Fake

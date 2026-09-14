@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/discord/__init__.py"
 type: "code"
-community: "View"
+community: "Discord Slash-Command Framework"
 location: "L142"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/View
+  - community/Discord_Slash-Command_Framework
 ---
 
 # decorator()
@@ -17,4 +17,4 @@ tags:
 - [[dot-command()]] - `indirect_call` [INFERRED]
 - [[dot-describe()]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/View
+#graphify/code #graphify/INFERRED #community/Discord_Slash-Command_Framework

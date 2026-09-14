@@ -1,346 +1,472 @@
 {
   "colorGroups": [
     {
-      "query": "tag:#community/botpy",
+      "query": "tag:#community/Discord_Bot_Command_Tests",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/discord/__init__py",
+      "query": "tag:#community/discordpy_Bot_Framework",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/anthropic/__init__py",
+      "query": "tag:#community/Anthropic_SDK_Fake",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/POST_/api/chat_Ultrons_brain",
+      "query": "tag:#community/Beta_Spend_Cap_Test__Bug_Fixes",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/View",
+      "query": "tag:#community/MCP_Client__Dispatch",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/route",
+      "query": "tag:#community/Discord_Slash-Command_Framework",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/MCP_external_tool/plugin_Support",
+      "query": "tag:#community/Backend_REST_Routes",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/start-ultronps1",
+      "query": "tag:#community/aiohttp_Fake_Client",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/run_ultron_chat",
+      "query": "tag:#community/Backend_Core_apppy_Trades",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/ClientSession",
+      "query": "tag:#community/Project_Docs__Pi_Setup",
       "color": {
         "a": 1,
         "rgb": 12234924
       }
     },
     {
-      "query": "tag:#community/apiGet",
+      "query": "tag:#community/Backup/Deploy_Action_Endpoints",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/Flask_Backend_apppy",
+      "query": "tag:#community/Beta_Program__Tailscale_Docs",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/dev_repo_diff",
+      "query": "tag:#community/Chat_Auth_Rate_Limit__TTS",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/fake_pkgs/_drop-in_fake_SDKs",
+      "query": "tag:#community/Memory__Trend_Distillation",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/apppy",
+      "query": "tag:#community/FIFO_Trade_Engine",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/authHeaders",
+      "query": "tag:#community/Activity_Log__CVE_Scanning",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/_status_data",
+      "query": "tag:#community/Dev-Tools_Fake_SDKs",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/Ultron_personal_AI_home_lab_system",
+      "query": "tag:#community/Git_Repo_Status_Tools",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/test_mcp_serverpy",
+      "query": "tag:#community/System_Status__Updates",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/Crypto/Trade_Record__Tax_Agent",
+      "query": "tag:#community/MCP_Design__Bug_History",
       "color": {
         "a": 1,
         "rgb": 12234924
       }
     },
     {
-      "query": "tag:#community/run-bot-bgps1",
+      "query": "tag:#community/MCP_Test_Server_Routes",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/_fifo_engine",
+      "query": "tag:#community/Docker_Container_Monitoring",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/scan_container_cves",
+      "query": "tag:#community/Discord_Bot_Core_Class",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/Preview-then-confirm_action_pattern",
+      "query": "tag:#community/Auth__Role_Resolution",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/action_backup",
+      "query": "tag:#community/Memory_Feature_Tests",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/require_role",
+      "query": "tag:#community/Dashboard_Visual_Design_Spec",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/Testing_Ultron__a_quick_guide",
+      "query": "tag:#community/Backup_Concurrency_Fix",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/Config_Value_Floor_Hardening",
+      "query": "tag:#community/Community_27",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/Financial_and_legal_boundaries_are_explicit_not_implied",
+      "query": "tag:#community/Community_28",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/get-tailscale-addressps1",
+      "query": "tag:#community/Community_29",
       "color": {
         "a": 1,
         "rgb": 12234924
       }
     },
     {
-      "query": "tag:#community/GET_/api/trades/export",
+      "query": "tag:#community/Community_30",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/The_Importer_Obsidian_plugin",
+      "query": "tag:#community/Community_31",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/__init__",
+      "query": "tag:#community/Community_32",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/Discord_backend_get_Raw-Error-Text_Bug",
+      "query": "tag:#community/Community_33",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/Discord_Field_Truncation_Off-by-N_Bug",
+      "query": "tag:#community/Community_34",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/get_llm_usage_Tool_Registration_Ordering_Bug",
+      "query": "tag:#community/Community_35",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/Nothing_works_until_explicitly_configured",
+      "query": "tag:#community/Community_36",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/run-betaps1",
+      "query": "tag:#community/Community_37",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/GET_/api/security/cve-scan",
+      "query": "tag:#community/Community_38",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/Running_permanently_at_startup_Task_Scheduler/NSSM",
+      "query": "tag:#community/Community_39",
       "color": {
         "a": 1,
         "rgb": 12234924
       }
     },
     {
-      "query": "tag:#community/cancelBackup",
+      "query": "tag:#community/Community_40",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/cancelDeploy",
+      "query": "tag:#community/Community_41",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/toggleVoiceInput",
+      "query": "tag:#community/Community_42",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/updateClock",
+      "query": "tag:#community/Community_43",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community//forget_command",
+      "query": "tag:#community/Community_44",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/require_auth_Discord_ID_allowlist_check",
+      "query": "tag:#community/Community_45",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/start-botps1",
+      "query": "tag:#community/Community_46",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/_get_db_connection",
+      "query": "tag:#community/Community_47",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/CLAUDEmd",
+      "query": "tag:#community/Community_48",
       "color": {
         "a": 1,
         "rgb": 10253663
+      }
+    },
+    {
+      "query": "tag:#community/Community_49",
+      "color": {
+        "a": 1,
+        "rgb": 12234924
+      }
+    },
+    {
+      "query": "tag:#community/Community_50",
+      "color": {
+        "a": 1,
+        "rgb": 5142951
+      }
+    },
+    {
+      "query": "tag:#community/Community_51",
+      "color": {
+        "a": 1,
+        "rgb": 15896107
+      }
+    },
+    {
+      "query": "tag:#community/Community_52",
+      "color": {
+        "a": 1,
+        "rgb": 14767961
+      }
+    },
+    {
+      "query": "tag:#community/Community_53",
+      "color": {
+        "a": 1,
+        "rgb": 7780274
+      }
+    },
+    {
+      "query": "tag:#community/Community_54",
+      "color": {
+        "a": 1,
+        "rgb": 5873999
+      }
+    },
+    {
+      "query": "tag:#community/Community_55",
+      "color": {
+        "a": 1,
+        "rgb": 15583560
+      }
+    },
+    {
+      "query": "tag:#community/Community_56",
+      "color": {
+        "a": 1,
+        "rgb": 11565729
+      }
+    },
+    {
+      "query": "tag:#community/Community_57",
+      "color": {
+        "a": 1,
+        "rgb": 16752039
+      }
+    },
+    {
+      "query": "tag:#community/Community_58",
+      "color": {
+        "a": 1,
+        "rgb": 10253663
+      }
+    },
+    {
+      "query": "tag:#community/Community_59",
+      "color": {
+        "a": 1,
+        "rgb": 12234924
+      }
+    },
+    {
+      "query": "tag:#community/Community_60",
+      "color": {
+        "a": 1,
+        "rgb": 5142951
+      }
+    },
+    {
+      "query": "tag:#community/Community_61",
+      "color": {
+        "a": 1,
+        "rgb": 15896107
+      }
+    },
+    {
+      "query": "tag:#community/Community_62",
+      "color": {
+        "a": 1,
+        "rgb": 14767961
+      }
+    },
+    {
+      "query": "tag:#community/Community_63",
+      "color": {
+        "a": 1,
+        "rgb": 7780274
+      }
+    },
+    {
+      "query": "tag:#community/Community_64",
+      "color": {
+        "a": 1,
+        "rgb": 5873999
+      }
+    },
+    {
+      "query": "tag:#community/Community_65",
+      "color": {
+        "a": 1,
+        "rgb": 15583560
+      }
+    },
+    {
+      "query": "tag:#community/Community_66",
+      "color": {
+        "a": 1,
+        "rgb": 11565729
       }
     }
   ]

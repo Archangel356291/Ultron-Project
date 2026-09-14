@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "ClientSession"
+community: "aiohttp Fake Client"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/ClientSession
+  - community/aiohttp_Fake_Client
 ---
 
 # Exception
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[ClientError]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/ClientSession
+#graphify/code #graphify/EXTRACTED #community/aiohttp_Fake_Client

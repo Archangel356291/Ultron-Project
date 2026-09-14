@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-discord-bot/bot.py"
 type: "code"
-community: "bot.py"
+community: "Discord Bot Command Tests"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/botpy
+  - community/Discord_Bot_Command_Tests
 ---
 
 # bot.py
@@ -24,6 +24,7 @@ tags:
 - [[backend_get_csv()]] - `contains` [EXTRACTED]
 - [[backend_post()]] - `contains` [EXTRACTED]
 - [[backup_command()]] - `contains` [EXTRACTED]
+- [[connections_command()]] - `contains` [EXTRACTED]
 - [[containers_command()]] - `contains` [EXTRACTED]
 - [[deploy_command()]] - `contains` [EXTRACTED]
 - [[diff_command()]] - `contains` [EXTRACTED]
@@ -34,6 +35,7 @@ tags:
 - [[format_backup_preview_embed()]] - `contains` [EXTRACTED]
 - [[format_backup_result_embed()]] - `contains` [EXTRACTED]
 - [[format_chat_embed()]] - `contains` [EXTRACTED]
+- [[format_connections_embed()]] - `contains` [EXTRACTED]
 - [[format_containers_embed()]] - `contains` [EXTRACTED]
 - [[format_deploy_preview_embed()]] - `contains` [EXTRACTED]
 - [[format_deploy_result_embed()]] - `contains` [EXTRACTED]
@@ -59,4 +61,4 @@ tags:
 - [[trades_command()]] - `contains` [EXTRACTED]
 - [[usage_command()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/botpy
+#graphify/code #graphify/EXTRACTED #community/Discord_Bot_Command_Tests

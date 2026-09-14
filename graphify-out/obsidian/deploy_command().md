@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-discord-bot/bot.py"
 type: "code"
-community: "bot.py"
-location: "L747"
+community: "Discord Bot Command Tests"
+location: "L810"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/botpy
+  - community/Discord_Bot_Command_Tests
 ---
 
 # deploy_command()
@@ -23,4 +23,4 @@ tags:
 - [[format_error_embed()]] - `calls` [EXTRACTED]
 - [[require_auth()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/botpy
+#graphify/code #graphify/EXTRACTED #community/Discord_Bot_Command_Tests

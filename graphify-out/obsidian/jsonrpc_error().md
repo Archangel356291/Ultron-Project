@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/test_mcp_server.py"
 type: "code"
-community: "test_mcp_server.py"
+community: "MCP Test Server Routes"
 location: "L50"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/test_mcp_serverpy
+  - community/MCP_Test_Server_Routes
 ---
 
 # jsonrpc_error()
@@ -15,4 +15,4 @@ tags:
 - [[mcp_endpoint()]] - `calls` [EXTRACTED]
 - [[test_mcp_server.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/test_mcp_serverpy
+#graphify/code #graphify/EXTRACTED #community/MCP_Test_Server_Routes

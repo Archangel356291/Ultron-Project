@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "app.py"
-location: "L916"
+community: "Backend Core (app.py, Trades)"
+location: "L1148"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/apppy
+  - community/Backend_Core_apppy_Trades
 ---
 
 # _validate_deploy_params()
@@ -20,4 +20,4 @@ tags:
 - [[app.py]] - `contains` [EXTRACTED]
 - [[docker_ps()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/apppy
+#graphify/code #graphify/EXTRACTED #community/Backend_Core_apppy_Trades

@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/discord/__init__.py"
 type: "rationale"
-community: "bot.py"
+community: "Discord Bot Command Tests"
 location: "L90"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/botpy
+  - community/Discord_Bot_Command_Tests
 ---
 
 # Fake interaction for testing command and button handlers directly.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[Interaction]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/botpy
+#graphify/rationale #graphify/EXTRACTED #community/Discord_Bot_Command_Tests

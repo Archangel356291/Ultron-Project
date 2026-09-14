@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "require_role"
-location: "L394"
+community: "Auth & Role Resolution"
+location: "L602"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/require_role
+  - community/Auth__Role_Resolution
 ---
 
 # _resolve_role()
@@ -17,4 +17,4 @@ tags:
 - [[wrapper()]] - `calls` [EXTRACTED]
 - [[wrapper()_1]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/require_role
+#graphify/code #graphify/EXTRACTED #community/Auth__Role_Resolution

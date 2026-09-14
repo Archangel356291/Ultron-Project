@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "_status_data"
-location: "L558"
+community: "System Status & Updates"
+location: "L790"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/_status_data
+  - community/System_Status__Updates
 ---
 
 # Count of pending OS updates. Real implementation on both platforms: Windows…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[pending_os_updates()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/_status_data
+#graphify/rationale #graphify/EXTRACTED #community/System_Status__Updates

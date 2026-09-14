@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "scan_container_cves"
-location: "L747"
+community: "Activity Log & CVE Scanning"
+location: "L979"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/scan_container_cves
+  - community/Activity_Log__CVE_Scanning
 ---
 
 # _scan_image_cves()
@@ -18,4 +18,4 @@ tags:
 - [[log_activity()]] - `calls` [EXTRACTED]
 - [[scan_container_cves()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/scan_container_cves
+#graphify/code #graphify/EXTRACTED #community/Activity_Log__CVE_Scanning

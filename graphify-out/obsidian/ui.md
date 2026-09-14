@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/discord/__init__.py"
 type: "code"
-community: "View"
+community: "Discord Slash-Command Framework"
 location: "L124"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/View
+  - community/Discord_Slash-Command_Framework
 ---
 
 # ui
@@ -17,4 +17,4 @@ tags:
 - [[View]] - `contains` [EXTRACTED]
 - [[discord__init__.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/View
+#graphify/code #graphify/EXTRACTED #community/Discord_Slash-Command_Framework

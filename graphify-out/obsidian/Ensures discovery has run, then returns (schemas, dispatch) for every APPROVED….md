@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "run_ultron_chat"
-location: "L2189"
+community: "MCP Client & Dispatch"
+location: "L2495"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/run_ultron_chat
+  - community/MCP_Client__Dispatch
 ---
 
 # Ensures discovery has run, then returns (schemas, dispatch) for every APPROVED…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_mcp_tools_and_dispatch()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/run_ultron_chat
+#graphify/rationale #graphify/EXTRACTED #community/MCP_Client__Dispatch

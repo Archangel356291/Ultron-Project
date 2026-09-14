@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/anthropic/__init__.py"
 type: "code"
-community: "anthropic/__init__.py"
+community: "Anthropic SDK Fake"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/anthropic/__init__py
+  - community/Anthropic_SDK_Fake
 ---
 
 # anthropic/__init__.py
@@ -29,5 +29,7 @@ tags:
 - [[Usage]] - `contains` [EXTRACTED]
 - [[_MessagesAPI]] - `contains` [EXTRACTED]
 - [[app.py]] - `imports` [EXTRACTED]
+- [[test_beta_spend_cap.py]] - `imports` [EXTRACTED]
+- [[test_mcp_untrusted_wrap.py]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/anthropic/__init__py
+#graphify/code #graphify/EXTRACTED #community/Anthropic_SDK_Fake

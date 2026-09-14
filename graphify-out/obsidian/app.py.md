@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "app.py"
+community: "Backend Core (app.py, Trades)"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/apppy
+  - community/Backend_Core_apppy_Trades
 ---
 
 # app.py
@@ -17,6 +17,7 @@ tags:
 - [[Ultron home lab monitoring backend. Exposes a small JSON API that the dashboard…]] - `rationale_for` [EXTRACTED]
 - [[_add_cache_breakpoint()]] - `contains` [EXTRACTED]
 - [[_backup_preview()]] - `contains` [EXTRACTED]
+- [[_beta_tester_spend_usd()]] - `contains` [EXTRACTED]
 - [[_check_rate_limit()]] - `contains` [EXTRACTED]
 - [[_consume_action_token()]] - `contains` [EXTRACTED]
 - [[_containers_data()]] - `indirect_call` [INFERRED]
@@ -44,6 +45,7 @@ tags:
 - [[_repo_status()]] - `contains` [EXTRACTED]
 - [[_resolve_role()]] - `contains` [EXTRACTED]
 - [[_run_backup()]] - `contains` [EXTRACTED]
+- [[_run_backup_locked()]] - `contains` [EXTRACTED]
 - [[_run_deploy_container()]] - `contains` [EXTRACTED]
 - [[_run_git()]] - `contains` [EXTRACTED]
 - [[_scan_image_cves()]] - `contains` [EXTRACTED]
@@ -51,13 +53,16 @@ tags:
 - [[_serialize_content()]] - `contains` [EXTRACTED]
 - [[_severity_from_score()]] - `contains` [EXTRACTED]
 - [[_split_platform_paths()]] - `contains` [EXTRACTED]
+- [[_start_memory_trend_scheduler()]] - `contains` [EXTRACTED]
 - [[_status_data()]] - `indirect_call` [INFERRED]
 - [[_storage_data()]] - `indirect_call` [INFERRED]
 - [[_systems_data()]] - `indirect_call` [INFERRED]
 - [[_tax_lots_to_csv()]] - `contains` [EXTRACTED]
 - [[_todays_token_usage()]] - `contains` [EXTRACTED]
+- [[_touch_presence()]] - `contains` [EXTRACTED]
 - [[_trade_date_to_epoch_days()]] - `contains` [EXTRACTED]
 - [[_trades_to_csv()]] - `contains` [EXTRACTED]
+- [[_usage_cost_usd()]] - `contains` [EXTRACTED]
 - [[_validate_backup_config()]] - `contains` [EXTRACTED]
 - [[_validate_container_name()]] - `contains` [EXTRACTED]
 - [[_validate_deploy_params()]] - `contains` [EXTRACTED]
@@ -72,11 +77,13 @@ tags:
 - [[anthropic__init__.py]] - `imports` [EXTRACTED]
 - [[chat()]] - `contains` [EXTRACTED]
 - [[chat_usage()]] - `contains` [EXTRACTED]
+- [[connections()]] - `contains` [EXTRACTED]
 - [[containers()]] - `contains` [EXTRACTED]
 - [[dashboard()]] - `contains` [EXTRACTED]
 - [[delete_trade()]] - `contains` [EXTRACTED]
 - [[dev_repo_diff()]] - `contains` [EXTRACTED]
 - [[dev_repos()]] - `contains` [EXTRACTED]
+- [[distill_activity_trends()]] - `contains` [EXTRACTED]
 - [[docker_ps()]] - `contains` [EXTRACTED]
 - [[docker_stats()]] - `contains` [EXTRACTED]
 - [[get_auth_log()]] - `indirect_call` [INFERRED]
@@ -94,7 +101,10 @@ tags:
 - [[health()]] - `contains` [EXTRACTED]
 - [[log_activity()]] - `contains` [EXTRACTED]
 - [[mcp_servers()]] - `contains` [EXTRACTED]
+- [[memory()]] - `contains` [EXTRACTED]
 - [[pending_os_updates()]] - `contains` [EXTRACTED]
+- [[recall_notes()]] - `indirect_call` [INFERRED]
+- [[remember_note()]] - `indirect_call` [INFERRED]
 - [[require_role()]] - `contains` [EXTRACTED]
 - [[require_token()]] - `contains` [EXTRACTED]
 - [[run_ultron_chat()]] - `contains` [EXTRACTED]
@@ -104,6 +114,9 @@ tags:
 - [[status()]] - `contains` [EXTRACTED]
 - [[storage()]] - `contains` [EXTRACTED]
 - [[systems()]] - `contains` [EXTRACTED]
+- [[test_beta_spend_cap.py]] - `imports` [EXTRACTED]
+- [[test_mcp_untrusted_wrap.py]] - `imports` [EXTRACTED]
+- [[test_memory.py]] - `imports` [EXTRACTED]
 - [[trade_delete()]] - `contains` [EXTRACTED]
 - [[trades()]] - `contains` [EXTRACTED]
 - [[trades_export()]] - `contains` [EXTRACTED]
@@ -112,4 +125,4 @@ tags:
 - [[tts()]] - `contains` [EXTRACTED]
 - [[whoami()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/apppy
+#graphify/code #graphify/EXTRACTED #community/Backend_Core_apppy_Trades

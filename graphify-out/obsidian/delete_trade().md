@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "route"
-location: "L1315"
+community: "Backend REST Routes"
+location: "L1561"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/route
+  - community/Backend_REST_Routes
 ---
 
 # delete_trade()
@@ -16,4 +16,4 @@ tags:
 - [[app.py]] - `contains` [EXTRACTED]
 - [[trade_delete()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/route
+#graphify/code #graphify/EXTRACTED #community/Backend_REST_Routes

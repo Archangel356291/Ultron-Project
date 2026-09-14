@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "require_role"
-location: "L428"
+community: "Chat Auth, Rate Limit & TTS"
+location: "L659"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/require_role
+  - community/Chat_Auth_Rate_Limit__TTS
 ---
 
 # Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[require_role()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/require_role
+#graphify/rationale #graphify/EXTRACTED #community/Chat_Auth_Rate_Limit__TTS

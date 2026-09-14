@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-discord-bot/bot.py"
 type: "code"
-community: ".__init__"
-location: "L484"
+community: "Discord Bot Core Class"
+location: "L535"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/__init__
+  - community/Discord_Bot_Core_Class
 ---
 
 # .setup_hook()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[UltronBot]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/__init__
+#graphify/code #graphify/EXTRACTED #community/Discord_Bot_Core_Class

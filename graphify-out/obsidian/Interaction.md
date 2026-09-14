@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/fake_pkgs/discord/__init__.py"
 type: "code"
-community: "bot.py"
+community: "Discord Bot Command Tests"
 location: "L89"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/botpy
+  - community/Discord_Bot_Command_Tests
 ---
 
 # Interaction
@@ -19,6 +19,7 @@ tags:
 - [[Fake interaction for testing command and button handlers directly.]] - `rationale_for` [EXTRACTED]
 - [[ask_command()]] - `references` [EXTRACTED]
 - [[backup_command()]] - `references` [EXTRACTED]
+- [[connections_command()]] - `references` [EXTRACTED]
 - [[containers_command()]] - `references` [EXTRACTED]
 - [[deploy_command()]] - `references` [EXTRACTED]
 - [[diff_command()]] - `references` [EXTRACTED]
@@ -34,4 +35,4 @@ tags:
 - [[trades_command()]] - `references` [EXTRACTED]
 - [[usage_command()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/botpy
+#graphify/code #graphify/EXTRACTED #community/Discord_Bot_Command_Tests
