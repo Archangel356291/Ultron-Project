@@ -1137,6 +1137,11 @@
           <div id="llm-usage-body" style="font-size:13px; color:var(--text-dim);">Connect the backend to see real token usage.</div>
         </div>
 
+        <div class="panel-label" data-role="admin">Connections</div>
+        <div class="card" style="margin-bottom:20px" data-role="admin">
+          <div id="connections-body" style="font-size:13px; color:var(--text-dim);">Connect the backend to see who's connected.</div>
+        </div>
+
         <div class="panel-label" style="display:flex; align-items:center; justify-content:space-between;" data-role="admin">
           <span>External tools (MCP)</span>
           <button class="conn-btn" id="mcp-refresh-btn" style="padding:5px 12px; font-size:11px;" onclick="loadMcpServers()">Check servers</button>
@@ -1392,6 +1397,7 @@
           fetchDevRepos(),
           fetchTrades(),
           fetchLlmUsage(),
+          fetchConnections(),
         ];
       await Promise.all(calls);
       setConnStatus('connected · last sync ' + new Date().toLocaleTimeString(), 'ok');
@@ -1670,6 +1676,46 @@
       '</div>' +
       '<div style="margin-top:4px; color:var(--text-faint); font-size:11.5px;">' + escapeHtml(cacheNote) + '</div>' +
       budgetHtml;
+
+    const betaTesters = data.beta_testers || [];
+    if (betaTesters.length > 0) {
+      const rows = betaTesters.map(function (t) {
+        const pct = data.beta_max_spend_usd > 0 ? (t.spend_usd / data.beta_max_spend_usd * 100) : 0;
+        const color = pct >= 90 ? 'var(--oxide)' : (pct >= 70 ? 'var(--amber)' : 'var(--signal)');
+        return '<div style="margin-top:4px;">' + escapeHtml(t.name) + ': <span style="color:' + color + '">$' +
+          t.spend_usd.toFixed(2) + ' / $' + data.beta_max_spend_usd.toFixed(2) + '</span> (' + t.requests + ' request(s))</div>';
+      }).join('');
+      el.innerHTML += '<div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--line);">' +
+        '<div style="color:var(--text-faint); font-size:11.5px;">Beta tester spend (lifetime cap $' + data.beta_max_spend_usd.toFixed(2) + '):</div>' +
+        rows + '</div>';
+    }
+  }
+
+  async function fetchConnections() {
+    const el = document.getElementById('connections-body');
+    if (!el) return;
+    let data;
+    try {
+      data = await apiGet('/api/connections');
+    } catch (err) {
+      return;
+    }
+    const people = data.people || [];
+    if (people.length === 0) {
+      el.innerHTML = '<div style="font-family:var(--font-mono); font-size:12px;">No one connected since the backend last started.</div>';
+      return;
+    }
+    const rows = people.map(function (p) {
+      const status = p.online
+        ? '<span style="color:var(--signal)">online</span>'
+        : '<span style="color:var(--text-faint)">last seen ' + p.last_seen_seconds_ago + 's ago</span>';
+      return '<div style="margin-top:4px;">' + escapeHtml(p.name) + ' (' + escapeHtml(p.role) + ') — ' +
+        p.device_count + ' device(s) · ' + status + '</div>';
+    }).join('');
+    el.innerHTML =
+      '<div style="font-family:var(--font-mono); font-size:12px;">' +
+      data.online_count + ' online now · ' + data.device_count + ' device(s) total' +
+      '</div>' + rows;
   }
 
   async function addTrade() {

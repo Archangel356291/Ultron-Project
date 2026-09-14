@@ -70,11 +70,12 @@ defeat one). See `ultron-backend/README.md`'s "External tools (MCP)"
 section for the full reasoning before changing this.
 
 **Real safeguards, not just docs.** Rate limiting, a daily token budget,
-and prompt caching are enforced in code and were each verified with a
-test that checks the actual mechanism (a request genuinely refused, an
-API call that genuinely never happens) — not just that a setting exists.
-Any new cost or safety control added later should meet the same bar:
-prove it does the thing, don't just document the intent.
+a $1.00-lifetime beta-tester spend cap (in real computed dollars, not
+tokens), and prompt caching are enforced in code and were each verified
+with a test that checks the actual mechanism (a request genuinely
+refused, an API call that genuinely never happens) — not just that a
+setting exists. Any new cost or safety control added later should meet
+the same bar: prove it does the thing, don't just document the intent.
 
 **One source of truth per piece of logic.** The dashboard, the bot, and
 Ultron's own chat tools all call the same backend functions — there's no
@@ -121,9 +122,9 @@ second one.
 
 ## Current status
 
-Fully functional beta: backend (20 endpoints, 13 built-in chat tools plus
+Fully functional beta: backend (24 endpoints, 13 built-in chat tools plus
 dynamic MCP tools), dashboard (10 sections, all live-wired), Discord bot
-(15 commands). See `ultron-backend/BETA-LAUNCH-CHECKLIST.md` for what's
+(16 commands). See `ultron-backend/BETA-LAUNCH-CHECKLIST.md` for what's
 been verified and what to expect. Known, deliberate gaps — not
 oversights — are called out in each README's own "Not included here" or
 equivalent section (e.g. no stdio/local-subprocess MCP transport, no
@@ -168,4 +169,5 @@ was.
 
 | Name | Contribution |
 |---|---|
-| _none yet_ | |
+| ShawneeMacDabs | Contributor — add specifics here (code, docs, feedback, etc.) |
+| LyraWolf | Funding |

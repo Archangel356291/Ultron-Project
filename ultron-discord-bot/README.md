@@ -18,6 +18,7 @@ implementation of "what the system status is," not two that can drift apart.
 | `/trades [asset]` | Your recorded trades — read-only, optionally filtered by asset | free |
 | `/portfolio` | Realized gain/loss per asset (FIFO) — not tax advice | free |
 | `/usage` | Today's real Claude API token usage, cache activity, and budget status | free |
+| `/connections` | Who's connected right now — people, role, device count, last seen | free |
 | `/mcp` | External tool servers, reachability, and which tools are approved | free |
 | `/export` | Download trades as a CSV file — transactions or tax-lots | free |
 | `/backup` | **Mutates the host.** Preview a backup, confirm with a button | free |
@@ -42,6 +43,13 @@ download, so it travels with the file wherever it ends up.
 Controls card and the backend's `GET /api/chat/usage` — same source, so
 they never disagree. The embed turns red once you're at 90%+ of a
 configured daily budget, same threshold the dashboard uses.
+
+`/connections` reads the same `/api/connections` the dashboard's Settings →
+Connections card does — it's presence visibility only, no way to disconnect
+or block anyone from here. Beta testers each show up under their own name
+(never a shared identity), which is also what makes the $1.00 lifetime
+beta spend cap (see the backend README's Cost controls) attributable to a
+real person rather than an anonymous token.
 
 `/mcp` is read-only visibility, nothing more — it shows every configured
 external tool server, whether it's reachable, and every tool it offers

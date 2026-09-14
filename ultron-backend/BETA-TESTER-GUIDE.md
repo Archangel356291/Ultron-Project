@@ -67,6 +67,12 @@ Everything else (home lab controls, security tools, system diagnostics,
 dev tools, admin settings) is intentionally hidden. That's not something
 broken on your end — beta testers don't get access to those, full stop.
 
+**Chat has a $1.00 total spend cap.** This is a lifetime cap for your
+whole time testing, not a daily one — it doesn't reset. Once you hit it,
+the AI Assistant will tell you plainly that the beta spend limit was
+reached instead of silently failing or guessing; everything else you have
+access to keeps working. If you need more, ask whoever invited you.
+
 ## Trying out the chat
 
 Go to **AI Assistant** and just type a message — ask it something, like

@@ -103,7 +103,9 @@ New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol T
 | `POST /api/actions/backup` | **Mutates the host.** Two-step confirm — see below    |
 | `POST /api/actions/deploy-container` | **Mutates the host.** Two-step confirm — see below |
 | `POST /api/chat`          | Chat with Ultron — see below                       |
-| `GET /api/chat/usage`      | Today's real token usage and budget status — see Cost controls |
+| `GET /api/chat/usage`      | Today's real token usage and budget status, plus per-beta-tester spend — see Cost controls |
+| `GET /api/whoami`           | Your own role/name; a beta tester also gets their spend vs. the cap |
+| `GET /api/connections`       | **Admin-only.** Who's connected right now — name, role, device count, last seen |
 | `GET /api/mcp/servers`      | Configured external tool servers and their tools — see External tools |
 
 `STORAGE_MOUNTS` defaults to `{"c_drive": "C:\\"}` on Windows. Add other
@@ -529,6 +531,43 @@ total (input + output tokens, summed across every call, resets at
 midnight local time) reaches the budget, `/api/chat` returns a 429 with a
 clear message — and, critically, **the Anthropic API is never called** for
 that request. This isn't a warning after the fact; it's a wall.
+
+**Beta-tester spend cap, in real dollars, with an actual hard stop.**
+
+```powershell
+$env:ULTRON_BETA_MAX_SPEND_USD = "1.00"    # this is the default — set only to change it
+```
+
+Every beta token is capped at **$1.00 of real spend for the whole beta,
+not a daily allowance** — it never resets on its own. Each call's real
+cost is computed from its actual token usage against `LLM_PRICING_PER_MTOK`
+(the live per-model USD/MTok rates for the models this project uses) and
+stored on that row in `llm_usage` at write time, so a later pricing edit
+can't retroactively change what a past call actually cost. Once a
+tester's lifetime total reaches the cap, `/api/chat` returns a 429 and —
+same as the daily token budget above — **the Anthropic API is never
+called** for that request. Admin chat (the real `ULTRON_API_TOKEN`) is
+never subject to this; it's a beta-tester-only restriction, enforced
+alongside the beta role's existing tool restrictions
+(`BETA_ALLOWED_TOOLS`). A tester can see their own running total via
+`/api/whoami`; the admin sees every tester's spend via `/api/chat/usage`'s
+`beta_testers` field and the dashboard's Settings → Usage & cost controls
+card. Verified in `dev-tools/test_beta_spend_cap.py` — drives real
+`/api/chat` calls through a scripted fake Anthropic client until a
+tester's computed spend crosses the cap, then asserts the next call is
+genuinely refused (not just that the setting exists), and that an admin
+token making the same call is unaffected.
+
+**Connection/device tracking.** `/api/connections` (admin-only) reports
+every identity (admin, or a beta tester by name) that has made an
+authenticated request since this backend process started, how many
+distinct devices (IPs) each has connected from, and whether they're
+active in the last 5 minutes. Read-only — this is visibility, not a
+limit. ponytail-simple: in-memory and single-process, so it resets on
+restart and wouldn't share state across `gunicorn -w N` workers; move it
+into SQLite like `llm_usage` if this backend ever runs multi-process.
+Surfaced on the dashboard (Settings → Connections) and via the Discord
+bot's `/connections` command.
 
 **Rate limiting.**
 

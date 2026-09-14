@@ -206,6 +206,14 @@ budget in the tens-of-thousands-times-N range is more realistic than the
 single-user 50k default. Both are one-line edits in
 `ultron-backend/start-ultron.ps1`.
 
+**A third cost control, added since — but per-tester, not shared:**
+`ULTRON_BETA_MAX_SPEND_USD` caps each beta tester at $1.00 of real spend
+for their whole time testing (default, one-line override in `.env`).
+Unlike the two above, this doesn't get tighter as tester count grows —
+each person gets their own $1.00, independent of everyone else's. See
+`ultron-backend/BETA-TESTERS.md`'s "Spend cap" section and the backend
+README's Cost controls for the enforcement details.
+
 ## Final pre-launch check (2026-09-13)
 
 Re-verified everything live, from a cold state, after the git history

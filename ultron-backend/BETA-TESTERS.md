@@ -29,7 +29,8 @@ ULTRON_BETA_TOKENS=alice:3f9a1c7e2b8d4056a1f2e3c4b5a69788,bob:9c2e5f81a4b7301dc6
    they're allowed to do. Paste its contents into a message/doc rather
    than pointing them at this repo. `/api/whoami` reports their name
    back once connected, so it's easy to confirm which token actually
-   ended up in their hands.
+   ended up in their hands — and, for a beta tester, their current spend
+   against the cap (see below).
 4. **Add a row to the roster below** with their name and the date they
    started — and the matching table in the main `README.md`'s "Beta
    testers" section, which mirrors this one for visibility. Keep both
@@ -48,6 +49,24 @@ Beta test #1 (2026-09-13) verified the `beta_tester` role itself, end to
 end, using the owner's own second device (phone) over Tailscale — not a
 third-party tester, so it isn't listed as one here. This roster is for
 actual other people.
+
+## Spend cap
+
+Every beta tester is capped at **$1.00 of real API spend, total, for the
+whole time they're testing** — not a daily allowance, a lifetime one. It's
+enforced in `/api/chat` itself (a genuine refusal once reached, not just a
+displayed number — see `ultron-backend/app.py`'s `_beta_tester_spend_usd`
+and the check in the `chat()` route), computed from each call's actual
+token usage at real Claude pricing, not estimated. Default is
+`$1.00`; override with `ULTRON_BETA_MAX_SPEND_USD` in `.env` if a
+particular tester (or the beta as a whole) needs a different limit —
+it applies to every beta token, there's no per-tester override yet.
+Admin chat is never subject to this. A tester can see their own running
+total via `/api/whoami`; the roster's spend across everyone is visible to
+the admin via `/api/chat/usage`'s `beta_testers` field, the dashboard's
+Settings → Usage & cost controls card, or watch who's actually connected
+right now via `/api/connections` (dashboard: Settings → Connections;
+Discord: `/connections`).
 
 ## What's still not covered
 

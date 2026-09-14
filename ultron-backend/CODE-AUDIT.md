@@ -83,3 +83,45 @@ round trip, not just "Discord showed a reply."
 
 **Result:** one real security-hygiene bug fixed (token in a git-tracked
 script instead of `.env`); everything else re-verified clean.
+
+## 2026-09-13 (later still) — connection tracking + beta spend cap added
+
+**What was checked:**
+- `ast.parse` / `python -m py_compile` on `app.py` and `bot.py` after
+  adding the `_PRESENCE` table, `/api/connections`, the
+  `LLM_PRICING_PER_MTOK` cost math, and the `beta_name`/`cost_usd`
+  columns on `llm_usage` — both clean.
+- Grepped `app.py` for `shell=True` (still none) and every
+  `conn.execute` call (now 18, all still parameterized with `?` — no
+  string-built SQL introduced by the two new queries added).
+- Confirmed the `llm_usage` schema change is a live migration
+  (`PRAGMA table_info` + `ALTER TABLE ADD COLUMN`), not a
+  `CREATE TABLE IF NOT EXISTS` that would silently no-op against an
+  existing `ultron.db` — verified by running it against the real
+  pre-existing database file, not a fresh one.
+- Confirmed the spend cap only applies to `g.role == "beta"` and never
+  to admin — read the check in `chat()` directly rather than trusting
+  the comment.
+- `/api/connections` and `/api/whoami`'s new fields are read-only (no
+  write path, no new mutation of host state) — consistent with this
+  project's "every chat tool is read-only" boundary; neither is exposed
+  to Ultron's own chat tools.
+
+**Live-verified, not just read:** `dev-tools/test_beta_spend_cap.py`
+drives real `/api/chat` requests through Flask's test client against a
+scripted fake Anthropic client, asserting: a call under the cap
+succeeds; cumulative spend is computed correctly from real usage
+numbers at real per-model pricing; the call that pushes spend over the
+cap still succeeds (the cap gates the *next* call, using spend-so-far);
+the following call is genuinely refused (429, Anthropic never called —
+proven by not queuing a canned reply, so a bypass would surface as the
+fake's "script exhausted" error instead of a clean 429); and an admin
+token making the same request immediately after is unaffected. Also
+asserts both identities (the capped-out beta tester and the admin) show
+up correctly in `/api/connections`.
+
+**Result:** no bugs found. New Discord bot command (`/connections`) and
+dashboard card (Settings → Connections) reuse the existing `require_auth`
+/ admin-gating patterns rather than introducing new ones — checked for
+whether either added a second gate to keep in sync with the backend's,
+and neither does; both are thin callers of the one backend endpoint.

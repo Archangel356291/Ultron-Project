@@ -87,6 +87,12 @@ $env:ULTRON_LLM_DAILY_TOKEN_BUDGET = "50000"
 # already — only touch this if you're actually hitting it):
 # $env:ULTRON_CHAT_RATE_LIMIT_PER_MINUTE = "20"
 
+# Lifetime dollar cap per beta tester (not per-day — never resets on its
+# own). Already the default even if you don't set this, listed here so
+# it's visible alongside the other cost controls. Each tester gets their
+# own $1.00; admin chat is never subject to this:
+$env:ULTRON_BETA_MAX_SPEND_USD = "1.00"
+
 # ============================================================
 # Voice replies — optional. Both must be set together for the feature to
 # work; requires a Fish Audio account (fish.audio) and API key. Both the

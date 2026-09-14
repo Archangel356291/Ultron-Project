@@ -337,6 +337,23 @@ def format_mcp_servers_embed(data):
     return embed
 
 
+def format_connections_embed(data):
+    embed = discord.Embed(title="Who's connected", color=BRAND_COLOR)
+    people = data.get("people", [])
+    if not people:
+        embed.description = "No one's connected since the backend last started."
+        return embed
+    for p in people:
+        status = "online" if p.get("online") else f"last seen {p.get('last_seen_seconds_ago', 0)}s ago"
+        embed.add_field(
+            name=f"{p.get('name')} ({p.get('role')})",
+            value=f"{p.get('device_count', 0)} device(s) — {status}",
+            inline=False,
+        )
+    embed.set_footer(text=f"{data.get('online_count', 0)} online now · {data.get('device_count', 0)} device(s) total")
+    return embed
+
+
 def format_error_embed(message):
     embed = discord.Embed(title="Ultron", description=message, color=ERROR_COLOR)
     return embed
@@ -683,6 +700,18 @@ async def usage_command(interaction: discord.Interaction):
     try:
         data = await backend_get(bot.http_session, "/api/chat/usage")
         await interaction.followup.send(embed=format_usage_embed(data))
+    except BackendError as e:
+        await interaction.followup.send(embed=format_error_embed(str(e)))
+
+
+@bot.tree.command(name="connections", description="Who's currently connected to Ultron (people and device count)")
+async def connections_command(interaction: discord.Interaction):
+    if not await require_auth(interaction):
+        return
+    await interaction.response.defer()
+    try:
+        data = await backend_get(bot.http_session, "/api/connections")
+        await interaction.followup.send(embed=format_connections_embed(data))
     except BackendError as e:
         await interaction.followup.send(embed=format_error_embed(str(e)))
 

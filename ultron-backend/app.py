@@ -19,6 +19,8 @@ Endpoints:
     POST /api/actions/deploy-container    -> MUTATES THE HOST. Two-step confirm — see below.
     POST /api/chat                         -> chat with Ultron (Claude API, tool-grounded)
     POST /api/tts                           -> speak text aloud (Fish Audio, returns mp3 bytes)
+    GET  /api/connections                   -> admin-only: who's currently connected (name,
+                                                role, device count, last seen)
     GET  /api/health                        -> simple liveness check, no auth required
 
 Auth:
@@ -223,6 +225,13 @@ def _init_db():
                 cache_creation_input_tokens INTEGER NOT NULL DEFAULT 0
             )
         """)
+        # Added for the beta-tester spend cap — ALTER rather than recreate so
+        # an existing ultron.db from before this feature keeps its history.
+        existing_cols = {row["name"] for row in conn.execute("PRAGMA table_info(llm_usage)")}
+        if "beta_name" not in existing_cols:
+            conn.execute("ALTER TABLE llm_usage ADD COLUMN beta_name TEXT")
+        if "cost_usd" not in existing_cols:
+            conn.execute("ALTER TABLE llm_usage ADD COLUMN cost_usd REAL NOT NULL DEFAULT 0")
         conn.commit()
     finally:
         conn.close()
@@ -301,6 +310,40 @@ _raw_budget = os.environ.get("ULTRON_LLM_DAILY_TOKEN_BUDGET", "").strip()
 LLM_DAILY_TOKEN_BUDGET = int(_raw_budget) if _raw_budget.isdigit() else None
 
 CHAT_RATE_LIMIT_PER_MINUTE = max(1, int(os.environ.get("ULTRON_CHAT_RATE_LIMIT_PER_MINUTE", "20")))
+
+# Real USD/MTok pricing for the models this project actually uses, so beta
+# spend can be capped in dollars (below) rather than the token-only budget
+# above. Add a row here if ULTRON_LLM_MODEL is ever pointed at a model not
+# listed. cache_write is the 5-minute ephemeral rate (1.25x input) — the
+# only TTL this codebase's cache_control blocks use; cache_read is the
+# standard 0.1x input rate.
+LLM_PRICING_PER_MTOK = {
+    "claude-sonnet-5": {"input": 2.00, "output": 10.00, "cache_write": 2.50, "cache_read": 0.20},
+    "claude-opus-5": {"input": 5.00, "output": 25.00, "cache_write": 6.25, "cache_read": 0.50},
+    "claude-haiku-4-5": {"input": 1.00, "output": 5.00, "cache_write": 1.25, "cache_read": 0.10},
+}
+
+
+def _usage_cost_usd(input_tokens, output_tokens, cache_read_tokens, cache_write_tokens):
+    """Real dollar cost of one API call from its actual usage counts. Returns
+    0.0 for a model with no pricing row here rather than raising — an
+    unpriced model should still log usage, just without a cost figure."""
+    pricing = LLM_PRICING_PER_MTOK.get(LLM_MODEL)
+    if pricing is None:
+        return 0.0
+    return (
+        input_tokens * pricing["input"]
+        + output_tokens * pricing["output"]
+        + cache_read_tokens * pricing["cache_read"]
+        + cache_write_tokens * pricing["cache_write"]
+    ) / 1_000_000
+
+
+# Lifetime dollar cap per beta tester — not a daily allowance, a total for
+# the whole time they're testing. Admin chat is never subject to this.
+# Enforced the same way the token budget above is: a real refusal in
+# /api/chat once reached, not just a number shown in the UI.
+BETA_MAX_SPEND_USD = float(os.environ.get("ULTRON_BETA_MAX_SPEND_USD", "1.00"))
 
 anthropic_client = None
 
@@ -404,6 +447,26 @@ def _resolve_role(token):
     return None, None
 
 
+# Who's currently connected — an in-memory presence table, updated on every
+# authenticated request by both decorators below. Keyed by identity
+# ("admin", or a beta tester's name) with the set of distinct IPs seen
+# ("devices") and the most recent request time. Read by /api/connections.
+# ponytail: in-memory + single process only — restarting the backend clears
+# it, and a multi-worker deployment (gunicorn -w N) would give each worker
+# its own view. Fine for a single `python app.py` home-lab process; move to
+# the DB (like llm_usage) if this ever runs multi-process.
+_PRESENCE = {}
+_PRESENCE_ONLINE_WINDOW_SECONDS = 5 * 60
+
+
+def _touch_presence(role, beta_name):
+    identity = beta_name if role == "beta" else "admin"
+    entry = _PRESENCE.setdefault(identity, {"role": role, "devices": set()})
+    entry["role"] = role
+    entry["devices"].add(request.remote_addr or "unknown")
+    entry["last_seen"] = time.time()
+
+
 def require_token(fn):
     """Admin-only. Existing routes are unchanged: a valid beta token is a
     real identity, just not one this route accepts, so it's a 403 (forbidden)
@@ -417,6 +480,7 @@ def require_token(fn):
         if role == "admin":
             g.role = role
             g.beta_name = None
+            _touch_presence(role, None)
             return fn(*args, **kwargs)
         if role == "beta":
             return jsonify({"error": "forbidden"}), 403
@@ -437,6 +501,7 @@ def require_role(fn):
             return jsonify({"error": "unauthorized"}), 401
         g.role = role
         g.beta_name = beta_name
+        _touch_presence(role, beta_name)
         return fn(*args, **kwargs)
     return wrapper
 
@@ -1820,21 +1885,32 @@ def _check_rate_limit():
 # actual spend rather than a guess, and so /api/chat/usage can show you
 # exactly what's been used.
 # --------------------------------------------------------------------------
-def _log_llm_usage(usage):
+def _log_llm_usage(usage, beta_name=None):
     """Best-effort — never raises. A logging failure must not break the
-    chat response it's recording usage for."""
+    chat response it's recording usage for. cost_usd is computed and stored
+    at write time (not derived later from tokens) so the beta spend cap is a
+    plain SUM() and a later pricing-table edit can't retroactively change
+    what already happened."""
     try:
+        input_tokens = getattr(usage, "input_tokens", 0) or 0
+        output_tokens = getattr(usage, "output_tokens", 0) or 0
+        cache_read = getattr(usage, "cache_read_input_tokens", 0) or 0
+        cache_write = getattr(usage, "cache_creation_input_tokens", 0) or 0
+        cost_usd = _usage_cost_usd(input_tokens, output_tokens, cache_read, cache_write)
         conn = _get_db_connection()
         try:
             conn.execute(
                 "INSERT INTO llm_usage (timestamp, input_tokens, output_tokens, "
-                "cache_read_input_tokens, cache_creation_input_tokens) VALUES (?, ?, ?, ?, ?)",
+                "cache_read_input_tokens, cache_creation_input_tokens, beta_name, cost_usd) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (
                     time.strftime("%Y-%m-%dT%H:%M:%S"),
-                    getattr(usage, "input_tokens", 0) or 0,
-                    getattr(usage, "output_tokens", 0) or 0,
-                    getattr(usage, "cache_read_input_tokens", 0) or 0,
-                    getattr(usage, "cache_creation_input_tokens", 0) or 0,
+                    input_tokens,
+                    output_tokens,
+                    cache_read,
+                    cache_write,
+                    beta_name,
+                    cost_usd,
                 ),
             )
             conn.commit()
@@ -1842,6 +1918,25 @@ def _log_llm_usage(usage):
             conn.close()
     except Exception:
         pass
+
+
+def _beta_tester_spend_usd(beta_name):
+    """Lifetime spend for one beta tester, in dollars. Returns 0.0 on any
+    read failure — same fail-open convention as _todays_token_usage above,
+    since a DB hiccup shouldn't itself block a chat the budget would
+    otherwise allow."""
+    try:
+        conn = _get_db_connection()
+        try:
+            row = conn.execute(
+                "SELECT COALESCE(SUM(cost_usd), 0) as spend FROM llm_usage WHERE beta_name = ?",
+                (beta_name,),
+            ).fetchone()
+        finally:
+            conn.close()
+        return row["spend"] or 0.0
+    except Exception:
+        return 0.0
 
 
 def _todays_token_usage():
@@ -1900,9 +1995,32 @@ def get_llm_usage(**_ignored):
         "cache_read_tokens": row["cache_read_sum"] or 0,
         "cache_creation_tokens": row["cache_write_sum"] or 0,
         "daily_budget": LLM_DAILY_TOKEN_BUDGET,
+        "beta_max_spend_usd": BETA_MAX_SPEND_USD,
     }
     if LLM_DAILY_TOKEN_BUDGET is not None:
         result["budget_remaining"] = max(0, LLM_DAILY_TOKEN_BUDGET - total)
+
+    try:
+        conn = _get_db_connection()
+        try:
+            beta_rows = conn.execute(
+                "SELECT beta_name, COUNT(*) as n, COALESCE(SUM(cost_usd), 0) as spend "
+                "FROM llm_usage WHERE beta_name IS NOT NULL GROUP BY beta_name"
+            ).fetchall()
+        finally:
+            conn.close()
+        result["beta_testers"] = [
+            {
+                "name": r["beta_name"],
+                "requests": r["n"],
+                "spend_usd": round(r["spend"] or 0.0, 4),
+                "spend_remaining_usd": round(max(0.0, BETA_MAX_SPEND_USD - (r["spend"] or 0.0)), 4),
+            }
+            for r in beta_rows
+        ]
+    except Exception:
+        result["beta_testers"] = []
+
     return result
 
 
@@ -2449,7 +2567,7 @@ def _add_cache_breakpoint(msg):
     return {**msg, "content": new_content}
 
 
-def run_ultron_chat(user_message, history, role="admin"):
+def run_ultron_chat(user_message, history, role="admin", beta_name=None):
     """Runs the tool-use loop against the Claude API and returns
     (reply_text, updated_history, tools_used).
 
@@ -2496,7 +2614,7 @@ def run_ultron_chat(user_message, history, role="admin"):
             messages=messages,
         )
         if hasattr(response, "usage"):
-            _log_llm_usage(response.usage)
+            _log_llm_usage(response.usage, beta_name=beta_name)
 
         messages.append({"role": "assistant", "content": _serialize_content(response.content)})
 
@@ -2553,7 +2671,41 @@ def run_ultron_chat(user_message, history, role="admin"):
 @app.route("/api/whoami")
 @require_role
 def whoami():
-    return jsonify({"role": g.role, "name": g.beta_name})
+    result = {"role": g.role, "name": g.beta_name}
+    if g.role == "beta":
+        spent = _beta_tester_spend_usd(g.beta_name)
+        result["spend_usd"] = round(spent, 4)
+        result["spend_limit_usd"] = BETA_MAX_SPEND_USD
+        result["spend_remaining_usd"] = round(max(0.0, BETA_MAX_SPEND_USD - spent), 4)
+    return jsonify(result)
+
+
+@app.route("/api/connections")
+@require_token
+def connections():
+    """Admin-only: who's connected right now — every identity (admin or a
+    beta tester) that has made an authenticated request since this backend
+    started, how many distinct devices (IPs) they've connected from, and
+    whether they're active within the last 5 minutes. Read-only, no write
+    path — mirrors the "real safeguards, not just docs" bar the rest of
+    this file holds to, but for visibility rather than a limit."""
+    now = time.time()
+    people = []
+    for identity, entry in _PRESENCE.items():
+        last_seen = entry.get("last_seen", 0)
+        people.append({
+            "name": identity,
+            "role": entry.get("role"),
+            "device_count": len(entry.get("devices", ())),
+            "last_seen_seconds_ago": int(now - last_seen),
+            "online": (now - last_seen) <= _PRESENCE_ONLINE_WINDOW_SECONDS,
+        })
+    people.sort(key=lambda p: p["last_seen_seconds_ago"])
+    return jsonify({
+        "people": people,
+        "online_count": sum(1 for p in people if p["online"]),
+        "device_count": sum(p["device_count"] for p in people),
+    })
 
 
 @app.route("/api/chat", methods=["POST"])
@@ -2577,6 +2729,15 @@ def chat():
                          "resets at midnight, or raise ULTRON_LLM_DAILY_TOKEN_BUDGET"
             }), 429
 
+    if g.role == "beta":
+        spent = _beta_tester_spend_usd(g.beta_name)
+        if spent >= BETA_MAX_SPEND_USD:
+            return jsonify({
+                "error": f"beta testing spend limit reached (${spent:.2f}/${BETA_MAX_SPEND_USD:.2f}) — "
+                         "this is a total cap for the whole beta, not a daily one; "
+                         "contact whoever invited you if you need more"
+            }), 429
+
     body = request.get_json(silent=True) or {}
     user_message = (body.get("message") or "").strip()
     history = body.get("history") or []
@@ -2592,7 +2753,7 @@ def chat():
             return jsonify({"error": "invalid history format"}), 400
 
     try:
-        reply, new_history, tools_used = run_ultron_chat(user_message, history, role=g.role)
+        reply, new_history, tools_used = run_ultron_chat(user_message, history, role=g.role, beta_name=g.beta_name)
     except anthropic.AuthenticationError:
         # Server misconfiguration, not the caller's fault — but surfacing it
         # clearly here saves a confusing debugging session once the real key
