@@ -45,3 +45,41 @@ as documented rather than crashing.
 **Not covered this pass:** `ultron-dashboard.html`'s JS — already
 verified separately (see git log) via `node --check`, ID-count, and
 live click-through during the visual-match work; not re-audited here.
+
+## 2026-09-13 (later) — Discord bot actually launched for real, plus a genuine bug found and fixed
+
+**What was checked:**
+- Re-ran `ast.parse` on `app.py` and `bot.py` after the per-tester token
+  change and the new dashboard-serving route — clean.
+- Re-verified RBAC live: admin token 200s on `/api/status`, no/garbage
+  token 401s, `/api/whoami` reports role and name correctly.
+- Re-grepped for `shell=True` (still none) and string-built SQL (still
+  none — 13 `conn.execute` calls, all parameterized).
+- Confirmed `.env` is still correctly gitignored after this session's
+  edits to it.
+- Confirmed the Discord bot's confirm-button per-user gate
+  (`interaction.user.id != self.author_id`) is still intact on
+  `ConfirmActionView`.
+
+**Real bug found and fixed:** `ultron-discord-bot/start-bot.ps1` never
+loaded from `.env` at all — unlike the backend's `start-ultron.ps1`, it
+expected secrets pasted directly into the script itself, which is
+git-tracked. That's the exact mistake this project already got burned by
+once (see the Phase 1 security-pass note above about a hardcoded token
+found and scrubbed from history). Rewrote it to load `.env` the same way
+the backend does, with the paste-into-script path now commented out and
+clearly marked as a fallback. Separately, `.env` had a real, working
+Discord bot token stored under the wrong key (`discord_token`, lowercase,
+which nothing reads) instead of `DISCORD_BOT_TOKEN` — renamed it, which
+is what let the bot actually start for the first time.
+
+**Live-verified, not just read:** started the real backend and bot
+together, confirmed the bot token authenticates with Discord (gateway
+connects), invited it to a real test server, confirmed all 15 slash
+commands synced, then had a human run `/status` and `/ask` for real in
+Discord — cross-checked against the backend's own request log
+(`GET /api/status` → 200, `POST /api/chat` → 200) to confirm the full
+round trip, not just "Discord showed a reply."
+
+**Result:** one real security-hygiene bug fixed (token in a git-tracked
+script instead of `.env`); everything else re-verified clean.

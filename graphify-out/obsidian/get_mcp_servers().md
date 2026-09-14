@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_ensure_mcp_discovered"
+community: "_mcp_jsonrpc_call"
 location: "L2141"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_ensure_mcp_discovered
+  - community/_mcp_jsonrpc_call
 ---
 
 # get_mcp_servers()
@@ -17,4 +17,4 @@ tags:
 - [[app.py]] - `indirect_call` [INFERRED]
 - [[mcp_servers()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_ensure_mcp_discovered
+#graphify/code #graphify/EXTRACTED #community/_mcp_jsonrpc_call

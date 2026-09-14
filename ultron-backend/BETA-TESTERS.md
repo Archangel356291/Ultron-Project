@@ -20,11 +20,13 @@ ULTRON_BETA_TOKENS=alice:3f9a1c7e2b8d4056a1f2e3c4b5a69788,bob:9c2e5f81a4b7301dc6
    ```
 2. **Add it to `ULTRON_BETA_TOKENS`** in `.env` as `name:token`, comma-separated
    from any existing entries. Restart the backend to pick it up.
-3. **Give them the URL and their token** (see `BETA-LAUNCH-CHECKLIST.md`
-   and `REMOTE-ACCESS.md`). They connect as `beta_tester`: chat plus
-   view-only trading data, nothing else — see `README.md`'s auth section
-   for exactly what that covers. `/api/whoami` reports their name back,
-   so it's easy to confirm which token actually ended up in their hands.
+3. **Send them `BETA-TESTER-GUIDE.md`, their URL, and their token.** The
+   guide is written for the tester directly (no dev background assumed)
+   — walks them through installing Tailscale, connecting, and what
+   they're allowed to do. Paste its contents into a message/doc rather
+   than pointing them at this repo. `/api/whoami` reports their name
+   back once connected, so it's easy to confirm which token actually
+   ended up in their hands.
 4. **Add a row to the roster below** with their name and the date they
    started.
 5. **When they stop testing:** remove their `name:token` entry from

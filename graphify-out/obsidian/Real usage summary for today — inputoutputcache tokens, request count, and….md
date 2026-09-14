@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "require_token"
+community: "_json_result"
 location: "L1872"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/require_token
+  - community/_json_result
 ---
 
 # Real usage summary for today — input/output/cache tokens, request count, and…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_llm_usage()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/require_token
+#graphify/rationale #graphify/EXTRACTED #community/_json_result

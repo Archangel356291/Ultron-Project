@@ -36,10 +36,24 @@
       }
     },
     {
-      "query": "tag:#community/require_token",
+      "query": "tag:#community/_json_result",
       "color": {
         "a": 1,
         "rgb": 15583560
+      }
+    },
+    {
+      "query": "tag:#community/MCP_external_tool/plugin_Support",
+      "color": {
+        "a": 1,
+        "rgb": 11565729
+      }
+    },
+    {
+      "query": "tag:#community/start-ultronps1",
+      "color": {
+        "a": 1,
+        "rgb": 16752039
       }
     },
     {
@@ -64,7 +78,14 @@
       }
     },
     {
-      "query": "tag:#community/_get_db_connection",
+      "query": "tag:#community/Flask_Backend_apppy",
+      "color": {
+        "a": 1,
+        "rgb": 15896107
+      }
+    },
+    {
+      "query": "tag:#community/dev_repo_diff",
       "color": {
         "a": 1,
         "rgb": 14767961
@@ -85,7 +106,14 @@
       }
     },
     {
-      "query": "tag:#community/_status_data",
+      "query": "tag:#community/authHeaders",
+      "color": {
+        "a": 1,
+        "rgb": 15583560
+      }
+    },
+    {
+      "query": "tag:#community/route",
       "color": {
         "a": 1,
         "rgb": 11565729
@@ -96,6 +124,27 @@
       "color": {
         "a": 1,
         "rgb": 16752039
+      }
+    },
+    {
+      "query": "tag:#community/test_mcp_serverpy",
+      "color": {
+        "a": 1,
+        "rgb": 10253663
+      }
+    },
+    {
+      "query": "tag:#community/Crypto/Trade_Record__Tax_Agent",
+      "color": {
+        "a": 1,
+        "rgb": 12234924
+      }
+    },
+    {
+      "query": "tag:#community/run-bot-bgps1",
+      "color": {
+        "a": 1,
+        "rgb": 5142951
       }
     },
     {
@@ -120,21 +169,14 @@
       }
     },
     {
-      "query": "tag:#community/_ensure_mcp_discovered",
-      "color": {
-        "a": 1,
-        "rgb": 5873999
-      }
-    },
-    {
-      "query": "tag:#community/route",
+      "query": "tag:#community/require_role",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/_indexmd",
+      "query": "tag:#community/Testing_Ultron__a_quick_guide",
       "color": {
         "a": 1,
         "rgb": 11565729

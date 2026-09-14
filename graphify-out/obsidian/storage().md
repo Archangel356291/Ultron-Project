@@ -15,6 +15,6 @@ tags:
 - [[_storage_data()]] - `calls` [EXTRACTED]
 - [[app.py]] - `contains` [EXTRACTED]
 - [[require_token()]] - `references` [EXTRACTED]
-- [[route_1]] - `references` [EXTRACTED]
+- [[route]] - `references` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/route

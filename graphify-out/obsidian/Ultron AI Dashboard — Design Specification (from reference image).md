@@ -1,12 +1,12 @@
 ---
 source_file: "ULTRON-DASHBOARD-DESIGN-SPEC.md"
 type: "document"
-community: "_index.md"
+community: "Testing Ultron — a quick guide"
 location: "L1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/_indexmd
+  - community/Testing_Ultron__a_quick_guide
 ---
 
 # Ultron AI Dashboard — Design Specification (from reference image)
@@ -18,4 +18,4 @@ tags:
 - [[Structuraldecorative details worth getting right]] - `contains` [EXTRACTED]
 - [[ULTRON-DASHBOARD-DESIGN-SPEC]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/_indexmd
+#graphify/document #graphify/EXTRACTED #community/Testing_Ultron__a_quick_guide

@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "rationale"
-community: "Ultron (personal AI home lab system)"
+community: "MCP (external tool/plugin) Support"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Ultron_personal_AI_home_lab_system
+  - community/MCP_external_tool/plugin_Support
 ---
 
 # MCP Empty Notification Response Bug
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[MCP (external toolplugin) Support]] - `conceptually_related_to` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system
+#graphify/rationale #graphify/EXTRACTED #community/MCP_external_tool/plugin_Support

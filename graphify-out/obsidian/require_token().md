@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "require_token"
+community: "route"
 location: "L407"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/require_token
+  - community/route
 ---
 
 # require_token()
@@ -31,4 +31,4 @@ tags:
 - [[trades_export()]] - `references` [EXTRACTED]
 - [[wrapper()_1]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/require_token
+#graphify/code #graphify/EXTRACTED #community/route

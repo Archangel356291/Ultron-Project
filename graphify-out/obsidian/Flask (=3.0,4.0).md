@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/requirements.txt"
 type: "code"
-community: "apiGet"
+community: "Flask Backend (app.py)"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/apiGet
+  - community/Flask_Backend_apppy
 ---
 
 # Flask (>=3.0,<4.0)
@@ -15,4 +15,4 @@ tags:
 - [[GET apihealth]] - `implements` [EXTRACTED]
 - [[start-ultron.ps1]] - `shares_data_with` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/apiGet
+#graphify/code #graphify/INFERRED #community/Flask_Backend_apppy

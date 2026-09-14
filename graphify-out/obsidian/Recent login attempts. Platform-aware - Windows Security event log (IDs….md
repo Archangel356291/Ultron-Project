@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "require_token"
+community: "route"
 location: "L594"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/require_token
+  - community/route
 ---
 
 # Recent login attempts. Platform-aware: - Windows: Security event log (IDs…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_auth_log()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/require_token
+#graphify/rationale #graphify/EXTRACTED #community/route

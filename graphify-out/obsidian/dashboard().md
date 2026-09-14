@@ -13,6 +13,6 @@ tags:
 
 ## Connections
 - [[app.py]] - `contains` [EXTRACTED]
-- [[route_1]] - `references` [EXTRACTED]
+- [[route]] - `references` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/route

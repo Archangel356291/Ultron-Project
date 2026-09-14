@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/BETA-TESTERS.md"
 type: "document"
-community: "_index.md"
-location: "L45"
+community: "Testing Ultron — a quick guide"
+location: "L47"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/_indexmd
+  - community/Testing_Ultron__a_quick_guide
 ---
 
 # What's still not covered
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[Beta testers]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/_indexmd
+#graphify/document #graphify/EXTRACTED #community/Testing_Ultron__a_quick_guide

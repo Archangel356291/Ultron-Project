@@ -31,14 +31,14 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 12 edges to [[_COMMUNITY_app.py]]
-- 4 edges to [[_COMMUNITY_require_token]]
-- 2 edges to [[_COMMUNITY_route]]
-- 1 edge to [[_COMMUNITY__status_data]]
+- 11 edges to [[_COMMUNITY_app.py]]
+- 5 edges to [[_COMMUNITY_route]]
+- 2 edges to [[_COMMUNITY__json_result]]
+- 1 edge to [[_COMMUNITY_run_ultron_chat]]
 
 ## Top bridge nodes
 - [[containers()]] - degree 5, connects to 3 communities
 - [[security_cve_scan()]] - degree 5, connects to 3 communities
 - [[docker_ps()]] - degree 7, connects to 2 communities
+- [[_scan_image_cves()]] - degree 5, connects to 2 communities
 - [[scan_container_cves()]] - degree 5, connects to 1 community
-- [[_scan_image_cves()]] - degree 5, connects to 1 community

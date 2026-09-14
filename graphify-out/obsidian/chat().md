@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_get_db_connection"
+community: "require_role"
 location: "L2561"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_get_db_connection
+  - community/require_role
 ---
 
 # chat()
@@ -16,7 +16,7 @@ tags:
 - [[_todays_token_usage()]] - `calls` [EXTRACTED]
 - [[app.py]] - `contains` [EXTRACTED]
 - [[require_role()]] - `references` [EXTRACTED]
-- [[route_1]] - `references` [EXTRACTED]
+- [[route]] - `references` [EXTRACTED]
 - [[run_ultron_chat()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_get_db_connection
+#graphify/code #graphify/EXTRACTED #community/require_role

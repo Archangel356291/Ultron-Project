@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_get_db_connection"
+community: "require_role"
 location: "L1798"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_get_db_connection
+  - community/require_role
 ---
 
 # _check_rate_limit()
@@ -16,4 +16,4 @@ tags:
 - [[app.py]] - `contains` [EXTRACTED]
 - [[chat()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_get_db_connection
+#graphify/code #graphify/EXTRACTED #community/require_role

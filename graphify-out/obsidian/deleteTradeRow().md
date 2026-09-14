@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "apiGet"
+community: "authHeaders"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/apiGet
+  - community/authHeaders
 ---
 
 # deleteTradeRow()
@@ -14,4 +14,4 @@ tags:
 - [[authHeaders()]] - `calls` [EXTRACTED]
 - [[fetchTrades()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/apiGet
+#graphify/code #graphify/EXTRACTED #community/authHeaders

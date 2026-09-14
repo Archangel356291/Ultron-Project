@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "require_token"
+community: "_json_result"
 location: "L1591"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/require_token
+  - community/_json_result
 ---
 
 # _json_result()
@@ -26,4 +26,4 @@ tags:
 - [[trades_summary()]] - `calls` [EXTRACTED]
 - [[trades_tax_lots()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/require_token
+#graphify/code #graphify/EXTRACTED #community/_json_result

@@ -9,22 +9,51 @@
 # HTTP call to that backend.
 
 # ============================================================
+# Secrets — loaded from ..\.env (KEY=value per line) if it exists, instead
+# of being pasted into this file. This file is git-tracked; .env is
+# gitignored. This is how a real token should get here — the manual
+# fallback lines below exist only for people not using a .env file, and
+# are commented out by default so nothing real ever lands in git by
+# accident (this is exactly the mistake the backend's start-ultron.ps1
+# already learned from — see its own header comment).
+# ============================================================
+$envFile = Join-Path $PSScriptRoot "..\.env"
+if (Test-Path $envFile) {
+    Get-Content $envFile | ForEach-Object {
+        if ($_ -match '^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$') {
+            [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2], "Process")
+        }
+    }
+    Write-Host "Loaded secrets from $envFile" -ForegroundColor DarkGray
+}
+
+# ============================================================
 # REQUIRED — the bot will not start without all three of these
 # ============================================================
 
 # From the Discord Developer Portal (discord.com/developers/applications) —
-# create an application, add a Bot, copy its token:
-$env:DISCORD_BOT_TOKEN = "PASTE-YOUR-DISCORD-BOT-TOKEN-HERE"
+# create an application, add a Bot, copy its token. Save it to .env as
+# DISCORD_BOT_TOKEN=... instead of uncommenting the line below, if you can:
+# if (-not $env:DISCORD_BOT_TOKEN) {
+#     $env:DISCORD_BOT_TOKEN = "PASTE-YOUR-DISCORD-BOT-TOKEN-HERE"
+# }
 
-# The SAME token you set in ultron-backend\start-ultron.ps1 — this is how
-# the bot authenticates to the backend:
-$env:ULTRON_API_TOKEN = "PASTE-YOUR-TOKEN-HERE"
+# The SAME token the backend was started with — this is how the bot
+# authenticates to it. Save it to .env as ULTRON_API_TOKEN=... instead of
+# uncommenting the line below, if you can:
+# if (-not $env:ULTRON_API_TOKEN) {
+#     $env:ULTRON_API_TOKEN = "PASTE-YOUR-TOKEN-HERE"
+# }
 
 # Comma-separated Discord user IDs allowed to use the bot. Right-click
 # your own username in Discord (with Developer Mode on, in Settings ->
 # Advanced) -> "Copy User ID". Without this, the bot refuses to start —
-# there is no default allowlist, on purpose:
-$env:ULTRON_DISCORD_ALLOWED_USERS = "PASTE-YOUR-DISCORD-USER-ID-HERE"
+# there is no default allowlist, on purpose. Save it to .env as
+# ULTRON_DISCORD_ALLOWED_USERS=... instead of uncommenting the line
+# below, if you can:
+# if (-not $env:ULTRON_DISCORD_ALLOWED_USERS) {
+#     $env:ULTRON_DISCORD_ALLOWED_USERS = "PASTE-YOUR-DISCORD-USER-ID-HERE"
+# }
 
 # ============================================================
 # Optional
@@ -54,7 +83,7 @@ $hasPlaceholder = $false
 foreach ($name in $placeholders.Keys) {
     $value = $placeholders[$name]
     if ([string]::IsNullOrWhiteSpace($value) -or $value -like "PASTE-*") {
-        Write-Host "$name is still a placeholder — edit this script and set a real value before running it." -ForegroundColor Red
+        Write-Host "$name is not set - add it to .env, or edit this script and uncomment its line, before running this." -ForegroundColor Red
         $hasPlaceholder = $true
     }
 }

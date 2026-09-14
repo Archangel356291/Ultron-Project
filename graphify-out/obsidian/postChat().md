@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "apiGet"
+community: "authHeaders"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/apiGet
+  - community/authHeaders
 ---
 
 # postChat()
@@ -14,4 +14,4 @@ tags:
 - [[authHeaders()]] - `calls` [EXTRACTED]
 - [[sendChatMessage()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/apiGet
+#graphify/code #graphify/EXTRACTED #community/authHeaders

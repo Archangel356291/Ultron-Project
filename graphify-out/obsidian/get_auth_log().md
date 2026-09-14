@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "require_token"
+community: "route"
 location: "L593"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/require_token
+  - community/route
 ---
 
 # get_auth_log()
@@ -16,4 +16,4 @@ tags:
 - [[app.py]] - `indirect_call` [INFERRED]
 - [[security_auth_log()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/require_token
+#graphify/code #graphify/EXTRACTED #community/route

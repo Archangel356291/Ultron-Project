@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/start-ultron.ps1"
 type: "code"
-community: "apiGet"
+community: "start-ultron.ps1"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/apiGet
+  - community/start-ultronps1
 ---
 
 # start-ultron.ps1
@@ -22,4 +22,4 @@ tags:
 - [[ULTRON_LLM_DAILY_TOKEN_BUDGET]] - `references` [EXTRACTED]
 - [[ULTRON_MCP_CONFIG (optional MCP feature)]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/apiGet
+#graphify/code #graphify/EXTRACTED #community/start-ultronps1

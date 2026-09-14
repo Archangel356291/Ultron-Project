@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "run_ultron_chat"
+community: "app.py"
 location: "L2420"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/run_ultron_chat
+  - community/apppy
 ---
 
 # Turn an SDK content-block object into a plain dict so it can be JSON-returned…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_serialize_block()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/run_ultron_chat
+#graphify/rationale #graphify/EXTRACTED #community/apppy

@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "rationale"
-community: "apiGet"
+community: "MCP (external tool/plugin) Support"
 tags:
   - graphify/rationale
   - graphify/INFERRED
-  - community/apiGet
+  - community/MCP_external_tool/plugin_Support
 ---
 
 # Real Action Endpoints (backup, deploy-container)
@@ -20,4 +20,4 @@ tags:
 - [[previewBackup()]] - `shares_data_with` [INFERRED]
 - [[previewDeploy()]] - `shares_data_with` [INFERRED]
 
-#graphify/rationale #graphify/INFERRED #community/apiGet
+#graphify/rationale #graphify/INFERRED #community/MCP_external_tool/plugin_Support

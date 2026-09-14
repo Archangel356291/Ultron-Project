@@ -136,6 +136,35 @@ Tailscale (cellular, Wi-Fi off):**
 Backend stopped after this test (not left running). To relaunch:
 `run-beta.ps1` from `ultron-backend/`, same as documented above.
 
+## Discord bot: set up, invited, and verified live (2026-09-13)
+
+Closes the "Discord bot (never started)" gap from Phase 1. Real bug found
+and fixed along the way — see `CODE-AUDIT.md`'s later 2026-09-13 entry
+for the full detail: `start-bot.ps1` never loaded `.env`, and the real
+bot token that had been sitting in `.env` was under the wrong key name.
+
+- Fixed both, confirmed the existing bot token is real and valid
+  (successfully authenticated with Discord's gateway).
+- Invited the bot to a real Discord server via an OAuth link built from
+  its own application ID (fetched live via the Discord API, not typed by
+  hand) with the permissions it actually needs: view channels, send
+  messages, embed links, attach files (for `/export`), read history.
+- Set `ULTRON_DISCORD_DEV_GUILD_ID` to that server so all 15 slash
+  commands sync instantly instead of waiting up to an hour for global
+  sync — confirmed synced via the Discord API.
+- A human ran `/status` and `/ask` for real in Discord; cross-checked
+  against the backend's own request log to confirm the full round trip
+  (Discord → bot → backend → Claude → back), not just "Discord showed a
+  reply."
+
+Not yet tested live: `/backup` and `/deploy`'s preview-confirm flow (the
+per-user Confirm/Cancel buttons), `/export`'s file attachment, and the
+rest of the read-only commands (`/containers`, `/storage`, `/systems`,
+`/repos`, `/diff`, `/trades`, `/portfolio`, `/usage`, `/mcp`, `/forget`).
+Their code paths are the same ones already exercised via the dashboard
+and curl, so low risk, but "the same code, called from Discord" hasn't
+been clicked through end to end for those specific commands yet.
+
 ---
 
 Everything below is pulled fresh from the actual code as of this write-up

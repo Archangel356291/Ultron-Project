@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "require_token"
+community: "_json_result"
 location: "L1871"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/require_token
+  - community/_json_result
 ---
 
 # get_llm_usage()
@@ -17,4 +17,4 @@ tags:
 - [[app.py]] - `indirect_call` [INFERRED]
 - [[chat_usage()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/require_token
+#graphify/code #graphify/EXTRACTED #community/_json_result

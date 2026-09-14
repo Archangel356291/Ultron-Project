@@ -1,12 +1,12 @@
 ---
 source_file: "dev-tools/test_mcp_server.py"
 type: "code"
-community: "Ultron (personal AI home lab system)"
+community: "test_mcp_server.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Ultron_personal_AI_home_lab_system
+  - community/test_mcp_serverpy
 ---
 
 # test_mcp_server.py
@@ -19,4 +19,4 @@ tags:
 - [[jsonrpc_result()]] - `contains` [EXTRACTED]
 - [[mcp_endpoint()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system
+#graphify/code #graphify/EXTRACTED #community/test_mcp_serverpy

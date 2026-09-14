@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "route"
+community: "_fifo_engine"
 location: "L1456"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/route
+  - community/_fifo_engine
 ---
 
 # get_trade_tax_lots()
@@ -17,4 +17,4 @@ tags:
 - [[app.py]] - `indirect_call` [INFERRED]
 - [[trades_tax_lots()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/route
+#graphify/code #graphify/EXTRACTED #community/_fifo_engine

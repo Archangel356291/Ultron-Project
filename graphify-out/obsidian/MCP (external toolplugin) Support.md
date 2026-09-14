@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "rationale"
-community: "Ultron (personal AI home lab system)"
+community: "MCP (external tool/plugin) Support"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/Ultron_personal_AI_home_lab_system
+  - community/MCP_external_tool/plugin_Support
 ---
 
 # MCP (external tool/plugin) Support
@@ -21,4 +21,4 @@ tags:
 - [[loadMcpServers()]] - `shares_data_with` [INFERRED]
 - [[test_mcp_server.py]] - `references` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system
+#graphify/rationale #graphify/EXTRACTED #community/MCP_external_tool/plugin_Support
