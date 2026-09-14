@@ -70,16 +70,36 @@ gitignored (see `.gitignore`), the same place every other secret this
 project holds lives. **There is no recovery path if this key is lost** —
 back it up the same way you'd back up any other credential in `.env`.
 
-**Sticky once private:** a node already redacted by a prior run stays
-private on every subsequent run, even if its (now-hidden) content would
-no longer match the keyword list — re-deriving from an already-scrubbed
-stub would misread "no more telltale keywords" as "safe to make public,"
-which is backwards. (This was a real bug caught by
+**Sticky once private — but only within this script.** A node already
+redacted by a prior `enrich_visibility.py` run stays private on every
+subsequent `enrich_visibility.py` run, even if its (now-hidden) content
+would no longer match the keyword list — re-deriving from an
+already-scrubbed stub would misread "no more telltale keywords" as "safe
+to make public," which is backwards. (This was a real bug caught by
 `graph-schema/test_enrich.py` during development — a naive first version
-reclassified redacted nodes as public on the second run, because the
-redaction itself removed the words that triggered private classification
-in the first place. Fixed by recovering the decrypted original before
-re-classifying/re-tagging on every run, not working off the stub.)
+reclassified redacted nodes as public on the second run. Fixed by
+recovering the decrypted original before re-classifying/re-tagging on
+every run, not working off the stub.)
+
+**This stickiness does NOT protect against graphify's own rebuilds,
+confirmed live during development.** graphify's code rebuild (both the
+manual CLI and its post-commit/post-checkout hook) re-extracts AST nodes
+from source files it doesn't know are "private" and merges them back into
+`graph.json` by matching `source_file` — since a freshly re-extracted
+node has its real `source_file`/`label` again, it overwrites the redacted
+stub outright, `visibility` field and all, exactly as if the node had
+never been redacted. This happened during Module 4 development: a single
+`git checkout` between branches dropped the private count from 48 to 19
+(every *code*-derived private node reverted to plaintext; only
+*document*-derived ones survived, since graphify's code rebuild never
+touches those). Re-running `enrich_visibility.py` correctly re-catches
+and re-redacts them — the keyword classifier still works fine on the
+now-plaintext content — but there is a real window, however brief, where
+a private code node sits in plaintext `graph.json` on disk until someone
+re-runs the privacy scripts. **Treat "committed to git" as the actual
+safety boundary, not "graph.json currently looks redacted"** — always
+run `graph-schema\run.ps1` and verify before committing, never assume
+the prior run's protection is still standing.
 
 **Second real leak, found and fixed the same night:** redacting a node's
 own `label`/`source_file` isn't sufficient — `graphify cluster-only`

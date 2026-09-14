@@ -240,9 +240,9 @@
     "semantic_hash": ""
   },
   "graph-schema/.node_history.json": {
-    "mtime": 1789426314.3339448,
-    "seen": 1789426533.2964487,
-    "ast_hash": "0c6a6a4664ac4201af76f5143e4d7a60",
+    "mtime": 1789426612.37482,
+    "seen": 1789426649.5919738,
+    "ast_hash": "89fd6aed3777a4ae365c0e717cb27f5b",
     "semantic_hash": ""
   },
   "graph-schema/enrich_visibility.py": {
@@ -264,15 +264,21 @@
     "semantic_hash": ""
   },
   "GRAPH-SCHEMA-DESIGN.md": {
-    "mtime": 1789426501.8803082,
-    "seen": 1789426533.296463,
-    "ast_hash": "65f6b8badbb694c200884433d2ff43e7",
+    "mtime": 1789426624.2929516,
+    "seen": 1789426649.5919907,
+    "ast_hash": "a6f2606b16f741aebb15c5de22e51e13",
     "semantic_hash": ""
   },
   "graph-schema/requirements.txt": {
     "mtime": 1789426303.6956758,
     "seen": 1789426533.2964723,
     "ast_hash": "4f0f4d3c5c469ebb603d63eeac3057e3",
+    "semantic_hash": ""
+  },
+  "graph-schema/run.ps1": {
+    "mtime": 1789426606.848352,
+    "seen": 1789426649.5919771,
+    "ast_hash": "c68d211b694c6bf59514bcf201d30e3a",
     "semantic_hash": ""
   }
 }

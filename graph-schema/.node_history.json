@@ -1117,19 +1117,19 @@
   },
   "button": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "choices": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "command": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "describe": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "dev_tools_fake_pkgs_discord_ext_init": {
     "date_created": "2026-09-13T02:46:48+00:00",
@@ -1137,7 +1137,7 @@
   },
   "event": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "ultron_discord_bot_bot": {
     "date_created": "2026-09-14T08:17:36.425766+00:00",
@@ -1145,7 +1145,7 @@
   },
   "ultron_discord_bot_bot_py_exception": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "dev_tools_fake_pkgs_discord_init_rationale_90": {
     "date_created": "2026-09-13T02:46:48+00:00",
@@ -1185,7 +1185,7 @@
   },
   "dev_tools_fake_pkgs_discord_init_py_exception": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "dev_tools_fake_pkgs_discord_init_rationale_1": {
     "date_created": "2026-09-13T02:46:48+00:00",
@@ -1281,7 +1281,7 @@
   },
   "after_request": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "ultron_backend_app": {
     "date_created": "2026-09-14T22:41:24.418964+00:00",
@@ -1329,7 +1329,7 @@
   },
   "dev_tools_fake_pkgs_anthropic_init_py_exception": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "dev_tools_test_mcp_untrusted_wrap": {
     "date_created": "2026-09-14T10:39:07.209395+00:00",
@@ -1349,7 +1349,7 @@
   },
   "dev_tools_test_mcp_server_py_route": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "dev_tools_test_mcp_server_rationale_1": {
     "date_created": "2026-09-13T02:46:48+00:00",
@@ -1389,7 +1389,7 @@
   },
   "ultron_backend_app_py_exception": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "ultron_backend_app_rationale_2318": {
     "date_created": "2026-09-14T22:41:24.418964+00:00",
@@ -1429,7 +1429,7 @@
   },
   "ultron_backend_app_py_route": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "ultron_backend_app_rationale_1858": {
     "date_created": "2026-09-14T22:41:24.418964+00:00",
@@ -1493,7 +1493,7 @@
   },
   "dev_tools_fake_pkgs_aiohttp_init_py_exception": {
     "date_created": "2026-09-14T22:51:54.322061+00:00",
-    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+    "date_updated": "2026-09-14T22:58:51.889003+00:00"
   },
   "dev_tools_fake_pkgs_aiohttp_init_rationale_1": {
     "date_created": "2026-09-13T02:46:48+00:00",
@@ -1965,114 +1965,206 @@
   },
   "graph_schema_enrich_visibility_classify_visibility": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_enrich_visibility_decrypt_private_node": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_enrich_visibility_derive_tags": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_enrich_visibility_enrich": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_enrich_visibility_file_mtime_iso": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_enrich_visibility_get_or_create_key": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_enrich_visibility_load_json": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_enrich_visibility_slug": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_test_enrich_demo": {
     "date_created": "2026-09-14T22:50:24.078808+00:00",
-    "date_updated": "2026-09-14T22:50:24.078808+00:00"
+    "date_updated": "2026-09-14T22:57:57.094338+00:00"
   },
   "graph_schema_test_enrich_fresh_paths": {
     "date_created": "2026-09-14T22:50:24.078808+00:00",
-    "date_updated": "2026-09-14T22:50:24.078808+00:00"
+    "date_updated": "2026-09-14T22:57:57.094338+00:00"
   },
   "graph_schema_test_enrich_write": {
     "date_created": "2026-09-14T22:50:24.078808+00:00",
-    "date_updated": "2026-09-14T22:50:24.078808+00:00"
+    "date_updated": "2026-09-14T22:57:57.094338+00:00"
   },
   "graph_schema_safe_report_main": {
     "date_created": "2026-09-14T22:54:16.112516+00:00",
-    "date_updated": "2026-09-14T22:54:16.112516+00:00"
+    "date_updated": "2026-09-14T22:57:57.093338+00:00"
   },
   "graph_schema_safe_report_make_safe_labels": {
     "date_created": "2026-09-14T22:54:16.112516+00:00",
-    "date_updated": "2026-09-14T22:54:16.112516+00:00"
+    "date_updated": "2026-09-14T22:57:57.093338+00:00"
   },
   "graph_schema_enrich_visibility": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_test_enrich": {
     "date_created": "2026-09-14T22:50:24.078808+00:00",
-    "date_updated": "2026-09-14T22:50:24.078808+00:00"
+    "date_updated": "2026-09-14T22:57:57.094338+00:00"
   },
   "graph_schema_enrich_visibility_rationale_1": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_enrich_visibility_rationale_103": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_enrich_visibility_rationale_209": {
     "date_created": "2026-09-14T22:50:48.056163+00:00",
-    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+    "date_updated": "2026-09-14T22:57:57.092333+00:00"
   },
   "graph_schema_test_enrich_rationale_1": {
     "date_created": "2026-09-14T22:50:24.078808+00:00",
-    "date_updated": "2026-09-14T22:50:24.078808+00:00"
+    "date_updated": "2026-09-14T22:57:57.094338+00:00"
   },
   "graph_schema_design": {
     "date_created": "2026-09-14T22:55:01.880308+00:00",
-    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+    "date_updated": "2026-09-14T22:57:57.090723+00:00"
   },
   "graph_schema_design_full_workflow_after_a_graphify_rebuild": {
     "date_created": "2026-09-14T22:55:01.880308+00:00",
-    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+    "date_updated": "2026-09-14T22:57:57.090723+00:00"
   },
   "graph_schema_design_knowledge_graph_schema_design_module_4_v1": {
     "date_created": "2026-09-14T22:55:01.880308+00:00",
-    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+    "date_updated": "2026-09-14T22:57:57.090723+00:00"
   },
   "graph_schema_design_known_limitations_not_solved_tonight": {
     "date_created": "2026-09-14T22:55:01.880308+00:00",
-    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+    "date_updated": "2026-09-14T22:57:57.090723+00:00"
   },
   "graph_schema_design_schema_additions_per_node": {
     "date_created": "2026-09-14T22:55:01.880308+00:00",
-    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+    "date_updated": "2026-09-14T22:57:57.090723+00:00"
   },
   "graph_schema_design_visibility_classification_and_enforcement": {
     "date_created": "2026-09-14T22:55:01.880308+00:00",
-    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+    "date_updated": "2026-09-14T22:57:57.090723+00:00"
   },
   "graph_schema_design_what_s_committed_to_git_vs_what_never_is": {
     "date_created": "2026-09-14T22:55:01.880308+00:00",
-    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+    "date_updated": "2026-09-14T22:57:57.090723+00:00"
   },
   "graph_schema_safe_report": {
     "date_created": "2026-09-14T22:54:16.112516+00:00",
-    "date_updated": "2026-09-14T22:54:16.112516+00:00"
+    "date_updated": "2026-09-14T22:57:57.093338+00:00"
   },
   "graph_schema_safe_report_rationale_1": {
     "date_created": "2026-09-14T22:54:16.112516+00:00",
-    "date_updated": "2026-09-14T22:54:16.112516+00:00"
+    "date_updated": "2026-09-14T22:57:57.093338+00:00"
+  },
+  "ultron_backend_remote_access_1_install_on_the_cyberpower_pc_the_backend_host": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_2_windows_firewall_probably_already_handled": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_3_install_on_your_phone": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_4_point_the_dashboard_and_bot_at_the_tailscale_address": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_5_verify_it_actually_works": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_6_a_couple_of_security_options_worth_knowing_about": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_find_this_machine_s_tailscale_address": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_optional_a_stricter_rule_instead_of_a_lan_wide_one": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_remote_access_tailscale_setup": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_tags_and_grants_in_more_depth": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_troubleshooting": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_remote_access_what_tailscale_actually_is_briefly": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_pi_setup": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_pi_setup_0_what_s_already_been_generated_for_this": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_pi_setup_1_flash_the_sd_card": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_pi_setup_2_first_boot_and_ssh_in": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_pi_setup_3_update_the_os": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_pi_setup_4_install_tailscale_join_the_same_tailnet": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_pi_setup_5_install_docker": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_pi_setup_raspberry_pi_setup_getting_it_reachable_phase_1": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_pi_setup_where_this_leaves_things": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_pi_setup_why_this_order": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "graph_schema_run": {
+    "date_created": "2026-09-14T22:57:57.093338+00:00",
+    "date_updated": "2026-09-14T22:57:57.093338+00:00"
   }
 }

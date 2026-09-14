@@ -240,45 +240,45 @@
     "semantic_hash": ""
   },
   "graph-schema/.node_history.json": {
-    "mtime": 1789426612.37482,
-    "seen": 1789426649.5919738,
+    "mtime": 1789426677.0923326,
+    "seen": 1789426678.3918962,
     "ast_hash": "89fd6aed3777a4ae365c0e717cb27f5b",
     "semantic_hash": ""
   },
   "graph-schema/enrich_visibility.py": {
-    "mtime": 1789426248.056163,
-    "seen": 1789426533.2964501,
-    "ast_hash": "3d8849bef1155b8d66ec03b6a3b48745",
+    "mtime": 1789426677.0923326,
+    "seen": 1789426678.3918977,
+    "ast_hash": "d9de50717c4fdec9fb8deaa248499734",
     "semantic_hash": ""
   },
   "graph-schema/safe_report.py": {
-    "mtime": 1789426456.112516,
-    "seen": 1789426533.296451,
-    "ast_hash": "00ba7b335fa71de1525d8f1b68f9acdd",
+    "mtime": 1789426677.0933383,
+    "seen": 1789426678.3918996,
+    "ast_hash": "1fb25f21089e906fb0abdf09ec132139",
     "semantic_hash": ""
   },
   "graph-schema/test_enrich.py": {
-    "mtime": 1789426224.0788083,
-    "seen": 1789426533.2964525,
-    "ast_hash": "c8443a5246bf4db218e1313249b57236",
+    "mtime": 1789426677.0943384,
+    "seen": 1789426678.3919003,
+    "ast_hash": "cd761ac59a4ee51bff948508ea711869",
     "semantic_hash": ""
   },
   "GRAPH-SCHEMA-DESIGN.md": {
-    "mtime": 1789426624.2929516,
-    "seen": 1789426649.5919907,
-    "ast_hash": "a6f2606b16f741aebb15c5de22e51e13",
+    "mtime": 1789426677.0907233,
+    "seen": 1789426678.3919106,
+    "ast_hash": "ea52b5fac66165787d5ab73c1f82eb21",
     "semantic_hash": ""
   },
   "graph-schema/requirements.txt": {
-    "mtime": 1789426303.6956758,
-    "seen": 1789426533.2964723,
-    "ast_hash": "4f0f4d3c5c469ebb603d63eeac3057e3",
+    "mtime": 1789426677.0933383,
+    "seen": 1789426678.3919196,
+    "ast_hash": "3d2b084bfd4e1dfdc75509e7e07d3731",
     "semantic_hash": ""
   },
   "graph-schema/run.ps1": {
-    "mtime": 1789426606.848352,
-    "seen": 1789426649.5919771,
-    "ast_hash": "c68d211b694c6bf59514bcf201d30e3a",
+    "mtime": 1789426677.0933383,
+    "seen": 1789426678.3918986,
+    "ast_hash": "3dd67cbc0a8f531a65b5c05715bfc51a",
     "semantic_hash": ""
   }
 }
