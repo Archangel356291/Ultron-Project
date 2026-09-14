@@ -210,13 +210,29 @@ re-verified:
 **Live-verified, not just read:** `dev-tools/test_beta_spend_cap.py` was
 extended to cover findings 1–4 end-to-end — the oversized-history
 rejection, the `/api/tts` cap, and the concurrency race (including the
-sabotage check for #3 above) — and re-run clean after every fix. Findings
-5, 6, 7, 8, 9 were verified by direct code inspection and, for 5 and 8,
-a JS syntax check of the modified dashboard script blocks; none of these
-five have an automated regression test yet (bot.py and the dashboard
-have no test harness comparable to the Flask test client used for
-app.py) — worth adding if this project's test infrastructure grows to
-cover them.
+sabotage check for #3 above) — and re-run clean after every fix.
+
+Separately, the same day, the real backend was actually started
+(`run-beta.ps1`, real `.env` secrets, not fakes) and driven both via curl
+and a real browser click-through as admin: `/api/health`, `/api/whoami`,
+`/api/connections`, a real `/api/chat` call (real Claude reply), and the
+oversized-history rejection (finding 2) all confirmed live over HTTP.
+In the actual dashboard in a real browser: connected via Settings, the
+Usage & cost controls card and the new Connections card (finding 4) both
+rendered real live data correctly, the beta-only "Your spend" card
+(finding 5) correctly stayed hidden for the admin role, and a chat
+message sent from both the Assistant tab and the Home talk-bar
+(`sendFromHome()`, finding 8) both completed normally with no console
+errors — confirming the `chatSending` re-entrancy guard doesn't break
+the normal non-overlapping case. Backend stopped afterward, not left
+running.
+
+Findings 6, 7, and 9 (Discord bot timeout handling, its per-user chat
+lock, and the backup collision lock) were verified by direct code
+inspection only — bot.py has no test harness comparable to the Flask
+test client used for app.py, and backup wasn't live-tested because
+`ULTRON_BACKUP_SOURCES`/`ULTRON_BACKUP_DEST` aren't configured on this
+host. Worth live-verifying once either is actually exercised for real.
 
 **Already known, not new:** MCP discovery caching for the life of the
 process and blocking sequentially on first use are both already listed
