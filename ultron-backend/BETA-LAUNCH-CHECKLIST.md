@@ -165,6 +165,47 @@ Their code paths are the same ones already exercised via the dashboard
 and curl, so low risk, but "the same code, called from Discord" hasn't
 been clicked through end to end for those specific commands yet.
 
+## Multi-device concurrency: tested for real (2026-09-13)
+
+Every prior test was one device at a time. Before running a live beta
+with several testers connected simultaneously, actually verified the
+backend handles real concurrent load rather than assuming `threaded=True`
+in `app.run()` was enough on its own:
+
+- **8 truly concurrent requests** (`curl ... &` fired together, not
+  sequentially) to `/api/status` — all returned `200` in ~0.4s total for
+  all 8, not ~0.4s × 8, confirming they actually ran in parallel rather
+  than queueing.
+- **2 concurrent `/api/chat` calls** with different prompts — each got
+  its own correct, non-cross-contaminated reply, and both usage-log
+  writes landed in the SQLite database with no lock errors
+  (`sqlite3.connect(..., timeout=10)` gives real headroom here).
+- **12 interleaved concurrent requests from two different beta
+  testers** (`alice` and `bob`, real distinct tokens, fired in rapid
+  alternating pairs) — `/api/whoami` correctly identified the right
+  tester on every single request. Zero identity bleed under real
+  concurrent load, not just "looks thread-safe by reading the code."
+
+**Two real constraints to know about before a multi-tester day** — both
+deliberate, documented, cost-control features, not bugs, but they're
+*shared across everyone*, not per-tester:
+
+- **Chat rate limit**: `ULTRON_CHAT_RATE_LIMIT_PER_MINUTE`, defaults to
+  20/minute *total*, across admin and every beta tester combined. A
+  handful of people chatting actively at once can trip this faster than
+  one person testing alone would expect.
+- **Daily token budget**: `ULTRON_LLM_DAILY_TOKEN_BUDGET`, set to 50,000
+  in `start-ultron.ps1` (active by default), also a *combined* ceiling
+  for the whole day, not per-tester.
+
+Neither was changed — the right value depends on how many testers you
+actually end up with, which isn't known yet. Rough starting point once
+it is: budget roughly a few thousand tokens per tester per short
+conversation, so for N simultaneous testers doing real testing, a daily
+budget in the tens-of-thousands-times-N range is more realistic than the
+single-user 50k default. Both are one-line edits in
+`ultron-backend/start-ultron.ps1`.
+
 ---
 
 Everything below is pulled fresh from the actual code as of this write-up
