@@ -71,6 +71,35 @@ end-to-end" gap above:
 Still open before this goes beyond "same device": the login-screen and
 Pi/Funnel items above.
 
+## Beta test #1 part 2: real remote device over Tailscale (2026-09-13)
+
+Extended beta test #1 beyond one device, using Tailscale instead of
+waiting on the Pi/Funnel:
+
+- Tailscale switched to a fresh account with both devices on it: this
+  PC (`pc-device-name`) and a phone (`phone-device-name`).
+- Windows Firewall rule scoped to the Tailscale range only, not the LAN:
+  `-RemoteAddress 100.64.0.0/10` (narrower than the plain port-5000 rule
+  in step 4 of the deployment plan above).
+- Tailnet grants locked to `autogroup:member` → `autogroup:self` (own
+  devices only) — see `REMOTE-ACCESS.md` for the syntax fix this needed
+  (`autogroup:self` isn't valid as a source, only a destination).
+- Verified from the phone itself, cellular only (Wi-Fi off, genuinely
+  off-LAN): `http://pc-device-name.tailXXXX.ts.net:5000/api/health`
+  returned `{"ok":true}`. Confirmed from this machine that `/api/whoami`
+  also resolves correctly over the same address with the beta token.
+
+**Real limitation, not yet closed:** this only reaches devices on *this*
+Tailscale account. A genuine third-party tester (different person,
+different account) still isn't covered by `autogroup:self` — they'd need
+an explicit invite/share, or the original public-URL-via-Funnel plan,
+which is still waiting on the Pi.
+
+Not yet done: actually opening `ultron-dashboard.html` on the phone
+itself and connecting through the UI (only the raw API was hit from the
+phone; the full dashboard-as-beta_tester walkthrough was verified locally
+on this PC, not yet repeated on a second device).
+
 ---
 
 Everything below is pulled fresh from the actual code as of this write-up
