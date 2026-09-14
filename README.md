@@ -33,6 +33,9 @@ dev-tools/            Testing infrastructure (fake SDKs, a real local
   `ultron-discord-bot/README.md`
 - **Remote access (Tailscale)?** →
   `ultron-backend/REMOTE-ACCESS.md`
+- **Connecting a Raspberry Pi for home-lab actions?** →
+  `ultron-backend/PI-SETUP.md` — phase 1 (network/SSH/Docker) only; the
+  backend doesn't talk to a Pi yet
 - **Continuing development / writing tests?** →
   `dev-tools/README.md`
 - **Dashboard's visual design, pixel-sampled against the reference
