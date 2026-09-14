@@ -31,7 +31,9 @@ ULTRON_BETA_TOKENS=alice:3f9a1c7e2b8d4056a1f2e3c4b5a69788,bob:9c2e5f81a4b7301dc6
    back once connected, so it's easy to confirm which token actually
    ended up in their hands.
 4. **Add a row to the roster below** with their name and the date they
-   started.
+   started — and the matching table in the main `README.md`'s "Beta
+   testers" section, which mirrors this one for visibility. Keep both
+   in sync.
 5. **When they stop testing:** remove their `name:token` entry from
    `ULTRON_BETA_TOKENS` and restart the backend. This revokes only that
    person — everyone else's token keeps working.

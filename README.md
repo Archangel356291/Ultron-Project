@@ -132,14 +132,21 @@ Development tab).
 
 ## Beta testers
 
-Full credits roster lives in `ultron-backend/BETA-TESTERS.md`, along with
-how someone gets added (each tester gets their own distinct,
-independently-revocable token — nobody shares credentials) and what to
-send them (`ultron-backend/BETA-TESTER-GUIDE.md`). Empty for now — no
-third-party testers yet, just the owner's own devices verifying the role
-itself works.
+Credited here as they join — not required, but real work deserves it.
+Full process (how someone gets added, each tester's own independently-
+revocable token, what to send them) lives in
+`ultron-backend/BETA-TESTERS.md`; this table mirrors that file's
+roster — update both when it changes.
+
+| Name | Started | Notes |
+|---|---|---|
+| _none yet_ | | |
+
+No third-party testers yet — beta test #1 (2026-09-13) verified the
+`beta_tester` role itself using the owner's own second device over
+Tailscale, not an outside tester.
 
 **Inviting someone?** `ultron-backend/BETA-INVITE-MESSAGE.md` has a
-ready-to-send, copy/paste invite — the first ask, sent before the guide
-and token above. Once they say yes, add their name to the roster in
-`BETA-TESTERS.md`.
+ready-to-send, copy/paste invite — the first ask, sent before
+`ultron-backend/BETA-TESTER-GUIDE.md` and their token. Once they say
+yes, add their name to the roster both here and in `BETA-TESTERS.md`.
