@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "rationale"
-community: "MCP (external tool/plugin) Support"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/rationale
   - graphify/INFERRED
-  - community/MCP_external_tool/plugin_Support
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # Real Action Endpoints (backup, deploy-container)
@@ -20,4 +20,4 @@ tags:
 - [[previewBackup()]] - `shares_data_with` [INFERRED]
 - [[previewDeploy()]] - `shares_data_with` [INFERRED]
 
-#graphify/rationale #graphify/INFERRED #community/MCP_external_tool/plugin_Support
+#graphify/rationale #graphify/INFERRED #community/Ultron_personal_AI_home_lab_system

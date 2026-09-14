@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "log_activity"
+community: "run_ultron_chat"
 location: "L215"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/log_activity
+  - community/run_ultron_chat
 ---
 
 # Best-effort logging — never raises. A logging failure (disk full, permissions,…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[log_activity()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/log_activity
+#graphify/rationale #graphify/EXTRACTED #community/run_ultron_chat

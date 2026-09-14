@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "apiGet"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/apiGet
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # loadAuthLog()
@@ -15,4 +15,4 @@ tags:
 - [[apiGet()]] - `calls` [EXTRACTED]
 - [[escapeHtml()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/apiGet
+#graphify/code #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system

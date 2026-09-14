@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-dashboard.html"
 type: "code"
-community: "MCP (external tool/plugin) Support"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MCP_external_tool/plugin_Support
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # confirmBackup()
@@ -14,4 +14,4 @@ tags:
 - [[Real Action Endpoints (backup, deploy-container)]] - `shares_data_with` [INFERRED]
 - [[apiPost()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MCP_external_tool/plugin_Support
+#graphify/code #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system

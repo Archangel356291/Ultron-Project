@@ -36,14 +36,14 @@
       }
     },
     {
-      "query": "tag:#community/_json_result",
+      "query": "tag:#community/route",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/docker_ps",
+      "query": "tag:#community/action_backup",
       "color": {
         "a": 1,
         "rgb": 11565729
@@ -71,21 +71,21 @@
       }
     },
     {
-      "query": "tag:#community/apiGet",
+      "query": "tag:#community/Ultron_personal_AI_home_lab_system",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/Ultron_personal_AI_home_lab_system",
+      "query": "tag:#community/_mcp_jsonrpc_call",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/trades",
+      "query": "tag:#community/trades_export",
       "color": {
         "a": 1,
         "rgb": 14767961
@@ -99,7 +99,7 @@
       }
     },
     {
-      "query": "tag:#community/MCP_external_tool/plugin_Support",
+      "query": "tag:#community/_ensure_mcp_discovered",
       "color": {
         "a": 1,
         "rgb": 5873999
@@ -120,27 +120,6 @@
       }
     },
     {
-      "query": "tag:#community/Flask_Backend_apppy",
-      "color": {
-        "a": 1,
-        "rgb": 16752039
-      }
-    },
-    {
-      "query": "tag:#community/route",
-      "color": {
-        "a": 1,
-        "rgb": 10253663
-      }
-    },
-    {
-      "query": "tag:#community/authHeaders",
-      "color": {
-        "a": 1,
-        "rgb": 12234924
-      }
-    },
-    {
       "query": "tag:#community/test_mcp_serverpy",
       "color": {
         "a": 1,
@@ -148,14 +127,14 @@
       }
     },
     {
-      "query": "tag:#community/_fifo_engine",
+      "query": "tag:#community/require_role",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/log_activity",
+      "query": "tag:#community/scan_container_cves",
       "color": {
         "a": 1,
         "rgb": 14767961
@@ -176,17 +155,10 @@
       }
     },
     {
-      "query": "tag:#community/require_role",
+      "query": "tag:#community/chat",
       "color": {
         "a": 1,
         "rgb": 15583560
-      }
-    },
-    {
-      "query": "tag:#community/Crypto/Trade_Record__Tax_Agent",
-      "color": {
-        "a": 1,
-        "rgb": 11565729
       }
     },
     {
@@ -327,13 +299,6 @@
       "color": {
         "a": 1,
         "rgb": 11565729
-      }
-    },
-    {
-      "query": "tag:#community/_indexmd",
-      "color": {
-        "a": 1,
-        "rgb": 16752039
       }
     },
     {

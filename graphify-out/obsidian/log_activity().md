@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "log_activity"
+community: "run_ultron_chat"
 location: "L214"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/log_activity
+  - community/run_ultron_chat
 ---
 
 # log_activity()
@@ -20,4 +20,4 @@ tags:
 - [[handler()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/log_activity
+#graphify/code #graphify/EXTRACTED #community/run_ultron_chat

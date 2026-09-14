@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[APIConnectionError]] - `inherits` [EXTRACTED]
 - [[APIStatusError]] - `inherits` [EXTRACTED]
-- [[Exception_2]] - `inherits` [EXTRACTED]
+- [[Exception_3]] - `inherits` [EXTRACTED]
 - [[anthropic__init__.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/anthropic/__init__py

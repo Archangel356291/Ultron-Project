@@ -1,16 +1,16 @@
 ---
 source_file: ""
 type: "code"
-community: "anthropic/__init__.py"
+community: "_mcp_jsonrpc_call"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/anthropic/__init__py
+  - community/_mcp_jsonrpc_call
 ---
 
 # Exception
 
 ## Connections
-- [[APIError]] - `inherits` [EXTRACTED]
+- [[MCPError]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/anthropic/__init__py
+#graphify/code #graphify/EXTRACTED #community/_mcp_jsonrpc_call

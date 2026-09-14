@@ -1,24 +1,29 @@
 ---
 type: community
-members: 15
+members: 20
 ---
 
 # require_role
 
-**Members:** 15 nodes
+**Members:** 20 nodes
 
 ## Members
 - [[Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope…]] - rationale - ultron-backend/app.py
+- [[Best-effort date - integer day count, for holding-period math. Never raises;…]] - rationale - ultron-backend/app.py
 - [[Constant-time-ish token check against both roles. Returns 'admin', 'beta', or…]] - rationale - ultron-backend/app.py
 - [[One TTS request to Fish Audio. Returns (audio_bytes, content_type, error).]] - rationale - ultron-backend/app.py
-- [[Returns None if the request is allowed, or an error message if the caller…]] - rationale - ultron-backend/app.py
-- [[Sums input+output tokens (real spend) for calls logged today (local date,…]] - rationale - ultron-backend/app.py
-- [[_check_rate_limit()]] - code - ultron-backend/app.py
+- [[Per-disposal detail each row is one sell matched against one consumed buy lot,…]] - rationale - ultron-backend/app.py
+- [[Simplified FIFO realized gainloss per asset — the aggregated view. See…]] - rationale - ultron-backend/app.py
+- [[The one place FIFO matching happens. Returns both an aggregated per-asset view…]] - rationale - ultron-backend/app.py
+- [[_fifo_engine()]] - code - ultron-backend/app.py
 - [[_fish_audio_tts()]] - code - ultron-backend/app.py
 - [[_resolve_role()]] - code - ultron-backend/app.py
-- [[_todays_token_usage()]] - code - ultron-backend/app.py
-- [[chat()]] - code - ultron-backend/app.py
+- [[_trade_date_to_epoch_days()]] - code - ultron-backend/app.py
+- [[get_trade_summary()]] - code - ultron-backend/app.py
+- [[get_trade_tax_lots()]] - code - ultron-backend/app.py
 - [[require_role()]] - code - ultron-backend/app.py
+- [[trades_summary()]] - code - ultron-backend/app.py
+- [[trades_tax_lots()]] - code - ultron-backend/app.py
 - [[tts()]] - code - ultron-backend/app.py
 - [[whoami()]] - code - ultron-backend/app.py
 - [[wrapper()]] - code - ultron-backend/app.py
@@ -32,17 +37,15 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 8 edges to [[_COMMUNITY_ultron-backendapp.py]]
-- 3 edges to [[_COMMUNITY_route]]
-- 2 edges to [[_COMMUNITY__fifo_engine]]
-- 1 edge to [[_COMMUNITY_trades]]
+- 11 edges to [[_COMMUNITY_ultron-backendapp.py]]
+- 8 edges to [[_COMMUNITY_route]]
+- 1 edge to [[_COMMUNITY_trades_export]]
+- 1 edge to [[_COMMUNITY_chat]]
 - 1 edge to [[_COMMUNITY_require_token]]
-- 1 edge to [[_COMMUNITY_run_ultron_chat]]
-- 1 edge to [[_COMMUNITY__json_result]]
 
 ## Top bridge nodes
 - [[require_role()]] - degree 10, connects to 3 communities
-- [[chat()]] - degree 6, connects to 3 communities
-- [[_todays_token_usage()]] - degree 4, connects to 2 communities
+- [[_fifo_engine()]] - degree 7, connects to 3 communities
+- [[trades_summary()]] - degree 5, connects to 2 communities
+- [[trades_tax_lots()]] - degree 5, connects to 2 communities
 - [[tts()]] - degree 4, connects to 2 communities
-- [[whoami()]] - degree 3, connects to 2 communities

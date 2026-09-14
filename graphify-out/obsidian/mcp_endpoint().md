@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[jsonrpc_error()]] - `calls` [EXTRACTED]
 - [[jsonrpc_result()]] - `calls` [EXTRACTED]
-- [[route_1]] - `references` [EXTRACTED]
+- [[route]] - `references` [EXTRACTED]
 - [[test_mcp_server.py]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/test_mcp_serverpy

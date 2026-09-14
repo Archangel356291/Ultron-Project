@@ -72,6 +72,7 @@ tags:
 - [[chat()]] - `contains` [EXTRACTED]
 - [[chat_usage()]] - `contains` [EXTRACTED]
 - [[containers()]] - `contains` [EXTRACTED]
+- [[dashboard()]] - `contains` [EXTRACTED]
 - [[delete_trade()]] - `contains` [EXTRACTED]
 - [[dev_repo_diff()]] - `contains` [EXTRACTED]
 - [[dev_repos()]] - `contains` [EXTRACTED]

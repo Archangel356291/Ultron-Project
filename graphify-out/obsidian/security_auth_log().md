@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_json_result"
-location: "L1686"
+community: "route"
+location: "L1701"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_json_result
+  - community/route
 ---
 
 # security_auth_log()
@@ -15,7 +15,7 @@ tags:
 - [[_json_result()]] - `calls` [EXTRACTED]
 - [[get_auth_log()]] - `calls` [EXTRACTED]
 - [[require_token()]] - `references` [EXTRACTED]
-- [[route]] - `references` [EXTRACTED]
+- [[route_1]] - `references` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_json_result
+#graphify/code #graphify/EXTRACTED #community/route

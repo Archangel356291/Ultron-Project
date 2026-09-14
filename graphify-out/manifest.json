@@ -36,9 +36,9 @@
     "semantic_hash": "0cc3dc786cac971cfbdaf4340c89f428"
   },
   "ultron-backend/app.py": {
-    "mtime": 1789339322.338869,
-    "seen": 1789342702.8808105,
-    "ast_hash": "19bd82020d6e83d79050f6f3e83d5dba",
+    "mtime": 1789348237.9766662,
+    "seen": 1789349720.42197,
+    "ast_hash": "1a5a2092024ef656164e8b11806e8591",
     "semantic_hash": ""
   },
   "ultron-backend/get-tailscale-address.ps1": {
@@ -84,15 +84,15 @@
     "semantic_hash": "83626a5a42d97f30d8116be227a9ec32"
   },
   "ultron-backend/BETA-LAUNCH-CHECKLIST.md": {
-    "mtime": 1789347042.9040284,
-    "seen": 1789347051.7209275,
-    "ast_hash": "f2df25f1e6097ff9938ebe7845461561",
+    "mtime": 1789349687.0628932,
+    "seen": 1789349720.421984,
+    "ast_hash": "395c3b9ed79ba5e5fab5be893293f161",
     "semantic_hash": ""
   },
   "ultron-backend/README.md": {
-    "mtime": 1789339590.332769,
-    "seen": 1789342702.8808255,
-    "ast_hash": "48063744b9275160d7d448aad6311893",
+    "mtime": 1789349662.4907863,
+    "seen": 1789349720.4219863,
+    "ast_hash": "0856d6c236581ec0bd1038c15e008f42",
     "semantic_hash": ""
   },
   "ultron-backend/REMOTE-ACCESS.md": {
@@ -156,9 +156,9 @@
     "semantic_hash": ""
   },
   "ultron-backend/_index.md": {
-    "mtime": 1789346741.1493702,
-    "seen": 1789346749.7389128,
-    "ast_hash": "fcb3a923606f61fd70134b8497c962d0",
+    "mtime": 1789349711.6323786,
+    "seen": 1789349720.421988,
+    "ast_hash": "cf10e01e0c0c1d86a802be2d3d27f27e",
     "semantic_hash": ""
   },
   "ultron-backend/CODE-AUDIT.md": {

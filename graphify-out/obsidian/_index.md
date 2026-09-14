@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/_index.md"
 type: "document"
-community: "_index.md"
+community: "start-ultron.ps1"
 location: "L1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/_indexmd
+  - community/start-ultronps1
 ---
 
 # _index.md
@@ -17,4 +17,4 @@ tags:
 - [[_master-index]] - `references` [EXTRACTED]
 - [[ultron-backend index]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/_indexmd
+#graphify/document #graphify/EXTRACTED #community/start-ultronps1

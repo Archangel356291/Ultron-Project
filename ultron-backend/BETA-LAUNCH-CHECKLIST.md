@@ -100,6 +100,40 @@ itself and connecting through the UI (only the raw API was hit from the
 phone; the full dashboard-as-beta_tester walkthrough was verified locally
 on this PC, not yet repeated on a second device).
 
+## Beta test #1 closed out: full success (2026-09-13)
+
+Finished what "not yet done" above left open — the dashboard itself,
+through the UI, on the actual phone. Two real bugs surfaced doing this,
+both fixed:
+
+- **`file://` silently broke the Connect button.** The dashboard was
+  Taildropped to the phone and opened as a local file; mobile Chrome
+  restricts `fetch()` from `file://` origins, so the health check failed
+  with no useful error beyond "could not reach backend" even though the
+  backend was reachable (confirmed by navigating the same URL directly).
+  Fixed by adding an unauthenticated `GET /` route to `app.py` that
+  serves `ultron-dashboard.html` from the backend itself — same origin as
+  the API, no CORS/file-origin issues, and no more transferring the file
+  to every device that wants to use it. Safe to serve unauthenticated:
+  the file has no secrets baked in, same as handing someone the file
+  directly.
+- **Both tokens rotated** (`ULTRON_API_TOKEN` and `ULTRON_BETA_TOKEN`)
+  after having been typed into chat multiple times during setup —
+  current values live only in `.env`, never in this file or git history.
+
+**Verified on the phone itself, through the actual dashboard UI, over
+Tailscale (cellular, Wi-Fi off):**
+- Beta token: nav restricted to AI Assistant + Crypto & Markets +
+  Settings, chat working end-to-end.
+- Admin token: full nav (all 9 sections + Settings), confirming the same
+  URL correctly serves either role depending only on which token is used.
+- Voice: `/api/tts` fires and returns real audio once "Speak replies
+  aloud" is toggled on in Settings (off by default, doesn't persist
+  between sessions — expected, not a bug).
+
+Backend stopped after this test (not left running). To relaunch:
+`run-beta.ps1` from `ultron-backend/`, same as documented above.
+
 ---
 
 Everything below is pulled fresh from the actual code as of this write-up
@@ -211,13 +245,22 @@ running it for a Python traceback before anything else.
 
 ## 6. Open the dashboard and connect it
 
-Double-click `ultron-dashboard.html` (or open it via `File → Open` in a
-browser — no server needed for the file itself). Go to **Settings →
-Connection**, enter:
+The backend serves the dashboard itself now — for any device other than
+the one running the backend, just visit its URL in a browser rather than
+copying `ultron-dashboard.html` around: opening it as a local file breaks
+the Connect button on mobile browsers (confirmed on Android Chrome), so
+the URL is the reliable path for anything but quick local testing on the
+host machine itself, where double-clicking the file still works fine.
 
-- Backend URL: `http://127.0.0.1:5000` (same machine) or
-  `http://<your-LAN-IP>:5000` (found via `ipconfig`, for another device
-  on the same Wi-Fi)
+- Same machine: `http://127.0.0.1:5000/` (or double-click
+  `ultron-dashboard.html` directly, either works here)
+- Another device on the same Wi-Fi: `http://<your-LAN-IP>:5000/` (found
+  via `ipconfig`)
+
+Go to **Settings → Connection**, enter:
+
+- Backend URL: the same address you just opened (drop the trailing
+  `/api/...` if your browser added one)
 - API token: the `ULTRON_API_TOKEN` value from step 2
 
 Click Connect. The mock numbers across every panel should start being

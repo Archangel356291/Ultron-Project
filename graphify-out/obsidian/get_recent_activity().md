@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_json_result"
+community: "route"
 location: "L233"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_json_result
+  - community/route
 ---
 
 # get_recent_activity()
@@ -16,4 +16,4 @@ tags:
 - [[activity()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/_json_result
+#graphify/code #graphify/EXTRACTED #community/route

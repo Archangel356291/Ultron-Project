@@ -14,7 +14,7 @@ members: 8
 - [[jsonrpc_error()]] - code - dev-tools/test_mcp_server.py
 - [[jsonrpc_result()]] - code - dev-tools/test_mcp_server.py
 - [[mcp_endpoint()]] - code - dev-tools/test_mcp_server.py
-- [[route_1]] - code
+- [[route]] - code
 - [[test_mcp_server.py]] - code - dev-tools/test_mcp_server.py
 
 ## Live Query (requires Dataview plugin)
@@ -25,7 +25,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_MCP (external toolplugin) Support]]
+- 1 edge to [[_COMMUNITY_Ultron (personal AI home lab system)]]
 
 ## Top bridge nodes
 - [[test_mcp_server.py]] - degree 6, connects to 1 community

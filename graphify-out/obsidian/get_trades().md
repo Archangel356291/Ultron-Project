@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "trades"
+community: "trades_export"
 location: "L1268"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/trades
+  - community/trades_export
 ---
 
 # get_trades()
@@ -17,4 +17,4 @@ tags:
 - [[trades()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/trades
+#graphify/code #graphify/EXTRACTED #community/trades_export

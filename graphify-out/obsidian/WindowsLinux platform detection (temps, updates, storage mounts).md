@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/README.md"
 type: "document"
-community: "Flask Backend (app.py)"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Flask_Backend_apppy
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # Windows/Linux platform detection (temps, updates, storage mounts)
@@ -15,4 +15,4 @@ tags:
 - [[WMI (==1.5.1, Windows only)]] - `references` [EXTRACTED]
 - [[pywin32 (==306, Windows only)]] - `references` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Flask_Backend_apppy
+#graphify/document #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system

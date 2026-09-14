@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "log_activity"
+community: "scan_container_cves"
 location: "L683"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/log_activity
+  - community/scan_container_cves
 ---
 
 # Defensive SARIF parser: Docker Scout's exact SARIF property layout isn't…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_parse_scout_sarif()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/log_activity
+#graphify/rationale #graphify/EXTRACTED #community/scan_container_cves

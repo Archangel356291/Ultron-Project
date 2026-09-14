@@ -603,13 +603,27 @@ variable.
 
 ## Exposing it beyond your LAN
 
-The dashboard (`ultron-dashboard.html`) now has a **Settings → Connection**
-panel where you enter this backend's URL and your `ULTRON_API_TOKEN` — once
-connected it polls `/api/status`, `/api/containers`, `/api/storage`, and
-`/api/systems` every 15 seconds and replaces the mock numbers with real
-ones. On the same Wi-Fi, use the LAN address (e.g. `http://192.168.1.50:5000`,
-found via `ipconfig`); from a phone off that network, use a Tailscale
-address instead.
+The backend serves the dashboard itself at `/` — open
+`http://<backend-address>:5000/` on any device and you get the real
+dashboard, not the static file. (`ultron-dashboard.html` still exists and
+still works if you double-click it locally, but for any *other* device,
+use the URL instead of copying the file around — see the note below on
+why.) It has a **Settings → Connection** panel where you enter this
+backend's URL and your `ULTRON_API_TOKEN` (or `ULTRON_BETA_TOKEN`,
+see the beta_tester section above) — once connected it polls
+`/api/status`, `/api/containers`, `/api/storage`, and `/api/systems`
+every 15 seconds and replaces the mock numbers with real ones. On the
+same Wi-Fi, use the LAN address (e.g. `http://192.168.1.50:5000`, found
+via `ipconfig`); from a phone off that network, use a Tailscale address
+instead.
+
+**Why the URL, not the file:** mobile browsers (Chrome on Android,
+confirmed) restrict `fetch()` calls made from a page opened via
+`file://`, which silently breaks the Connect button with a generic
+"could not reach backend" error even though the backend is reachable —
+this cost real debugging time on 2026-09-13's beta test before the fix
+above went in. Opening the dashboard from the backend's own `/` route
+avoids it entirely, since the page and the API it calls share an origin.
 
 This runs Flask's built-in dev server, which is fine on your own network but
 isn't meant to be exposed to the internet directly. For remote access from

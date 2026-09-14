@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_json_result"
-location: "L1785"
+community: "run_ultron_chat"
+location: "L1800"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_json_result
+  - community/run_ultron_chat
 ---
 
 # _log_llm_usage()
@@ -17,4 +17,4 @@ tags:
 - [[run_ultron_chat()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_json_result
+#graphify/code #graphify/EXTRACTED #community/run_ultron_chat

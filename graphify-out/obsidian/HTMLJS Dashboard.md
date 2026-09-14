@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "concept"
-community: "Flask Backend (app.py)"
+community: "Ultron (personal AI home lab system)"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Flask_Backend_apppy
+  - community/Ultron_personal_AI_home_lab_system
 ---
 
 # HTML/JS Dashboard
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Flask Backend (app.py)]] - `shares_data_with` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Flask_Backend_apppy
+#graphify/concept #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system

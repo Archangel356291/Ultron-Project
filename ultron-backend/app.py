@@ -97,7 +97,7 @@ import urllib.request
 from functools import wraps
 
 import psutil
-from flask import Flask, jsonify, request, Response, g
+from flask import Flask, jsonify, request, Response, g, send_from_directory
 
 app = Flask(__name__)
 
@@ -1573,6 +1573,21 @@ def _json_result(data, error_status=502):
     if isinstance(data, dict) and "error" in data:
         return jsonify(data), error_status
     return jsonify(data)
+
+
+# Serves the dashboard itself from the same origin as the API. Deliberately
+# unauthenticated: the HTML/JS file has no secrets baked into it (the user
+# types their token into Settings -> Connection at runtime, never saved),
+# so this is no more sensitive than handing someone the file directly — it
+# just avoids the file:// origin restrictions mobile browsers impose on
+# fetch() calls from local files, which otherwise silently break the
+# Connect button on phones.
+DASHBOARD_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+@app.route("/")
+def dashboard():
+    return send_from_directory(DASHBOARD_DIR, "ultron-dashboard.html")
 
 
 @app.route("/api/health")
