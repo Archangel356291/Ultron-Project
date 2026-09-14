@@ -100,7 +100,7 @@ import urllib.request
 from functools import wraps
 
 import psutil
-from flask import Flask, jsonify, request, Response, g, send_from_directory
+from flask import Flask, jsonify, request, Response, g, send_from_directory, stream_with_context
 
 app = Flask(__name__)
 # Blanket backstop on request body size, independent of any per-field check
@@ -552,7 +552,17 @@ TTS_MAX_CHARS = 2000  # keep one reply from turning into an unbounded paid TTS c
 
 
 def _fish_audio_tts(text):
-    """One TTS request to Fish Audio. Returns (audio_bytes, content_type, error)."""
+    """One TTS request to Fish Audio. Fish Audio's own /v1/tts already
+    streams its reply via chunked transfer -- this used to defeat that by
+    reading the whole response into memory (resp.read()) before returning,
+    which is why audio used to start only after the ENTIRE reply had been
+    synthesized (a delay proportional to reply length). Now returns a
+    generator of chunks as they actually arrive, so playback can start on
+    the first chunk instead of the last. Returns (chunk_iter, content_type,
+    error) -- error is set (and chunk_iter is None) only if the request
+    itself failed before any audio arrived; once streaming starts, a
+    mid-stream failure just truncates playback rather than erroring, same
+    as any other network hiccup during audio playback."""
     text = (text or "").strip()
     if not text:
         return None, None, "no text to speak"
@@ -575,9 +585,7 @@ def _fish_audio_tts(text):
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=FISH_AUDIO_TIMEOUT_SECONDS) as resp:
-            audio = resp.read()
-            content_type = resp.headers.get("Content-Type", "audio/mpeg")
+        resp = urllib.request.urlopen(req, timeout=FISH_AUDIO_TIMEOUT_SECONDS)
     except urllib.error.HTTPError as e:
         if e.code in (401, 403):
             return None, None, "Fish Audio rejected the configured API key"
@@ -585,7 +593,19 @@ def _fish_audio_tts(text):
     except urllib.error.URLError as e:
         return None, None, f"could not reach Fish Audio: {e.reason}"
 
-    return audio, content_type, None
+    content_type = resp.headers.get("Content-Type", "audio/mpeg")
+
+    def _chunks():
+        try:
+            while True:
+                chunk = resp.read(8192)
+                if not chunk:
+                    break
+                yield chunk
+        finally:
+            resp.close()
+
+    return _chunks(), content_type, None
 
 
 @app.after_request
@@ -3072,10 +3092,10 @@ def tts():
                          "voice replies are paused along with chat until this is raised"
             }), 429
     body = request.get_json(silent=True) or {}
-    audio, content_type, err = _fish_audio_tts(body.get("text", ""))
+    chunks, content_type, err = _fish_audio_tts(body.get("text", ""))
     if err:
         return jsonify({"error": err}), 502
-    return Response(audio, mimetype=content_type or "audio/mpeg")
+    return Response(stream_with_context(chunks), mimetype=content_type or "audio/mpeg")
 
 
 @app.route("/api/mcp/servers")
