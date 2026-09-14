@@ -1,11 +1,57 @@
+# Build context here is the repo root (docker-compose.yml -> ultron-backend
+# service), so this file is what actually keeps .git/, dev-tools/, .env,
+# graphify-out/, this whole Obsidian vault, etc. out of the backend image —
+# today's Dockerfile COPYs are specific enough to not need it, but that's a
+# property of the Dockerfile, not a guarantee; deny-by-default means a
+# looser COPY later (e.g. "COPY . .") can't silently start shipping any of
+# this without someone also editing this allowlist.
+
+# ==============================================================================
+# 1. DENY-BY-DEFAULT (ignore everything first)
+# ==============================================================================
+**
+
+# ==============================================================================
+# 2. ALLOWLIST — exactly what ultron-backend/Dockerfile COPYs:
+#    ultron-backend/ (requirements.txt + app.py + its own docs/scripts) and
+#    ultron-dashboard.html, which app.py serves from one directory up.
+# ==============================================================================
+!ultron-backend/
+!ultron-backend/**
+!ultron-dashboard.html
+
+# ==============================================================================
+# 3. EXPLICIT BLOCKS (strip junk/secrets back out of the allowlisted tree,
+#    even though ultron-backend/** above would otherwise let it through)
+# ==============================================================================
+
+# Secrets & local data
+**/.env*
+**/secrets/
+**/credentials*.json
+**/*.db
+
+# Claude Code / AI agent metadata
+**/.claude/
+**/.anthropic/
+**/claude.log
+
+# Local dev & IDEs
+**/.git/
+**/.github/
+**/.vscode/
+**/.idea/
+**/*.swp
+
+# OS junk
+**/.DS_Store
+**/Thumbs.db
+
+# Build artifacts & runtimes
 **/__pycache__/
 **/*.pyc
+**/*.pyo
+**/*.pyd
 **/venv/
 **/.venv/
-**/*.db
-.git/
-.obsidian/
-.vscode/
-graphify-out/
-*.zip
-_archive/
+**/.pytest_cache/

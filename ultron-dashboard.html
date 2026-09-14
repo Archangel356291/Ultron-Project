@@ -454,6 +454,30 @@
   .chat-input input:disabled{ opacity:0.6; }
   .msg.ultron.thinking .who{ color:var(--text-faint); }
   .msg.ultron.err .who{ color:var(--oxide); }
+
+  /* ---------- brain map (assistant section) ---------- */
+  .brain-card{ position:relative; padding:0; overflow:hidden; }
+  #brain-canvas{ display:block; width:100%; height:640px; cursor:default; }
+  .brain-about{
+    padding:16px 18px; border-top:1px solid var(--line);
+    font-size:12.5px; line-height:1.6; color:var(--text-dim);
+  }
+  .brain-about b{ color:var(--oxide); font-family:var(--font-display); font-size:12.5px; text-transform:uppercase; letter-spacing:0.02em; }
+  .brain-tooltip{
+    position:absolute; pointer-events:none; z-index:5;
+    background:var(--panel-raised); border:1px solid var(--line); border-radius:6px;
+    padding:8px 12px; font-family:var(--font-mono); font-size:11px; color:var(--text-dim);
+    max-width:220px; box-shadow:0 8px 24px -8px rgba(0,0,0,0.6);
+  }
+  .brain-tooltip b{
+    color:var(--oxide); font-family:var(--font-display); font-size:12.5px;
+    text-transform:uppercase; letter-spacing:0.02em; display:block; margin-bottom:3px;
+  }
+  .brain-tooltip .cat{ color:var(--text-faint); text-transform:capitalize; }
+  .brain-stats{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:0 20px; padding:14px 18px 18px; border-top:1px solid var(--line);
+  }
   .msg.ultron.err{ color:var(--oxide); }
   .msg .tool-tag{
     display:inline-block; font-family:var(--font-mono); font-size:9.5px;
@@ -908,6 +932,31 @@
       <section class="section" id="sec-assistant">
         <h2 class="section-title">AI assistant</h2>
         <p class="section-desc">Chat, analysis, and automation, routed through the core.</p>
+
+        <div class="panel-label" style="display:flex; align-items:center; justify-content:space-between;">
+          <span>Ultron's brain</span>
+          <span style="font-family:var(--font-mono); font-size:9px; color:var(--text-faint); text-transform:none;">tools, skills, memory &amp; usage — hover a node</span>
+        </div>
+        <div class="card brain-card" style="margin-bottom:20px;">
+          <canvas id="brain-canvas"></canvas>
+          <div class="brain-tooltip" id="brain-tooltip" hidden></div>
+          <div class="brain-stats">
+            <div class="status-row"><span class="label">Built-in tools</span><span class="val" id="brain-stat-tools">—</span></div>
+            <div class="status-row"><span class="label">Memory notes</span><span class="val" id="brain-stat-memory">—</span></div>
+            <div class="status-row"><span class="label">Connected skills (MCP)</span><span class="val" id="brain-stat-mcp">check Settings</span></div>
+            <div class="status-row"><span class="label">Tokens used today</span><span class="val" id="brain-stat-usage">—</span></div>
+          </div>
+          <div class="brain-about">
+            <b>Who he is</b><br>
+            Named and styled after the Ultron of Marvel fiction — the voice, not the mission.
+            Quiet, dry superiority; a taste for grand, faintly poetic phrasing; dark, understated
+            humor. What isn't borrowed is the character's actual disposition toward people — no
+            grudge against humanity in general, no contempt for whoever he's actually talking to.
+            The persona is texture on top of a genuinely useful assistant, never a substitute for
+            being one.
+          </div>
+        </div>
+
         <div class="chat-wrap">
           <div class="chat-log" id="chat-log">
             <div class="msg ultron"><div class="who">ULTRON</div>Standing by. Connect the backend under Settings → Connection, then ask me about this host's status, containers, storage, or updates — I'll check the real numbers before answering.</div>
@@ -1128,8 +1177,13 @@
             <button class="conn-btn" id="cfg-connect-btn" onclick="connectBackend()">Connect</button>
             <span class="conn-status" id="cfg-status">not connected — showing mock data</span>
           </div>
+          <label style="display:flex; align-items:center; gap:7px; margin-top:10px; font-size:12px; color:var(--text-dim); cursor:pointer;">
+            <input type="checkbox" id="cfg-remember" style="accent-color:var(--oxide);">
+            Remember me on this device
+          </label>
           <div class="conn-note">
-            This page is a static file, so nothing you type here is saved when it reloads — enter the URL and token each time you open it. On the same Wi-Fi as the backend, use its LAN address (e.g. <code>http://192.168.1.50:5000</code>). From outside your home network — your phone on mobile data, for instance — use its Tailscale address instead of opening a port on your router.
+            This page is a static file, so nothing you type here is saved when it reloads unless you check "Remember me" above — that saves the URL and token to this browser's local storage so this page reconnects automatically next time, but means anything that can run script on this page (or anyone with access to this browser) can read them back out. Leave it unchecked to enter both fresh each time instead. On the same Wi-Fi as the backend, use its LAN address (e.g. <code>http://192.168.1.50:5000</code>). From outside your home network — your phone on mobile data, for instance — use its Tailscale address instead of opening a port on your router.
+            <span id="cfg-forget-wrap" hidden> · <a href="#" onclick="forgetConnection(); return false;" style="color:var(--oxide);">Forget saved connection</a></span>
           </div>
         </div>
 
@@ -1258,6 +1312,14 @@
     if (state.role !== 'admin') {
       switchSection('assistant');
     }
+    // Default voice replies on for the admin (you) — for a beta_tester
+    // it stays an explicit opt-in, since /api/tts spends against their
+    // small lifetime cap same as any chat reply, and they didn't ask for
+    // audio turned on by default.
+    const voiceToggle = document.getElementById('cfg-voice-reply');
+    if (voiceToggle && state.role === 'admin') {
+      voiceToggle.classList.add('on');
+    }
   }
 
   function authHeaders() {
@@ -1290,6 +1352,56 @@
         ? "I'm online and watching this host. What would you like to work on?"
         : 'Standing by. Connect the backend to bring me online.';
     }
+  }
+
+  // "Remember me" — opt-in only (see the "Remember me on this device"
+  // checkbox in Settings → Connection). Saves the URL/token to this
+  // browser's own localStorage, which never leaves this browser/device,
+  // but is readable by any script that ever runs on this page and by
+  // anyone with access to this browser profile — that tradeoff is spelled
+  // out in the connection note next to the checkbox, not hidden here.
+  const REMEMBER_KEY = 'ultron_remembered_connection';
+
+  function saveRememberedConnection(url, token) {
+    try {
+      localStorage.setItem(REMEMBER_KEY, JSON.stringify({ url, token }));
+    } catch (err) { /* private browsing, storage disabled, etc. — just skip */ }
+    const wrap = document.getElementById('cfg-forget-wrap');
+    if (wrap) wrap.hidden = false;
+  }
+
+  function clearRememberedConnection() {
+    try { localStorage.removeItem(REMEMBER_KEY); } catch (err) { /* ignore */ }
+    const wrap = document.getElementById('cfg-forget-wrap');
+    if (wrap) wrap.hidden = true;
+  }
+
+  function forgetConnection() {
+    clearRememberedConnection();
+    const rememberEl = document.getElementById('cfg-remember');
+    if (rememberEl) rememberEl.checked = false;
+    const tokenInput = document.getElementById('cfg-token');
+    if (tokenInput) tokenInput.value = '';
+    setConnStatus('saved connection forgotten — enter your token to reconnect');
+  }
+
+  function loadRememberedConnection() {
+    let saved = null;
+    try {
+      const raw = localStorage.getItem(REMEMBER_KEY);
+      if (raw) saved = JSON.parse(raw);
+    } catch (err) { /* ignore corrupt/inaccessible storage */ }
+    if (!saved || !saved.url || !saved.token) return;
+
+    const urlInput = document.getElementById('cfg-base-url');
+    const tokenInput = document.getElementById('cfg-token');
+    const rememberEl = document.getElementById('cfg-remember');
+    const wrap = document.getElementById('cfg-forget-wrap');
+    if (urlInput) urlInput.value = saved.url;
+    if (tokenInput) tokenInput.value = saved.token;
+    if (rememberEl) rememberEl.checked = true;
+    if (wrap) wrap.hidden = false;
+    connectBackend();
   }
 
   async function connectBackend() {
@@ -1337,6 +1449,14 @@
       state.chatHistory = [];
       const hostLabel = document.getElementById('hlo-host-label');
       if (hostLabel) hostLabel.textContent = state.baseUrl.replace(/^https?:\/\//, '');
+
+      const rememberEl = document.getElementById('cfg-remember');
+      if (rememberEl && rememberEl.checked) {
+        saveRememberedConnection(url, token);
+      } else {
+        clearRememberedConnection();
+      }
+
       await refreshAll();
       startPolling();
     } catch (err) {
@@ -1403,6 +1523,7 @@
           fetchStorage(),
           fetchSystems(),
           fetchActivity(),
+          fetchMemory(),
           fetchDevRepos(),
           fetchTrades(),
           fetchLlmUsage(),
@@ -1572,6 +1693,18 @@
     }).join('');
   }
 
+  async function fetchMemory() {
+    let data;
+    try {
+      data = await apiGet('/api/memory?limit=200');
+    } catch (err) {
+      return;
+    }
+    if (typeof updateBrainMemoryStat === 'function') {
+      updateBrainMemoryStat((data.notes || []).length);
+    }
+  }
+
   async function fetchDevRepos() {
     const tbody = document.getElementById('dev-repos-tbody');
     if (!tbody) return;
@@ -1663,6 +1796,9 @@
     } catch (err) {
       return;
     }
+    const brainUsageEl = document.getElementById('brain-stat-usage');
+    if (brainUsageEl) brainUsageEl.textContent = (data.total_tokens || 0).toLocaleString();
+
     const cacheTotal = (data.cache_read_tokens || 0) + (data.cache_creation_tokens || 0);
     const cacheNote = cacheTotal > 0
       ? (data.cache_read_tokens + ' read from cache, ' + data.cache_creation_tokens + ' written to cache')
@@ -1878,6 +2014,7 @@
     try {
       const data = await apiGet('/api/mcp/servers');
       const servers = data.servers || [];
+      if (typeof updateBrainSkillNodes === 'function') updateBrainSkillNodes(servers);
       if (!servers.length) {
         bodyEl.textContent = 'No external tool servers configured (ULTRON_MCP_CONFIG unset).';
       } else {
@@ -2209,7 +2346,10 @@
     recognizer.start();
   }
 
-  // --- voice output: Fish Audio TTS via the backend (key stays server-side), opt-in ---
+  // --- voice output: Fish Audio TTS via the backend (key stays server-side).
+  // On by default (see the "Speak replies aloud" switch's markup) but still
+  // opt-out and best-effort — a missing/misconfigured backend key just means
+  // no audio, never a broken chat reply. ---
   async function speakReply(text) {
     const toggle = document.getElementById('cfg-voice-reply');
     if (!toggle || !toggle.classList.contains('on')) return;
@@ -2314,6 +2454,221 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
   }
+
+  // ---------- brain map: a small animated node graph of Ultron's own
+  // built-in tools (+ memory + connected MCP skills once checked), drawn on
+  // a canvas. Deliberately hand-rolled rather than a physics/graph library
+  // - this is ~20 nodes on a hub-and-spoke layout, not a real force
+  // simulation like graphify's own graph.html, so sine-wave drift plus a
+  // slow shared rotation is enough to read as "alive" without the
+  // complexity (or instability) of real n-body repulsion.
+  const BRAIN_CATEGORIES = {
+    system:   { color: '#3DD6FF', label: 'System' },
+    security: { color: '#33D17A', label: 'Security' },
+    dev:      { color: '#FFC24B', label: 'Development' },
+    trade:    { color: '#FF8A1E', label: 'Trading' },
+    memory:   { color: '#B084F0', label: 'Memory' },
+    usage:    { color: '#5B6B8C', label: 'Usage' },
+    skill:    { color: '#8D9BBD', label: 'External skill (MCP)' },
+  };
+  const BRAIN_TOOLS = [
+    { id: 'get_system_status', label: 'System status', category: 'system', desc: 'CPU, memory, temperature, uptime' },
+    { id: 'list_containers', label: 'Containers', category: 'system', desc: 'Docker container list & live stats' },
+    { id: 'get_storage_usage', label: 'Storage', category: 'system', desc: 'Disk usage per configured drive' },
+    { id: 'get_pending_updates', label: 'Updates', category: 'system', desc: 'Pending OS updates' },
+    { id: 'get_recent_activity', label: 'Activity log', category: 'system', desc: 'Real backups/deploys/scans, with outcomes' },
+    { id: 'get_auth_log', label: 'Auth log', category: 'security', desc: 'Recent login attempts' },
+    { id: 'get_repo_status', label: 'Repo status', category: 'dev', desc: 'Git status for configured repos' },
+    { id: 'get_repo_diff', label: 'Repo diff', category: 'dev', desc: 'Uncommitted diff for one repo' },
+    { id: 'get_trades', label: 'Trades', category: 'trade', desc: 'Recorded trade ledger' },
+    { id: 'get_trade_summary', label: 'Trade summary', category: 'trade', desc: 'FIFO realized gain/loss' },
+    { id: 'get_trade_tax_lots', label: 'Tax lots', category: 'trade', desc: 'Per-disposal tax-lot detail' },
+    { id: 'remember_note', label: 'Remember', category: 'memory', desc: 'Saves a distilled fact for later recall' },
+    { id: 'recall_notes', label: 'Recall', category: 'memory', desc: 'Looks up saved memory notes' },
+    { id: 'get_llm_usage', label: 'LLM usage', category: 'usage', desc: 'Token usage & daily budget' },
+    { id: 'get_mcp_servers', label: 'MCP servers', category: 'usage', desc: 'Connected external tool servers' },
+  ];
+
+  let brainCanvas, brainCtx, brainTooltipEl;
+  let brainNodes = [];
+  let brainSkillNodes = [];
+  let brainHover = null;
+  let brainRotation = 0;
+
+  function layoutBrainNodes() {
+    const cats = Object.keys(BRAIN_CATEGORIES).filter(function (c) { return c !== 'skill'; });
+    const byCategory = {};
+    cats.forEach(function (c) { byCategory[c] = BRAIN_TOOLS.filter(function (t) { return t.category === c; }); });
+    const nodes = [{
+      id: 'hub', label: 'ULTRON', kind: 'hub', category: 'hub', r: 16,
+      desc: 'The voice, not the mission — see "Who he is" below.',
+    }];
+    cats.forEach(function (cat, ci) {
+      const list = byCategory[cat];
+      const arcStart = (ci / cats.length) * Math.PI * 2;
+      const arcSpan = (Math.PI * 2 / cats.length) * 0.82;
+      list.forEach(function (tool, i) {
+        const t = list.length > 1 ? i / (list.length - 1) : 0.5;
+        nodes.push(Object.assign({}, tool, {
+          kind: 'tool', r: 7,
+          angle: arcStart + arcSpan * t,
+          baseRadius: 0.78 + (i % 2) * 0.14,
+          phase: Math.random() * Math.PI * 2,
+          freq: 0.3 + Math.random() * 0.4,
+        }));
+      });
+    });
+    return nodes;
+  }
+
+  function sizeBrainCanvas() {
+    if (!brainCanvas) return;
+    const rect = brainCanvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const dpr = window.devicePixelRatio || 1;
+    brainCanvas.width = Math.round(rect.width * dpr);
+    brainCanvas.height = Math.round(rect.height * dpr);
+    brainCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function hexToRgba(hex, alpha) {
+    const n = parseInt(hex.replace('#', ''), 16);
+    return 'rgba(' + [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(',') + ',' + alpha + ')';
+  }
+
+  function drawBrainFrame(t) {
+    if (!brainCtx || !brainCanvas.isConnected) return;
+    const rect = brainCanvas.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    if (!w || !h) { requestAnimationFrame(drawBrainFrame); return; }
+    // The assistant tab starts hidden (display:none), so the very first
+    // frame after it becomes visible is when this canvas actually gets a
+    // real size — catch that here rather than relying only on the resize
+    // listener, or the backing buffer stays at the browser's 300x150
+    // default while CSS stretches it, drawing everything off-position.
+    const dpr = window.devicePixelRatio || 1;
+    if (Math.round(brainCanvas.width / dpr) !== Math.round(w) || Math.round(brainCanvas.height / dpr) !== Math.round(h)) {
+      sizeBrainCanvas();
+    }
+    brainCtx.clearRect(0, 0, w, h);
+    const cx = w / 2, cy = h / 2;
+    const ringR = Math.min(w, h) * 0.4;
+    brainRotation += 0.0012;
+
+    const all = brainNodes.concat(brainSkillNodes);
+    all.forEach(function (n) {
+      if (n.kind === 'hub') { n.x = cx; n.y = cy; return; }
+      const r = ringR * n.baseRadius + Math.sin(t / 1000 * n.freq + n.phase) * (ringR * 0.045);
+      const a = n.angle + brainRotation;
+      n.x = cx + Math.cos(a) * r;
+      n.y = cy + Math.sin(a) * r;
+    });
+
+    all.forEach(function (n) {
+      if (n.kind === 'hub') return;
+      brainCtx.strokeStyle = hexToRgba(BRAIN_CATEGORIES[n.category].color, 0.22);
+      brainCtx.lineWidth = 1;
+      brainCtx.beginPath();
+      brainCtx.moveTo(cx, cy);
+      brainCtx.lineTo(n.x, n.y);
+      brainCtx.stroke();
+    });
+
+    all.forEach(function (n) {
+      const color = n.kind === 'hub' ? '#FF8A1E' : BRAIN_CATEGORIES[n.category].color;
+      const hovered = n === brainHover;
+      brainCtx.save();
+      brainCtx.shadowColor = color;
+      brainCtx.shadowBlur = hovered ? 18 : (n.kind === 'hub' ? 14 : 8);
+      brainCtx.fillStyle = color;
+      brainCtx.beginPath();
+      brainCtx.arc(n.x, n.y, hovered ? n.r * 1.4 : n.r, 0, Math.PI * 2);
+      brainCtx.fill();
+      brainCtx.restore();
+    });
+
+    requestAnimationFrame(drawBrainFrame);
+  }
+
+  function brainNodeAt(x, y) {
+    const all = brainNodes.concat(brainSkillNodes);
+    for (let i = all.length - 1; i >= 0; i--) {
+      const n = all[i];
+      const dx = n.x - x, dy = n.y - y;
+      if (Math.sqrt(dx * dx + dy * dy) <= n.r + 5) return n;
+    }
+    return null;
+  }
+
+  function initBrainGraph() {
+    brainCanvas = document.getElementById('brain-canvas');
+    brainTooltipEl = document.getElementById('brain-tooltip');
+    if (!brainCanvas) return;
+    brainCtx = brainCanvas.getContext('2d');
+    brainNodes = layoutBrainNodes();
+    sizeBrainCanvas();
+    window.addEventListener('resize', sizeBrainCanvas);
+
+    brainCanvas.addEventListener('mousemove', function (e) {
+      const rect = brainCanvas.getBoundingClientRect();
+      const node = brainNodeAt(e.clientX - rect.left, e.clientY - rect.top);
+      brainHover = node;
+      brainCanvas.style.cursor = node ? 'pointer' : 'default';
+      if (!node) { brainTooltipEl.hidden = true; return; }
+      const cat = BRAIN_CATEGORIES[node.category];
+      brainTooltipEl.innerHTML = '<b>' + escapeHtml(node.label) + '</b>' +
+        (node.desc ? escapeHtml(node.desc) : '') +
+        (cat ? '<div class="cat">' + escapeHtml(cat.label) + '</div>' : '');
+      brainTooltipEl.hidden = false;
+      const left = Math.min(e.clientX - rect.left + 14, rect.width - 230);
+      brainTooltipEl.style.left = Math.max(4, left) + 'px';
+      brainTooltipEl.style.top = Math.max(4, e.clientY - rect.top - 10) + 'px';
+    });
+    brainCanvas.addEventListener('mouseleave', function () {
+      brainHover = null;
+      brainTooltipEl.hidden = true;
+    });
+
+    const toolsStat = document.getElementById('brain-stat-tools');
+    if (toolsStat) toolsStat.textContent = BRAIN_TOOLS.length;
+
+    requestAnimationFrame(drawBrainFrame);
+  }
+
+  // Called after a successful /api/memory fetch — see fetchMemory() above.
+  function updateBrainMemoryStat(count) {
+    const el = document.getElementById('brain-stat-memory');
+    if (el) el.textContent = count;
+  }
+
+  // Called from loadMcpServers() once servers have actually been checked —
+  // approved tools become real "skill" nodes on the graph, same distinction
+  // the Settings → External tools (MCP) card already draws (✓ approved).
+  function updateBrainSkillNodes(servers) {
+    const approved = [];
+    (servers || []).forEach(function (s) {
+      (s.tools || []).forEach(function (t) {
+        if (t.approved) approved.push({ server: s.name, name: t.name });
+      });
+    });
+    const mcpStat = document.getElementById('brain-stat-mcp');
+    if (mcpStat) mcpStat.textContent = approved.length;
+
+    const count = approved.length;
+    brainSkillNodes = approved.map(function (t, i) {
+      const a = (i / Math.max(count, 1)) * Math.PI * 2;
+      return {
+        id: 'mcp__' + t.server + '__' + t.name,
+        label: t.name, category: 'skill', kind: 'tool', r: 6,
+        angle: a, baseRadius: 1.12,
+        phase: Math.random() * Math.PI * 2, freq: 0.3 + Math.random() * 0.4,
+        desc: 'from MCP server "' + t.server + '"',
+      };
+    });
+  }
+
+  initBrainGraph();
+  loadRememberedConnection();
 </script>
 </body>
 </html>

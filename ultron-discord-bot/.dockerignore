@@ -1,4 +1,34 @@
-__pycache__/
-*.pyc
-venv/
-.venv/
+# Build context here is this directory (docker-compose.yml ->
+# ultron-discord-bot service), and its Dockerfile does "COPY . ." — a
+# broad copy, so unlike the backend's this file is the only thing keeping
+# stray local files (a .env someone drops here for local testing, venv/,
+# __pycache__/) out of the image.
+
+# ==============================================================================
+# 1. DENY-BY-DEFAULT (ignore everything first)
+# ==============================================================================
+**
+
+# ==============================================================================
+# 2. ALLOWLIST — exactly what this Dockerfile needs: requirements.txt,
+#    every .py module (just bot.py today, but any future module too),
+#    and the README for anyone shelling into the running container.
+# ==============================================================================
+!*.py
+!requirements.txt
+!README.md
+
+# ==============================================================================
+# 3. EXPLICIT BLOCKS
+# ==============================================================================
+**/.env*
+**/.claude/
+**/.git/
+**/.vscode/
+**/.idea/
+**/__pycache__/
+**/*.pyc
+**/venv/
+**/.venv/
+**/.DS_Store
+**/Thumbs.db

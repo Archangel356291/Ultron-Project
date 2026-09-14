@@ -91,6 +91,7 @@ New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol T
 | `GET /api/storage`      | Disk usage for the drives listed in `STORAGE_MOUNTS` |
 | `GET /api/systems`       | Pending updates, temp, uptime, load average        |
 | `GET /api/activity`       | Persistent log of real events — backups, deploys, CVE scans |
+| `GET /api/memory`         | Ultron's saved memory notes (most recent first, or `?query=` to search) |
 | `GET /api/dev/repos`       | Git status (branch, dirty/clean, last commit) for configured repos |
 | `GET /api/dev/repos/<repo>/diff` | Uncommitted diff for one configured repo             |
 | `GET/POST /api/trades`     | Your manually-recorded trade ledger — list or add    |
@@ -343,27 +344,34 @@ that's grounded in this backend's own data rather than guessing:
   fresh conversation.
 - Response body: `{"reply": "...", "history": [...], "tools_used": [...]}`.
   Store the returned `history` and send it back on the next call.
-- Ultron can call thirteen built-in read-only tools — `get_system_status`,
+- Ultron can call fifteen built-in tools — `get_system_status`,
   `list_containers`, `get_storage_usage`, `get_pending_updates`,
-  `get_auth_log`, `get_recent_activity`, `get_repo_status`, `get_repo_diff`,
-  `get_trades`, `get_trade_summary`, `get_trade_tax_lots`, `get_llm_usage`,
-  and `get_mcp_servers` — which are the exact same functions the GET routes
-  above use, so its answers reflect real numbers, not invented ones. CVE
-  scanning is deliberately not one of these tools — see "Security
-  monitoring" above for why. Adding a trade record is deliberately not one
-  either — see "Trade records" above, and neither is the CSV export, since
-  a file download doesn't map onto a chat reply. `get_repo_diff` is the
-  first tool that takes a real parameter (`repo`) — the tool-calling loop
-  passes whatever arguments the model supplies straight through as keyword
-  arguments, so a handler function's own signature is what defines what it
-  will accept. On top of these thirteen, any approved external tools from
-  `ULTRON_MCP_CONFIG` are added dynamically, namespaced `mcp__<server>__
-  <tool>` — see "External tools (MCP)" above for what "approved" means and
-  why there's no way around it from inside a conversation.
-- It has **no ability to take actions through chat**, even though the
-  backup and deploy-container actions now exist on the dashboard. Ultron's
-  own tools are all read-only; if asked to deploy something or run a
-  backup via chat, it says so and points to the dashboard action instead of
+  `get_auth_log`, `get_recent_activity`, `remember_note`, `recall_notes`,
+  `get_repo_status`, `get_repo_diff`, `get_trades`, `get_trade_summary`,
+  `get_trade_tax_lots`, `get_llm_usage`, and `get_mcp_servers` — which
+  (aside from the memory pair below) are the exact same functions the GET
+  routes above use, so its answers reflect real numbers, not invented
+  ones. CVE scanning is deliberately not one of these tools — see
+  "Security monitoring" above for why. Adding a trade record is
+  deliberately not one either — see "Trade records" above, and neither is
+  the CSV export, since a file download doesn't map onto a chat reply.
+  `get_repo_diff` is the first tool that takes a real parameter (`repo`)
+  — the tool-calling loop passes whatever arguments the model supplies
+  straight through as keyword arguments, so a handler function's own
+  signature is what defines what it will accept. On top of these fifteen,
+  any approved external tools from `ULTRON_MCP_CONFIG` are added
+  dynamically, namespaced `mcp__<server>__<tool>` — see "External tools
+  (MCP)" above for what "approved" means and why there's no way around it
+  from inside a conversation.
+- `remember_note` / `recall_notes` are a small persistent notebook — a
+  short distilled fact or preference Ultron chooses to save so it can
+  recall it in a later conversation, not a transcript log (chat content
+  is still never logged anywhere). Capped at 500 characters per note and
+  200 notes total (oldest trimmed first); admin-only, like `get_mcp_servers`.
+- Other than `remember_note`, Ultron has **no ability to take actions
+  through chat**, even though the backup and deploy-container actions now
+  exist on the dashboard. If asked to deploy something or run a backup via
+  chat, it says so and points to the dashboard action instead of
   pretending to comply — see "Action endpoints" above for why that's a
   deliberate line, not a gap.
 - It refuses to write exploit code or attack tooling, and won't give

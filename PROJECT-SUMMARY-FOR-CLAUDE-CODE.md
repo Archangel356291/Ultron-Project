@@ -230,7 +230,7 @@ real thing":
 ## Current state
 
 Fully functional beta, audited clean as of the last pass: 20 backend
-routes, 13 built-in chat tools (plus dynamic MCP tools when configured),
+routes, 15 built-in chat tools (plus dynamic MCP tools when configured),
 a fully live-wired dashboard across all 10 sections, and a 15-command
 Discord bot. Every deliverable file was confirmed byte-identical between
 what was tested and what's in the final package. `ultron-backend/

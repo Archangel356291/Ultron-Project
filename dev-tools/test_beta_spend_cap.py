@@ -38,6 +38,7 @@ os.environ["ULTRON_BETA_MAX_SPEND_USD"] = "1.00"
 os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
 os.environ["ULTRON_FISH_AUDIO_API_KEY"] = "fake-fish-key"
 os.environ["ULTRON_FISH_VOICE_ID"] = "fake-voice-id"
+os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"  # keep the spend-cap assertions deterministic
 
 import anthropic  # noqa: E402  (the fake, via sys.path above)
 import app  # noqa: E402

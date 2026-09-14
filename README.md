@@ -52,7 +52,14 @@ unless there's a real reason not to:
 read function — no chat tool writes a trade, deploys a container, runs a
 backup, or approves an MCP tool. Adding a new *read* tool is low-stakes;
 adding anything that writes needs the reasoning below, not just a
-function reference in `TOOL_DISPATCH`.
+function reference in `TOOL_DISPATCH`. `remember_note` (see
+`ultron-backend/README.md`'s AI assistant section) is the one existing
+exception, and it earns that by being narrow, reversible, and never
+host-affecting — not by being convenient. Any *future* write tool that
+touches something real (the host, a container, a dollar figure) should
+follow the backup/deploy-container pattern below (preview-then-confirm,
+human-clicked, no chat-only path), not get a bare chat-callable function
+just because the precedent above made one exception look easy.
 
 **Destructive host actions require a human-confirmed token, not a
 conversational "yes."** `/api/actions/backup` and
@@ -125,7 +132,7 @@ second one.
 
 ## Current status
 
-Fully functional beta: backend (24 endpoints, 13 built-in chat tools plus
+Fully functional beta: backend (24 endpoints, 15 built-in chat tools plus
 dynamic MCP tools), dashboard (10 sections, all live-wired), Discord bot
 (16 commands). See `ultron-backend/BETA-LAUNCH-CHECKLIST.md` for what's
 been verified and what to expect. Known, deliberate gaps — not
