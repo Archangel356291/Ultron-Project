@@ -6,12 +6,12 @@
 - Unclassified: 6 file(s) not represented in the graph (top: (none) 6)
 
 ## Summary
-- 487 nodes · 768 edges · 71 communities (25 shown, 40 thin omitted)
+- 485 nodes · 778 edges · 66 communities (22 shown, 38 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 46 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `37f3eaf0`
+- Built from commit: `ced24fcf`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,18 +22,16 @@
 - ultron-discord-bot (Thin Remote-Control Layer)
 - run_ultron_chat
 - View
-- route
+- require_token
 - ClientSession
-- trades
-- ultron-backend README (Backend API Reference)
-- action_backup
-- Beta Testers Roster & Add Process
-- require_role
+- ultron-backend index (_index.md)
+- app.py
+- route
 - _get_db_connection
 - _fifo_engine
-- action_deploy_container
+- docker_ps
 - fake_pkgs/ (drop-in fake SDKs)
-- app.py
+- dev_repo_diff
 - _status_data
 - MCP Support (External Tool/Plugin System)
 - test_mcp_server.py
@@ -41,7 +39,6 @@
 - UltronBot
 - wrapper
 - test_memory.py
-- Ultron Dashboard Design Spec
 - Action Endpoints (backup, deploy-container)
 - aiultronproject Slack Workspace
 - add_cors_headers
@@ -79,8 +76,6 @@
 - WMI (==1.5.1, Windows only)
 - _fish_audio_tts
 - _start_memory_trend_scheduler
-- Exception
-- route
 
 ## God Nodes (most connected - your core abstractions)
 1. `Interaction` - 22 edges
@@ -92,7 +87,7 @@
 7. `backend_get()` - 13 edges
 8. `require_role()` - 10 edges
 9. `deploy_command()` - 10 edges
-10. `ConfirmActionView` - 9 edges
+10. `APIStatusError` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `ultron-discord-bot Service (Docker Compose)` --shares_data_with--> `ultron-discord-bot (Thin Remote-Control Layer)`  [INFERRED]
@@ -115,7 +110,7 @@
 - **MCP Discovery/Execution Separation Security Model** — project_summary_for_claude_code_mcp_support, readme_mcp_opt_in_principle, ultron_backend_readme_mcp_external_tools [INFERRED 0.85]
 - **Original Four-Agent Spec Plus Emergent Fifth** — project_summary_for_claude_code_ethical_hacking_agent, project_summary_for_claude_code_investment_agent, project_summary_for_claude_code_crypto_trade_agent, project_summary_for_claude_code_home_lab_monitor_agent, project_summary_for_claude_code_coding_subagent [INFERRED 0.85]
 
-## Communities (71 total, 40 thin omitted)
+## Communities (66 total, 38 thin omitted)
 
 ### Community 0 - "bot.py"
 Cohesion: 0.09
@@ -135,59 +130,51 @@ Nodes (26): demo(), _queue_reply(), Self-check for the beta-tester $1 spend cap 
 
 ### Community 4 - "run_ultron_chat"
 Cohesion: 0.08
-Nodes (28): Exception, _add_cache_breakpoint(), _ensure_mcp_discovered(), get_mcp_tools_and_dispatch(), _log_llm_usage(), _make_mcp_tool_handler(), handler(), _mcp_call_tool() (+20 more)
+Nodes (30): _add_cache_breakpoint(), _ensure_mcp_discovered(), get_mcp_servers(), get_mcp_tools_and_dispatch(), _log_llm_usage(), _make_mcp_tool_handler(), handler(), _mcp_call_tool() (+22 more)
 
 ### Community 5 - "View"
 Cohesion: 0.08
 Nodes (8): app_commands, Button, Choice, CommandTree, Matches @discord.ui.button(...). The fake doesn't need the full component-…, ui, decorator(), View
 
-### Community 6 - "route"
-Cohesion: 0.11
-Nodes (26): route, chat_usage(), connections(), containers(), _containers_data(), dashboard(), delete_trade(), docker_stats() (+18 more)
+### Community 6 - "require_token"
+Cohesion: 0.14
+Nodes (17): chat_usage(), connections(), delete_trade(), get_auth_log(), get_llm_usage(), _json_result(), mcp_servers(), memory() (+9 more)
 
 ### Community 7 - "ClientSession"
 Cohesion: 0.12
 Nodes (7): ClientError, ClientSession, ClientTimeout, _MockResponse, Exception, Minimal fake of 'aiohttp' — enough to test bot.py's backend_get/backend_chat…, Test double: configure `.script` with a queue of _MockResponse objects (or an…
 
-### Community 8 - "trades"
-Cohesion: 0.20
-Nodes (10): add_trade(), get_trades(), Returns (normalized_dict, None) or (None, error_message)., Raw transaction ledger as CSV text., Per-disposal FIFO tax report as CSV text — one row per sell-vs-buy-lot match,…, _tax_lots_to_csv(), trades(), trades_export() (+2 more)
+### Community 9 - "ultron-backend index (_index.md)"
+Cohesion: 0.11
+Nodes (28): Master Index (Obsidian Vault Root), $1.00 Lifetime Beta Spend Cap (ULTRON_BETA_MAX_SPEND_USD), Chamfered-Corner UI Design (45° cut panels), file:// Origin fetch() Bug (mobile Chrome Connect button), --line Panel Border Color Variable, Tailscale Grants/ACLs (autogroup:self), Tailscale Remote Access, ultron-backend Service (Docker Compose) (+20 more)
 
-### Community 9 - "ultron-backend README (Backend API Reference)"
-Cohesion: 0.17
-Nodes (14): Master Index (Obsidian Vault Root), ultron-backend Service (Docker Compose), Bug: Startup Script ANTHROPIC_API_KEY UX Trap, Project & Conversation Summary (History/Rationale Doc), Claude Code (Anthropic) - AI Pair-Programming Assistant, README.md (Top-level Architecture & Principles), ultron-backend index (_index.md), Bug: Beta Testers Couldn't See Own Spend (+6 more)
+### Community 10 - "app.py"
+Cohesion: 0.15
+Nodes (23): action_backup(), action_deploy_container(), _backup_preview(), _consume_action_token(), _dir_size_bytes(), log_activity(), _new_action_token(), _prune_expired_tokens_locked() (+15 more)
 
-### Community 10 - "action_backup"
-Cohesion: 0.27
-Nodes (10): action_backup(), _backup_preview(), _consume_action_token(), _dir_size_bytes(), _new_action_token(), _prune_expired_tokens_locked(), Pops and returns (params, None) on success, or (None, error_message). Tokens…, _run_backup() (+2 more)
-
-### Community 11 - "Beta Testers Roster & Add Process"
-Cohesion: 0.27
-Nodes (11): $1.00 Lifetime Beta Spend Cap (ULTRON_BETA_MAX_SPEND_USD), file:// Origin fetch() Bug (mobile Chrome Connect button), Tailscale Grants/ACLs (autogroup:self), Tailscale Remote Access, Why Tailscale Instead of Raw WireGuard, Beta Invite Message, Beta Launch Checklist, Beta Tester Guide (+3 more)
-
-### Community 12 - "require_role"
-Cohesion: 0.28
-Nodes (9): _beta_tester_spend_usd(), chat(), _check_rate_limit(), Returns None if the request is allowed, or an error message if the caller…, Lifetime spend for one beta tester, in dollars. Returns 0.0 on any read failure…, Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope…, require_role(), tts() (+1 more)
+### Community 12 - "route"
+Cohesion: 0.18
+Nodes (15): _beta_tester_spend_usd(), chat(), _check_rate_limit(), dashboard(), get_trade_tax_lots(), health(), route, Per-disposal detail: each row is one sell matched against one consumed buy lot,… (+7 more)
 
 ### Community 13 - "_get_db_connection"
-Cohesion: 0.25
-Nodes (9): activity(), distill_activity_trends(), _get_db_connection(), get_recent_activity(), _init_db(), Sums input+output tokens (real spend) for calls logged today (local date,…, Best-effort, like log_activity — this runs unattended on a background timer…, remember_note() (+1 more)
+Cohesion: 0.14
+Nodes (16): activity(), add_trade(), distill_activity_trends(), _get_db_connection(), get_recent_activity(), get_trades(), _init_db(), Returns (normalized_dict, None) or (None, error_message). (+8 more)
 
 ### Community 14 - "_fifo_engine"
 Cohesion: 0.20
-Nodes (10): _fifo_engine(), get_trade_summary(), get_trade_tax_lots(), Best-effort date -> integer day count, for holding-period math. Never raises;…, The one place FIFO matching happens. Returns both an aggregated per-asset view…, Simplified FIFO realized gain/loss per asset — the aggregated view. See…, Per-disposal detail: each row is one sell matched against one consumed buy lot,…, _trade_date_to_epoch_days() (+2 more)
+Nodes (10): _fifo_engine(), get_trade_summary(), Best-effort date -> integer day count, for holding-period math. Never raises;…, The one place FIFO matching happens. Returns both an aggregated per-asset view…, Simplified FIFO realized gain/loss per asset — the aggregated view. See…, Per-disposal FIFO tax report as CSV text — one row per sell-vs-buy-lot match,…, _tax_lots_to_csv(), _trade_date_to_epoch_days() (+2 more)
 
-### Community 15 - "action_deploy_container"
-Cohesion: 0.12
-Nodes (19): action_deploy_container(), docker_ps(), log_activity(), _parse_scout_sarif(), Runs `docker scout cves` for one image. Returns a result dict — never raises.…, Scans the images of currently running containers. Capped to CVE_SCAN_MAX_IMAGES…, Validates and normalizes a deploy-container request body. Returns (params,…, Best-effort logging — never raises. A logging failure (disk full, permissions,… (+11 more)
+### Community 15 - "docker_ps"
+Cohesion: 0.14
+Nodes (14): containers(), _containers_data(), docker_ps(), docker_stats(), _parse_scout_sarif(), Runs `docker scout cves` for one image. Returns a result dict — never raises.…, Scans the images of currently running containers. Capped to CVE_SCAN_MAX_IMAGES…, Return container info via the Docker CLI, avoiding a hard dependency on the… (+6 more)
 
 ### Community 16 - "fake_pkgs/ (drop-in fake SDKs)"
 Cohesion: 0.22
 Nodes (9): fake_pkgs/aiohttp (aiohttp client fake), fake_pkgs/anthropic (scriptable Anthropic client fake), fake_pkgs/discord (Discord SDK fake), fake_pkgs/ (drop-in fake SDKs), test_mcp_server.py (real protocol-compliant local MCP server), Why this exists as a separate folder (test against real-like dependencies), anthropic (>=1.0.0,<2.0.0), aiohttp (+1 more)
 
-### Community 17 - "app.py"
-Cohesion: 0.20
-Nodes (13): dev_repo_diff(), dev_repos(), _find_repo_dir(), get_repo_diff(), get_repo_status(), Ultron home lab monitoring backend. Exposes a small JSON API that the dashboard…, Runs a read-only git command in repo_path. Returns (stdout, error) — never…, Matches only against the pre-configured repo basenames — a caller can never… (+5 more)
+### Community 17 - "dev_repo_diff"
+Cohesion: 0.22
+Nodes (9): dev_repo_diff(), dev_repos(), _find_repo_dir(), get_repo_diff(), get_repo_status(), Runs a read-only git command in repo_path. Returns (stdout, error) — never…, Matches only against the pre-configured repo basenames — a caller can never…, _repo_status() (+1 more)
 
 ### Community 18 - "_status_data"
 Cohesion: 0.25
@@ -209,24 +196,20 @@ Nodes (3): demo(), _fake_streaming_tts(), Self-check for the /api/tts streaming 
 Cohesion: 0.50
 Nodes (5): Constant-time-ish token check against admin and every registered beta tester.…, wrapper(), wrapper(), _resolve_role(), _touch_presence()
 
-### Community 25 - "Ultron Dashboard Design Spec"
-Cohesion: 0.67
-Nodes (3): Chamfered-Corner UI Design (45° cut panels), --line Panel Border Color Variable, Ultron Dashboard Design Spec
-
 ### Community 68 - "_start_memory_trend_scheduler"
 Cohesion: 0.67
 Nodes (3): Runs distill_activity_trends() once now, then every 24h, in a daemon thread so…, _start_memory_trend_scheduler(), _loop()
 
 ## Knowledge Gaps
-- **43 isolated node(s):** `ButtonStyle`, `file:// Origin fetch() Bug (mobile Chrome Connect button)`, `Tailscale Grants/ACLs (autogroup:self)`, `Ultron Discord Bot README`, `anthropic (>=1.0.0,<2.0.0)` (+38 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 212 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **40 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **42 isolated node(s):** `ButtonStyle`, `file:// Origin fetch() Bug (mobile Chrome Connect button)`, `Tailscale Grants/ACLs (autogroup:self)`, `anthropic (>=1.0.0,<2.0.0)`, `aiohttp` (+37 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 209 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **38 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **What connects `ButtonStyle`, `file:// Origin fetch() Bug (mobile Chrome Connect button)`, `Tailscale Grants/ACLs (autogroup:self)` to the rest of the system?**
-  _43 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _42 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `bot.py` be split into smaller, more focused modules?**
   _Cohesion score 0.08755760368663594 - nodes in this community are weakly interconnected._
 - **Should `discord/__init__.py` be split into smaller, more focused modules?**
@@ -236,6 +219,6 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `ultron-discord-bot (Thin Remote-Control Layer)` be split into smaller, more focused modules?**
   _Cohesion score 0.0735632183908046 - nodes in this community are weakly interconnected._
 - **Should `run_ultron_chat` be split into smaller, more focused modules?**
-  _Cohesion score 0.082010582010582 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07586206896551724 - nodes in this community are weakly interconnected._
 - **Should `View` be split into smaller, more focused modules?**
   _Cohesion score 0.08307692307692308 - nodes in this community are weakly interconnected._
