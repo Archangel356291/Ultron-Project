@@ -240,9 +240,9 @@
     "semantic_hash": ""
   },
   "graph-schema/.node_history.json": {
-    "mtime": 1789426731.9018445,
-    "seen": 1789426777.630955,
-    "ast_hash": "6ae1bbc4a2a26b9075218e2e4704ca45",
+    "mtime": 1789426796.6406052,
+    "seen": 1789426804.0740414,
+    "ast_hash": "93d2c42f39853cb32154c66221d9f6d6",
     "semantic_hash": ""
   },
   "graph-schema/enrich_visibility.py": {
