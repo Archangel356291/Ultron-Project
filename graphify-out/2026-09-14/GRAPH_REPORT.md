@@ -1,17 +1,17 @@
 # Graph Report - Ultron Project  (2026-09-14)
 
 ## Corpus Check
-- 32 files · ~54,480 words
+- 35 files · ~60,014 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 2 file(s) not represented in the graph (top: (none) 2)
+- Unclassified: 6 file(s) not represented in the graph (top: (none) 6)
 
 ## Summary
-- 523 nodes · 863 edges · 44 communities (22 shown, 12 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 33 edges (avg confidence: 0.85)
+- 487 nodes · 768 edges · 71 communities (25 shown, 40 thin omitted)
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 46 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8a4e57f8`
+- Built from commit: `37f3eaf0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,184 +19,223 @@
 - bot.py
 - discord/__init__.py
 - anthropic/__init__.py
-- POST /api/chat (Ultron's brain)
+- ultron-discord-bot (Thin Remote-Control Layer)
+- run_ultron_chat
 - View
-- app.py
-- run_ultron_chat
-- start-ultron.ps1
-- run_ultron_chat
 - route
-- apiGet
-- Flask Backend (app.py)
-- docker_ps
+- ClientSession
+- trades
+- ultron-backend README (Backend API Reference)
+- action_backup
+- Beta Testers Roster & Add Process
+- require_role
 - _get_db_connection
 - _fifo_engine
-- require_role
+- action_deploy_container
+- fake_pkgs/ (drop-in fake SDKs)
+- app.py
 - _status_data
+- MCP Support (External Tool/Plugin System)
 - test_mcp_server.py
-- _json_result
-- run-bot-bg.ps1
+- test_tts_streaming.py
 - UltronBot
-- test_beta_spend_cap.py
-- Preview-then-confirm action pattern
-- _ensure_mcp_discovered
-- Testing Ultron — a quick guide
-- Financial and legal boundaries are explicit, not implied
-- get-tailscale-address.ps1
-- GET /api/trades/export
+- wrapper
+- test_memory.py
+- Ultron Dashboard Design Spec
+- Action Endpoints (backup, deploy-container)
+- aiultronproject Slack Workspace
+- add_cors_headers
+- Preview-Then-Confirm Action Pattern
+- _load_mcp_config
+- _split_platform_paths
+- _fifo_engine() (Shared FIFO Trade Computation)
 - The Importer (Obsidian plugin)
-- .__init__
-- Discord backend_get Raw-Error-Text Bug
-- Discord Field Truncation Off-by-N Bug
-- get_llm_usage Tool Registration Ordering Bug
-- Raspberry Pi setup — getting it reachable, phase 1
+- Ultron Project CLAUDE.md (graphify + vault instructions)
+- docker-compose.yml (Compose Orchestration)
+- ultron Bridge Network
+- Coding Sub-Agent (Emergent, Not In Original Spec)
+- Crypto/Trade Record & Tax Agent
+- Ethical Hacking Agent (Refused)
+- Home Lab Monitor & Command Router Agent
+- Investment/Financial Predictive Agent (Refused, Reinterpreted)
+- LyraWolf (Contributor)
+- Archangel356291 (Project Owner)
+- dev-tools (Testing Infrastructure)
+- Explicit Financial/Legal Boundaries
+- ultron-backend (Flask Backend)
+- Nothing Works Until Explicitly Configured
+- One Source of Truth Per Piece of Logic
+- Real-Dependency Testing Approach
+- Ultron (Personal AI Home Lab System)
+- Pi Phase 2 Plan (Preview-Then-Confirm Extended To Pi)
+- /api/activity (Persistent Activity Log)
+- app.py (Flask Backend Entrypoint)
+- /api/security/auth-log
+- /api/security/cve-scan (Docker Scout CVE Scan)
+- /api/dev/* (Development Tab Git Status/Diff)
+- Flask (>=3.0,<4.0)
+- psutil (>=6.0,<7.0)
+- pywin32 (==306, Windows only)
+- WMI (==1.5.1, Windows only)
+- _fish_audio_tts
+- _start_memory_trend_scheduler
+- Exception
+- route
 
 ## God Nodes (most connected - your core abstractions)
-1. `require_token()` - 19 edges
-2. `require_auth()` - 19 edges
-3. `Ultron Backend README` - 19 edges
+1. `Interaction` - 22 edges
+2. `require_token()` - 20 edges
+3. `require_auth()` - 19 edges
 4. `format_error_embed()` - 17 edges
-5. `Ultron Project README` - 15 edges
-6. `_json_result()` - 13 edges
+5. `_get_db_connection()` - 15 edges
+6. `_json_result()` - 14 edges
 7. `backend_get()` - 13 edges
-8. `apiGet()` - 13 edges
-9. `refreshAll()` - 13 edges
-10. `_get_db_connection()` - 12 edges
+8. `require_role()` - 10 edges
+9. `deploy_command()` - 10 edges
+10. `ConfirmActionView` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Flask (>=3.0,<4.0)` --shares_data_with--> `Flask Backend (app.py)`  [INFERRED]
-  ultron-backend/requirements.txt → PROJECT-SUMMARY-FOR-CLAUDE-CODE.md
-- `pywin32 (==306, Windows only)` --shares_data_with--> `Flask Backend (app.py)`  [INFERRED]
-  ultron-backend/requirements.txt → PROJECT-SUMMARY-FOR-CLAUDE-CODE.md
-- `WMI (==1.5.1, Windows only)` --shares_data_with--> `Flask Backend (app.py)`  [INFERRED]
-  ultron-backend/requirements.txt → PROJECT-SUMMARY-FOR-CLAUDE-CODE.md
-- `Ultron Dashboard Design Spec` --references--> `ultron-dashboard.html (single-file dashboard)`  [EXTRACTED]
-  ULTRON-DASHBOARD-DESIGN-SPEC.md → ultron-dashboard.html
-- `Ultron Discord Bot README` --references--> `Connection/Device Tracking (/api/connections)`  [EXTRACTED]
-  ultron-discord-bot/README.md → ultron-backend/README.md
+- `ultron-discord-bot Service (Docker Compose)` --shares_data_with--> `ultron-discord-bot (Thin Remote-Control Layer)`  [INFERRED]
+  docker-compose.yml → README.md
+- `Real Safeguards, Not Just Docs` --conceptually_related_to--> `Cost Controls (Budget, Spend Cap, Rate Limit, Caching)`  [INFERRED]
+  README.md → ultron-backend/README.md
+- `ultron-backend Service (Docker Compose)` --shares_data_with--> `ultron-backend README (Backend API Reference)`  [INFERRED]
+  docker-compose.yml → ultron-backend/README.md
+- `export_command()` --references--> `Choice`  [EXTRACTED]
+  ultron-discord-bot/bot.py → dev-tools/fake_pkgs/discord/__init__.py
+- `Beta Testers Roster & Add Process` --references--> `Ultron Discord Bot README`  [EXTRACTED]
+  ultron-backend/BETA-TESTERS.md → ultron-discord-bot/README.md
 
 ## Import Cycles
 - None detected.
 
 ## Hyperedges (group relationships)
 - **Fake SDKs built to match real SDK shape** — dev_tools_readme_fake_anthropic, dev_tools_readme_fake_discord, dev_tools_readme_fake_aiohttp, ultron_backend_requirements_anthropic, ultron_discord_bot_requirements_discordpy, ultron_discord_bot_requirements_aiohttp [EXTRACTED 1.00]
-- **Beta Tester Cost & Access Guardrails** — concept_beta_tester_role, concept_beta_spend_cap, concept_chat_rate_limit, concept_daily_token_budget, concept_rbac_enforcement [INFERRED 0.85]
-- **Dashboard Live Data Refresh Flow** — ultron_dashboard_connectbackend, ultron_dashboard_startpolling, ultron_dashboard_refreshall, ultron_dashboard_apiget, ultron_dashboard_fetchstatus [INFERRED 0.85]
-- **Preview-Then-Confirm Action Flow (backup + deploy)** — concept_preview_confirm_pattern, ultron_dashboard_previewdeploy, ultron_dashboard_confirmdeploy, ultron_dashboard_previewbackup, ultron_dashboard_confirmbackup [INFERRED 0.85]
+- **Preview-Then-Confirm Pattern Across Current and Planned Actions** — readme_preview_then_confirm_pattern, ultron_backend_readme_action_endpoints, ultron_backend_pi_setup_phase2_plan [INFERRED 0.80]
+- **MCP Discovery/Execution Separation Security Model** — project_summary_for_claude_code_mcp_support, readme_mcp_opt_in_principle, ultron_backend_readme_mcp_external_tools [INFERRED 0.85]
+- **Original Four-Agent Spec Plus Emergent Fifth** — project_summary_for_claude_code_ethical_hacking_agent, project_summary_for_claude_code_investment_agent, project_summary_for_claude_code_crypto_trade_agent, project_summary_for_claude_code_home_lab_monitor_agent, project_summary_for_claude_code_coding_subagent [INFERRED 0.85]
 
-## Communities (44 total, 12 thin omitted)
+## Communities (71 total, 40 thin omitted)
 
 ### Community 0 - "bot.py"
 Cohesion: 0.09
-Nodes (56): button, Choice, choices, command, describe, event, Interaction, ask_command() (+48 more)
+Nodes (56): button, choices, command, describe, Interaction, Fake interaction for testing command and button handlers directly., event, ask_command() (+48 more)
 
 ### Community 1 - "discord/__init__.py"
-Cohesion: 0.08
-Nodes (46): Vault Master Index, Ultron Project CLAUDE.md (graphify + vault instructions), $1.00 Lifetime Beta Spend Cap (ULTRON_BETA_MAX_SPEND_USD), Backend-Served Dashboard Route (GET /), beta_tester RBAC Role, Chamfered-Corner UI Design (45° cut panels), Chat Rate Limit (ULTRON_CHAT_RATE_LIMIT_PER_MINUTE), Connection/Device Tracking (/api/connections) (+38 more)
+Cohesion: 0.06
+Nodes (15): Bot, ButtonStyle, Embed, File, _Followup, HTTPException, Intents, _InteractionResponse (+7 more)
 
 ### Community 2 - "anthropic/__init__.py"
-Cohesion: 0.06
-Nodes (17): Bot, ButtonStyle, Embed, File, _Followup, HTTPException, Intents, Interaction (+9 more)
+Cohesion: 0.09
+Nodes (20): Anthropic, APIConnectionError, APIError, APIStatusError, APITimeoutError, AuthenticationError, BadRequestError, ContentBlock (+12 more)
 
-### Community 3 - "POST /api/chat (Ultron's brain)"
+### Community 3 - "ultron-discord-bot (Thin Remote-Control Layer)"
 Cohesion: 0.07
-Nodes (23): apiGet(), apiPost(), appendChatBubble(), authHeaders(), connectBackend(), fetchActivity(), fetchConnections(), fetchContainers() (+15 more)
+Nodes (26): demo(), _queue_reply(), Self-check for the beta-tester $1 spend cap (ULTRON_BETA_MAX_SPEND_USD) and the…, ultron-discord-bot Service (Docker Compose), Bug: Discord backend_get Showed Raw Error Text, Bug: Discord Field-Truncation Off-By-N, Bug: Tool-Registration Ordering (get_llm_usage NameError Risk), Config Value Hardening (Min-1 Clamp on Token/Rate Limits) (+18 more)
 
-### Community 4 - "View"
-Cohesion: 0.10
-Nodes (17): Anthropic, APIConnectionError, APIError, APIStatusError, APITimeoutError, AuthenticationError, BadRequestError, ContentBlock (+9 more)
-
-### Community 5 - "app.py"
-Cohesion: 0.12
-Nodes (27): after_request, action_backup(), action_deploy_container(), add_cors_headers(), _backup_preview(), _consume_action_token(), _dir_size_bytes(), _load_mcp_config() (+19 more)
-
-### Community 6 - "run_ultron_chat"
+### Community 4 - "run_ultron_chat"
 Cohesion: 0.08
-Nodes (28): _add_cache_breakpoint(), _ensure_mcp_discovered(), get_mcp_tools_and_dispatch(), _log_llm_usage(), _make_mcp_tool_handler(), handler(), _mcp_call_tool(), _mcp_discover_all() (+20 more)
+Nodes (28): Exception, _add_cache_breakpoint(), _ensure_mcp_discovered(), get_mcp_tools_and_dispatch(), _log_llm_usage(), _make_mcp_tool_handler(), handler(), _mcp_call_tool() (+20 more)
 
-### Community 7 - "start-ultron.ps1"
+### Community 5 - "View"
 Cohesion: 0.08
 Nodes (8): app_commands, Button, Choice, CommandTree, Matches @discord.ui.button(...). The fake doesn't need the full component-…, ui, decorator(), View
 
-### Community 8 - "run_ultron_chat"
-Cohesion: 0.10
-Nodes (25): jsonrpc_error(), jsonrpc_result(), mcp_endpoint(), route, A real MCP server for testing app.py's MCP client against genuine JSON-RPC…, Real Action Endpoints (backup, deploy-container), Coding Sub-Agent / Development Tab (git data), Trade CSV Export (transactions + tax-lots) (+17 more)
+### Community 6 - "route"
+Cohesion: 0.11
+Nodes (26): route, chat_usage(), connections(), containers(), _containers_data(), dashboard(), delete_trade(), docker_stats() (+18 more)
 
-### Community 9 - "route"
-Cohesion: 0.13
-Nodes (19): route, activity(), connections(), dashboard(), delete_trade(), get_auth_log(), get_mcp_servers(), get_recent_activity() (+11 more)
-
-### Community 10 - "apiGet"
+### Community 7 - "ClientSession"
 Cohesion: 0.12
 Nodes (7): ClientError, ClientSession, ClientTimeout, _MockResponse, Exception, Minimal fake of 'aiohttp' — enough to test bot.py's backend_get/backend_chat…, Test double: configure `.script` with a queue of _MockResponse objects (or an…
 
-### Community 11 - "Flask Backend (app.py)"
-Cohesion: 0.12
-Nodes (15): fake_pkgs/aiohttp (aiohttp client fake), fake_pkgs/anthropic (scriptable Anthropic client fake), fake_pkgs/discord (Discord SDK fake), fake_pkgs/ (drop-in fake SDKs), test_mcp_server.py (real protocol-compliant local MCP server), Why this exists as a separate folder (test against real-like dependencies), Flask Backend (app.py), HTML/JS Dashboard (+7 more)
+### Community 8 - "trades"
+Cohesion: 0.20
+Nodes (10): add_trade(), get_trades(), Returns (normalized_dict, None) or (None, error_message)., Raw transaction ledger as CSV text., Per-disposal FIFO tax report as CSV text — one row per sell-vs-buy-lot match,…, _tax_lots_to_csv(), trades(), trades_export() (+2 more)
 
-### Community 12 - "docker_ps"
-Cohesion: 0.14
-Nodes (14): containers(), _containers_data(), docker_ps(), docker_stats(), _parse_scout_sarif(), Return container info via the Docker CLI, avoiding a hard dependency on the…, Live CPU/mem per container, keyed by name. Best-effort; returns {} on any…, Defensive SARIF parser: Docker Scout's exact SARIF property layout isn't… (+6 more)
+### Community 9 - "ultron-backend README (Backend API Reference)"
+Cohesion: 0.17
+Nodes (14): Master Index (Obsidian Vault Root), ultron-backend Service (Docker Compose), Bug: Startup Script ANTHROPIC_API_KEY UX Trap, Project & Conversation Summary (History/Rationale Doc), Claude Code (Anthropic) - AI Pair-Programming Assistant, README.md (Top-level Architecture & Principles), ultron-backend index (_index.md), Bug: Beta Testers Couldn't See Own Spend (+6 more)
+
+### Community 10 - "action_backup"
+Cohesion: 0.27
+Nodes (10): action_backup(), _backup_preview(), _consume_action_token(), _dir_size_bytes(), _new_action_token(), _prune_expired_tokens_locked(), Pops and returns (params, None) on success, or (None, error_message). Tokens…, _run_backup() (+2 more)
+
+### Community 11 - "Beta Testers Roster & Add Process"
+Cohesion: 0.27
+Nodes (11): $1.00 Lifetime Beta Spend Cap (ULTRON_BETA_MAX_SPEND_USD), file:// Origin fetch() Bug (mobile Chrome Connect button), Tailscale Grants/ACLs (autogroup:self), Tailscale Remote Access, Why Tailscale Instead of Raw WireGuard, Beta Invite Message, Beta Launch Checklist, Beta Tester Guide (+3 more)
+
+### Community 12 - "require_role"
+Cohesion: 0.28
+Nodes (9): _beta_tester_spend_usd(), chat(), _check_rate_limit(), Returns None if the request is allowed, or an error message if the caller…, Lifetime spend for one beta tester, in dollars. Returns 0.0 on any read failure…, Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope…, require_role(), tts() (+1 more)
 
 ### Community 13 - "_get_db_connection"
-Cohesion: 0.18
-Nodes (12): add_trade(), chat_usage(), _get_db_connection(), get_llm_usage(), get_trades(), _init_db(), Returns (normalized_dict, None) or (None, error_message)., Raw transaction ledger as CSV text. (+4 more)
+Cohesion: 0.25
+Nodes (9): activity(), distill_activity_trends(), _get_db_connection(), get_recent_activity(), _init_db(), Sums input+output tokens (real spend) for calls logged today (local date,…, Best-effort, like log_activity — this runs unattended on a background timer…, remember_note() (+1 more)
 
-### Community 15 - "_fifo_engine"
+### Community 14 - "_fifo_engine"
 Cohesion: 0.20
-Nodes (10): _fifo_engine(), get_trade_tax_lots(), Best-effort date -> integer day count, for holding-period math. Never raises;…, The one place FIFO matching happens. Returns both an aggregated per-asset view…, Per-disposal detail: each row is one sell matched against one consumed buy lot,…, Per-disposal FIFO tax report as CSV text — one row per sell-vs-buy-lot match,…, _tax_lots_to_csv(), _trade_date_to_epoch_days() (+2 more)
+Nodes (10): _fifo_engine(), get_trade_summary(), get_trade_tax_lots(), Best-effort date -> integer day count, for holding-period math. Never raises;…, The one place FIFO matching happens. Returns both an aggregated per-asset view…, Simplified FIFO realized gain/loss per asset — the aggregated view. See…, Per-disposal detail: each row is one sell matched against one consumed buy lot,…, _trade_date_to_epoch_days() (+2 more)
 
-### Community 16 - "require_role"
-Cohesion: 0.11
-Nodes (21): _beta_tester_spend_usd(), chat(), _check_rate_limit(), _fish_audio_tts(), get_trade_summary(), Simplified FIFO realized gain/loss per asset — the aggregated view. See…, Returns None if the request is allowed, or an error message if the caller…, Lifetime spend for one beta tester, in dollars. Returns 0.0 on any read failure… (+13 more)
+### Community 15 - "action_deploy_container"
+Cohesion: 0.12
+Nodes (19): action_deploy_container(), docker_ps(), log_activity(), _parse_scout_sarif(), Runs `docker scout cves` for one image. Returns a result dict — never raises.…, Scans the images of currently running containers. Capped to CVE_SCAN_MAX_IMAGES…, Validates and normalizes a deploy-container request body. Returns (params,…, Best-effort logging — never raises. A logging failure (disk full, permissions,… (+11 more)
 
-### Community 17 - "_status_data"
+### Community 16 - "fake_pkgs/ (drop-in fake SDKs)"
+Cohesion: 0.22
+Nodes (9): fake_pkgs/aiohttp (aiohttp client fake), fake_pkgs/anthropic (scriptable Anthropic client fake), fake_pkgs/discord (Discord SDK fake), fake_pkgs/ (drop-in fake SDKs), test_mcp_server.py (real protocol-compliant local MCP server), Why this exists as a separate folder (test against real-like dependencies), anthropic (>=1.0.0,<2.0.0), aiohttp (+1 more)
+
+### Community 17 - "app.py"
+Cohesion: 0.20
+Nodes (13): dev_repo_diff(), dev_repos(), _find_repo_dir(), get_repo_diff(), get_repo_status(), Ultron home lab monitoring backend. Exposes a small JSON API that the dashboard…, Runs a read-only git command in repo_path. Returns (stdout, error) — never…, Matches only against the pre-configured repo basenames — a caller can never… (+5 more)
+
+### Community 18 - "_status_data"
 Cohesion: 0.25
 Nodes (9): get_cpu_temp_c(), get_uptime_str(), pending_os_updates(), Best-effort CPU temperature read. Returns None if unavailable — which, on…, Count of pending OS updates. Real implementation on both platforms: Windows…, status(), _status_data(), systems() (+1 more)
 
-### Community 18 - "test_mcp_server.py"
-Cohesion: 0.25
-Nodes (8): Step 1 — Connect Tailscale, Step 2 — Open Ultron, Step 3 — Connect with your token, Testing Ultron — a quick guide, Trying out the chat, What to report, What you can actually do, What you'll need
+### Community 19 - "MCP Support (External Tool/Plugin System)"
+Cohesion: 0.29
+Nodes (7): Bug: MCP Empty Notification Response Mishandled, Bug: MCP Response-Size Cap Applied At Wrong Layer, dev-tools/fake_pkgs (Scriptable Fakes for anthropic/discord/aiohttp), MCP Support (External Tool/Plugin System), dev-tools/test_mcp_server.py (Real Protocol-Strict MCP Test Server), MCP Opt-In At the Tool Level, Not Server Level, External Tools (MCP) Section
 
-### Community 19 - "_json_result"
-Cohesion: 0.20
-Nodes (11): dev_repo_diff(), dev_repos(), _find_repo_dir(), get_repo_diff(), get_repo_status(), _json_result(), Runs a read-only git command in repo_path. Returns (stdout, error) — never…, Matches only against the pre-configured repo basenames — a caller can never… (+3 more)
+### Community 20 - "test_mcp_server.py"
+Cohesion: 0.47
+Nodes (5): jsonrpc_error(), jsonrpc_result(), mcp_endpoint(), route, A real MCP server for testing app.py's MCP client against genuine JSON-RPC…
 
-### Community 20 - "run-bot-bg.ps1"
-Cohesion: 0.33
-Nodes (6): Color palette (sampled), Layout structure, Recommended next step, Structural/decorative details worth getting right, The one real, actionable color finding, Ultron AI Dashboard — Design Specification (from reference image)
-
-### Community 22 - "test_beta_spend_cap.py"
+### Community 21 - "test_tts_streaming.py"
 Cohesion: 0.50
-Nodes (3): demo(), _queue_reply(), Self-check for the beta-tester $1 spend cap (ULTRON_BETA_MAX_SPEND_USD) and the…
+Nodes (3): demo(), _fake_streaming_tts(), Self-check for the /api/tts streaming fix (Module 1 of the roadmap: "text…
 
-### Community 44 - "Raspberry Pi setup — getting it reachable, phase 1"
-Cohesion: 0.20
-Nodes (9): 0. What's already been generated for this, 1. Flash the SD card, 2. First boot and SSH in, 3. Update the OS, 4. Install Tailscale, join the same tailnet, 5. Install Docker, Raspberry Pi setup — getting it reachable, phase 1, Where this leaves things (+1 more)
+### Community 23 - "wrapper"
+Cohesion: 0.50
+Nodes (5): Constant-time-ish token check against admin and every registered beta tester.…, wrapper(), wrapper(), _resolve_role(), _touch_presence()
 
-## Ambiguous Edges - Review These
-- `Coding Sub-Agent / Development Tab (git data)` → `Home Lab Monitor & Command Router`  [AMBIGUOUS]
-  PROJECT-SUMMARY-FOR-CLAUDE-CODE.md · relation: conceptually_related_to
+### Community 25 - "Ultron Dashboard Design Spec"
+Cohesion: 0.67
+Nodes (3): Chamfered-Corner UI Design (45° cut panels), --line Panel Border Color Variable, Ultron Dashboard Design Spec
+
+### Community 68 - "_start_memory_trend_scheduler"
+Cohesion: 0.67
+Nodes (3): Runs distill_activity_trends() once now, then every 24h, in a daemon thread so…, _start_memory_trend_scheduler(), _loop()
 
 ## Knowledge Gaps
-- **54 isolated node(s):** `ButtonStyle`, `Folders`, `Root notes`, `Beta tester invite message`, `How someone gets added` (+49 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 214 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **43 isolated node(s):** `ButtonStyle`, `file:// Origin fetch() Bug (mobile Chrome Connect button)`, `Tailscale Grants/ACLs (autogroup:self)`, `Ultron Discord Bot README`, `anthropic (>=1.0.0,<2.0.0)` (+38 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 212 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **40 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What is the exact relationship between `Coding Sub-Agent / Development Tab (git data)` and `Home Lab Monitor & Command Router`?**
-  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `app_commands` connect `start-ultron.ps1` to `anthropic/__init__.py`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **Why does `Ultron Dashboard Design Spec` connect `discord/__init__.py` to `run-bot-bg.ps1`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **What connects `ButtonStyle`, `Folders`, `Root notes` to the rest of the system?**
-  _54 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `ButtonStyle`, `file:// Origin fetch() Bug (mobile Chrome Connect button)`, `Tailscale Grants/ACLs (autogroup:self)` to the rest of the system?**
+  _43 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `bot.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.0898995240613432 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08755760368663594 - nodes in this community are weakly interconnected._
 - **Should `discord/__init__.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.07607843137254902 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05689900426742532 - nodes in this community are weakly interconnected._
 - **Should `anthropic/__init__.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.05512820512820513 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08571428571428572 - nodes in this community are weakly interconnected._
+- **Should `ultron-discord-bot (Thin Remote-Control Layer)` be split into smaller, more focused modules?**
+  _Cohesion score 0.0735632183908046 - nodes in this community are weakly interconnected._
+- **Should `run_ultron_chat` be split into smaller, more focused modules?**
+  _Cohesion score 0.082010582010582 - nodes in this community are weakly interconnected._
+- **Should `View` be split into smaller, more focused modules?**
+  _Cohesion score 0.08307692307692308 - nodes in this community are weakly interconnected._

@@ -36,9 +36,9 @@
     "semantic_hash": "0cc3dc786cac971cfbdaf4340c89f428"
   },
   "ultron-backend/app.py": {
-    "mtime": 1789373610.7698953,
-    "seen": 1789374133.4128196,
-    "ast_hash": "91e2571128be6f635aab0e41d6176e7c",
+    "mtime": 1789425327.5859056,
+    "seen": 1789425671.9571688,
+    "ast_hash": "4929f3ea7a31330e150883cb94057206",
     "semantic_hash": ""
   },
   "ultron-backend/get-tailscale-address.ps1": {
@@ -55,9 +55,9 @@
   },
   "ultron-discord-bot/bot.py": {
     "mtime": 1789373856.4257655,
-    "seen": 1789374133.4128242,
+    "seen": 1789384417.7862473,
     "ast_hash": "0c6e74e096a49b278a422a3b09ba7362",
-    "semantic_hash": ""
+    "semantic_hash": "0c6e74e096a49b278a422a3b09ba7362"
   },
   "ultron-discord-bot/start-bot.ps1": {
     "mtime": 1789353085.2517867,
@@ -66,10 +66,10 @@
     "semantic_hash": "2050f56dab3a5468ed30161cba51b607"
   },
   "README.md": {
-    "mtime": 1789360988.444058,
-    "seen": 1789361010.4328005,
-    "ast_hash": "9e35a9ccc3fd78a1cbf61f0f158c5168",
-    "semantic_hash": ""
+    "mtime": 1789382364.2322896,
+    "seen": 1789384417.7862508,
+    "ast_hash": "e5f8efe7a1d87197bd402fcd0cfc3203",
+    "semantic_hash": "e5f8efe7a1d87197bd402fcd0cfc3203"
   },
   "Welcome.md": {
     "mtime": 1789267423.6562016,
@@ -90,10 +90,10 @@
     "semantic_hash": "fc694bb34a54f8adfcddc91b4e9d71ef"
   },
   "ultron-backend/README.md": {
-    "mtime": 1789374088.492863,
-    "seen": 1789374133.4128401,
-    "ast_hash": "d67c272b68cebf4cb526b724c2a1a562",
-    "semantic_hash": ""
+    "mtime": 1789379702.6579201,
+    "seen": 1789384417.7862551,
+    "ast_hash": "0706ec0033bc71a58d969b02c6ab58cb",
+    "semantic_hash": "0706ec0033bc71a58d969b02c6ab58cb"
   },
   "ultron-backend/REMOTE-ACCESS.md": {
     "mtime": 1789346724.2392569,
@@ -108,9 +108,9 @@
     "semantic_hash": "11e5532dd472503b4a8c00bf88a25d0e"
   },
   "ultron-dashboard.html": {
-    "mtime": 1789373745.9694188,
-    "seen": 1789374133.4128437,
-    "ast_hash": "95c55632c585a543d1e621e5b17908a5",
+    "mtime": 1789425390.6802747,
+    "seen": 1789425671.9571958,
+    "ast_hash": "174b52be607e106e408263b8bab8c38d",
     "semantic_hash": ""
   },
   "ultron-discord-bot/README.md": {
@@ -132,10 +132,10 @@
     "semantic_hash": "73792b9af3fc811b105441cc773526b1"
   },
   "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md": {
-    "mtime": 1789276661.5231514,
-    "seen": 1789287961.2649632,
-    "ast_hash": "a2fb66245f9d75fc5e02852fd3cab37e",
-    "semantic_hash": "a2fb66245f9d75fc5e02852fd3cab37e"
+    "mtime": 1789379017.9448023,
+    "seen": 1789384417.7862499,
+    "ast_hash": "5d45c0cab0e8599c590c1e3197e72c3a",
+    "semantic_hash": "5d45c0cab0e8599c590c1e3197e72c3a"
   },
   "CLAUDE.md": {
     "mtime": 1789338760.1588264,
@@ -145,21 +145,21 @@
   },
   "_master-index.md": {
     "mtime": 1789360086.2936542,
-    "seen": 1789361010.4328039,
+    "seen": 1789384417.7862518,
     "ast_hash": "f28dcec4ec3840ff8a974a72e81ce53f",
-    "semantic_hash": ""
+    "semantic_hash": "f28dcec4ec3840ff8a974a72e81ce53f"
   },
   "ultron-backend/_index.md": {
     "mtime": 1789374100.9774895,
-    "seen": 1789374133.412842,
+    "seen": 1789384417.7862556,
     "ast_hash": "733f9c8a19599e102505f9e28d3e9735",
-    "semantic_hash": ""
+    "semantic_hash": "733f9c8a19599e102505f9e28d3e9735"
   },
   "ultron-backend/CODE-AUDIT.md": {
-    "mtime": 1789374062.591375,
-    "seen": 1789374133.4128382,
-    "ast_hash": "3b01cc03d9be34e0e4e86882be15e2b1",
-    "semantic_hash": ""
+    "mtime": 1789374871.8404772,
+    "seen": 1789384417.7862532,
+    "ast_hash": "a97c43eb5c1d9c5b83a0c01717c79917",
+    "semantic_hash": "a97c43eb5c1d9c5b83a0c01717c79917"
   },
   "ultron-backend/run-beta.ps1": {
     "mtime": 1789344480.6248035,
@@ -198,15 +198,39 @@
     "semantic_hash": "0f0f1fe4efe02db1e8ff5df791bcad6c"
   },
   "dev-tools/test_beta_spend_cap.py": {
-    "mtime": 1789373986.4765491,
-    "seen": 1789374133.4128165,
-    "ast_hash": "4863c5c3edf3b852a935b9d4c2646fb9",
+    "mtime": 1789425333.7360604,
+    "seen": 1789425671.9571621,
+    "ast_hash": "b5dc037f9edc54bd0a6b59d8f84387a2",
     "semantic_hash": ""
   },
   "ultron-backend/PI-SETUP.md": {
     "mtime": 1789360963.008067,
-    "seen": 1789361010.4328113,
+    "seen": 1789384417.7862542,
     "ast_hash": "c0295590117409a80fdfc2d0499079a4",
+    "semantic_hash": "c0295590117409a80fdfc2d0499079a4"
+  },
+  "dev-tools/test_mcp_untrusted_wrap.py": {
+    "mtime": 1789382347.209395,
+    "seen": 1789384417.7862413,
+    "ast_hash": "b1a45a2dff2cb43b5e7b0ca29c095ec1",
+    "semantic_hash": "b1a45a2dff2cb43b5e7b0ca29c095ec1"
+  },
+  "dev-tools/test_memory.py": {
+    "mtime": 1789382169.9523282,
+    "seen": 1789384417.7862422,
+    "ast_hash": "4b490d1422f4c927cb5472face44f5ba",
+    "semantic_hash": "4b490d1422f4c927cb5472face44f5ba"
+  },
+  "docker-compose.yml": {
+    "mtime": 1789376728.0691845,
+    "seen": 1789384417.7862525,
+    "ast_hash": "ec9c1b371f042a3e5411eb053f1f1843",
+    "semantic_hash": "ec9c1b371f042a3e5411eb053f1f1843"
+  },
+  "dev-tools/test_tts_streaming.py": {
+    "mtime": 1789425368.6604004,
+    "seen": 1789425671.9571676,
+    "ast_hash": "f5b165f470e9ca8d7f472c4b5214e98d",
     "semantic_hash": ""
   }
 }
