@@ -130,7 +130,16 @@ equivalent section (e.g. no stdio/local-subprocess MCP transport, no
 exchange API integration for trades, no CI integration for the
 Development tab).
 
-## Beta testers
+## Contributors
+
+### Core
+
+| Name | Role |
+|---|---|
+| [@Archangel356291](https://github.com/Archangel356291) | Project owner |
+| Claude Code (Anthropic) | AI pair-programming assistant — built, tested, and documented alongside the owner throughout development |
+
+### Beta testers
 
 Credited here as they join — not required, but real work deserves it.
 Full process (how someone gets added, each tester's own independently-
@@ -150,3 +159,13 @@ Tailscale, not an outside tester.
 ready-to-send, copy/paste invite — the first ask, sent before
 `ultron-backend/BETA-TESTER-GUIDE.md` and their token. Once they say
 yes, add their name to the roster both here and in `BETA-TESTERS.md`.
+
+### Other contributors
+
+Room for anyone else who pitches in beyond beta testing — code, docs,
+bug reports that led to a real fix, whatever the actual contribution
+was.
+
+| Name | Contribution |
+|---|---|
+| _none yet_ | |
