@@ -1,0 +1,2078 @@
+{
+  "dev_tools_fake_pkgs_discord_init_interaction": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "ultron_discord_bot_bot_backenderror": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_confirmactionview": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_ext_commands_bot": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_buttonstyle": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_embed": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_file": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_followup": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_httpexception": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_intents": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_interactionresponse": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_mockmessage": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_object": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_user": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_anthropic": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_apiconnectionerror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_apierror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_apistatuserror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_apitimeouterror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_authenticationerror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_badrequesterror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_contentblock": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_internalservererror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_message": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_messagesapi": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_notfounderror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_permissiondeniederror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_ratelimiterror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_usage": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "ultron_discord_bot_bot_ultronbot": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_backend_app_mcperror": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_app_commands": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_button": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_choice": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_commandtree": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_ui": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_view": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_clienterror": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_clientsession": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_clienttimeout": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_mockresponse": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "ultron_discord_bot_bot_ask_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_backend_chat": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_backend_get": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_backend_get_csv": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_backend_post": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_backup_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_confirmactionview_cancel": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_confirmactionview_confirm": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_confirmactionview_interaction_check": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_confirmactionview_on_timeout": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_connections_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_containers_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_deploy_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_diff_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_export_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_forget_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_backup_preview_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_backup_result_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_chat_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_connections_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_containers_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_deploy_preview_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_deploy_result_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_diff_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_error_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_mcp_servers_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_portfolio_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_repos_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_status_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_storage_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_systems_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_trades_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_format_usage_embed": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_is_authorized": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_mcp_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_on_ready": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_parse_allowed_users": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_portfolio_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_repos_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_require_auth": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_status_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_storage_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_systems_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_trades_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_usage_command": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_ext_commands_bot_close": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_ext_commands_bot_event": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_ext_commands_bot_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_ext_commands_bot_run": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_ext_commands_bot_setup_hook": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_embed_add_field": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_embed_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_embed_set_footer": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_file_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_followup_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_followup_send": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_intents_default": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_interaction_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_interactionresponse_defer": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_interactionresponse_edit_message": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_interactionresponse_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_interactionresponse_send_message": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_mockmessage_edit": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_mockmessage_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_object_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_user_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "ultron_backend_app_action_backup": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_action_deploy_container": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_backup_preview": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_consume_action_token": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_dir_size_bytes": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_new_action_token": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_prune_expired_tokens_locked": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_run_backup": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_run_backup_locked": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_run_deploy_container": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_validate_backup_config": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_containers": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_containers_data": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_docker_ps": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_docker_stats": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_beta_tester_spend_usd": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_chat": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_check_rate_limit": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_fish_audio_tts": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_fish_audio_tts_chunks": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_require_role": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_require_role_wrapper": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_require_token_wrapper": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_resolve_role": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_todays_token_usage": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_touch_presence": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_tts": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_whoami": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_add_trade": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_trades": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_tax_lots_to_csv": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_trades": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_trades_export": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_trades_to_csv": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_validate_trade_input": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_fifo_engine": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_trade_summary": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_trade_tax_lots": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_trade_date_to_epoch_days": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_trades_summary": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_trades_tax_lots": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_log_activity": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_parse_scout_sarif": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_scan_container_cves": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_scan_image_cves": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_security_cve_scan": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_severity_from_score": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_add_cors_headers": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_dev_repo_diff": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_dev_repos": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_find_repo_dir": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_repo_diff": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_repo_status": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_load_mcp_config": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_parse_beta_tokens": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_repo_status": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_run_git": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_split_platform_paths": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_validate_container_name": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_validate_deploy_params": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_validate_image_ref": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_validate_port": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_cpu_temp_c": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_uptime_str": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_pending_os_updates": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_status": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_status_data": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_systems": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_systems_data": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_anthropic_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_apistatuserror_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_authenticationerror_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_badrequesterror_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_contentblock_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_contentblock_model_dump": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_internalservererror_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_message_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_messagesapi_create": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_messagesapi_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_notfounderror_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_permissiondeniederror_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_ratelimiterror_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_usage_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_test_mcp_untrusted_wrap_demo": {
+    "date_created": "2026-09-14T10:39:07.209395+00:00",
+    "date_updated": "2026-09-14T10:39:07.209395+00:00"
+  },
+  "dev_tools_test_mcp_untrusted_wrap_fake_mcp_lookup": {
+    "date_created": "2026-09-14T10:39:07.209395+00:00",
+    "date_updated": "2026-09-14T10:39:07.209395+00:00"
+  },
+  "dev_tools_test_mcp_server_jsonrpc_error": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_test_mcp_server_jsonrpc_result": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_test_mcp_server_mcp_endpoint": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_test_tts_streaming_demo": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_test_tts_streaming_fake_streaming_tts": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_test_tts_streaming_fake_streaming_tts_chunks": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_discord_bot_bot_confirmactionview_init": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_ultronbot_chat_lock": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_ultronbot_close": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_ultronbot_init": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_ultronbot_setup_hook": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "dev_tools_test_memory_demo": {
+    "date_created": "2026-09-14T10:36:09.952328+00:00",
+    "date_updated": "2026-09-14T10:36:09.952328+00:00"
+  },
+  "dev_tools_test_memory_demo_trend_distillation": {
+    "date_created": "2026-09-14T10:36:09.952328+00:00",
+    "date_updated": "2026-09-14T10:36:09.952328+00:00"
+  },
+  "dev_tools_test_beta_spend_cap_demo": {
+    "date_created": "2026-09-14T22:41:24.417965+00:00",
+    "date_updated": "2026-09-14T22:41:24.417965+00:00"
+  },
+  "dev_tools_test_beta_spend_cap_demo_fire": {
+    "date_created": "2026-09-14T22:41:24.417965+00:00",
+    "date_updated": "2026-09-14T22:41:24.417965+00:00"
+  },
+  "dev_tools_test_beta_spend_cap_queue_reply": {
+    "date_created": "2026-09-14T22:41:24.417965+00:00",
+    "date_updated": "2026-09-14T22:41:24.417965+00:00"
+  },
+  "ultron_backend_app_add_cache_breakpoint": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_ensure_mcp_discovered": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_mcp_tools_and_dispatch": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_make_mcp_tool_handler": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_make_mcp_tool_handler_handler": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_mcp_call_tool": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_mcp_discover_all": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_mcp_http_post": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_mcp_initialize": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_mcp_jsonrpc_call": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_mcp_list_tools": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_run_ultron_chat": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_serialize_block": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_serialize_content": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_app_commands_choices": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_app_commands_choices_decorator": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_app_commands_describe": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_app_commands_describe_decorator": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_button_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_choice_class_getitem": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_choice_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_commandtree_command": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_commandtree_command_decorator": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_commandtree_copy_global_to": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_commandtree_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_commandtree_sync": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_ui_button": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_ui_button_decorator": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_view_disable_all_items": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_view_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_view_interaction_check": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_view_on_timeout": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_view_stop": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "ultron_backend_app_activity": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_chat_usage": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_connections": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_dashboard": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_delete_trade": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_auth_log": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_llm_usage": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_mcp_servers": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_recent_activity": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_health": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_json_result": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_mcp_servers": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_memory": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_recall_notes": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_require_token": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_security_auth_log": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_storage": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_storage_data": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_trade_delete": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_distill_activity_trends": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_get_db_connection": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_init_db": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_log_llm_usage": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_remember_note": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_start_memory_trend_scheduler": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_start_memory_trend_scheduler_loop": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_usage_cost_usd": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_clientsession_close": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_clientsession_get": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_clientsession_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_clientsession_next": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_clientsession_post": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_clienttimeout_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_mockresponse_aenter": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_mockresponse_aexit": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_mockresponse_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_mockresponse_json": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_mockresponse_text": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "button": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "choices": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "command": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "describe": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_ext_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "event": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "ultron_discord_bot_bot": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_py_exception": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_rationale_90": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "ultron_discord_bot_bot_rationale_1": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_rationale_374": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_rationale_422": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_rationale_446": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_rationale_559": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "ultron_discord_bot_bot_rationale_613": {
+    "date_created": "2026-09-14T08:17:36.425766+00:00",
+    "date_updated": "2026-09-14T08:17:36.425766+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_ext_commands": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_py_exception": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_rationale_1": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_rationale_43": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_rationale_66": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "ultron_backend_app_rationale_1121": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_754": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_788": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2072": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2132": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2151": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_555": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_623": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_679": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1474": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1740": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1761": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1601": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1613": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1707": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1723": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1000": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1053": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_265": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_958": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "after_request": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "ultron_backend_app": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1169": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1359": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_1413": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_168": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2267": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_820": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_700": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_810": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_py_exception": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "dev_tools_test_mcp_untrusted_wrap": {
+    "date_created": "2026-09-14T10:39:07.209395+00:00",
+    "date_updated": "2026-09-14T10:39:07.209395+00:00"
+  },
+  "dev_tools_fake_pkgs_anthropic_init_rationale_1": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_test_mcp_untrusted_wrap_rationale_1": {
+    "date_created": "2026-09-14T10:39:07.209395+00:00",
+    "date_updated": "2026-09-14T10:39:07.209395+00:00"
+  },
+  "dev_tools_test_mcp_server": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_test_mcp_server_py_route": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "dev_tools_test_mcp_server_rationale_1": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_test_tts_streaming": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_test_tts_streaming_rationale_1": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_test_memory": {
+    "date_created": "2026-09-14T10:36:09.952328+00:00",
+    "date_updated": "2026-09-14T10:36:09.952328+00:00"
+  },
+  "dev_tools_test_memory_rationale_1": {
+    "date_created": "2026-09-14T10:36:09.952328+00:00",
+    "date_updated": "2026-09-14T10:36:09.952328+00:00"
+  },
+  "dev_tools_test_beta_spend_cap": {
+    "date_created": "2026-09-14T22:41:24.417965+00:00",
+    "date_updated": "2026-09-14T22:41:24.417965+00:00"
+  },
+  "dev_tools_test_beta_spend_cap_rationale_1": {
+    "date_created": "2026-09-14T22:41:24.417965+00:00",
+    "date_updated": "2026-09-14T22:41:24.417965+00:00"
+  },
+  "ultron_backend_get_tailscale_address": {
+    "date_created": "2026-09-13T02:47:50+00:00",
+    "date_updated": "2026-09-13T02:47:50+00:00"
+  },
+  "ultron_backend_get_tailscale_address_test_tailscaleinstalled": {
+    "date_created": "2026-09-13T02:47:50+00:00",
+    "date_updated": "2026-09-13T02:47:50+00:00"
+  },
+  "ultron_backend_app_py_exception": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "ultron_backend_app_rationale_2318": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2424": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2451": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2490": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2515": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2800": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2814": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2833": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_fake_pkgs_discord_init_rationale_136": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "ultron_backend_app_py_route": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "ultron_backend_app_rationale_1858": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2175": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2468": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_2962": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_658": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_846": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_run_beta": {
+    "date_created": "2026-09-14T00:08:00.624804+00:00",
+    "date_updated": "2026-09-14T00:08:00.624804+00:00"
+  },
+  "ultron_backend_start_ultron": {
+    "date_created": "2026-09-14T04:05:22.621770+00:00",
+    "date_updated": "2026-09-14T04:05:22.621770+00:00"
+  },
+  "ultron_discord_bot_run_bot_bg": {
+    "date_created": "2026-09-14T02:38:57.455878+00:00",
+    "date_updated": "2026-09-14T02:38:57.455878+00:00"
+  },
+  "ultron_discord_bot_start_bot": {
+    "date_created": "2026-09-14T02:31:25.251787+00:00",
+    "date_updated": "2026-09-14T02:31:25.251787+00:00"
+  },
+  "ultron_backend_app_rationale_2097": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_387": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_429": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "ultron_backend_app_rationale_493": {
+    "date_created": "2026-09-14T22:41:24.418964+00:00",
+    "date_updated": "2026-09-14T22:41:24.418964+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_py_exception": {
+    "date_created": "2026-09-14T22:51:54.322061+00:00",
+    "date_updated": "2026-09-14T22:56:52.361522+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_rationale_1": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "dev_tools_fake_pkgs_aiohttp_init_rationale_35": {
+    "date_created": "2026-09-13T02:46:48+00:00",
+    "date_updated": "2026-09-13T02:46:48+00:00"
+  },
+  "knowledge_graph_gap_spec": {
+    "date_created": "2026-09-14T22:44:39.100418+00:00",
+    "date_updated": "2026-09-14T22:44:39.100418+00:00"
+  },
+  "knowledge_graph_gap_spec_1_beta_test_results_already_recorded_pulled_in_as_ground_truth": {
+    "date_created": "2026-09-14T22:44:39.100418+00:00",
+    "date_updated": "2026-09-14T22:44:39.100418+00:00"
+  },
+  "knowledge_graph_gap_spec_2_graphify_s_actual_output_format_verified_from_the_real_files": {
+    "date_created": "2026-09-14T22:44:39.100418+00:00",
+    "date_updated": "2026-09-14T22:44:39.100418+00:00"
+  },
+  "knowledge_graph_gap_spec_3_ponytail_what_it_actually_limits_strips": {
+    "date_created": "2026-09-14T22:44:39.100418+00:00",
+    "date_updated": "2026-09-14T22:44:39.100418+00:00"
+  },
+  "knowledge_graph_gap_spec_4_the_gap_what_module_4_actually_needs_to_add": {
+    "date_created": "2026-09-14T22:44:39.100418+00:00",
+    "date_updated": "2026-09-14T22:44:39.100418+00:00"
+  },
+  "knowledge_graph_gap_spec_knowledge_graph_gap_spec_module_2_deliverable": {
+    "date_created": "2026-09-14T22:44:39.100418+00:00",
+    "date_updated": "2026-09-14T22:44:39.100418+00:00"
+  },
+  "ultron_backend_requirements_anthropic": {
+    "date_created": "2026-09-13T05:20:55.563225+00:00",
+    "date_updated": "2026-09-13T05:20:55.563225+00:00"
+  },
+  "ultron_discord_bot_requirements_aiohttp": {
+    "date_created": "2026-09-13T02:47:51+00:00",
+    "date_updated": "2026-09-13T02:47:51+00:00"
+  },
+  "ultron_discord_bot_requirements_discordpy": {
+    "date_created": "2026-09-13T02:47:51+00:00",
+    "date_updated": "2026-09-13T02:47:51+00:00"
+  },
+  "dev_tools_readme_fake_aiohttp": {
+    "date_created": "2026-09-13T02:47:09+00:00",
+    "date_updated": "2026-09-13T02:47:09+00:00"
+  },
+  "dev_tools_readme_fake_anthropic": {
+    "date_created": "2026-09-13T02:47:09+00:00",
+    "date_updated": "2026-09-13T02:47:09+00:00"
+  },
+  "dev_tools_readme_fake_discord": {
+    "date_created": "2026-09-13T02:47:09+00:00",
+    "date_updated": "2026-09-13T02:47:09+00:00"
+  },
+  "dev_tools_readme_fake_pkgs": {
+    "date_created": "2026-09-13T02:47:09+00:00",
+    "date_updated": "2026-09-13T02:47:09+00:00"
+  },
+  "dev_tools_readme_test_mcp_server": {
+    "date_created": "2026-09-13T02:47:09+00:00",
+    "date_updated": "2026-09-13T02:47:09+00:00"
+  },
+  "dev_tools_readme_testing_philosophy": {
+    "date_created": "2026-09-13T02:47:09+00:00",
+    "date_updated": "2026-09-13T02:47:09+00:00"
+  },
+  "project_summary_for_claude_code_dev_tools_fake_pkgs": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_test_mcp_server": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_bug_mcp_empty_notification": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_bug_mcp_response_size_cap": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_mcp_support": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "readme_mcp_opt_in_principle": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "ultron_backend_readme_mcp_external_tools": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_dashboard_apipost": {
+    "date_created": "2026-09-14T22:41:24.419964+00:00",
+    "date_updated": "2026-09-14T22:41:24.419964+00:00"
+  },
+  "ultron_backend_readme_action_endpoints": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_backend_code_audit_bug_backup_collision": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "_master_index_slack_workspace": {
+    "date_created": "2026-09-14T04:28:06.293654+00:00",
+    "date_updated": "2026-09-14T04:28:06.293654+00:00"
+  },
+  "readme_contributor_shawneemacdabs": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_preview_then_confirm_pattern": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_read_only_by_default_principle": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "docker_compose_ultron_discord_bot_service": {
+    "date_created": "2026-09-14T09:05:28.069185+00:00",
+    "date_updated": "2026-09-14T09:05:28.069185+00:00"
+  },
+  "ultron_backend_code_audit_presence_table": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_readme_chat_endpoint": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_dashboard_appendchatbubble": {
+    "date_created": "2026-09-14T22:41:24.419964+00:00",
+    "date_updated": "2026-09-14T22:41:24.419964+00:00"
+  },
+  "ultron_dashboard_postchat": {
+    "date_created": "2026-09-14T22:41:24.419964+00:00",
+    "date_updated": "2026-09-14T22:41:24.419964+00:00"
+  },
+  "ultron_dashboard_sendchatmessage": {
+    "date_created": "2026-09-14T22:41:24.419964+00:00",
+    "date_updated": "2026-09-14T22:41:24.419964+00:00"
+  },
+  "ultron_dashboard_sendfromhome": {
+    "date_created": "2026-09-14T22:41:24.419964+00:00",
+    "date_updated": "2026-09-14T22:41:24.419964+00:00"
+  },
+  "ultron_dashboard_speakreply": {
+    "date_created": "2026-09-14T22:41:24.419964+00:00",
+    "date_updated": "2026-09-14T22:41:24.419964+00:00"
+  },
+  "readme_dashboard": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_discord_bot": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "project_summary_for_claude_code_bug_discord_backend_get_errors": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_bug_discord_field_truncation": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_bug_tool_registration_ordering": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_config_value_hardening": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "readme_real_safeguards_principle": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "ultron_backend_code_audit_bot_ps1_secret_bug": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_code_audit_bug_chat_histories_race": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_code_audit_bug_discord_timeout_not_caught": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_code_audit_bug_no_history_size_cap": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_code_audit_bug_presence_race": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_code_audit_bug_send_from_home_bypass": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_code_audit_bug_spend_cap_race": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_code_audit_bug_tts_no_spend_cap": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_code_audit_discord_token_wrong_key_bug": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_readme_cost_controls": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_backend_readme_fifo_engine": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_backend_readme_trade_records": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "welcome_importer_plugin": {
+    "date_created": "2026-09-13T02:43:43.656202+00:00",
+    "date_updated": "2026-09-13T02:43:43.656202+00:00"
+  },
+  "welcome_obsidian_vault": {
+    "date_created": "2026-09-13T02:43:43.656202+00:00",
+    "date_updated": "2026-09-13T02:43:43.656202+00:00"
+  },
+  "claude_md": {
+    "date_created": "2026-09-13T22:32:40.158826+00:00",
+    "date_updated": "2026-09-13T22:32:40.158826+00:00"
+  },
+  "docker_compose_document": {
+    "date_created": "2026-09-14T09:05:28.069185+00:00",
+    "date_updated": "2026-09-14T09:05:28.069185+00:00"
+  },
+  "docker_compose_ultron_network": {
+    "date_created": "2026-09-14T09:05:28.069185+00:00",
+    "date_updated": "2026-09-14T09:05:28.069185+00:00"
+  },
+  "project_summary_for_claude_code_coding_subagent": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_crypto_trade_agent": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_ethical_hacking_agent": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_home_lab_monitor_agent": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "project_summary_for_claude_code_investment_agent": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "readme_contributor_lyrawolf": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_contributor_owner": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_dev_tools": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_financial_legal_boundary_principle": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_flask_backend": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_nothing_works_until_configured_principle": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_one_source_of_truth_principle": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_testing_approach": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "readme_ultron": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "ultron_backend_pi_setup_phase2_plan": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_readme_activity_log": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_backend_readme_app_py": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_backend_readme_auth_log": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_backend_readme_cve_scan": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_backend_readme_dev_endpoints": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_backend_requirements_flask": {
+    "date_created": "2026-09-13T05:20:55.563225+00:00",
+    "date_updated": "2026-09-13T05:20:55.563225+00:00"
+  },
+  "ultron_backend_requirements_psutil": {
+    "date_created": "2026-09-13T05:20:55.563225+00:00",
+    "date_updated": "2026-09-13T05:20:55.563225+00:00"
+  },
+  "ultron_backend_requirements_pywin32": {
+    "date_created": "2026-09-13T05:20:55.563225+00:00",
+    "date_updated": "2026-09-13T05:20:55.563225+00:00"
+  },
+  "ultron_backend_requirements_wmi": {
+    "date_created": "2026-09-13T05:20:55.563225+00:00",
+    "date_updated": "2026-09-13T05:20:55.563225+00:00"
+  },
+  "ultron_dashboard_connectbackend": {
+    "date_created": "2026-09-14T22:41:24.419964+00:00",
+    "date_updated": "2026-09-14T22:41:24.419964+00:00"
+  },
+  "docker_compose_ultron_backend_service": {
+    "date_created": "2026-09-14T09:05:28.069185+00:00",
+    "date_updated": "2026-09-14T09:05:28.069185+00:00"
+  },
+  "ultron_dashboard_apiget": {
+    "date_created": "2026-09-14T22:41:24.419964+00:00",
+    "date_updated": "2026-09-14T22:41:24.419964+00:00"
+  },
+  "ultron_dashboard_document": {
+    "date_created": "2026-09-14T22:41:24.419964+00:00",
+    "date_updated": "2026-09-14T22:41:24.419964+00:00"
+  },
+  "concept_beta_spend_cap": {
+    "date_created": "2026-09-14T04:02:44.945609+00:00",
+    "date_updated": "2026-09-14T04:02:44.945609+00:00"
+  },
+  "concept_chamfered_corners": {
+    "date_created": "2026-09-14T02:22:32.078529+00:00",
+    "date_updated": "2026-09-14T02:22:32.078529+00:00"
+  },
+  "concept_file_url_bug": {
+    "date_created": "2026-09-14T04:05:01.887673+00:00",
+    "date_updated": "2026-09-14T04:05:01.887673+00:00"
+  },
+  "concept_line_color_variable": {
+    "date_created": "2026-09-14T02:22:32.078529+00:00",
+    "date_updated": "2026-09-14T02:22:32.078529+00:00"
+  },
+  "concept_tailscale_grants": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "concept_tailscale_remote_access": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "readme_contributor_claude_code": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "ultron_backend_pi_setup_tailscale_tailnet": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_readme_beta_tester_role": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "_master_index_document": {
+    "date_created": "2026-09-14T04:28:06.293654+00:00",
+    "date_updated": "2026-09-14T04:28:06.293654+00:00"
+  },
+  "project_summary_for_claude_code_document": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "readme_document": {
+    "date_created": "2026-09-14T10:39:24.232290+00:00",
+    "date_updated": "2026-09-14T10:39:24.232290+00:00"
+  },
+  "ultron_backend__index_document": {
+    "date_created": "2026-09-14T08:21:40.977489+00:00",
+    "date_updated": "2026-09-14T08:21:40.977489+00:00"
+  },
+  "ultron_backend_beta_invite_message": {
+    "date_created": "2026-09-14T02:55:28.273101+00:00",
+    "date_updated": "2026-09-14T02:55:28.273101+00:00"
+  },
+  "ultron_backend_beta_launch_checklist": {
+    "date_created": "2026-09-14T04:05:01.887673+00:00",
+    "date_updated": "2026-09-14T04:05:01.887673+00:00"
+  },
+  "ultron_backend_beta_tester_guide": {
+    "date_created": "2026-09-14T04:02:22.452964+00:00",
+    "date_updated": "2026-09-14T04:02:22.452964+00:00"
+  },
+  "ultron_backend_beta_testers": {
+    "date_created": "2026-09-14T04:02:44.945609+00:00",
+    "date_updated": "2026-09-14T04:02:44.945609+00:00"
+  },
+  "ultron_backend_code_audit_document": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "ultron_backend_pi_setup_document": {
+    "date_created": "2026-09-14T04:42:43.008067+00:00",
+    "date_updated": "2026-09-14T04:42:43.008067+00:00"
+  },
+  "ultron_backend_readme_document": {
+    "date_created": "2026-09-14T09:55:02.657920+00:00",
+    "date_updated": "2026-09-14T09:55:02.657920+00:00"
+  },
+  "ultron_backend_remote_access": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_dashboard_design_spec": {
+    "date_created": "2026-09-14T02:22:32.078529+00:00",
+    "date_updated": "2026-09-14T02:22:32.078529+00:00"
+  },
+  "ultron_discord_bot_readme": {
+    "date_created": "2026-09-14T04:03:51.141260+00:00",
+    "date_updated": "2026-09-14T04:03:51.141260+00:00"
+  },
+  "project_summary_for_claude_code_bug_startup_script_api_key": {
+    "date_created": "2026-09-14T09:43:37.944802+00:00",
+    "date_updated": "2026-09-14T09:43:37.944802+00:00"
+  },
+  "rationale_tailscale_over_wireguard": {
+    "date_created": "2026-09-14T00:45:24.239257+00:00",
+    "date_updated": "2026-09-14T00:45:24.239257+00:00"
+  },
+  "ultron_backend_code_audit_bug_no_spend_visibility": {
+    "date_created": "2026-09-14T08:34:31.840477+00:00",
+    "date_updated": "2026-09-14T08:34:31.840477+00:00"
+  },
+  "graph_schema_enrich_visibility_classify_visibility": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_enrich_visibility_decrypt_private_node": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_enrich_visibility_derive_tags": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_enrich_visibility_enrich": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_enrich_visibility_file_mtime_iso": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_enrich_visibility_get_or_create_key": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_enrich_visibility_load_json": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_enrich_visibility_slug": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_test_enrich_demo": {
+    "date_created": "2026-09-14T22:50:24.078808+00:00",
+    "date_updated": "2026-09-14T22:50:24.078808+00:00"
+  },
+  "graph_schema_test_enrich_fresh_paths": {
+    "date_created": "2026-09-14T22:50:24.078808+00:00",
+    "date_updated": "2026-09-14T22:50:24.078808+00:00"
+  },
+  "graph_schema_test_enrich_write": {
+    "date_created": "2026-09-14T22:50:24.078808+00:00",
+    "date_updated": "2026-09-14T22:50:24.078808+00:00"
+  },
+  "graph_schema_safe_report_main": {
+    "date_created": "2026-09-14T22:54:16.112516+00:00",
+    "date_updated": "2026-09-14T22:54:16.112516+00:00"
+  },
+  "graph_schema_safe_report_make_safe_labels": {
+    "date_created": "2026-09-14T22:54:16.112516+00:00",
+    "date_updated": "2026-09-14T22:54:16.112516+00:00"
+  },
+  "graph_schema_enrich_visibility": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_test_enrich": {
+    "date_created": "2026-09-14T22:50:24.078808+00:00",
+    "date_updated": "2026-09-14T22:50:24.078808+00:00"
+  },
+  "graph_schema_enrich_visibility_rationale_1": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_enrich_visibility_rationale_103": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_enrich_visibility_rationale_209": {
+    "date_created": "2026-09-14T22:50:48.056163+00:00",
+    "date_updated": "2026-09-14T22:50:48.056163+00:00"
+  },
+  "graph_schema_test_enrich_rationale_1": {
+    "date_created": "2026-09-14T22:50:24.078808+00:00",
+    "date_updated": "2026-09-14T22:50:24.078808+00:00"
+  },
+  "graph_schema_design": {
+    "date_created": "2026-09-14T22:55:01.880308+00:00",
+    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+  },
+  "graph_schema_design_full_workflow_after_a_graphify_rebuild": {
+    "date_created": "2026-09-14T22:55:01.880308+00:00",
+    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+  },
+  "graph_schema_design_knowledge_graph_schema_design_module_4_v1": {
+    "date_created": "2026-09-14T22:55:01.880308+00:00",
+    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+  },
+  "graph_schema_design_known_limitations_not_solved_tonight": {
+    "date_created": "2026-09-14T22:55:01.880308+00:00",
+    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+  },
+  "graph_schema_design_schema_additions_per_node": {
+    "date_created": "2026-09-14T22:55:01.880308+00:00",
+    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+  },
+  "graph_schema_design_visibility_classification_and_enforcement": {
+    "date_created": "2026-09-14T22:55:01.880308+00:00",
+    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+  },
+  "graph_schema_design_what_s_committed_to_git_vs_what_never_is": {
+    "date_created": "2026-09-14T22:55:01.880308+00:00",
+    "date_updated": "2026-09-14T22:55:01.880308+00:00"
+  },
+  "graph_schema_safe_report": {
+    "date_created": "2026-09-14T22:54:16.112516+00:00",
+    "date_updated": "2026-09-14T22:54:16.112516+00:00"
+  },
+  "graph_schema_safe_report_rationale_1": {
+    "date_created": "2026-09-14T22:54:16.112516+00:00",
+    "date_updated": "2026-09-14T22:54:16.112516+00:00"
+  }
+}

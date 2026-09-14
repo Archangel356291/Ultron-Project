@@ -15,6 +15,12 @@ id_rsa
 id_ed25519
 credentials.json
 
+# Encrypted private knowledge-graph nodes (graph-schema/enrich_visibility.py).
+# Never committed even though it's encrypted -- see GRAPH-SCHEMA-DESIGN.md;
+# Module 9's own rule is that private graph content never enters repo history,
+# encryption is defense in depth, not a license to commit it anyway.
+graphify-out/private-nodes.enc.json
+
 # Python (3.10)
 __pycache__/
 *.py[cod]

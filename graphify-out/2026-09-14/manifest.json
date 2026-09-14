@@ -232,5 +232,47 @@
     "seen": 1789425685.4656167,
     "ast_hash": "7adaa6072d9ac47dcf52fd26d1953ea0",
     "semantic_hash": ""
+  },
+  "KNOWLEDGE-GRAPH-GAP-SPEC.md": {
+    "mtime": 1789425879.100418,
+    "seen": 1789425879.8800747,
+    "ast_hash": "df246b1d1624c51e8fd98789633d7e93",
+    "semantic_hash": ""
+  },
+  "graph-schema/.node_history.json": {
+    "mtime": 1789426314.3339448,
+    "seen": 1789426533.2964487,
+    "ast_hash": "0c6a6a4664ac4201af76f5143e4d7a60",
+    "semantic_hash": ""
+  },
+  "graph-schema/enrich_visibility.py": {
+    "mtime": 1789426248.056163,
+    "seen": 1789426533.2964501,
+    "ast_hash": "3d8849bef1155b8d66ec03b6a3b48745",
+    "semantic_hash": ""
+  },
+  "graph-schema/safe_report.py": {
+    "mtime": 1789426456.112516,
+    "seen": 1789426533.296451,
+    "ast_hash": "00ba7b335fa71de1525d8f1b68f9acdd",
+    "semantic_hash": ""
+  },
+  "graph-schema/test_enrich.py": {
+    "mtime": 1789426224.0788083,
+    "seen": 1789426533.2964525,
+    "ast_hash": "c8443a5246bf4db218e1313249b57236",
+    "semantic_hash": ""
+  },
+  "GRAPH-SCHEMA-DESIGN.md": {
+    "mtime": 1789426501.8803082,
+    "seen": 1789426533.296463,
+    "ast_hash": "65f6b8badbb694c200884433d2ff43e7",
+    "semantic_hash": ""
+  },
+  "graph-schema/requirements.txt": {
+    "mtime": 1789426303.6956758,
+    "seen": 1789426533.2964723,
+    "ast_hash": "4f0f4d3c5c469ebb603d63eeac3057e3",
+    "semantic_hash": ""
   }
 }
