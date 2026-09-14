@@ -206,6 +206,33 @@ budget in the tens-of-thousands-times-N range is more realistic than the
 single-user 50k default. Both are one-line edits in
 `ultron-backend/start-ultron.ps1`.
 
+## Final pre-launch check (2026-09-13)
+
+Re-verified everything live, from a cold state, after the git history
+rewrite and several rounds of token rotation — not assumed still-good
+from earlier passes:
+
+- Git: `main` fully synced with `origin/main`, clean working tree.
+- Backend: started fresh from `.env`, `/api/health` and `/` (dashboard
+  route) both 200, admin token resolves correctly, no-token request
+  correctly 401s.
+- Concurrency: re-ran the 8-parallel-request test — still ~0.4s total,
+  genuinely parallel, not queued.
+- Discord bot: token still valid (Discord API confirms the app), still
+  a member of the test server, all 15 commands still synced.
+- Secrets: swept git-tracked files for every real token/key value
+  currently in use — none found. `.env` remains correctly gitignored.
+
+**The one real gap before a live multi-tester beta:** `ULTRON_BETA_TOKENS`
+is currently unset in `.env` — the `beta_tester` role doesn't exist yet.
+This is expected, not a bug (the roster in `BETA-TESTERS.md` is still
+empty), but it's the one concrete step left: once you have a real
+tester, follow `BETA-TESTERS.md`'s add process (generate their token,
+add it to `.env`, restart the backend) before sending them anything.
+
+Everything else — RBAC, concurrency, the bot, the dashboard's mobile
+fix, the guide/invite docs — is verified and ready.
+
 ---
 
 Everything below is pulled fresh from the actual code as of this write-up
