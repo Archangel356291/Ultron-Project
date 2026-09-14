@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>three.js vendoring smoke test</title></head>
+<body style="background:#050810; color:#E9EDF7; font-family:monospace; padding:20px;">
+<div id="status">running...</div>
+<canvas id="c" width="200" height="150" style="display:block; margin-top:10px;"></canvas>
+<script type="module">
+  // Proves the vendored, offline three-pipeline/three.module.js actually
+  // works -- not just that it downloaded. Creates a real scene/camera/
+  // renderer/mesh and renders one frame. Not part of any real feature;
+  // Module 6/9 build the actual visuals on top of this later.
+  import * as THREE from './three.module.js';
+
+  const statusEl = document.getElementById('status');
+  try {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, 200 / 150, 0.1, 100);
+    camera.position.z = 3;
+
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c') });
+    renderer.setSize(200, 150);
+
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff8a1e });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    renderer.render(scene, camera);
+
+    window.__threeSmokeTestResult = {
+      ok: true,
+      revision: THREE.REVISION,
+      rendererInfo: !!renderer.info,
+    };
+    statusEl.textContent = 'OK -- three.js r' + THREE.REVISION + ' loaded and rendered one frame.';
+  } catch (e) {
+    window.__threeSmokeTestResult = { ok: false, error: e.message };
+    statusEl.textContent = 'FAILED: ' + e.message;
+  }
+</script>
+</body>
+</html>
