@@ -66,10 +66,10 @@
     "semantic_hash": "2050f56dab3a5468ed30161cba51b607"
   },
   "README.md": {
-    "mtime": 1789359155.9777334,
-    "seen": 1789359333.0763009,
-    "ast_hash": "75ef842421acd07ce03d7d0520ea9e81",
-    "semantic_hash": "75ef842421acd07ce03d7d0520ea9e81"
+    "mtime": 1789360988.444058,
+    "seen": 1789361010.4328005,
+    "ast_hash": "9e35a9ccc3fd78a1cbf61f0f158c5168",
+    "semantic_hash": ""
   },
   "Welcome.md": {
     "mtime": 1789267423.6562016,
@@ -144,16 +144,16 @@
     "semantic_hash": "0c39bc1232104b2fb754cedb77281b93"
   },
   "_master-index.md": {
-    "mtime": 1789356154.257585,
-    "seen": 1789359333.0763028,
-    "ast_hash": "62ae8d8c1512e6d447634b254d94aa4f",
-    "semantic_hash": "62ae8d8c1512e6d447634b254d94aa4f"
+    "mtime": 1789360086.2936542,
+    "seen": 1789361010.4328039,
+    "ast_hash": "f28dcec4ec3840ff8a974a72e81ce53f",
+    "semantic_hash": ""
   },
   "ultron-backend/_index.md": {
-    "mtime": 1789358981.9160385,
-    "seen": 1789359333.076311,
-    "ast_hash": "03001f6be8d5c7f68117a2cf13415bca",
-    "semantic_hash": "03001f6be8d5c7f68117a2cf13415bca"
+    "mtime": 1789360979.168257,
+    "seen": 1789361010.4328141,
+    "ast_hash": "198d413a43f13482ee66e5a4825f8e35",
+    "semantic_hash": ""
   },
   "ultron-backend/CODE-AUDIT.md": {
     "mtime": 1789358972.6336923,
@@ -202,5 +202,11 @@
     "seen": 1789359333.0762885,
     "ast_hash": "25ad6bd5d7eb4c42a8e20b95a7e31e76",
     "semantic_hash": "25ad6bd5d7eb4c42a8e20b95a7e31e76"
+  },
+  "ultron-backend/PI-SETUP.md": {
+    "mtime": 1789360963.008067,
+    "seen": 1789361010.4328113,
+    "ast_hash": "c0295590117409a80fdfc2d0499079a4",
+    "semantic_hash": ""
   }
 }

@@ -1,7 +1,9 @@
 # Graph Report - Ultron Project  (2026-09-13)
 
 ## Corpus Check
-- cluster-only mode — file stats not available
+- 31 files · ~50,673 words
+- Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 2 file(s) not represented in the graph (top: (none) 2)
 
 ## Summary
 - 510 nodes · 849 edges · 44 communities (22 shown, 12 thin omitted)
@@ -9,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `677751d2`
+- Built from commit: `bd54b58d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -50,13 +52,13 @@
 - get_llm_usage Tool Registration Ordering Bug
 
 ## God Nodes (most connected - your core abstractions)
-1. `require_auth()` - 19 edges
-2. `require_token()` - 19 edges
+1. `require_token()` - 19 edges
+2. `require_auth()` - 19 edges
 3. `Ultron Backend README` - 19 edges
 4. `format_error_embed()` - 17 edges
 5. `Ultron Project README` - 15 edges
-6. `backend_get()` - 13 edges
-7. `_json_result()` - 13 edges
+6. `_json_result()` - 13 edges
+7. `backend_get()` - 13 edges
 8. `apiGet()` - 13 edges
 9. `refreshAll()` - 13 edges
 10. `_get_db_connection()` - 12 edges
@@ -90,7 +92,7 @@ Nodes (56): button, Choice, choices, command, describe, event, Interaction, ask_
 
 ### Community 1 - "discord/__init__.py"
 Cohesion: 0.08
-Nodes (47): Vault Master Index, Ultron Project CLAUDE.md (graphify + vault instructions), $1.00 Lifetime Beta Spend Cap (ULTRON_BETA_MAX_SPEND_USD), Backend-Served Dashboard Route (GET /), beta_tester RBAC Role, Chamfered-Corner UI Design (45° cut panels), Chat Rate Limit (ULTRON_CHAT_RATE_LIMIT_PER_MINUTE), Connection/Device Tracking (/api/connections) (+39 more)
+Nodes (46): Vault Master Index, Ultron Project CLAUDE.md (graphify + vault instructions), $1.00 Lifetime Beta Spend Cap (ULTRON_BETA_MAX_SPEND_USD), Backend-Served Dashboard Route (GET /), beta_tester RBAC Role, Chamfered-Corner UI Design (45° cut panels), Chat Rate Limit (ULTRON_CHAT_RATE_LIMIT_PER_MINUTE), Connection/Device Tracking (/api/connections) (+38 more)
 
 ### Community 2 - "anthropic/__init__.py"
 Cohesion: 0.06
@@ -177,7 +179,7 @@ Nodes (3): demo(), _queue_reply(), Self-check for the beta-tester $1 spend cap (
   PROJECT-SUMMARY-FOR-CLAUDE-CODE.md · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **46 isolated node(s):** `ButtonStyle`, `Folders`, `Root notes`, `Beta tester invite message`, `How someone gets added` (+41 more)
+- **46 isolated node(s):** `What you'll need`, `Step 1 — Connect Tailscale`, `Step 2 — Open Ultron`, `Step 3 — Connect with your token`, `What you can actually do` (+41 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 203 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -190,7 +192,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
 - **Why does `Ultron Dashboard Design Spec` connect `discord/__init__.py` to `run-bot-bg.ps1`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **What connects `ButtonStyle`, `Folders`, `Root notes` to the rest of the system?**
+- **What connects `What you'll need`, `Step 1 — Connect Tailscale`, `Step 2 — Open Ultron` to the rest of the system?**
   _46 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `bot.py` be split into smaller, more focused modules?**
   _Cohesion score 0.0898995240613432 - nodes in this community are weakly interconnected._
