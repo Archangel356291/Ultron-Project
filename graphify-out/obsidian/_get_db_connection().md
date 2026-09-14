@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "route"
+community: "_get_db_connection"
 location: "L163"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/route
+  - community/_get_db_connection
 ---
 
 # _get_db_connection()
@@ -24,4 +24,4 @@ tags:
 - [[log_activity()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/route
+#graphify/code #graphify/EXTRACTED #community/_get_db_connection

@@ -1,12 +1,12 @@
 ---
 source_file: "_master-index.md"
 type: "document"
-community: "start-ultron.ps1"
+community: "_index.md"
 location: "L1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/start-ultronps1
+  - community/_indexmd
 ---
 
 # Master Index
@@ -16,4 +16,4 @@ tags:
 - [[Root notes]] - `contains` [EXTRACTED]
 - [[_master-index]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/start-ultronps1
+#graphify/document #graphify/EXTRACTED #community/_indexmd

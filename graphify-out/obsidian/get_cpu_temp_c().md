@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "ultron-backend/app.py"
+community: "_status_data"
 location: "L424"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/ultron-backend/apppy
+  - community/_status_data
 ---
 
 # get_cpu_temp_c()
@@ -17,4 +17,4 @@ tags:
 - [[_systems_data()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/ultron-backend/apppy
+#graphify/code #graphify/EXTRACTED #community/_status_data

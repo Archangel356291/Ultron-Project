@@ -1,12 +1,12 @@
 ---
 source_file: "_master-index.md"
 type: "document"
-community: "start-ultron.ps1"
+community: "_index.md"
 location: "L5"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/start-ultronps1
+  - community/_indexmd
 ---
 
 # Folders
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[Master Index]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/start-ultronps1
+#graphify/document #graphify/EXTRACTED #community/_indexmd

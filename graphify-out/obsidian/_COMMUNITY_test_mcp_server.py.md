@@ -25,7 +25,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_Ultron (personal AI home lab system)]]
+- 1 edge to [[_COMMUNITY_MCP (external toolplugin) Support]]
 
 ## Top bridge nodes
 - [[test_mcp_server.py]] - degree 6, connects to 1 community

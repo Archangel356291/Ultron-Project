@@ -30,7 +30,7 @@ members: 32
 - [[AuthenticationError]] - code - dev-tools/fake_pkgs/anthropic/__init__.py
 - [[BadRequestError]] - code - dev-tools/fake_pkgs/anthropic/__init__.py
 - [[ContentBlock]] - code - dev-tools/fake_pkgs/anthropic/__init__.py
-- [[Exception_3]] - code
+- [[Exception_2]] - code
 - [[Fake stand-in for the real 'anthropic' package, used only for local testing…]] - rationale - dev-tools/fake_pkgs/anthropic/__init__.py
 - [[InternalServerError]] - code - dev-tools/fake_pkgs/anthropic/__init__.py
 - [[Message]] - code - dev-tools/fake_pkgs/anthropic/__init__.py

@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "ultron-backend/app.py"
+community: "_status_data"
 location: "L425"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/ultron-backend/apppy
+  - community/_status_data
 ---
 
 # Best-effort CPU temperature read. Returns None if unavailable — which, on…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_cpu_temp_c()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/ultron-backend/apppy
+#graphify/rationale #graphify/EXTRACTED #community/_status_data

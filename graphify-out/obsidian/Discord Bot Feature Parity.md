@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "concept"
-community: "Ultron (personal AI home lab system)"
+community: "Crypto/Trade Record & Tax Agent"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Ultron_personal_AI_home_lab_system
+  - community/Crypto/Trade_Record__Tax_Agent
 ---
 
 # Discord Bot Feature Parity
@@ -15,4 +15,4 @@ tags:
 - [[Discord Bot (bot.py)]] - `conceptually_related_to` [EXTRACTED]
 - [[Real Action Endpoints (backup, deploy-container)]] - `conceptually_related_to` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system
+#graphify/concept #graphify/EXTRACTED #community/Crypto/Trade_Record__Tax_Agent

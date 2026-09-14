@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "require_token"
+community: "route"
 location: "L1117"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/require_token
+  - community/route
 ---
 
 # get_repo_status()
@@ -16,4 +16,4 @@ tags:
 - [[dev_repos()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/require_token
+#graphify/code #graphify/EXTRACTED #community/route

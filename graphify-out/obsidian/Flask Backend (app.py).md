@@ -1,11 +1,11 @@
 ---
 source_file: "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
 type: "concept"
-community: "Ultron (personal AI home lab system)"
+community: "Flask Backend (app.py)"
 tags:
   - graphify/concept
   - graphify/INFERRED
-  - community/Ultron_personal_AI_home_lab_system
+  - community/Flask_Backend_apppy
 ---
 
 # Flask Backend (app.py)
@@ -21,4 +21,4 @@ tags:
 - [[pywin32 (==306, Windows only)]] - `shares_data_with` [INFERRED]
 - [[runCveScan()]] - `shares_data_with` [INFERRED]
 
-#graphify/concept #graphify/INFERRED #community/Ultron_personal_AI_home_lab_system
+#graphify/concept #graphify/INFERRED #community/Flask_Backend_apppy

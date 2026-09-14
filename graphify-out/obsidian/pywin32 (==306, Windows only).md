@@ -1,11 +1,11 @@
 ---
 source_file: "ultron-backend/requirements.txt"
 type: "code"
-community: "Ultron (personal AI home lab system)"
+community: "Flask Backend (app.py)"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Ultron_personal_AI_home_lab_system
+  - community/Flask_Backend_apppy
 ---
 
 # pywin32 (==306, Windows only)
@@ -14,4 +14,4 @@ tags:
 - [[Flask Backend (app.py)]] - `shares_data_with` [INFERRED]
 - [[WindowsLinux platform detection (temps, updates, storage mounts)]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Ultron_personal_AI_home_lab_system
+#graphify/code #graphify/EXTRACTED #community/Flask_Backend_apppy

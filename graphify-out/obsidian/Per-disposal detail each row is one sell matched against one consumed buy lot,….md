@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "rationale"
-community: "require_role"
+community: "_fifo_engine"
 location: "L1434"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/require_role
+  - community/_fifo_engine
 ---
 
 # Per-disposal detail: each row is one sell matched against one consumed buy lot,…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_trade_tax_lots()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/require_role
+#graphify/rationale #graphify/EXTRACTED #community/_fifo_engine

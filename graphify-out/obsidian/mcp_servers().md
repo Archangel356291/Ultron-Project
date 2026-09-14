@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "_ensure_mcp_discovered"
+community: "route"
 location: "L2619"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_ensure_mcp_discovered
+  - community/route
 ---
 
 # mcp_servers()
@@ -17,4 +17,4 @@ tags:
 - [[route_1]] - `references` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_ensure_mcp_discovered
+#graphify/code #graphify/EXTRACTED #community/route

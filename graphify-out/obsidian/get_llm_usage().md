@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "route"
+community: "_get_db_connection"
 location: "L1848"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/route
+  - community/_get_db_connection
 ---
 
 # get_llm_usage()
@@ -17,4 +17,4 @@ tags:
 - [[chat_usage()]] - `calls` [EXTRACTED]
 - [[ultron-backendapp.py]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/route
+#graphify/code #graphify/EXTRACTED #community/_get_db_connection

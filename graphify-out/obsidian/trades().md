@@ -1,12 +1,12 @@
 ---
 source_file: "ultron-backend/app.py"
 type: "code"
-community: "route"
+community: "trades"
 location: "L1643"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/route
+  - community/trades
 ---
 
 # trades()
@@ -19,4 +19,4 @@ tags:
 - [[route_1]] - `references` [EXTRACTED]
 - [[ultron-backendapp.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/route
+#graphify/code #graphify/EXTRACTED #community/trades

@@ -31,7 +31,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_start-ultron.ps1]]
+- 1 edge to [[_COMMUNITY_Flask Backend (app.py)]]
 - 1 edge to [[_COMMUNITY_POST apichat (Ultron's brain)]]
 
 ## Top bridge nodes
