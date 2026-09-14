@@ -2361,10 +2361,53 @@
         body: JSON.stringify({ text: text }),
       });
       if (!res.ok) return; // not configured on the backend, or a transient error — chat itself already worked, fail silently
-      const url = URL.createObjectURL(await res.blob());
-      const audio = new Audio(url);
-      audio.onended = () => URL.revokeObjectURL(url);
-      audio.play();
+      const mime = (res.headers.get('Content-Type') || 'audio/mpeg').split(';')[0].trim();
+
+      // The backend now streams this reply as Fish Audio generates it,
+      // instead of waiting for the whole thing — but res.blob() below
+      // would throw that away by buffering the full response before
+      // playback starts, bringing back exactly the "audio lags behind
+      // text, proportional to reply length" bug this was meant to fix.
+      // MediaSource lets us feed chunks to <audio> as they arrive while
+      // still sending the Authorization header a plain <audio src> can't
+      // (a token belongs in a header, never a URL). Where MSE can't
+      // decode this mime type (some Safari/mobile builds), fall back to
+      // the old buffer-then-play behavior — slower to start, still correct.
+      if (window.MediaSource && res.body && MediaSource.isTypeSupported(mime)) {
+        const mediaSource = new MediaSource();
+        const audio = new Audio();
+        const objectUrl = URL.createObjectURL(mediaSource);
+        audio.src = objectUrl;
+        audio.onended = () => URL.revokeObjectURL(objectUrl);
+        mediaSource.addEventListener('sourceopen', function onOpen() {
+          mediaSource.removeEventListener('sourceopen', onOpen);
+          const sourceBuffer = mediaSource.addSourceBuffer(mime);
+          const reader = res.body.getReader();
+          let started = false;
+          (async function pump() {
+            try {
+              for (;;) {
+                const { done, value } = await reader.read();
+                if (done) {
+                  if (mediaSource.readyState === 'open') mediaSource.endOfStream();
+                  return;
+                }
+                await new Promise(function (resolve) {
+                  sourceBuffer.addEventListener('updateend', resolve, { once: true });
+                  sourceBuffer.appendBuffer(value);
+                });
+                if (!started) { started = true; audio.play().catch(function () {}); }
+              }
+            } catch (e) { /* stream error mid-playback — best-effort, let what already played stand */ }
+          })();
+        }, { once: true });
+      } else {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.onended = () => URL.revokeObjectURL(url);
+        audio.play();
+      }
     } catch (e) { /* voice is best-effort — never break chat over it */ }
   }
 

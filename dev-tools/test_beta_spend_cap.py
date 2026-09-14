@@ -43,7 +43,7 @@ os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"  # keep the spend-cap assertion
 import anthropic  # noqa: E402  (the fake, via sys.path above)
 import app  # noqa: E402
 
-app._fish_audio_tts = lambda text: (b"fake-mp3-bytes", "audio/mpeg", None)
+app._fish_audio_tts = lambda text: ([b"fake-mp3-bytes"], "audio/mpeg", None)  # matches the streaming (chunk-iterable) contract
 
 client = app.app.test_client()
 ADMIN_HEADERS = {"Authorization": "Bearer admin-test-token"}
