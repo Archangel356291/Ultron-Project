@@ -1,0 +1,22 @@
+# gitleaks config for this repo. Extends the default ruleset (real
+# secret-pattern detection) rather than replacing it.
+#
+# The allowlist below is path-scoped, not content-scoped, on purpose --
+# it names the exact files verified as false positives during the
+# Module 3 audit (2026-09-14: full-history scan, 85 commits, 2 findings,
+# both false positives), so a real secret landing in some OTHER file
+# still gets caught. Never widen this to a content/regex pattern (e.g.
+# "any 64-char hex string") -- that would also hide a real hex-shaped
+# secret (many API tokens are exactly that shape).
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Verified false positives (Module 3 audit, 2026-09-14) -- see GIT-SECRET-AUDIT.md"
+paths = [
+  '''\.obsidian/plugins/.*''',
+  '''graphify-out/cache/stat-index\.json''',
+  '''graphify-out/manifest\.json''',
+  '''graphify-out/[0-9-]+/manifest\.json''',
+]
