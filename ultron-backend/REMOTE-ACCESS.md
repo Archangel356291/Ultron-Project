@@ -184,7 +184,7 @@ only person on it and protects you the moment you're not:
 {
   "grants": [
     {
-      "src": ["autogroup:self"],
+      "src": ["autogroup:member"],
       "dst": ["autogroup:self"],
       "ip": ["*"]
     }
@@ -193,9 +193,13 @@ only person on it and protects you the moment you're not:
 ```
 
 `autogroup:self` means "devices owned by the same user" — your PC and
-your phone, since you signed into both with the same account. This says
-"your own devices can talk to each other, freely; nothing else is
-allowed by default."
+your phone, since you signed into both with the same account. It's
+**destination-only**: Tailscale rejects it on the `src` side ("not valid
+on the src side of a rule"), so the source has to be `autogroup:member`
+("any authenticated user on this tailnet") instead — with only one
+person on the tailnet, that still resolves to exactly the same thing:
+your own devices can talk to each other, freely; nothing else is
+allowed by default.
 
 **The nuance that's easy to miss:** `autogroup:self` explicitly does
 **not** cover tagged devices — Tailscale treats a tagged device as more
@@ -211,12 +215,12 @@ explicit grant for the tag:
   },
   "grants": [
     {
-      "src": ["autogroup:self"],
+      "src": ["autogroup:member"],
       "dst": ["autogroup:self"],
       "ip": ["*"]
     },
     {
-      "src": ["autogroup:self"],
+      "src": ["autogroup:member"],
       "dst": ["tag:ultron-backend"],
       "ip": ["tcp:5000"]
     }
@@ -240,10 +244,15 @@ breaks something you needed. Grants are deny-by-default once you start
 writing them — an empty or incomplete `grants` section can cut off
 connectivity you didn't mean to touch (SSH between your own devices,
 for instance, needs its own explicit `ssh` section if you rely on it,
-separate from `grants`). None of this could be tested against a real
-tailnet while this was written, so treat the two examples above as a
-starting point to adapt and verify yourself, not a drop-in you should
-paste without reading — and Tailscale's own [grant examples
+separate from `grants`).
+
+The first example (`autogroup:member` → `autogroup:self`) **has now been
+saved against a real tailnet** (2026-09-13) and works — it originally read
+`"src": ["autogroup:self"]` here, which Tailscale rejects outright
+("`autogroup:self` not valid on the src side of a rule"); fixed above.
+The tag-based second example is still unverified — adapt and check it
+against the admin console's own diff/validation before trusting it, and
+Tailscale's own [grant examples
 page](https://tailscale.com/docs/reference/examples/grants) is the
 authoritative source for anything beyond what's covered here.
 
