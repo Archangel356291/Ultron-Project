@@ -1,31 +1,37 @@
 # Graph Report - Ultron Project  (2026-09-14)
 
 ## Corpus Check
-- 519 files · ~0 words
+- 42 files · ~68,221 words
 - Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 6 file(s) not represented in the graph (top: (none) 6)
 
 ## Summary
-- 519 nodes · 822 edges · 66 communities (26 shown, 35 thin omitted)
+- 520 nodes · 822 edges · 67 communities (26 shown, 35 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 46 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
+## Graph Freshness
+- Built from commit: `2fbdb767`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
+
 ## Community Hubs (Navigation)
-- Private/Mixed Community 0
+- bot.py
 - discord/__init__.py
 - anthropic/__init__.py
-- Private/Mixed Community 3
-- Private/Mixed Community 4
-- Private/Mixed Community 5
+- ultron-discord-bot (Thin Remote-Control Layer)
+- ultron-backend index (_index.md)
+- app.py
 - run_ultron_chat
 - View
-- Private/Mixed Community 8
+- route
 - ClientSession
 - enrich_visibility.py
 - docker_ps
 - require_role
-- Private/Mixed Community 13
-- Private/Mixed Community 14
-- Private/Mixed Community 15
+- trades
+- _get_db_connection
+- [private]
 - fake_pkgs/ (drop-in fake SDKs)
 - dev_repo_diff
 - _status_data
@@ -35,33 +41,33 @@
 - Knowledge graph gap spec (Module 2 deliverable)
 - UltronBot
 - test_tts_streaming.py
-- Private/Mixed Community 25
+- wrapper
 - test_memory.py
 - safe_report.py
 - Action Endpoints (backup, deploy-container)
 - aiultronproject Slack Workspace
 - Preview-Then-Confirm Action Pattern
-- Private/Mixed Community 31
-- Private/Mixed Community 32
+- [private]
+- [private]
 - The Importer (Obsidian plugin)
 - Ultron Project CLAUDE.md (graphify + vault instructions)
 - docker-compose.yml (Compose Orchestration)
 - ultron Bridge Network
 - Coding Sub-Agent (Emergent, Not In Original Spec)
-- Private/Mixed Community 38
+- [private]
 - Ethical Hacking Agent (Refused)
-- Private/Mixed Community 40
-- Private/Mixed Community 41
+- [private]
+- [private]
 - LyraWolf (Contributor)
 - Archangel356291 (Project Owner)
 - dev-tools (Testing Infrastructure)
-- Private/Mixed Community 45
+- [private]
 - ultron-backend (Flask Backend)
 - Nothing Works Until Explicitly Configured
 - One Source of Truth Per Piece of Logic
 - Real-Dependency Testing Approach
-- Private/Mixed Community 50
-- Private/Mixed Community 51
+- [private]
+- [private]
 - /api/activity (Persistent Activity Log)
 - app.py (Flask Backend Entrypoint)
 - /api/security/auth-log
@@ -105,9 +111,9 @@
 - **MCP Discovery/Execution Separation Security Model** — project_summary_for_claude_code_mcp_support, readme_mcp_opt_in_principle, ultron_backend_readme_mcp_external_tools [INFERRED 0.85]
 - **Original Four-Agent Spec Plus Emergent Fifth** — project_summary_for_claude_code_ethical_hacking_agent, project_summary_for_claude_code_investment_agent, project_summary_for_claude_code_crypto_trade_agent, project_summary_for_claude_code_home_lab_monitor_agent, project_summary_for_claude_code_coding_subagent [INFERRED 0.85]
 
-## Communities (66 total, 35 thin omitted)
+## Communities (67 total, 35 thin omitted)
 
-### Community 0 - "Private/Mixed Community 0"
+### Community 0 - "bot.py"
 Cohesion: 0.09
 Nodes (56): button, choices, command, describe, Interaction, Fake interaction for testing command and button handlers directly., event, ask_command() (+48 more)
 
@@ -119,15 +125,15 @@ Nodes (15): Bot, ButtonStyle, Embed, File, _Followup, HTTPException, Intents, _I
 Cohesion: 0.09
 Nodes (20): Anthropic, APIConnectionError, APIError, APIStatusError, APITimeoutError, AuthenticationError, BadRequestError, ContentBlock (+12 more)
 
-### Community 3 - "Private/Mixed Community 3"
+### Community 3 - "ultron-discord-bot (Thin Remote-Control Layer)"
 Cohesion: 0.07
 Nodes (26): demo(), _queue_reply(), [private], ultron-discord-bot Service (Docker Compose), Bug: Discord backend_get Showed Raw Error Text, Bug: Discord Field-Truncation Off-By-N, Bug: Tool-Registration Ordering (get_llm_usage NameError Risk), [private] (+18 more)
 
-### Community 4 - "Private/Mixed Community 4"
+### Community 4 - "ultron-backend index (_index.md)"
 Cohesion: 0.11
 Nodes (28): Master Index (Obsidian Vault Root), [private], Chamfered-Corner UI Design (45° cut panels), file:// Origin fetch() Bug (mobile Chrome Connect button), --line Panel Border Color Variable, [private], [private], ultron-backend Service (Docker Compose) (+20 more)
 
-### Community 5 - "Private/Mixed Community 5"
+### Community 5 - "app.py"
 Cohesion: 0.12
 Nodes (28): after_request, action_backup(), action_deploy_container(), add_cors_headers(), _backup_preview(), [private], _dir_size_bytes(), _load_mcp_config() (+20 more)
 
@@ -139,7 +145,7 @@ Nodes (28): _add_cache_breakpoint(), _ensure_mcp_discovered(), get_mcp_tools_and
 Cohesion: 0.08
 Nodes (8): app_commands, Button, Choice, CommandTree, Matches @discord.ui.button(...). The fake doesn't need the full component-…, ui, decorator(), View
 
-### Community 8 - "Private/Mixed Community 8"
+### Community 8 - "route"
 Cohesion: 0.11
 Nodes (26): activity(), chat_usage(), connections(), dashboard(), delete_trade(), get_auth_log(), get_llm_usage(), get_mcp_servers() (+18 more)
 
@@ -159,15 +165,15 @@ Nodes (14): containers(), _containers_data(), docker_ps(), docker_stats(), _pars
 Cohesion: 0.20
 Nodes (11): _beta_tester_spend_usd(), chat(), _check_rate_limit(), _fish_audio_tts(), Returns None if the request is allowed, or an error message if the caller…, Lifetime spend for one beta tester, in dollars. Returns 0.0 on any read failure…, One TTS request to Fish Audio. Fish Audio's own /v1/tts already streams its…, Admin or beta_tester. Use only on endpoints in the beta tester's allowed scope… (+3 more)
 
-### Community 13 - "Private/Mixed Community 13"
+### Community 13 - "trades"
 Cohesion: 0.20
 Nodes (10): add_trade(), get_trades(), Returns (normalized_dict, None) or (None, error_message)., Raw transaction ledger as CSV text., [private], _tax_lots_to_csv(), trades(), trades_export() (+2 more)
 
-### Community 14 - "Private/Mixed Community 14"
+### Community 14 - "_get_db_connection"
 Cohesion: 0.22
 Nodes (10): distill_activity_trends(), _get_db_connection(), _init_db(), [private], Best-effort, like log_activity — this runs unattended on a background timer…, Runs distill_activity_trends() once now, then every 24h, in a daemon thread so…, remember_note(), _start_memory_trend_scheduler() (+2 more)
 
-### Community 15 - "Private/Mixed Community 15"
+### Community 15 - "[private]"
 Cohesion: 0.20
 Nodes (10): [private], [private], [private], [private], [private], [private], [private], [private] (+2 more)
 
@@ -203,7 +209,7 @@ Nodes (5): 1. Beta test results already recorded — pulled in as ground truth, 
 Cohesion: 0.50
 Nodes (3): demo(), _fake_streaming_tts(), Self-check for the /api/tts streaming fix (Module 1 of the roadmap: "text…
 
-### Community 25 - "Private/Mixed Community 25"
+### Community 25 - "wrapper"
 Cohesion: 0.50
 Nodes (5): [private], wrapper(), wrapper(), _resolve_role(), _touch_presence()
 
@@ -212,24 +218,24 @@ Cohesion: 0.67
 Nodes (3): main(), make_safe_labels(), Regenerates graph.json's community_name field, GRAPH_REPORT.md, and graph.html…
 
 ## Knowledge Gaps
-- **44 isolated node(s):** `ButtonStyle`, `1. Beta test results already recorded — pulled in as ground truth`, `2. Graphify's actual output format, verified from the real files`, `3. Ponytail — what it actually limits/strips`, `4. The gap — what Module 4 actually needs to add` (+39 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 225 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **44 isolated node(s):** `Schema additions (per node)`, `Visibility: classification and enforcement`, `Full workflow after a graphify rebuild`, `What's committed to git vs. what never is`, `Known limitations — not solved tonight` (+39 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 226 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **35 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What connects `ButtonStyle`, `1. Beta test results already recorded — pulled in as ground truth`, `2. Graphify's actual output format, verified from the real files` to the rest of the system?**
+- **What connects `Schema additions (per node)`, `Visibility: classification and enforcement`, `Full workflow after a graphify rebuild` to the rest of the system?**
   _44 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Private/Mixed Community 0` be split into smaller, more focused modules?**
+- **Should `bot.py` be split into smaller, more focused modules?**
   _Cohesion score 0.08755760368663594 - nodes in this community are weakly interconnected._
 - **Should `discord/__init__.py` be split into smaller, more focused modules?**
   _Cohesion score 0.05689900426742532 - nodes in this community are weakly interconnected._
 - **Should `anthropic/__init__.py` be split into smaller, more focused modules?**
   _Cohesion score 0.08571428571428572 - nodes in this community are weakly interconnected._
-- **Should `Private/Mixed Community 3` be split into smaller, more focused modules?**
+- **Should `ultron-discord-bot (Thin Remote-Control Layer)` be split into smaller, more focused modules?**
   _Cohesion score 0.0735632183908046 - nodes in this community are weakly interconnected._
-- **Should `Private/Mixed Community 4` be split into smaller, more focused modules?**
+- **Should `ultron-backend index (_index.md)` be split into smaller, more focused modules?**
   _Cohesion score 0.10591133004926108 - nodes in this community are weakly interconnected._
-- **Should `Private/Mixed Community 5` be split into smaller, more focused modules?**
+- **Should `app.py` be split into smaller, more focused modules?**
   _Cohesion score 0.11822660098522167 - nodes in this community are weakly interconnected._
