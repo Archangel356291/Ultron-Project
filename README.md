@@ -169,5 +169,5 @@ was.
 
 | Name | Contribution |
 |---|---|
-| ShawneeMacDabs | Contributor — add specifics here (code, docs, feedback, etc.) |
+| ShawneeMacDabs | Set up the messaging platform (Slack) used for easy project information transfer |
 | LyraWolf | Funding |
