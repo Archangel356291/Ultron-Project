@@ -232,5 +232,11 @@
     "seen": 1789425685.4656167,
     "ast_hash": "7adaa6072d9ac47dcf52fd26d1953ea0",
     "semantic_hash": ""
+  },
+  "KNOWLEDGE-GRAPH-GAP-SPEC.md": {
+    "mtime": 1789425879.100418,
+    "seen": 1789425879.8800747,
+    "ast_hash": "df246b1d1624c51e8fd98789633d7e93",
+    "semantic_hash": ""
   }
 }
