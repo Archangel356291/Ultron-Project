@@ -511,8 +511,13 @@ def format_deploy_result_embed(result):
 # --------------------------------------------------------------------------
 class UltronBot(commands.Bot):
     def __init__(self):
+        # Slash commands only (bot.tree.command) -- no @bot.command prefix
+        # commands exist, so there's nothing to read message content for.
+        # when_mentioned (never used, no prefix commands registered) avoids
+        # discord.py's message_content warning without requesting the
+        # privileged intent.
         intents = discord.Intents.default()
-        super().__init__(command_prefix="!", intents=intents)
+        super().__init__(command_prefix=commands.when_mentioned, intents=intents)
         self.http_session = None
         # Per-user conversation history, in memory only. Restarting the bot
         # clears it — there's no persistence layer here, same as the
