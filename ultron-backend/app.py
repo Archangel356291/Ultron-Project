@@ -284,6 +284,18 @@ def _init_db():
         # place self-improvement proposals live with an ID/status instead of
         # scattered as one-off design docs per module.
         conn.execute("""
+            CREATE TABLE IF NOT EXISTS metrics_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                cpu_percent REAL,
+                mem_percent REAL,
+                cpu_temp_c REAL,
+                containers_running INTEGER,
+                containers_total INTEGER,
+                storage_json TEXT
+            )
+        """)
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS evolution_ideas (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 created_at TEXT NOT NULL,
@@ -2202,6 +2214,120 @@ def _systems_data():
 
 
 # --------------------------------------------------------------------------
+# Metrics history (master prompt section 9) -- /api/systems, /api/storage,
+# /api/containers above are point-in-time snapshots with nothing to graph;
+# this samples them on a timer into metrics_history so trend/baseline
+# questions (section 8) have real data behind them instead of nothing.
+# Same daemon-thread-on-a-timer shape as _start_memory_trend_scheduler
+# above, placed here (not up there) because it needs _status_data/
+# _storage_data, which aren't defined yet at that point in the file --
+# starting the thread before they exist would race the rest of module
+# import. Pruned by age on every write so this can't grow unbounded.
+# --------------------------------------------------------------------------
+METRICS_SAMPLE_SECONDS = int(os.environ.get("ULTRON_METRICS_SAMPLE_SECONDS", "300"))
+METRICS_HISTORY_RETENTION_DAYS = int(os.environ.get("ULTRON_METRICS_RETENTION_DAYS", "90"))
+METRICS_HISTORY_PERIODS = {"hour": 1, "day": 24, "week": 24 * 7, "month": 24 * 30}
+
+
+def _sample_metrics():
+    """Best-effort, like log_activity -- runs unattended on a background
+    timer with nothing to report errors to, must never take the process down."""
+    try:
+        status = _status_data()
+        storage_percents = {
+            label: v["percent_used"] for label, v in _storage_data().items() if "percent_used" in v
+        }
+        conn = _get_db_connection()
+        try:
+            conn.execute(
+                "INSERT INTO metrics_history (timestamp, cpu_percent, mem_percent, cpu_temp_c, "
+                "containers_running, containers_total, storage_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (
+                    time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    status["cpu_percent"], status["mem_percent"], status["cpu_temp_c"],
+                    status["containers_running"], status["containers_total"],
+                    json.dumps(storage_percents),
+                ),
+            )
+            cutoff = time.strftime(
+                "%Y-%m-%dT%H:%M:%S",
+                time.localtime(time.time() - METRICS_HISTORY_RETENTION_DAYS * 86400),
+            )
+            conn.execute("DELETE FROM metrics_history WHERE timestamp < ?", (cutoff,))
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception:
+        pass
+
+
+def _start_metrics_history_scheduler():
+    """Samples system/storage/container metrics every METRICS_SAMPLE_SECONDS
+    so get_metrics_history has real data to serve. Set
+    ULTRON_DISABLE_METRICS_HISTORY=1 to skip entirely -- used by the test
+    suite, so test DBs stay deterministic."""
+    if os.environ.get("ULTRON_DISABLE_METRICS_HISTORY") == "1":
+        return
+
+    def _loop():
+        while True:
+            _sample_metrics()
+            time.sleep(METRICS_SAMPLE_SECONDS)
+
+    threading.Thread(target=_loop, daemon=True).start()
+
+
+_start_metrics_history_scheduler()
+
+
+def get_metrics_history(period=None, hours=None, limit=2000, **_ignored):
+    """Real sampled history only. If metrics_history is empty (collection
+    just started, or the scheduler is disabled), says so plainly instead
+    of fabricating a trend -- section 9's 'Historical data collection
+    begins now', never an invented line."""
+    if hours is None:
+        hours = METRICS_HISTORY_PERIODS.get((period or "day").strip().lower(), 24)
+    try:
+        hours = max(1, min(float(hours), 24 * 365))
+    except (TypeError, ValueError):
+        hours = 24
+    try:
+        limit = max(1, min(int(limit), 5000))
+    except (TypeError, ValueError):
+        limit = 2000
+
+    cutoff = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(time.time() - hours * 3600))
+    try:
+        conn = _get_db_connection()
+        try:
+            earliest = conn.execute("SELECT MIN(timestamp) as t FROM metrics_history").fetchone()["t"]
+            rows = conn.execute(
+                "SELECT timestamp, cpu_percent, mem_percent, cpu_temp_c, containers_running, "
+                "containers_total, storage_json FROM metrics_history WHERE timestamp >= ? "
+                "ORDER BY timestamp ASC LIMIT ?",
+                (cutoff, limit),
+            ).fetchall()
+        finally:
+            conn.close()
+    except Exception as e:
+        return {"error": f"could not read metrics history: {e}"}
+
+    if not earliest:
+        return {
+            "samples": [],
+            "collection_started_at": None,
+            "note": "Historical data collection begins now -- no samples recorded yet.",
+        }
+
+    samples = []
+    for r in rows:
+        d = dict(r)
+        d["storage"] = json.loads(d.pop("storage_json") or "{}")
+        samples.append(d)
+    return {"samples": samples, "collection_started_at": earliest}
+
+
+# --------------------------------------------------------------------------
 # routes
 # --------------------------------------------------------------------------
 def _json_result(data, error_status=502):
@@ -2279,6 +2405,16 @@ def systems():
 def activity():
     limit = request.args.get("limit", "20")
     return _json_result(get_recent_activity(limit=limit))
+
+
+@app.route("/api/metrics-history")
+@require_token
+def metrics_history():
+    return _json_result(get_metrics_history(
+        period=request.args.get("period"),
+        hours=request.args.get("hours"),
+        limit=request.args.get("limit", "2000"),
+    ))
 
 
 @app.route("/api/memory")
@@ -3114,6 +3250,23 @@ TOOLS = [
         "input_schema": {"type": "object", "properties": {}},
     },
     {
+        "name": "get_metrics_history",
+        "description": (
+            "Get sampled system/storage/container history for trend or baseline questions "
+            "(e.g. 'has CPU temp been climbing this week'). Real sampled data only -- if "
+            "collection just started there may be little or no history yet, which this tool "
+            "reports honestly (collection_started_at / a note) rather than inventing a trend."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "period": {"type": "string", "description": "One of: hour, day, week, month (default day)"},
+                "hours": {"type": "number", "description": "Exact lookback window in hours, overrides period"},
+                "limit": {"type": "integer", "description": "Max samples to return (default 2000)"},
+            },
+        },
+    },
+    {
         "name": "get_recent_activity",
         "description": (
             "Get a log of real actions this backend has actually taken — backups run, "
@@ -3309,6 +3462,7 @@ TOOL_DISPATCH = {
     "get_pending_updates": _systems_data,
     "get_auth_log": get_auth_log,
     "get_recent_activity": get_recent_activity,
+    "get_metrics_history": get_metrics_history,
     "remember_note": remember_note,
     "recall_notes": recall_notes,
     "recall_related_notes": recall_related_notes,
