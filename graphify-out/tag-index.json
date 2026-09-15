@@ -352,7 +352,7 @@
     "ultron_backend_app_prune_expired_tokens_locked",
     "ultron_backend_app_todays_token_usage"
   ],
-  "community:bot_py": [
+  "community:private_mixed_community_0": [
     "dev_tools_fake_pkgs_discord_init_interaction",
     "ultron_discord_bot_bot_backenderror",
     "ultron_discord_bot_bot_confirmactionview",
@@ -413,9 +413,7 @@
     "ultron_discord_bot_bot_rationale_422",
     "ultron_discord_bot_bot_rationale_446",
     "ultron_discord_bot_bot_rationale_559",
-    "ultron_discord_bot_bot_rationale_613",
-    "ultron_discord_bot_bot_format_portfolio_embed",
-    "ultron_discord_bot_bot_portfolio_command"
+    "ultron_discord_bot_bot_rationale_613"
   ],
   "visibility:public": [
     "dev_tools_fake_pkgs_discord_init_interaction",
@@ -718,6 +716,13 @@
     "dev_tools_fake_pkgs_aiohttp_init",
     "dev_tools_fake_pkgs_aiohttp_init_py_exception",
     "ultron_backend_remote_access",
+    "graph_schema_design",
+    "graph_schema_design_full_workflow_after_a_graphify_rebuild",
+    "graph_schema_design_knowledge_graph_schema_design_module_4_v1",
+    "graph_schema_design_known_limitations_not_solved_tonight",
+    "graph_schema_design_schema_additions_per_node",
+    "graph_schema_design_visibility_classification_and_enforcement",
+    "graph_schema_design_what_s_committed_to_git_vs_what_never_is",
     "knowledge_graph_gap_spec",
     "knowledge_graph_gap_spec_1_beta_test_results_already_recorded_pulled_in_as_ground_truth",
     "knowledge_graph_gap_spec_2_graphify_s_actual_output_format_verified_from_the_real_files",
@@ -779,13 +784,6 @@
     "ultron_backend_app_rationale_429",
     "dev_tools_fake_pkgs_aiohttp_init_rationale_1",
     "dev_tools_fake_pkgs_aiohttp_init_rationale_35",
-    "graph_schema_design",
-    "graph_schema_design_full_workflow_after_a_graphify_rebuild",
-    "graph_schema_design_knowledge_graph_schema_design_module_4_v1",
-    "graph_schema_design_known_limitations_not_solved_tonight",
-    "graph_schema_design_schema_additions_per_node",
-    "graph_schema_design_visibility_classification_and_enforcement",
-    "graph_schema_design_what_s_committed_to_git_vs_what_never_is",
     "docker_compose_ultron_backend_service",
     "ultron_dashboard_apiget",
     "ultron_dashboard_document",
@@ -874,7 +872,8 @@
     "project_summary_for_claude_code_ethical_hacking_agent",
     "readme_nothing_works_until_configured_principle",
     "readme_one_source_of_truth_principle",
-    "readme_testing_approach"
+    "readme_testing_approach",
+    "session_2026_09_14_48be4fab"
   ],
   "community:discord_init_py": [
     "dev_tools_fake_pkgs_discord_ext_commands_bot",
@@ -1041,7 +1040,7 @@
     "dev_tools_fake_pkgs_aiohttp_init_rationale_1",
     "dev_tools_fake_pkgs_aiohttp_init_rationale_35"
   ],
-  "community:route": [
+  "community:private_mixed_community_11": [
     "ultron_backend_app_beta_tester_spend_usd",
     "ultron_backend_app_chat",
     "ultron_backend_app_check_rate_limit",
@@ -1058,8 +1057,7 @@
     "ultron_backend_app_rationale_2072",
     "ultron_backend_app_rationale_2132",
     "ultron_backend_app_rationale_555",
-    "ultron_backend_app_rationale_679",
-    "ultron_backend_app_rationale_1707"
+    "ultron_backend_app_rationale_679"
   ],
   "community:enrich_visibility_py": [
     "graph_schema_test_enrich_demo",
@@ -1135,12 +1133,11 @@
     "dev_tools_test_tts_streaming",
     "dev_tools_test_tts_streaming_rationale_1"
   ],
-  "community:wrapper": [
+  "community:private_mixed_community_25": [
     "ultron_backend_app_require_role_wrapper",
     "ultron_backend_app_require_token_wrapper",
     "ultron_backend_app_resolve_role",
-    "ultron_backend_app_touch_presence",
-    "ultron_backend_app_rationale_623"
+    "ultron_backend_app_touch_presence"
   ],
   "community:test_memory_py": [
     "dev_tools_test_memory_demo",
@@ -1166,7 +1163,7 @@
     "ultron_backend_app_split_platform_paths",
     "ultron_backend_app_rationale_168"
   ],
-  "community:ultron_discord_bot_thin_remote_control_layer": [
+  "community:private_mixed_community_4": [
     "dev_tools_test_beta_spend_cap_demo",
     "dev_tools_test_beta_spend_cap_demo_fire",
     "dev_tools_test_beta_spend_cap_queue_reply",
@@ -1191,14 +1188,9 @@
     "project_summary_for_claude_code_bug_discord_backend_get_errors",
     "project_summary_for_claude_code_bug_discord_field_truncation",
     "project_summary_for_claude_code_bug_tool_registration_ordering",
-    "readme_real_safeguards_principle",
-    "ultron_backend_code_audit_bot_ps1_secret_bug",
-    "ultron_backend_code_audit_discord_token_wrong_key_bug",
-    "project_summary_for_claude_code_config_value_hardening",
-    "ultron_backend_readme_cost_controls",
-    "dev_tools_test_beta_spend_cap_rationale_1"
+    "readme_real_safeguards_principle"
   ],
-  "community:app_py": [
+  "community:private_mixed_community_7": [
     "ultron_backend_app_action_backup",
     "ultron_backend_app_action_deploy_container",
     "ultron_backend_app_backup_preview",
@@ -1215,15 +1207,9 @@
     "ultron_backend_app_validate_port",
     "ultron_backend_app",
     "ultron_backend_app_rationale_1169",
-    "ultron_backend_app_rationale_820",
-    "ultron_backend_app_consume_action_token",
-    "ultron_backend_app_new_action_token",
-    "ultron_backend_app_parse_beta_tokens",
-    "ultron_backend_app_prune_expired_tokens_locked",
-    "ultron_backend_app_rationale_1",
-    "ultron_backend_app_rationale_1121"
+    "ultron_backend_app_rationale_820"
   ],
-  "community:get_db_connection": [
+  "community:private_mixed_community_8": [
     "ultron_backend_app_add_trade",
     "ultron_backend_app_chat_usage",
     "ultron_backend_app_distill_activity_trends",
@@ -1240,10 +1226,7 @@
     "ultron_backend_app_rationale_1474",
     "ultron_backend_app_rationale_1740",
     "ultron_backend_app_rationale_387",
-    "ultron_backend_app_rationale_429",
-    "ultron_backend_app_todays_token_usage",
-    "ultron_backend_app_rationale_2151",
-    "ultron_backend_app_rationale_2175"
+    "ultron_backend_app_rationale_429"
   ],
   "community:run_ps1": [
     "graph_schema_run"
@@ -1262,12 +1245,6 @@
   ],
   "type:document": [
     "ultron_backend_remote_access",
-    "knowledge_graph_gap_spec",
-    "knowledge_graph_gap_spec_1_beta_test_results_already_recorded_pulled_in_as_ground_truth",
-    "knowledge_graph_gap_spec_2_graphify_s_actual_output_format_verified_from_the_real_files",
-    "knowledge_graph_gap_spec_3_ponytail_what_it_actually_limits_strips",
-    "knowledge_graph_gap_spec_4_the_gap_what_module_4_actually_needs_to_add",
-    "knowledge_graph_gap_spec_knowledge_graph_gap_spec_module_2_deliverable",
     "graph_schema_design",
     "graph_schema_design_full_workflow_after_a_graphify_rebuild",
     "graph_schema_design_knowledge_graph_schema_design_module_4_v1",
@@ -1275,6 +1252,12 @@
     "graph_schema_design_schema_additions_per_node",
     "graph_schema_design_visibility_classification_and_enforcement",
     "graph_schema_design_what_s_committed_to_git_vs_what_never_is",
+    "knowledge_graph_gap_spec",
+    "knowledge_graph_gap_spec_1_beta_test_results_already_recorded_pulled_in_as_ground_truth",
+    "knowledge_graph_gap_spec_2_graphify_s_actual_output_format_verified_from_the_real_files",
+    "knowledge_graph_gap_spec_3_ponytail_what_it_actually_limits_strips",
+    "knowledge_graph_gap_spec_4_the_gap_what_module_4_actually_needs_to_add",
+    "knowledge_graph_gap_spec_knowledge_graph_gap_spec_module_2_deliverable",
     "ultron_dashboard_design_spec",
     "ultron_backend_beta_invite_message",
     "ultron_backend_beta_tester_guide",
@@ -1319,7 +1302,7 @@
     "ultron_backend_remote_access_troubleshooting",
     "ultron_backend_remote_access_what_tailscale_actually_is_briefly"
   ],
-  "community:ultron_backend_index_index_md": [
+  "community:private_mixed_community_1": [
     "ultron_backend_remote_access",
     "docker_compose_ultron_backend_service",
     "ultron_dashboard_apiget",
@@ -1341,24 +1324,16 @@
     "project_summary_for_claude_code_document",
     "ultron_backend_readme_document",
     "readme_document",
-    "ultron_backend_code_audit_bug_no_spend_visibility",
-    "concept_tailscale_grants",
-    "concept_tailscale_remote_access",
-    "concept_beta_spend_cap",
-    "ultron_backend_pi_setup_tailscale_tailnet",
-    "ultron_backend_pi_setup",
-    "ultron_backend_pi_setup_0_what_s_already_been_generated_for_this",
-    "ultron_backend_pi_setup_1_flash_the_sd_card",
-    "ultron_backend_pi_setup_2_first_boot_and_ssh_in",
-    "ultron_backend_pi_setup_3_update_the_os",
-    "ultron_backend_pi_setup_4_install_tailscale_join_the_same_tailnet",
-    "ultron_backend_pi_setup_5_install_docker",
-    "ultron_backend_pi_setup_document",
-    "ultron_backend_pi_setup_raspberry_pi_setup_getting_it_reachable_phase_1",
-    "ultron_backend_pi_setup_where_this_leaves_things",
-    "ultron_backend_pi_setup_why_this_order",
-    "rationale_tailscale_over_wireguard",
-    "project_summary_for_claude_code_bug_startup_script_api_key"
+    "ultron_backend_code_audit_bug_no_spend_visibility"
+  ],
+  "community:knowledge_graph_schema_design_module_4_v1": [
+    "graph_schema_design",
+    "graph_schema_design_full_workflow_after_a_graphify_rebuild",
+    "graph_schema_design_knowledge_graph_schema_design_module_4_v1",
+    "graph_schema_design_known_limitations_not_solved_tonight",
+    "graph_schema_design_schema_additions_per_node",
+    "graph_schema_design_visibility_classification_and_enforcement",
+    "graph_schema_design_what_s_committed_to_git_vs_what_never_is"
   ],
   "community:knowledge_graph_gap_spec_module_2_deliverable": [
     "knowledge_graph_gap_spec",
@@ -1473,16 +1448,8 @@
     "ultron_backend_app_rationale_1",
     "ultron_backend_app_rationale_1121",
     "ultron_backend_app_rationale_2151",
-    "ultron_backend_app_rationale_2175"
-  ],
-  "community:knowledge_graph_schema_design_module_4_v1": [
-    "graph_schema_design",
-    "graph_schema_design_full_workflow_after_a_graphify_rebuild",
-    "graph_schema_design_knowledge_graph_schema_design_module_4_v1",
-    "graph_schema_design_known_limitations_not_solved_tonight",
-    "graph_schema_design_schema_additions_per_node",
-    "graph_schema_design_visibility_classification_and_enforcement",
-    "graph_schema_design_what_s_committed_to_git_vs_what_never_is"
+    "ultron_backend_app_rationale_2175",
+    "session_2026_09_14_48be4fab"
   ],
   "community:fake_pkgs_drop_in_fake_sdks": [
     "ultron_discord_bot_requirements_aiohttp",
@@ -1618,6 +1585,10 @@
   "community:real_dependency_testing_approach": [
     "readme_testing_approach"
   ],
+  "community:bot_py": [
+    "ultron_discord_bot_bot_format_portfolio_embed",
+    "ultron_discord_bot_bot_portfolio_command"
+  ],
   "visibility:private": [
     "ultron_discord_bot_bot_format_portfolio_embed",
     "ultron_discord_bot_bot_portfolio_command",
@@ -1745,6 +1716,38 @@
     "ultron_backend_readme_fifo_engine",
     "ultron_backend_readme_trade_records"
   ],
+  "community:app_py": [
+    "ultron_backend_app_consume_action_token",
+    "ultron_backend_app_new_action_token",
+    "ultron_backend_app_parse_beta_tokens",
+    "ultron_backend_app_prune_expired_tokens_locked",
+    "ultron_backend_app_rationale_1",
+    "ultron_backend_app_rationale_1121"
+  ],
+  "community:get_db_connection": [
+    "ultron_backend_app_todays_token_usage",
+    "ultron_backend_app_rationale_2151",
+    "ultron_backend_app_rationale_2175"
+  ],
+  "community:ultron_backend_index_index_md": [
+    "concept_tailscale_grants",
+    "concept_tailscale_remote_access",
+    "concept_beta_spend_cap",
+    "ultron_backend_pi_setup_tailscale_tailnet",
+    "ultron_backend_pi_setup",
+    "ultron_backend_pi_setup_0_what_s_already_been_generated_for_this",
+    "ultron_backend_pi_setup_1_flash_the_sd_card",
+    "ultron_backend_pi_setup_2_first_boot_and_ssh_in",
+    "ultron_backend_pi_setup_3_update_the_os",
+    "ultron_backend_pi_setup_4_install_tailscale_join_the_same_tailnet",
+    "ultron_backend_pi_setup_5_install_docker",
+    "ultron_backend_pi_setup_document",
+    "ultron_backend_pi_setup_raspberry_pi_setup_getting_it_reachable_phase_1",
+    "ultron_backend_pi_setup_where_this_leaves_things",
+    "ultron_backend_pi_setup_why_this_order",
+    "rationale_tailscale_over_wireguard",
+    "project_summary_for_claude_code_bug_startup_script_api_key"
+  ],
   "community:crypto_trade_record_tax_agent": [
     "project_summary_for_claude_code_crypto_trade_agent"
   ],
@@ -1767,6 +1770,19 @@
     "ultron_backend_remote_access_tags_and_grants_in_more_depth",
     "ultron_backend_remote_access_troubleshooting",
     "ultron_backend_remote_access_what_tailscale_actually_is_briefly"
+  ],
+  "community:route": [
+    "ultron_backend_app_rationale_1707"
+  ],
+  "community:wrapper": [
+    "ultron_backend_app_rationale_623"
+  ],
+  "community:ultron_discord_bot_thin_remote_control_layer": [
+    "ultron_backend_code_audit_bot_ps1_secret_bug",
+    "ultron_backend_code_audit_discord_token_wrong_key_bug",
+    "project_summary_for_claude_code_config_value_hardening",
+    "ultron_backend_readme_cost_controls",
+    "dev_tools_test_beta_spend_cap_rationale_1"
   ],
   "community:investment_financial_predictive_agent_refused_reinterpreted": [
     "project_summary_for_claude_code_investment_agent"
