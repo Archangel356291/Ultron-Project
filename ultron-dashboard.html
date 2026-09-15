@@ -12,26 +12,60 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --void:#050810;
-    --panel:#0A1120;
-    --panel-raised:#0F1830;
-    --line:#03294A;
-    --steel:#5B6B8C;
+    /* ---- Black: the dominant environment (60-70%). Layered, not flat --
+       panel-raised sits one step lighter than panel, which sits one step
+       lighter than void, so surfaces read as stacked material rather than
+       a single flat background. ---- */
+    --void:#08090A;
+    --panel:#0F1113;
+    --panel-raised:#16191C;
+
+    /* ---- Dark metallic silver: structure (15-25%) -- panel borders,
+       separators, inactive controls, technical framing. --line already
+       drove ~50 border/separator declarations sitewide before this
+       change, so recoloring it (not renaming it) re-themes all of them
+       for free, no per-rule edits needed. ---- */
+    --line:#2C2F33;
+    --metal:#2C2F33;
+    --metal-light:#474C52;
+    --metal-dim:#1B1D20;
+    --steel:#8B93A0;
+
+    /* ---- Blue: readable text/telemetry AND the general interactive
+       accent (nav active state, focus rings, buttons, hover) -- 5-10%.
+       This is what most of the old --oxide usage becomes: --oxide itself
+       is reclassified below to mean "AI-tied" specifically, not "the
+       site's accent color," so the general-UI role needs a real home
+       rather than silently keeping orange everywhere. ---- */
+    --blue:#4FA6E0;
+    --blue-bright:#8FD6FF;
+    --cyan:#3DD6FF;
+
+    /* ---- Gold/orange: Ultron's intelligence, specifically (3-8%) -- the
+       brain, "AI" branding/labels, AI-tied status. Narrowed on purpose:
+       before this pass --oxide was the site's general accent AND the
+       AI color at once, which is exactly the "everything is the same
+       color" problem this redesign's brief calls out. ---- */
     --oxide:#FF8A1E;
     --oxide-dim:#5C3210;
-    --signal:#33D17A;
-    --amber:#FFC24B;
-    --cyan:#3DD6FF;
-    /* Module 14: AI core (Home hero only) -- gold/amber, reserved for
-       Ultron's intelligence specifically. --oxide above stays the
-       site-wide accent everywhere else. */
     --core-gold:#FFB238;
     --core-amber:#FF8A1E;
     --core-glow-a:rgba(255,178,56,0.32);
     --core-glow-b:rgba(255,178,56,0.06);
+
+    /* ---- Red: alerts/critical/warnings only (1-5%) -- genuinely new,
+       there was no dedicated red token before tonight (errors/critical
+       states were borrowing --oxide, which is why "warning" and
+       "AI-active" used to look identical). Two tiers, matching the
+       brief's "deeper reds and controlled bright-red highlights." ---- */
+    --red:#C0392B;
+    --red-bright:#FF3B3B;
+
+    --signal:#33D17A;
+    --amber:#FFC24B;
     --text:#E9EDF7;
     --text-dim:#8D9BBD;
-    --text-faint:#4C5A78;
+    --text-faint:#69707E;
     --font-display: 'Barlow Condensed', sans-serif;
     --font-hud: 'Orbitron', 'Barlow Condensed', sans-serif;
     --font-body: 'Inter', sans-serif;
@@ -55,7 +89,7 @@
     padding:0 28px;
     background:linear-gradient(180deg, var(--panel-raised) 0%, var(--panel) 100%);
     border-bottom:1px solid var(--line);
-    box-shadow:0 0 24px -8px rgba(255,138,30,0.15);
+    box-shadow:0 4px 24px -8px rgba(0,0,0,0.6);
     position:sticky; top:0; z-index:20;
     gap:20px;
   }
@@ -65,6 +99,9 @@
     display:flex; align-items:center; justify-content:center;
   }
   .th-mark svg{ width:100%; height:100%; }
+  /* The logo's own pulse and the "AI" in the wordmark stay gold on
+     purpose -- this is Ultron's identity mark, not a general UI accent,
+     so it's one of the few places outside the hero panel gold stays. */
   .th-mark .pulse{
     position:absolute; top:11px; right:11px; bottom:11px; left:11px; border-radius:50%; background:var(--oxide);
     box-shadow:0 0 12px var(--oxide); animation:core-pulse 2.4s ease-in-out infinite;
@@ -84,9 +121,9 @@
     color:var(--text-faint); text-transform:uppercase;
   }
   .th-caps b{ color:var(--text-dim); font-weight:500; }
-  .th-caps .sep{ color:var(--oxide); opacity:0.6; }
+  .th-caps .sep{ color:var(--metal-light); opacity:0.8; }
   .th-caps span[data-section]{ cursor:pointer; transition:color .15s; }
-  .th-caps span[data-section]:hover{ color:var(--oxide); }
+  .th-caps span[data-section]:hover{ color:var(--blue-bright); }
   .th-right{ display:flex; align-items:center; gap:18px; flex-shrink:0; }
   .th-user{
     display:flex; align-items:center; gap:9px;
@@ -94,7 +131,7 @@
     clip-path: polygon(8px 0, 100% 0, 100% 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
     background:var(--panel-raised);
   }
-  .th-user svg{ width:18px; height:18px; stroke:var(--oxide); flex-shrink:0; }
+  .th-user svg{ width:18px; height:18px; stroke:var(--blue); flex-shrink:0; }
   .th-user-label{ font-family:var(--font-display); font-size:12.5px; font-weight:600; letter-spacing:0.04em; }
   .th-user-sub{ font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); margin-top:1px; }
   .th-status{
@@ -146,7 +183,7 @@
     padding:11px 14px;
     color:var(--text-dim);
     cursor:pointer;
-    border-top:1px solid transparent; border-bottom:1px solid transparent;
+    border-top:1px solid transparent; border-bottom:1px solid transparent; border-left:2px solid transparent;
     margin-bottom:3px;
     transition:background .15s, color .15s, border-color .15s;
   }
@@ -155,15 +192,21 @@
   .nav-item .label{ color:var(--text); font-family:var(--font-display); font-size:13.5px; font-weight:600; letter-spacing:0.01em; text-transform:uppercase; white-space:nowrap; }
   .nav-item .nav-sub{ font-family:var(--font-mono); font-size:9px; color:var(--text-faint); margin-top:1px; }
   .nav-item:hover{ color:var(--text); background:var(--panel-raised); }
+  /* Active page: metal + blue, matching "the navigation should feel like
+     the control interface of an AI system" -- with one small red left
+     accent as the "selected state" indicator (a status LED, not a wash)
+     rather than a full-red or full-gold treatment. Gold stays reserved
+     for AI-tied elements specifically, not general navigation state. */
   .nav-item.active{
-    color:var(--oxide);
-    background:linear-gradient(90deg, rgba(255,138,30,0.22), rgba(255,138,30,0.05) 90%);
-    border-top-color:rgba(255,138,30,0.7); border-bottom-color:rgba(255,138,30,0.7);
+    color:var(--blue-bright);
+    background:linear-gradient(90deg, rgba(79,166,224,0.14), rgba(79,166,224,0.03) 90%);
+    border-top-color:var(--metal-light); border-bottom-color:var(--metal-light);
+    border-left-color:var(--red-bright);
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
   }
-  .nav-item.active .label{ color:var(--oxide); }
-  .nav-item.active svg{ stroke:var(--oxide); }
-  .nav-item.active .nav-sub{ color:var(--oxide); opacity:0.75; }
+  .nav-item.active .label{ color:var(--blue-bright); }
+  .nav-item.active svg{ stroke:var(--blue-bright); }
+  .nav-item.active .nav-sub{ color:var(--blue); opacity:0.85; }
 
   .sidebar-foot{
     padding:14px 18px 18px;
@@ -203,7 +246,7 @@
   }
   .panel-label::before{
     content:''; width:7px; height:7px; border-radius:50%;
-    background:var(--oxide); box-shadow:0 0 8px var(--oxide); flex-shrink:0;
+    background:var(--blue); box-shadow:0 0 8px var(--blue); flex-shrink:0;
   }
   .card{
     background: linear-gradient(160deg, var(--panel) 0%, var(--panel-raised) 100%);
@@ -215,7 +258,7 @@
   }
   .card::before{
     content:''; position:absolute; top:0; left:14px; right:14px; height:1px;
-    background:linear-gradient(90deg, transparent, rgba(255,138,30,0.4), transparent);
+    background:linear-gradient(90deg, transparent, var(--metal-light), transparent);
   }
   .grid{ display:grid; gap:16px; }
   .cols-2{ grid-template-columns:1fr 1fr; }
@@ -457,19 +500,25 @@
   }
   .talk-bar::before{
     content:''; position:absolute; top:0; left:14px; right:14px; height:1px;
-    background:linear-gradient(90deg, transparent, rgba(255,138,30,0.4), transparent);
+    background:linear-gradient(90deg, transparent, var(--metal-light), transparent);
   }
+  /* The talk bar is the command console -- the user's channel TO Ultron,
+     not the AI itself (that's the hero brain above it) -- so this stays
+     blue/metal, matching the hierarchy's own "Command Console" as a
+     distinct thing from "AI Core." The mic keeps gold specifically while
+     .listening, since that reflects the brain's own real listening state
+     (see window.__heroSetState('listening')), not a static UI accent. */
   .talk-label{
     display:flex; align-items:center; gap:8px;
     font-family:var(--font-display); font-size:13px; font-weight:600; letter-spacing:0.04em;
-    color:var(--oxide); text-transform:uppercase; margin-bottom:8px;
+    color:var(--blue); text-transform:uppercase; margin-bottom:8px;
   }
   .talk-row{ display:flex; gap:10px; }
   .talk-row input{
     flex:1; background:var(--void); border:1px solid var(--line); border-radius:7px;
     padding:12px 15px; color:var(--text); font-size:13.5px; font-family:var(--font-body);
   }
-  .talk-row input:focus{ outline:none; border-color:var(--oxide); }
+  .talk-row input:focus{ outline:none; border-color:var(--blue); }
   .talk-mic{
     width:42px; flex-shrink:0; border-radius:7px; border:1px solid var(--line);
     background:var(--panel-raised); color:var(--text-faint); opacity:0.55; cursor:default;
@@ -479,7 +528,7 @@
   .talk-mic.listening{ color:var(--oxide); border-color:var(--oxide); }
   .talk-send{
     width:42px; flex-shrink:0; border-radius:7px; border:none;
-    background:var(--oxide); color:var(--void); display:flex; align-items:center; justify-content:center; cursor:pointer;
+    background:var(--blue); color:var(--void); display:flex; align-items:center; justify-content:center; cursor:pointer;
   }
   .talk-send:disabled{ opacity:0.5; cursor:default; }
   .mode-pills{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
@@ -489,7 +538,7 @@
     transition:border-color .15s, color .15s, background .15s;
   }
   .mode-pill:hover{ color:var(--text); }
-  .mode-pill.active{ border-color:var(--oxide); color:var(--oxide); background:var(--oxide-dim); }
+  .mode-pill.active{ border-color:var(--blue); color:var(--blue-bright); background:rgba(79,166,224,0.12); }
 
   /* ---------- home lab overview (mini) ---------- */
   .hlo-rings{ display:flex; gap:18px; margin-bottom:16px; }
@@ -533,9 +582,9 @@
   .page-footer::before, .page-footer::after{
     content:''; position:absolute; top:-1px; width:38%; height:1px;
   }
-  .page-footer::before{ left:0; background:linear-gradient(90deg, transparent, var(--oxide)); }
-  .page-footer::after{ right:0; background:linear-gradient(90deg, var(--oxide), transparent); }
-  .page-footer .sep{ color:var(--oxide); margin:0 10px; opacity:0.6; }
+  .page-footer::before{ left:0; background:linear-gradient(90deg, transparent, var(--metal-light)); }
+  .page-footer::after{ right:0; background:linear-gradient(90deg, var(--metal-light), transparent); }
+  .page-footer .sep{ color:var(--metal-light); margin:0 10px; opacity:0.9; }
 
   .quick-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px; }
   .qa-btn{
@@ -543,11 +592,11 @@
     padding:10px 16px; border-radius:7px; font-size:13px; cursor:pointer;
     transition:border-color .15s, background .15s;
   }
-  .qa-btn:hover{ border-color:var(--oxide); background:var(--panel-raised); }
+  .qa-btn:hover{ border-color:var(--blue); background:var(--panel-raised); }
   .quick-actions .qa-btn{ display:flex; align-items:center; gap:12px; width:100%; }
   .quick-actions .qa-icon{
-    width:30px; height:30px; flex-shrink:0; border:1px solid var(--oxide); border-radius:6px;
-    display:flex; align-items:center; justify-content:center; color:var(--oxide);
+    width:30px; height:30px; flex-shrink:0; border:1px solid var(--blue); border-radius:6px;
+    display:flex; align-items:center; justify-content:center; color:var(--blue);
   }
   .quick-actions .qa-icon svg{ width:16px; height:16px; stroke:currentColor; }
   .quick-actions .qa-label{ flex:1; }
@@ -593,15 +642,15 @@
     flex:1; background:var(--void); border:1px solid var(--line); border-radius:6px;
     padding:11px 14px; color:var(--text); font-size:13.5px; font-family:var(--font-body);
   }
-  .chat-input input:focus{ outline:none; border-color:var(--oxide); }
+  .chat-input input:focus{ outline:none; border-color:var(--blue); }
   .chat-input button{
-    background:var(--oxide); color:var(--void); border:none; border-radius:6px;
+    background:var(--blue); color:var(--void); border:none; border-radius:6px;
     padding:0 18px; font-weight:600; font-size:13px; cursor:pointer;
   }
   .chat-input button:disabled{ opacity:0.5; cursor:default; }
   .chat-input input:disabled{ opacity:0.6; }
   .msg.ultron.thinking .who{ color:var(--text-faint); }
-  .msg.ultron.err .who{ color:var(--oxide); }
+  .msg.ultron.err .who{ color:var(--red-bright); }
 
   /* ---------- brain map (assistant section) ---------- */
   .brain-card{ position:relative; padding:0; overflow:hidden; }
@@ -626,7 +675,7 @@
     display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
     gap:0 20px; padding:14px 18px 18px; border-top:1px solid var(--line);
   }
-  .msg.ultron.err{ color:var(--oxide); }
+  .msg.ultron.err{ color:var(--red-bright); }
   .msg .tool-tag{
     display:inline-block; font-family:var(--font-mono); font-size:9.5px;
     color:var(--text-faint); border:1px solid var(--line); border-radius:4px;
@@ -639,7 +688,7 @@
   .log-line .sev{ width:56px; flex-shrink:0; }
   .sev.info{ color:var(--signal); }
   .sev.warn{ color:var(--amber); }
-  .sev.crit{ color:var(--oxide); }
+  .sev.crit{ color:var(--red-bright); }
 
   /* ---------- crypto ---------- */
   .ticker-row{ display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
@@ -648,12 +697,12 @@
   .ticker-card .price{ font-family:var(--font-display); font-size:22px; font-weight:600; margin-top:2px; }
   .ticker-card .chg{ font-family:var(--font-mono); font-size:11.5px; margin-top:3px; }
   .chg.up{ color:var(--signal); }
-  .chg.down{ color:var(--oxide); }
+  .chg.down{ color:var(--red-bright); }
   .disclaimer{ font-size:12px; color:var(--text-faint); border-left:2px solid var(--line); padding:8px 12px; margin-top:16px; line-height:1.5; }
 
   /* ---------- storage ---------- */
   .bar-track{ height:8px; background:var(--void); border-radius:4px; overflow:hidden; border:1px solid var(--line); }
-  .bar-fill{ height:100%; background:var(--oxide); }
+  .bar-fill{ height:100%; background:var(--blue); }
 
   /* ---------- settings ---------- */
   .set-row{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--line); }
@@ -661,9 +710,9 @@
   .set-row .stitle{ font-size:13.5px; color:var(--text); }
   .set-row .sdesc{ font-size:12px; color:var(--text-faint); margin-top:2px; }
   .switch{ width:38px; height:21px; border-radius:11px; background:var(--line); position:relative; cursor:pointer; border:1px solid var(--line); flex-shrink:0; }
-  .switch.on{ background:var(--oxide-dim); border-color:var(--oxide); }
+  .switch.on{ background:rgba(79,166,224,0.22); border-color:var(--blue); }
   .switch::after{ content:''; position:absolute; width:15px; height:15px; border-radius:50%; background:var(--text-dim); top:2px; left:3px; transition:left .15s; }
-  .switch.on::after{ left:19px; background:var(--oxide); }
+  .switch.on::after{ left:19px; background:var(--blue-bright); }
 
   .stat-card .num{ font-family:var(--font-display); font-size:30px; font-weight:600; }
   .stat-card .lbl{ font-size:12px; color:var(--text-dim); margin-top:2px; }
@@ -680,16 +729,16 @@
     background:var(--void); border:1px solid var(--line); border-radius:6px;
     padding:9px 12px; color:var(--text); font-size:13px; font-family:var(--font-body);
   }
-  .conn-field input:focus{ outline:none; border-color:var(--oxide); }
+  .conn-field input:focus{ outline:none; border-color:var(--blue); }
   .conn-actions{ display:flex; align-items:center; gap:12px; margin-top:4px; flex-wrap:wrap; }
   .conn-btn{
-    background:var(--oxide); color:var(--void); border:none; border-radius:6px;
+    background:var(--blue); color:var(--void); border:none; border-radius:6px;
     padding:9px 18px; font-weight:600; font-size:13px; cursor:pointer;
   }
   .conn-btn:disabled{ opacity:0.5; cursor:default; }
   .conn-status{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); }
   .conn-status.ok{ color:var(--signal); }
-  .conn-status.err{ color:var(--oxide); }
+  .conn-status.err{ color:var(--red-bright); }
   .conn-note{ font-size:12px; color:var(--text-faint); margin-top:12px; line-height:1.5; border-left:2px solid var(--line); padding:8px 12px; }
 
   @media(max-width:420px){
@@ -1335,12 +1384,12 @@
             <span class="conn-status" id="cfg-status">not connected — showing mock data</span>
           </div>
           <label style="display:flex; align-items:center; gap:7px; margin-top:10px; font-size:12px; color:var(--text-dim); cursor:pointer;">
-            <input type="checkbox" id="cfg-remember" style="accent-color:var(--oxide);">
+            <input type="checkbox" id="cfg-remember" style="accent-color:var(--blue);">
             Remember me on this device
           </label>
           <div class="conn-note">
             This page is a static file, so nothing you type here is saved when it reloads unless you check "Remember me" above — that saves the URL and token to this browser's local storage so this page reconnects automatically next time, but means anything that can run script on this page (or anyone with access to this browser) can read them back out. Leave it unchecked to enter both fresh each time instead. On the same Wi-Fi as the backend, use its LAN address (e.g. <code>http://192.168.1.50:5000</code>). From outside your home network — your phone on mobile data, for instance — use its Tailscale address instead of opening a port on your router.
-            <span id="cfg-forget-wrap" hidden> · <a href="#" onclick="forgetConnection(); return false;" style="color:var(--oxide);">Forget saved connection</a></span>
+            <span id="cfg-forget-wrap" hidden> · <a href="#" onclick="forgetConnection(); return false;" style="color:var(--blue);">Forget saved connection</a></span>
           </div>
         </div>
 
@@ -1503,7 +1552,12 @@
     const pip = document.getElementById('topbar-pip');
     const txt = document.getElementById('topbar-status-text');
     if (txt) txt.textContent = text;
-    if (pip) pip.style.background = ok ? 'var(--signal)' : 'var(--oxide)';
+    // "OFFLINE" per the status vocabulary is dark metallic gray, not red --
+    // red is reserved for a genuine fault (see the hero's own separate
+    // 'alert' state, driven by a real connection-loss-after-connected
+    // condition elsewhere), and this pip's "not ok" also just means
+    // "never configured yet," the normal resting state before setup.
+    if (pip) pip.style.background = ok ? 'var(--signal)' : 'var(--steel)';
 
     const sphere = document.getElementById('sphere-wrap');
     if (sphere) sphere.classList.toggle('offline', !ok);
@@ -1888,12 +1942,12 @@
       [/backup/i, '#B084F0', '<path d="M7 18a4 4 0 01-.5-7.97A5 5 0 0116.9 8.02 3.5 3.5 0 0117.5 18H7z"/>'],
       [/docker|container/i, 'var(--cyan)', '<path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/>'],
       [/scan|threat|security|cve/i, 'var(--signal)', '<path d="M12 3l8 3.5v5.3C20 16.6 16.6 20.3 12 21c-4.6-.7-8-4.4-8-9.2V6.5L12 3z"/>'],
-      [/market|btc|eth|sol|price|trade/i, 'var(--oxide)', '<path d="M3 17l5-6 4 3 6-8 3 3"/>'],
+      [/market|btc|eth|sol|price|trade/i, 'var(--blue)', '<path d="M3 17l5-6 4 3 6-8 3 3"/>'],
       [/repo|git|code|push|deploy/i, 'var(--cyan)', '<path d="M8 6L3 12l5 6M16 6l5 6-5 6"/>'],
     ];
     listEl.innerHTML = events.map(function (e) {
       const shortTime = ((e.timestamp || '').split('T')[1] || '').slice(0, 5) || '—';
-      const statusColor = e.status === 'error' ? 'var(--oxide)' : (e.status === 'warning' ? 'var(--amber)' : 'var(--signal)');
+      const statusColor = e.status === 'error' ? 'var(--red-bright)' : (e.status === 'warning' ? 'var(--amber)' : 'var(--signal)');
       const summary = e.summary || '';
       const match = ACTIVITY_ICONS.find(function (m) { return m[0].test(summary); });
       const badgeColor = match ? match[1] : statusColor;
@@ -1985,7 +2039,7 @@
       } else {
         const rows = assetKeys.map(function (a) {
           const e = byAsset[a];
-          const color = e.realized_gain_usd >= 0 ? 'var(--signal)' : 'var(--oxide)';
+          const color = e.realized_gain_usd >= 0 ? 'var(--signal)' : 'var(--red-bright)';
           const warn = (e.warnings && e.warnings.length)
             ? ('<div style="color:var(--amber); font-size:11px; margin-top:2px;">' + e.warnings.map(escapeHtml).join('<br>') + '</div>')
             : '';
@@ -2019,7 +2073,7 @@
     let budgetHtml = '<span style="color:var(--text-faint)">No daily budget configured (ULTRON_LLM_DAILY_TOKEN_BUDGET unset — no limit).</span>';
     if (data.daily_budget != null) {
       const pct = data.daily_budget > 0 ? (data.total_tokens / data.daily_budget * 100) : 0;
-      const color = pct >= 90 ? 'var(--oxide)' : (pct >= 70 ? 'var(--amber)' : 'var(--signal)');
+      const color = pct >= 90 ? 'var(--red-bright)' : (pct >= 70 ? 'var(--amber)' : 'var(--signal)');
       budgetHtml = '<div style="margin-top:8px;">Budget: <span style="color:' + color + '">' +
         data.total_tokens.toLocaleString() + ' / ' + data.daily_budget.toLocaleString() + ' tokens</span> used today (' +
         pct.toFixed(0) + '%) — <b>' + (data.budget_remaining || 0).toLocaleString() + '</b> remaining</div>';
@@ -2038,7 +2092,7 @@
     if (betaTesters.length > 0) {
       const rows = betaTesters.map(function (t) {
         const pct = data.beta_max_spend_usd > 0 ? (t.spend_usd / data.beta_max_spend_usd * 100) : 0;
-        const color = pct >= 90 ? 'var(--oxide)' : (pct >= 70 ? 'var(--amber)' : 'var(--signal)');
+        const color = pct >= 90 ? 'var(--red-bright)' : (pct >= 70 ? 'var(--amber)' : 'var(--signal)');
         return '<div style="margin-top:4px;">' + escapeHtml(t.name) + ': <span style="color:' + color + '">$' +
           t.spend_usd.toFixed(2) + ' / $' + data.beta_max_spend_usd.toFixed(2) + '</span> (' + t.requests + ' request(s))</div>';
       }).join('');
@@ -2086,7 +2140,7 @@
     }
     if (typeof data.spend_usd !== 'number') return;
     const pct = data.spend_limit_usd > 0 ? (data.spend_usd / data.spend_limit_usd * 100) : 0;
-    const color = pct >= 90 ? 'var(--oxide)' : (pct >= 70 ? 'var(--amber)' : 'var(--signal)');
+    const color = pct >= 90 ? 'var(--red-bright)' : (pct >= 70 ? 'var(--amber)' : 'var(--signal)');
     el.innerHTML =
       '<div style="font-family:var(--font-mono); font-size:12px;">' +
       '$' + data.spend_usd.toFixed(2) + ' / $' + data.spend_limit_usd.toFixed(2) +
@@ -2254,7 +2308,7 @@
         }).join('');
       }
     } catch (err) {
-      bodyEl.innerHTML = '<span style="color:var(--oxide)">' + escapeHtml(err.message) + '</span>';
+      bodyEl.innerHTML = '<span style="color:var(--red-bright)">' + escapeHtml(err.message) + '</span>';
     } finally {
       btn.disabled = false;
     }
@@ -2728,7 +2782,7 @@
     system:   { color: '#3DD6FF', label: 'System' },
     security: { color: '#33D17A', label: 'Security' },
     dev:      { color: '#FFC24B', label: 'Development' },
-    trade:    { color: '#FF8A1E', label: 'Trading' },
+    trade:    { color: '#4FA6E0', label: 'Trading' },
     memory:   { color: '#B084F0', label: 'Memory' },
     usage:    { color: '#5B6B8C', label: 'Usage' },
     skill:    { color: '#8D9BBD', label: 'External skill (MCP)' },
@@ -3274,9 +3328,9 @@ function toggleReducedVisuals(el) {
   // rather than being silently uncolored.
   var CATEGORY_COLORS = {
     code: '#3DD6FF', document: '#4C8DFF', concept: '#33D17A',
-    rationale: '#B084F0', memory: '#FFB238', paper: '#FF8A1E', image: '#5B6B8C',
+    rationale: '#B084F0', memory: '#FFB238', paper: '#6B93B0', image: '#5B6B8C',
   };
-  var PRIVATE_COLOR = '#4C5A78';
+  var PRIVATE_COLOR = '#474C52';
   var DEFAULT_COLOR = '#8D9BBD';
 
   function colorFor(n) {
