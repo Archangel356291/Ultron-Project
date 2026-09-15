@@ -280,6 +280,24 @@ def _init_db():
                 created_at TEXT NOT NULL
             )
         """)
+        # Master-prompt section 13's "Ultron Ideas/Evolution" system -- one
+        # place self-improvement proposals live with an ID/status instead of
+        # scattered as one-off design docs per module.
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS evolution_ideas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                category TEXT NOT NULL,
+                problem TEXT NOT NULL,
+                evidence TEXT,
+                proposed_solution TEXT NOT NULL,
+                target TEXT,
+                benefit TEXT,
+                risk TEXT,
+                status TEXT NOT NULL DEFAULT 'DISCOVERED'
+            )
+        """)
         conn.commit()
     finally:
         conn.close()
@@ -491,6 +509,134 @@ def recall_related_notes(query=None, min_nodes=6, **_ignored):
         for n in result["nodes"]
     ]
     return {"notes": notes, "widened": result["widened"]}
+
+
+# --------------------------------------------------------------------------
+# Ultron Ideas/Evolution tracker (master prompt section 13) -- Ultron logs
+# self-improvement proposals it discovers (new metric, new agent, UI, etc.)
+# here instead of a one-off markdown doc per feature. propose_idea is the
+# only write path exposed to chat, and it can only ever create a fresh
+# DISCOVERED row -- moving an idea to APPROVED/REJECTED/DEPLOYED etc. is
+# deliberately NOT a chat tool (section 11: Ultron can propose, never
+# self-approve), only the admin-only PATCH route below does that, same as a
+# human clicking Approve/Reject on the dashboard.
+# --------------------------------------------------------------------------
+EVOLUTION_CATEGORIES = (
+    "ui", "monitoring", "new-metric", "new-agent", "security", "performance",
+    "reliability", "memory", "reasoning", "automation", "integration", "home-lab",
+)
+EVOLUTION_STATUSES = (
+    "DISCOVERED", "ANALYZING", "PROPOSED", "APPROVED", "REJECTED",
+    "IN DEVELOPMENT", "TESTED", "DEPLOYED (PC)",
+    "HANDED OFF FOR REMOTE DEPLOYMENT", "MEASURED", "ROLLED BACK", "COMPLETED",
+)
+EVOLUTION_FIELD_MAX_CHARS = 1000
+
+
+def _validate_idea_input(body):
+    """Returns (normalized_dict, None) or (None, error_message)."""
+    category = (body.get("category") or "").strip().lower()
+    if category not in EVOLUTION_CATEGORIES:
+        return None, f"category must be one of: {', '.join(EVOLUTION_CATEGORIES)}"
+
+    problem = (body.get("problem") or "").strip()[:EVOLUTION_FIELD_MAX_CHARS]
+    if not problem:
+        return None, "problem is required"
+
+    proposed_solution = (body.get("proposed_solution") or "").strip()[:EVOLUTION_FIELD_MAX_CHARS]
+    if not proposed_solution:
+        return None, "proposed_solution is required"
+
+    return {
+        "category": category,
+        "problem": problem,
+        "evidence": (body.get("evidence") or "").strip()[:EVOLUTION_FIELD_MAX_CHARS] or None,
+        "proposed_solution": proposed_solution,
+        "target": (body.get("target") or "").strip()[:200] or None,
+        "benefit": (body.get("benefit") or "").strip()[:EVOLUTION_FIELD_MAX_CHARS] or None,
+        "risk": (body.get("risk") or "").strip()[:EVOLUTION_FIELD_MAX_CHARS] or None,
+    }, None
+
+
+def propose_idea(category=None, problem=None, proposed_solution=None, evidence=None,
+                  target=None, benefit=None, risk=None, **_ignored):
+    normalized, err = _validate_idea_input({
+        "category": category, "problem": problem, "proposed_solution": proposed_solution,
+        "evidence": evidence, "target": target, "benefit": benefit, "risk": risk,
+    })
+    if err:
+        return {"error": err}
+    try:
+        conn = _get_db_connection()
+        try:
+            now = time.strftime("%Y-%m-%dT%H:%M:%S")
+            cur = conn.execute(
+                "INSERT INTO evolution_ideas (created_at, updated_at, category, problem, "
+                "evidence, proposed_solution, target, benefit, risk, status) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'DISCOVERED')",
+                (now, now, normalized["category"], normalized["problem"], normalized["evidence"],
+                 normalized["proposed_solution"], normalized["target"], normalized["benefit"],
+                 normalized["risk"]),
+            )
+            conn.commit()
+            idea_id = cur.lastrowid
+        finally:
+            conn.close()
+    except Exception as e:
+        return {"error": f"could not save idea: {e}"}
+    normalized["id"] = idea_id
+    normalized["status"] = "DISCOVERED"
+    return normalized
+
+
+def get_ideas(status=None, category=None, limit=50, **_ignored):
+    try:
+        limit = max(1, min(int(limit), 200))
+    except (TypeError, ValueError):
+        limit = 50
+    clauses, params = [], []
+    if status:
+        clauses.append("status = ?")
+        params.append(status.strip())
+    if category:
+        clauses.append("category = ?")
+        params.append(category.strip().lower())
+    where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+    try:
+        conn = _get_db_connection()
+        try:
+            rows = conn.execute(
+                f"SELECT * FROM evolution_ideas {where} ORDER BY id DESC LIMIT ?",
+                (*params, limit),
+            ).fetchall()
+        finally:
+            conn.close()
+        return {"ideas": [dict(r) for r in rows]}
+    except Exception as e:
+        return {"error": f"could not read ideas: {e}"}
+
+
+def update_idea_status(idea_id, status, note=None):
+    status = (status or "").strip()
+    if status not in EVOLUTION_STATUSES:
+        return {"error": f"status must be one of: {', '.join(EVOLUTION_STATUSES)}"}
+    try:
+        conn = _get_db_connection()
+        try:
+            cur = conn.execute(
+                "UPDATE evolution_ideas SET status = ?, updated_at = ? WHERE id = ?",
+                (status, time.strftime("%Y-%m-%dT%H:%M:%S"), idea_id),
+            )
+            conn.commit()
+            updated = cur.rowcount > 0
+        finally:
+            conn.close()
+    except Exception as e:
+        return {"error": f"could not update idea: {e}"}
+    if not updated:
+        return {"error": f"no idea with id {idea_id}"}
+    log_activity("evolution_status_change", f"Idea #{idea_id} -> {status}", detail=note)
+    return {"id": idea_id, "status": status}
 
 
 # --------------------------------------------------------------------------
@@ -2221,6 +2367,33 @@ def trades_export():
     )
 
 
+@app.route("/api/evolution/ideas", methods=["GET", "POST"])
+@require_token
+def evolution_ideas():
+    if request.method == "POST":
+        body = request.get_json(silent=True) or {}
+        idea = propose_idea(**body)
+        if "error" in idea:
+            return jsonify(idea), 400
+        return jsonify(idea), 201
+
+    return _json_result(get_ideas(
+        status=request.args.get("status"),
+        category=request.args.get("category"),
+        limit=request.args.get("limit", "50"),
+    ))
+
+
+@app.route("/api/evolution/ideas/<int:idea_id>", methods=["PATCH"])
+@require_token
+def evolution_idea_status(idea_id):
+    body = request.get_json(silent=True) or {}
+    result = update_idea_status(idea_id, body.get("status"), note=body.get("note"))
+    if "error" in result:
+        return jsonify(result), 404 if "no idea with id" in result["error"] else 400
+    return jsonify(result)
+
+
 @app.route("/api/security/auth-log")
 @require_token
 def security_auth_log():
@@ -3005,6 +3178,44 @@ TOOLS = [
         "input_schema": {"type": "object", "properties": {}},
     },
     {
+        "name": "propose_idea",
+        "description": (
+            "Log a self-improvement proposal to Ultron's Evolution/Ideas tracker -- a new "
+            "metric, agent, UI change, security fix, or other capability gap you've noticed. "
+            "Always starts at status DISCOVERED; only the user can move it to APPROVED and "
+            "have it built/deployed -- this tool only records the idea, it never approves or "
+            "acts on it."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "category": {"type": "string", "description": f"One of: {', '.join(EVOLUTION_CATEGORIES)}"},
+                "problem": {"type": "string", "description": "What gap or opportunity was observed"},
+                "proposed_solution": {"type": "string", "description": "What you'd build to address it"},
+                "evidence": {"type": "string", "description": "What specifically led you to this, e.g. a log line or missing metric"},
+                "target": {"type": "string", "description": "Which device/container this touches, e.g. 'PC (core)' or 'Pi (planned)'"},
+                "benefit": {"type": "string", "description": "Expected benefit if built"},
+                "risk": {"type": "string", "description": "Risk or cost, if any"},
+            },
+            "required": ["category", "problem", "proposed_solution"],
+        },
+    },
+    {
+        "name": "get_ideas",
+        "description": (
+            "List Ultron's logged self-improvement ideas from the Evolution tracker, "
+            "optionally filtered by status or category. Read-only."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "status": {"type": "string", "description": "Filter to one exact status, e.g. 'DISCOVERED' or 'APPROVED'"},
+                "category": {"type": "string", "description": f"Filter to one of: {', '.join(EVOLUTION_CATEGORIES)}"},
+                "limit": {"type": "integer", "description": "Max ideas to return (default 50)"},
+            },
+        },
+    },
+    {
         "name": "get_mcp_servers",
         "description": (
             "Get every configured external (MCP) server, whether it's currently reachable, "
@@ -3034,6 +3245,8 @@ TOOL_DISPATCH = {
     "get_trade_tax_lots": get_trade_tax_lots,
     "get_llm_usage": get_llm_usage,
     "get_mcp_servers": get_mcp_servers,
+    "propose_idea": propose_idea,
+    "get_ideas": get_ideas,
 }
 
 # Tools a beta_tester's chat may use — view-only trading data, nothing that
