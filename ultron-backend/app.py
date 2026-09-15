@@ -350,9 +350,13 @@ def get_recent_activity(limit=20):
                 "FROM activity_log ORDER BY id DESC LIMIT ?",
                 (limit,),
             ).fetchall()
+            count_today = conn.execute(
+                "SELECT COUNT(*) as n FROM activity_log WHERE timestamp LIKE ?",
+                (time.strftime("%Y-%m-%d") + "%",),
+            ).fetchone()["n"]
         finally:
             conn.close()
-        return {"events": [dict(r) for r in rows]}
+        return {"events": [dict(r) for r in rows], "count_today": count_today}
     except Exception as e:
         return {"error": f"could not read activity log: {e}"}
 
@@ -2722,7 +2726,8 @@ def get_llm_usage(**_ignored):
                 "COALESCE(SUM(input_tokens), 0) as in_sum, "
                 "COALESCE(SUM(output_tokens), 0) as out_sum, "
                 "COALESCE(SUM(cache_read_input_tokens), 0) as cache_read_sum, "
-                "COALESCE(SUM(cache_creation_input_tokens), 0) as cache_write_sum "
+                "COALESCE(SUM(cache_creation_input_tokens), 0) as cache_write_sum, "
+                "COALESCE(SUM(cost_usd), 0) as cost_sum "
                 "FROM llm_usage WHERE timestamp LIKE ?",
                 (today_prefix + "%",),
             ).fetchone()
@@ -2740,6 +2745,7 @@ def get_llm_usage(**_ignored):
         "total_tokens": total,
         "cache_read_tokens": row["cache_read_sum"] or 0,
         "cache_creation_tokens": row["cache_write_sum"] or 0,
+        "cost_usd_today": round(row["cost_sum"] or 0.0, 4),
         "daily_budget": LLM_DAILY_TOKEN_BUDGET,
         "beta_max_spend_usd": BETA_MAX_SPEND_USD,
     }

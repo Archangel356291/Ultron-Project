@@ -1334,10 +1334,10 @@
         <h2 class="section-title">Data &amp; analytics</h2>
         <p class="section-desc">Insights and reports drawn from the lab and the core's activity.</p>
         <div class="grid cols-4">
-          <div class="card stat-card"><div class="num">1.6M</div><div class="lbl">Tokens this session</div></div>
-          <div class="card stat-card"><div class="num">$6.40</div><div class="lbl">Session cost estimate</div></div>
-          <div class="card stat-card"><div class="num">42</div><div class="lbl">Commands routed today</div></div>
-          <div class="card stat-card"><div class="num">99.4%</div><div class="lbl">30-day uptime</div></div>
+          <div class="card stat-card"><div class="num" id="stat-data-tokens">—</div><div class="lbl">Tokens today</div></div>
+          <div class="card stat-card"><div class="num" id="stat-data-cost">—</div><div class="lbl">Cost today</div></div>
+          <div class="card stat-card"><div class="num" id="stat-data-commands">—</div><div class="lbl">Commands routed today</div></div>
+          <div class="card stat-card"><div class="num" id="stat-data-uptime">—</div><div class="lbl">Uptime (current)</div></div>
         </div>
 
         <div class="panel-label" style="margin-top:20px" data-role="admin">Ultron Evolution — self-improvement ideas</div>
@@ -1933,6 +1933,9 @@
 
     const hloUptimeEl = document.getElementById('hlo-host-uptime');
     if (hloUptimeEl) hloUptimeEl.textContent = data.uptime || '—';
+
+    const dataUptimeEl = document.getElementById('stat-data-uptime');
+    if (dataUptimeEl) dataUptimeEl.textContent = data.uptime || '—';
   }
 
   async function fetchActivity() {
@@ -1944,6 +1947,9 @@
     } catch (err) {
       return;
     }
+    const commandsEl = document.getElementById('stat-data-commands');
+    if (commandsEl && data.count_today != null) commandsEl.textContent = data.count_today.toLocaleString();
+
     const events = data.events || [];
     if (!events.length) {
       listEl.innerHTML = '<div class="activity-item"><span class="activity-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M12 11v5"/></svg></span><span class="activity-text">No activity recorded yet — backups, deployments, and CVE scans will show up here once you run one.</span><span class="activity-time">—</span></div>';
@@ -2137,6 +2143,11 @@
     }
     const brainUsageEl = document.getElementById('brain-stat-usage');
     if (brainUsageEl) brainUsageEl.textContent = (data.total_tokens || 0).toLocaleString();
+
+    const dataTokensEl = document.getElementById('stat-data-tokens');
+    if (dataTokensEl) dataTokensEl.textContent = (data.total_tokens || 0).toLocaleString();
+    const dataCostEl = document.getElementById('stat-data-cost');
+    if (dataCostEl && data.cost_usd_today != null) dataCostEl.textContent = '$' + data.cost_usd_today.toFixed(2);
 
     const cacheTotal = (data.cache_read_tokens || 0) + (data.cache_creation_tokens || 0);
     const cacheNote = cacheTotal > 0
