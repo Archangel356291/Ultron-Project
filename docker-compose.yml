@@ -12,7 +12,14 @@ services:
     environment:
       - ULTRON_DB_PATH=/data/ultron.db
     volumes:
-      - ultron-data:/data
+      # Ultron's learned/gathered data (trades, memory notes, evolution
+      # ideas, metrics history, activity log -- everything in ultron.db)
+      # lives on the host at a real, browsable path instead of inside
+      # Docker's own hidden volume storage. Host-specific, so it's a
+      # variable sourced from the untracked .env (set
+      # ULTRON_DATA_DIR there) rather than hardcoded here -- this repo
+      # is public, and other clones won't have this exact path.
+      - "${ULTRON_DATA_DIR}:/data"
       # Lets Ultron see/manage sibling containers on the host (docker_ps,
       # docker_stats, CVE scan, deploy-container). Whoever can write to
       # this socket has root-equivalent power over the whole Docker host —
@@ -41,6 +48,3 @@ services:
 networks:
   ultron:
     driver: bridge
-
-volumes:
-  ultron-data:
