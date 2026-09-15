@@ -2888,6 +2888,70 @@ def get_mcp_servers(**_ignored):
     return {"servers": servers}
 
 
+# --------------------------------------------------------------------------
+# Capability registry (master prompt sections 27-28) -- honestly answers
+# "what can you do" / "what can't you do yet". Generated from the actual
+# running TOOL_DISPATCH/BETA_ALLOWED_TOOLS and get_mcp_servers() rather than
+# a hand-maintained list, so it can never drift out of sync with what's
+# really callable. KNOWN_SENSES/KNOWN_DEVICES below are the one part that
+# can't be introspected from code (they're facts about physical hardware
+# this backend has no way to check itself) -- kept to what's actually been
+# confirmed, same bar as PI-SETUP.md and README already hold to; update
+# them only once a device is genuinely verified, never guessed ahead of it.
+# --------------------------------------------------------------------------
+KNOWN_SENSES = [
+    {"name": "Infrastructure", "connected": True, "device": "PC (core)",
+     "detail": "Docker/host stats via list_containers, get_storage_usage, get_pending_updates"},
+    {"name": "Development", "connected": True, "device": "PC (core)",
+     "detail": "Git status/diff for configured repos via get_repo_status, get_repo_diff"},
+    {"name": "Knowledge", "connected": True, "device": "PC (core)",
+     "detail": "Vault + runtime memory graph via /api/knowledge-graph, remember_note/recall_notes"},
+    {"name": "Remote", "connected": True, "device": "PC (core), reached via Tailscale",
+     "detail": "Pixel 7 -> Tailscale -> this backend; client access only, confirmed via one real beta test"},
+    {"name": "Network", "connected": False, "device": None,
+     "detail": "No collector/container exists yet for any home-lab device beyond this PC"},
+    {"name": "Vision", "connected": False, "device": None, "detail": "No camera/image input wired up"},
+    {"name": "Hearing", "connected": False, "device": None,
+     "detail": "No voice/audio input -- /api/tts is speech output only, not listening"},
+    {"name": "Applications", "connected": False, "device": None, "detail": "Not yet scoped"},
+]
+
+KNOWN_DEVICES = [
+    {"device": "CyberPower PC", "role": "core", "status": "connected",
+     "detail": "Backend + Discord bot run here via Docker Compose"},
+    {"device": "Raspberry Pi", "role": "planned sense", "status": "not_connected",
+     "detail": "PI-SETUP.md phase 1 (flash/SSH/Tailscale/Docker) not done yet as of 2026-09-15"},
+    {"device": "M715q", "role": "planned sense", "status": "not_connected", "detail": "No code or setup doc exists yet"},
+    {"device": "M920q", "role": "planned sense", "status": "not_connected", "detail": "No code or setup doc exists yet"},
+    {"device": "NAS", "role": "planned sense", "status": "not_connected", "detail": "No code or setup doc exists yet"},
+    {"device": "Raspberry Pi 5 systems", "role": "planned sense", "status": "not_connected", "detail": "No code or setup doc exists yet"},
+    {"device": "Pixel 7", "role": "remote control", "status": "partially_connected",
+     "detail": "Tailscale client access to the PC confirmed via one real beta test; nothing Pixel-specific beyond that"},
+]
+
+
+def get_capabilities(**_ignored):
+    """Read-only self-description: every chat tool this backend can
+    actually dispatch right now, every MCP server/tool (approved or not),
+    and the home-lab senses/devices with an honest connected/not_connected
+    status. Never claims something works without it being true this
+    instant -- chat_tools/mcp come straight from the live dispatch tables."""
+    return {
+        "chat_tools": [
+            {
+                "name": t["name"],
+                "description": t["description"],
+                "admin_only": t["name"] not in BETA_ALLOWED_TOOLS,
+            }
+            for t in TOOLS
+        ],
+        "mcp": get_mcp_servers(),
+        "senses": KNOWN_SENSES,
+        "devices": KNOWN_DEVICES,
+        "financial_action_boundary": "permanent -- no execute/write trade tool exists (see FINANCIAL-ACTION-BOUNDARY.md)",
+    }
+
+
 def _make_mcp_tool_handler(server, session_id, tool_name):
     """Closure matching the same handler(**kwargs) -> dict contract every
     internal tool uses. Never raises — errors come back as {"error": ...}
@@ -3226,6 +3290,16 @@ TOOLS = [
         ),
         "input_schema": {"type": "object", "properties": {}},
     },
+    {
+        "name": "get_capabilities",
+        "description": (
+            "Answer 'what can you do' / 'what can't you do yet' honestly: every chat tool "
+            "actually callable right now (and whether it's admin-only), every MCP server/tool "
+            "(approved or not), and the home-lab senses/devices with a real connected/"
+            "not_connected status -- never a fabricated capability list."
+        ),
+        "input_schema": {"type": "object", "properties": {}},
+    },
 ]
 
 TOOL_DISPATCH = {
@@ -3247,6 +3321,7 @@ TOOL_DISPATCH = {
     "get_mcp_servers": get_mcp_servers,
     "propose_idea": propose_idea,
     "get_ideas": get_ideas,
+    "get_capabilities": get_capabilities,
 }
 
 # Tools a beta_tester's chat may use — view-only trading data, nothing that
@@ -3571,6 +3646,12 @@ def tts():
 @require_token
 def mcp_servers():
     return jsonify(get_mcp_servers())
+
+
+@app.route("/api/capabilities")
+@require_token
+def capabilities():
+    return jsonify(get_capabilities())
 
 
 if __name__ == "__main__":
