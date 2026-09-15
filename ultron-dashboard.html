@@ -736,6 +736,17 @@
     padding:9px 18px; font-weight:600; font-size:13px; cursor:pointer;
   }
   .conn-btn:disabled{ opacity:0.5; cursor:default; }
+  .conn-btn.ghost{ background:transparent; border:1px solid var(--line); color:var(--text-dim); }
+  .period-row{ display:flex; gap:8px; margin-bottom:16px; }
+  .chart-wrap{ position:relative; }
+  .chart-wrap svg{ width:100%; height:120px; display:block; }
+  .metric-chart-tooltip{
+    position:absolute; pointer-events:none; z-index:5; top:4px;
+    background:var(--panel-raised); border:1px solid var(--line); border-radius:6px;
+    padding:6px 10px; font-family:var(--font-mono); font-size:11px; color:var(--text-dim);
+    box-shadow:0 8px 24px -8px rgba(0,0,0,0.6); white-space:nowrap;
+  }
+  .metric-chart-tooltip b{ color:var(--text); font-size:12.5px; }
   .conn-status{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); }
   .conn-status.ok{ color:var(--signal); }
   .conn-status.err{ color:var(--red-bright); }
@@ -1327,6 +1338,29 @@
             </div>
           </div>
         </div>
+
+        <div class="panel-label" style="margin-top:20px">History</div>
+        <div class="period-row">
+          <button class="conn-btn ghost" id="metrics-period-hour" style="padding:6px 14px; font-size:12px;" onclick="setMetricsPeriod('hour')">Hour</button>
+          <button class="conn-btn" id="metrics-period-day" style="padding:6px 14px; font-size:12px;" onclick="setMetricsPeriod('day')">Day</button>
+          <button class="conn-btn ghost" id="metrics-period-week" style="padding:6px 14px; font-size:12px;" onclick="setMetricsPeriod('week')">Week</button>
+          <button class="conn-btn ghost" id="metrics-period-month" style="padding:6px 14px; font-size:12px;" onclick="setMetricsPeriod('month')">Month</button>
+        </div>
+        <div class="grid cols-3">
+          <div class="card">
+            <div class="panel-label">CPU usage</div>
+            <div class="chart-wrap"><svg id="chart-cpu" viewBox="0 0 300 120"></svg><div class="metric-chart-tooltip" id="chart-cpu-tooltip" hidden></div></div>
+          </div>
+          <div class="card">
+            <div class="panel-label">Memory usage</div>
+            <div class="chart-wrap"><svg id="chart-mem" viewBox="0 0 300 120"></svg><div class="metric-chart-tooltip" id="chart-mem-tooltip" hidden></div></div>
+          </div>
+          <div class="card">
+            <div class="panel-label">CPU temperature</div>
+            <div class="chart-wrap"><svg id="chart-temp" viewBox="0 0 300 120"></svg><div class="metric-chart-tooltip" id="chart-temp-tooltip" hidden></div></div>
+          </div>
+        </div>
+        <div id="metrics-history-status" style="font-family:var(--font-mono); font-size:11px; color:var(--text-faint); margin-top:8px;"></div>
       </section>
 
       <!-- DATA & ANALYTICS -->
@@ -1781,6 +1815,7 @@
           fetchLlmUsage(),
           fetchConnections(),
           fetchEvolutionIdeas(),
+          fetchMetricsHistory(),
         ];
       await Promise.all(calls);
       if (!state.connected) {
@@ -1936,6 +1971,161 @@
 
     const dataUptimeEl = document.getElementById('stat-data-uptime');
     if (dataUptimeEl) dataUptimeEl.textContent = data.uptime || '—';
+  }
+
+  // Systems-tab history charts (master prompt section 9), sourced from the
+  // metrics_history sampler in ultron-backend/app.py. Small multiples --
+  // CPU%/mem% and temp are different units/scales, so each metric gets its
+  // own axis rather than one shared chart (never a dual-axis chart). Hand-
+  // rolled SVG: the dashboard has no charting library and three small
+  // single-series line charts don't justify adding one.
+  let metricsPeriod = 'day';
+  const METRIC_CHART_SPECS = [
+    { id: 'cpu', key: 'cpu_percent', colorHex: '#3DD6FF', unit: '%' },
+    { id: 'mem', key: 'mem_percent', colorHex: '#4FA6E0', unit: '%' },
+    { id: 'temp', key: 'cpu_temp_c', colorHex: '#8FD6FF', unit: '°C' },
+  ];
+
+  function setMetricsPeriod(period) {
+    metricsPeriod = period;
+    ['hour', 'day', 'week', 'month'].forEach(function (p) {
+      const btn = document.getElementById('metrics-period-' + p);
+      if (btn) btn.classList.toggle('ghost', p !== period);
+    });
+    fetchMetricsHistory();
+  }
+
+  function formatSampleTime(ts) {
+    const datePart = (ts || '').split('T')[0] || '';
+    const timePart = (ts || '').split('T')[1] || '';
+    const hm = timePart.slice(0, 5);
+    return (metricsPeriod === 'hour' || metricsPeriod === 'day') ? hm : (datePart.slice(5) + ' ' + hm);
+  }
+
+  function svgEl(tag, attrs) {
+    const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+    return e;
+  }
+
+  function renderMetricChart(spec, samples) {
+    const svg = document.getElementById('chart-' + spec.id);
+    const tooltip = document.getElementById('chart-' + spec.id + '-tooltip');
+    if (!svg) return;
+    svg.innerHTML = '';
+
+    const points = samples
+      .map(function (s) { return { t: s.timestamp, v: s[spec.key] }; })
+      .filter(function (p) { return p.v != null; });
+
+    const W = 300, H = 120, PAD_L = 30, PAD_R = 10, PAD_T = 10, PAD_B = 18;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    if (!points.length) {
+      const text = svgEl('text', {
+        x: W / 2, y: H / 2, 'text-anchor': 'middle', fill: 'var(--text-faint)',
+        'font-size': '11', 'font-family': 'var(--font-mono)',
+      });
+      text.textContent = 'No data for this period yet';
+      svg.appendChild(text);
+      return;
+    }
+
+    const values = points.map(function (p) { return p.v; });
+    let vMin = Math.min.apply(null, values), vMax = Math.max.apply(null, values);
+    if (vMin === vMax) { vMin -= 1; vMax += 1; }
+    const span = vMax - vMin;
+    vMin -= span * 0.1; vMax += span * 0.1;
+
+    const xFor = function (i) { return PAD_L + (points.length === 1 ? 0 : (i / (points.length - 1)) * (W - PAD_L - PAD_R)); };
+    const yFor = function (v) { return PAD_T + (1 - (v - vMin) / (vMax - vMin)) * (H - PAD_T - PAD_B); };
+
+    // gridlines + tick labels -- recessive, hairline, never a second axis
+    const steps = 3;
+    for (let i = 0; i <= steps; i++) {
+      const v = vMin + (vMax - vMin) * (i / steps);
+      const y = yFor(v);
+      svg.appendChild(svgEl('line', { x1: PAD_L, x2: W - PAD_R, y1: y, y2: y, stroke: 'var(--line)', 'stroke-width': '1' }));
+      const label = svgEl('text', { x: PAD_L - 4, y: y + 3, 'text-anchor': 'end', 'font-size': '8', 'font-family': 'var(--font-mono)', fill: 'var(--text-faint)' });
+      label.textContent = Math.round(v) + (spec.unit === '%' ? '' : spec.unit);
+      svg.appendChild(label);
+    }
+
+    // area wash (~10% opacity) under the line
+    let areaD = 'M ' + xFor(0) + ' ' + yFor(points[0].v);
+    points.forEach(function (p, i) { areaD += ' L ' + xFor(i) + ' ' + yFor(p.v); });
+    areaD += ' L ' + xFor(points.length - 1) + ' ' + (H - PAD_B) + ' L ' + xFor(0) + ' ' + (H - PAD_B) + ' Z';
+    svg.appendChild(svgEl('path', { d: areaD, fill: spec.colorHex, opacity: '0.1', stroke: 'none' }));
+
+    // 2px line, round join/cap
+    let lineD = 'M ' + xFor(0) + ' ' + yFor(points[0].v);
+    points.forEach(function (p, i) { if (i > 0) lineD += ' L ' + xFor(i) + ' ' + yFor(p.v); });
+    svg.appendChild(svgEl('path', { d: lineD, fill: 'none', stroke: spec.colorHex, 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+
+    // endpoint marker (>=8px, surface-color ring) + direct label -- lines label the end, not every point
+    const lastI = points.length - 1;
+    const lx = xFor(lastI), ly = yFor(points[lastI].v);
+    svg.appendChild(svgEl('circle', { cx: lx, cy: ly, r: '4', fill: spec.colorHex, stroke: 'var(--panel)', 'stroke-width': '2' }));
+    const endLabel = svgEl('text', {
+      x: Math.min(lx, W - PAD_R - 22), y: Math.max(ly - 8, PAD_T + 8), 'text-anchor': 'middle',
+      'font-size': '9', 'font-family': 'var(--font-mono)', fill: 'var(--text-dim)',
+    });
+    endLabel.textContent = (Math.round(points[lastI].v * 10) / 10) + spec.unit;
+    svg.appendChild(endLabel);
+
+    // crosshair + hover dot, hidden until pointer enters the hit layer
+    const crosshair = svgEl('line', { x1: 0, x2: 0, y1: PAD_T, y2: H - PAD_B, stroke: 'var(--steel)', 'stroke-width': '1', opacity: '0' });
+    const hoverDot = svgEl('circle', { r: '4', fill: spec.colorHex, stroke: 'var(--panel)', 'stroke-width': '2', opacity: '0' });
+    svg.appendChild(crosshair);
+    svg.appendChild(hoverDot);
+
+    const hit = svgEl('rect', { x: PAD_L, y: PAD_T, width: Math.max(1, W - PAD_L - PAD_R), height: H - PAD_T - PAD_B, fill: 'transparent' });
+    svg.appendChild(hit);
+
+    function indexAtClientX(clientX) {
+      const rect = svg.getBoundingClientRect();
+      const svgX = (clientX - rect.left) / rect.width * W;
+      const frac = points.length === 1 ? 0 : (svgX - PAD_L) / (W - PAD_L - PAD_R);
+      return Math.max(0, Math.min(points.length - 1, Math.round(frac * (points.length - 1))));
+    }
+
+    hit.addEventListener('pointermove', function (e) {
+      const i = indexAtClientX(e.clientX);
+      const p = points[i];
+      const x = xFor(i), y = yFor(p.v);
+      crosshair.setAttribute('x1', x); crosshair.setAttribute('x2', x); crosshair.setAttribute('opacity', '0.6');
+      hoverDot.setAttribute('cx', x); hoverDot.setAttribute('cy', y); hoverDot.setAttribute('opacity', '1');
+      if (tooltip) {
+        tooltip.hidden = false;
+        const valueEl = document.createElement('b');
+        valueEl.textContent = (Math.round(p.v * 10) / 10) + spec.unit;
+        const timeEl = document.createElement('div');
+        timeEl.style.color = 'var(--text-faint)';
+        timeEl.textContent = formatSampleTime(p.t);
+        tooltip.replaceChildren(valueEl, timeEl);
+        const rect = svg.getBoundingClientRect();
+        const leftPx = (x / W) * rect.width;
+        tooltip.style.left = Math.max(4, Math.min(leftPx + 8, rect.width - 100)) + 'px';
+      }
+    });
+    hit.addEventListener('pointerleave', function () {
+      crosshair.setAttribute('opacity', '0');
+      hoverDot.setAttribute('opacity', '0');
+      if (tooltip) tooltip.hidden = true;
+    });
+  }
+
+  async function fetchMetricsHistory() {
+    const statusEl = document.getElementById('metrics-history-status');
+    let data;
+    try {
+      data = await apiGet('/api/metrics-history?period=' + metricsPeriod);
+    } catch (err) {
+      if (statusEl) statusEl.textContent = err.message;
+      return;
+    }
+    if (statusEl) statusEl.textContent = data.note || '';
+    METRIC_CHART_SPECS.forEach(function (spec) { renderMetricChart(spec, data.samples || []); });
   }
 
   async function fetchActivity() {
