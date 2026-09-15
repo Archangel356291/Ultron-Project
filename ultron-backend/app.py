@@ -102,6 +102,11 @@ from functools import wraps
 import psutil
 from flask import Flask, jsonify, request, Response, g, send_from_directory, stream_with_context
 
+# Module 10: the schema/tagging/retrieval logic Module 4 and Module 8 built
+# for the vault knowledge graph, reused as-is for Ultron's own runtime memory
+# (see graph_schema_shared.py's own docstring for why it lives here).
+from graph_schema_shared import classify_visibility, derive_tags, retrieve
+
 app = Flask(__name__)
 # Blanket backstop on request body size, independent of any per-field check
 # a route does itself (e.g. /api/chat's history-length/content checks) --
@@ -253,6 +258,28 @@ def _init_db():
                 note TEXT NOT NULL
             )
         """)
+        # Module 10: same public/private tagging Module 4 built for the vault
+        # graph, applied to Ultron's own memory notes.
+        existing_note_cols = {row["name"] for row in conn.execute("PRAGMA table_info(memory_notes)")}
+        if "category" not in existing_note_cols:
+            conn.execute("ALTER TABLE memory_notes ADD COLUMN category TEXT")
+        if "tags" not in existing_note_cols:
+            conn.execute("ALTER TABLE memory_notes ADD COLUMN tags TEXT")
+        if "visibility" not in existing_note_cols:
+            conn.execute("ALTER TABLE memory_notes ADD COLUMN visibility TEXT")
+        # Module 10: the same labeled-edge convention the vault graph uses
+        # (source/target/relation), between two memory_notes rows instead of
+        # two graph.json nodes.
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS memory_edges (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source_note_id INTEGER NOT NULL,
+                target_note_id INTEGER NOT NULL,
+                relation TEXT NOT NULL,
+                confidence REAL NOT NULL DEFAULT 1.0,
+                created_at TEXT NOT NULL
+            )
+        """)
         conn.commit()
     finally:
         conn.close()
@@ -315,6 +342,43 @@ def get_recent_activity(limit=20):
 # --------------------------------------------------------------------------
 MEMORY_NOTE_MAX_CHARS = 500
 MEMORY_NOTES_MAX_ROWS = 200
+MEMORY_EDGE_MAX_LINKS = 10  # cap edges created per saved note — avoid runaway fan-out
+
+
+def _notes_as_graph():
+    """Shapes memory_notes + memory_edges into the {"nodes": [...], "links":
+    [...]} + tag_index format graph_schema_shared.retrieve() expects — the
+    exact same shape Module 8 already feeds it for the vault graph, just
+    sourced from SQLite instead of graphify-out/graph.json."""
+    conn = _get_db_connection()
+    try:
+        rows = conn.execute(
+            "SELECT id, created_at, note, category, tags, visibility FROM memory_notes"
+        ).fetchall()
+        edge_rows = conn.execute(
+            "SELECT source_note_id, target_note_id, relation FROM memory_edges"
+        ).fetchall()
+    finally:
+        conn.close()
+    nodes = [
+        {
+            "id": r["id"],
+            "label": r["note"],
+            "created_at": r["created_at"],
+            "category": r["category"] or "concept",
+            "visibility": r["visibility"] or "public",
+        }
+        for r in rows
+    ]
+    tag_index = {}
+    for r in rows:
+        for tag in (json.loads(r["tags"]) if r["tags"] else []):
+            tag_index.setdefault(tag, []).append(r["id"])
+    links = [
+        {"source": e["source_note_id"], "target": e["target_note_id"], "relation": e["relation"]}
+        for e in edge_rows
+    ]
+    return {"nodes": nodes, "links": links}, tag_index
 
 
 def remember_note(note=None, **_ignored):
@@ -324,18 +388,46 @@ def remember_note(note=None, **_ignored):
     truncated = len(note) > MEMORY_NOTE_MAX_CHARS
     if truncated:
         note = note[:MEMORY_NOTE_MAX_CHARS]
+
+    # Module 10: same public/private classification + tagging Module 4 built
+    # for the vault graph, reused as-is on this note's text.
+    node = {"label": note}
+    visibility = classify_visibility(node)
+    tags = derive_tags(node, visibility)
+
     try:
+        # Related-note lookup, against notes that exist BEFORE this one is
+        # inserted, reusing the exact same retrieval logic Module 8 built —
+        # this note's own text is the "query" that finds what it relates to.
+        graph, tag_index = _notes_as_graph()
+        related = retrieve(note, graph, tag_index, min_nodes=3)
+
         conn = _get_db_connection()
         try:
-            conn.execute(
-                "INSERT INTO memory_notes (created_at, note) VALUES (?, ?)",
-                (time.strftime("%Y-%m-%dT%H:%M:%S"), note),
+            cur = conn.execute(
+                "INSERT INTO memory_notes (created_at, note, category, tags, visibility) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (time.strftime("%Y-%m-%dT%H:%M:%S"), note, "concept", json.dumps(tags), visibility),
             )
+            new_id = cur.lastrowid
+            for related_id in related["seed_ids"][:MEMORY_EDGE_MAX_LINKS]:
+                conn.execute(
+                    "INSERT INTO memory_edges (source_note_id, target_note_id, relation, "
+                    "confidence, created_at) VALUES (?, ?, ?, ?, ?)",
+                    (new_id, related_id, "relates_to", 1.0, time.strftime("%Y-%m-%dT%H:%M:%S")),
+                )
             # Trim to the most recent MEMORY_NOTES_MAX_ROWS — oldest first.
             conn.execute(
                 "DELETE FROM memory_notes WHERE id NOT IN "
                 "(SELECT id FROM memory_notes ORDER BY id DESC LIMIT ?)",
                 (MEMORY_NOTES_MAX_ROWS,),
+            )
+            # SQLite has no FK cascade here — clean up edges pointing at
+            # notes that just got trimmed, or memory_edges accumulates
+            # dangling rows forever.
+            conn.execute(
+                "DELETE FROM memory_edges WHERE source_note_id NOT IN (SELECT id FROM memory_notes) "
+                "OR target_note_id NOT IN (SELECT id FROM memory_notes)"
             )
             conn.commit()
         finally:
@@ -369,6 +461,36 @@ def recall_notes(query=None, limit=20, **_ignored):
         return {"notes": [dict(r) for r in rows]}
     except Exception as e:
         return {"error": f"could not read memory notes: {e}"}
+
+
+def recall_related_notes(query=None, min_nodes=6, **_ignored):
+    """Module 10's graph-aware recall — reuses the exact retrieval logic
+    Module 8 built for the vault graph (tag-index + label seed match,
+    widened on a sparse result, expanded one hop via memory_edges), applied
+    to memory_notes instead of graphify-out/graph.json. Unlike recall_notes'
+    plain substring search, this also surfaces notes related to the query
+    that don't share any of its literal words, via memory_edges links."""
+    if not query or not query.strip():
+        return {"error": "query is required"}
+    try:
+        min_nodes = max(1, min(int(min_nodes), MEMORY_NOTES_MAX_ROWS))
+    except (TypeError, ValueError):
+        min_nodes = 6
+    try:
+        graph, tag_index = _notes_as_graph()
+        result = retrieve(query.strip(), graph, tag_index, min_nodes=min_nodes)
+    except Exception as e:
+        return {"error": f"could not retrieve related notes: {e}"}
+    seed_set = set(result["seed_ids"])
+    notes = [
+        {
+            "created_at": n.get("created_at"),
+            "note": n.get("label"),
+            "relation": "seed" if n["id"] in seed_set else "linked",
+        }
+        for n in result["nodes"]
+    ]
+    return {"notes": notes, "widened": result["widened"]}
 
 
 # remember_note only captures what the model thinks to save mid-conversation
@@ -2688,6 +2810,24 @@ TOOLS = [
         },
     },
     {
+        "name": "recall_related_notes",
+        "description": (
+            "Graph-aware recall of memory notes for a topic — also follows one hop of "
+            "relationships between notes, so it can surface a note related to the query "
+            "even when it doesn't share any of the query's literal words. Prefer this over "
+            "recall_notes when you want notes ABOUT a topic, not just a substring match. "
+            "Read-only."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "The topic to find related notes for"},
+                "min_nodes": {"type": "integer", "description": "Widen the search if fewer than this many notes match tightly (default 6)"},
+            },
+            "required": ["query"],
+        },
+    },
+    {
         "name": "get_repo_status",
         "description": (
             "Get the status of every configured git repository — current branch, whether "
@@ -2779,6 +2919,7 @@ TOOL_DISPATCH = {
     "get_recent_activity": get_recent_activity,
     "remember_note": remember_note,
     "recall_notes": recall_notes,
+    "recall_related_notes": recall_related_notes,
     "get_repo_status": get_repo_status,
     "get_repo_diff": get_repo_diff,
     "get_trades": get_trades,

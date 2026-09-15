@@ -19,7 +19,6 @@ source file's mtime (from graphify's own manifest.json) actually
 changed, not just because this script ran again.
 """
 import json
-import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,6 +26,9 @@ from pathlib import Path
 from cryptography.fernet import Fernet
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "ultron-backend"))
+from graph_schema_shared import classify_visibility, derive_tags  # noqa: E402
+
 GRAPH_PATH = ROOT / "graphify-out" / "graph.json"
 MANIFEST_PATH = ROOT / "graphify-out" / "manifest.json"
 HISTORY_PATH = ROOT / "graph-schema" / ".node_history.json"
@@ -34,56 +36,6 @@ TAG_INDEX_PATH = ROOT / "graphify-out" / "tag-index.json"
 PRIVATE_STORE_PATH = ROOT / "graphify-out" / "private-nodes.enc.json"
 ENV_PATH = ROOT / ".env"
 KEY_ENV_VAR = "ULTRON_GRAPH_ENCRYPTION_KEY"
-
-# Roadmap's explicit hard-private categories (Module 4, step 14) plus
-# what step 13 asks for generally: "default new/unclear node types to
-# PRIVATE unless explicitly marked public-safe" -- so this list is
-# deliberately broad, and the classifier defaults private on any doubt,
-# not the reverse.
-_PRIVATE_KEYWORDS = (
-    "api key", "api_key", "apikey", "credential", "password", "secret",
-    "token", "bearer", "auth token",
-    "vpn", "wireguard", "tailscale", "network config", "firewall",
-    "home lab", "raspberry pi", "pi-setup",
-    "trading position", "account balance", "portfolio", "trade record",
-    "financial", "realized gain", "tax lot", "fifo",
-    "ssn", "passport", "beta spend", "spend cap",
-)
-_IP_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
-
-
-def classify_visibility(node):
-    # Sticky once private: a node already redacted by a prior run has had
-    # its telltale content stripped from the plaintext graph by design,
-    # so re-classifying from the stub alone would misread it as public
-    # the moment the very keywords that made it private are gone. Once
-    # private, it takes a human clearing the flag (not yet built -- see
-    # GRAPH-SCHEMA-DESIGN.md's known limitations) to make it public again.
-    if node.get("visibility") == "private":
-        return "private"
-    haystack = " ".join(
-        str(node.get(k, "")) for k in ("label", "source_file", "community_name", "norm_label")
-    ).lower()
-    if _IP_RE.search(haystack):
-        return "private"
-    for kw in _PRIVATE_KEYWORDS:
-        if kw in haystack:
-            return "private"
-    return "public"
-
-
-def _slug(text):
-    return re.sub(r"[^a-z0-9]+", "_", str(text).lower()).strip("_")
-
-
-def derive_tags(node, visibility):
-    tags = []
-    if node.get("file_type"):
-        tags.append(f"type:{node['file_type']}")
-    if node.get("community_name"):
-        tags.append(f"community:{_slug(node['community_name'])}")
-    tags.append(f"visibility:{visibility}")
-    return tags
 
 
 def _load_json(path, default):
