@@ -241,6 +241,56 @@ add it to `.env`, restart the backend) before sending them anything.
 Everything else — RBAC, concurrency, the bot, the dashboard's mobile
 fix, the guide/invite docs — is verified and ready.
 
+## Roadmap complete + full dashboard visual overhaul: successful (2026-09-14)
+
+All 13 modules of the MASTER ROADMAP v0.0.1.4 shipped tonight, each on
+its own branch, merged `--no-ff`, tested live, pushed — real bugs found
+and fixed along the way in nearly every one, documented in each
+module's own design doc rather than re-summarized here:
+
+- **1** — TTS streaming fix (was buffering the whole reply before
+  playback)
+- **2-3** — repo hygiene, full-history secret audit (clean, no rewrite
+  needed at the time)
+- **4** — vault knowledge-graph schema: public/private tagging,
+  encryption at rest, a real "sticky-once-private" bug fixed
+- **5** — Three.js + Blender pipeline vendored and proven (a real
+  `three.module.js`-without-`three.core.js` failure caught)
+- **6** — dual-mode offline knowledge-graph viewer
+- **7-8** — write/read paths for the vault graph; a real tag-index bug
+  (`visibility` itself matching as a keyword) caught and fixed
+- **9** — automated backup + genuinely verified restore (a real
+  filename-collision bug at second-precision timestamps, fixed)
+- **10** — Ultron's own runtime knowledge graph (`memory_notes`/
+  `memory_edges`), reusing Module 4/8's schema and retrieval logic
+  rather than reimplementing it
+- **11** — the permanent financial-action boundary, with its own
+  regression-guard test
+- **12** — open-sourced: license added, a real personal-data leak found
+  in docs + git history via manual review (gitleaks structurally can't
+  catch non-credential PII) and scrubbed via `git filter-repo`, repo
+  flipped public and confirmed via an unauthenticated API check
+- **13** — the hero visual: an original procedurally-built robotic
+  head, later superseded by —
+- **14+** — a full dashboard redesign across several follow-up passes:
+  the hero recast as a Canvas2D particle/filament AI core (cheaper than
+  the Module 13 mesh, better suited to a Raspberry Pi 400), a real
+  Home-tab Knowledge Graph wired to the actual vault + memory graphs
+  (not a demo dataset), and a site-wide black/dark-metallic-silver/
+  blue/gold/red re-theme replacing the single-accent-color scheme used
+  everywhere before it.
+
+Every pass followed the same discipline as the original launch: a real
+bug caught live (not assumed away) before being called done, the full
+test checkpoint re-run clean after each one, `git status` clean and
+`origin/main` fully synced at the end of the session.
+
+**Status: stable, verified, and current as of this entry.** No open
+regressions, no known-broken functionality. The one still-open beta
+item is unchanged from the "Final pre-launch check" entry above —
+`ULTRON_BETA_TOKENS` stays unset until there's a real tester to onboard,
+by design, not an oversight.
+
 ---
 
 Everything below is pulled fresh from the actual code as of this write-up

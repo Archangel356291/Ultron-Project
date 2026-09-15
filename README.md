@@ -132,8 +132,10 @@ second one.
 
 ## Current status
 
-Fully functional beta: backend (24 endpoints, 15 built-in chat tools plus
-dynamic MCP tools), dashboard (10 sections, all live-wired), Discord bot
+Fully functional beta: backend (27 endpoints, 16 built-in chat tools plus
+dynamic MCP tools), dashboard (10 sections, all live-wired, redesigned as
+a black/metallic/blue/gold/red command-center interface with a live
+particle-based AI core and a real Home-tab knowledge graph), Discord bot
 (16 commands). See `ultron-backend/BETA-LAUNCH-CHECKLIST.md` for what's
 been verified and what to expect. Known, deliberate gaps — not
 oversights — are called out in each README's own "Not included here" or
