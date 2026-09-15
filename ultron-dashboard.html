@@ -1339,6 +1339,19 @@
           <div class="card stat-card"><div class="num">42</div><div class="lbl">Commands routed today</div></div>
           <div class="card stat-card"><div class="num">99.4%</div><div class="lbl">30-day uptime</div></div>
         </div>
+
+        <div class="panel-label" style="margin-top:20px" data-role="admin">Ultron Evolution — self-improvement ideas</div>
+        <div class="card" data-role="admin">
+          <div class="table-scroll">
+          <table>
+            <tr><th>Status</th><th>Category</th><th>Problem</th><th>Proposed solution</th><th>Target</th><th></th></tr>
+            <tbody id="evolution-ideas-tbody">
+            <tr><td colspan="6" style="color:var(--text-faint)">Connect the backend to see logged ideas.</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <div id="evolution-ideas-status" style="font-family:var(--font-mono); font-size:11px; color:var(--text-faint); margin-top:8px;"></div>
+        </div>
       </section>
 
       <!-- MEDIA & FILES -->
@@ -1767,6 +1780,7 @@
           fetchTrades(),
           fetchLlmUsage(),
           fetchConnections(),
+          fetchEvolutionIdeas(),
         ];
       await Promise.all(calls);
       if (!state.connected) {
@@ -2000,6 +2014,65 @@
       return '<tr><td>' + escapeHtml(r.name) + '</td><td>' + escapeHtml(r.branch || '—') + '</td><td>' +
         commitText + '</td><td>' + statusPill + '</td></tr>';
     }).join('');
+  }
+
+  // Ultron Evolution feed (master prompt section 43): dashboard view of the
+  // section-13 ideas tracker built in ultron-backend/app.py. Approve/Reject
+  // are the only actions offered here -- deliberately the same two-button
+  // shape as a real approval flow, not a full status-transition editor;
+  // further transitions (IN DEVELOPMENT, TESTED, etc.) happen through
+  // normal development work, not a dashboard button.
+  const EVOLUTION_STATUS_PILL = {
+    DISCOVERED: 'warn', ANALYZING: 'warn', PROPOSED: 'warn',
+    APPROVED: 'on', 'IN DEVELOPMENT': 'warn', TESTED: 'warn',
+    'DEPLOYED (PC)': 'on', 'HANDED OFF FOR REMOTE DEPLOYMENT': 'warn',
+    MEASURED: 'on', COMPLETED: 'on', REJECTED: 'off', 'ROLLED BACK': 'off',
+  };
+  const EVOLUTION_PENDING_STATUSES = ['DISCOVERED', 'ANALYZING', 'PROPOSED'];
+
+  async function fetchEvolutionIdeas() {
+    const tbody = document.getElementById('evolution-ideas-tbody');
+    if (!tbody) return;
+    let data;
+    try {
+      data = await apiGet('/api/evolution/ideas?limit=50');
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-faint)">' + escapeHtml(err.message) + '</td></tr>';
+      return;
+    }
+    const ideas = data.ideas || [];
+    if (!ideas.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-faint)">No ideas logged yet — Ultron will propose improvements here as it finds them.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = ideas.map(function (idea) {
+      const pillClass = EVOLUTION_STATUS_PILL[idea.status] || 'warn';
+      const statusPill = '<span class="pill ' + pillClass + '"><span class="dot"></span>' + escapeHtml(idea.status) + '</span>';
+      let actions = '';
+      if (EVOLUTION_PENDING_STATUSES.indexOf(idea.status) !== -1) {
+        actions = '<button class="conn-btn" style="padding:4px 10px; font-size:11px;" onclick="updateIdeaStatus(' + idea.id + ', \'APPROVED\')">Approve</button> ' +
+          '<button class="conn-btn" style="padding:4px 10px; font-size:11px;" onclick="updateIdeaStatus(' + idea.id + ', \'REJECTED\')">Reject</button>';
+      }
+      return '<tr><td>' + statusPill + '</td><td>' + escapeHtml(idea.category) + '</td><td>' +
+        escapeHtml(idea.problem) + '</td><td>' + escapeHtml(idea.proposed_solution) + '</td><td>' +
+        escapeHtml(idea.target || '—') + '</td><td>' + actions + '</td></tr>';
+    }).join('');
+  }
+
+  async function updateIdeaStatus(id, status) {
+    const statusEl = document.getElementById('evolution-ideas-status');
+    try {
+      const res = await fetch(state.baseUrl + '/api/evolution/ideas/' + id, {
+        method: 'PATCH',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+        body: JSON.stringify({ status: status }),
+      });
+      if (!res.ok) throw new Error('update failed: ' + res.status);
+      if (statusEl) statusEl.textContent = '';
+      await fetchEvolutionIdeas();
+    } catch (err) {
+      if (statusEl) statusEl.textContent = 'Could not update idea: ' + err.message;
+    }
   }
 
   async function fetchTrades() {
