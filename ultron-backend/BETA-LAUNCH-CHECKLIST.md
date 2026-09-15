@@ -79,7 +79,7 @@ Extended beta test #1 beyond one device, using Tailscale instead of
 waiting on the Pi/Funnel:
 
 - Tailscale switched to a fresh account with both devices on it: this
-  PC (`pc-device-name`) and a phone (`phone-device-name`).
+  PC and a phone.
 - Windows Firewall rule scoped to the Tailscale range only, not the LAN:
   `-RemoteAddress 100.64.0.0/10` (narrower than the plain port-5000 rule
   in step 4 of the deployment plan above).
@@ -87,7 +87,7 @@ waiting on the Pi/Funnel:
   devices only) — see `REMOTE-ACCESS.md` for the syntax fix this needed
   (`autogroup:self` isn't valid as a source, only a destination).
 - Verified from the phone itself, cellular only (Wi-Fi off, genuinely
-  off-LAN): `http://pc-device-name.tailXXXX.ts.net:5000/api/health`
+  off-LAN): `http://your-pc-name.tailXXXX.ts.net:5000/api/health`
   returned `{"ok":true}`. Confirmed from this machine that `/api/whoami`
   also resolves correctly over the same address with the beta token.
 

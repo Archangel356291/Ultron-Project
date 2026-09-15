@@ -20,8 +20,8 @@ that, in the order that makes each later step possible:
    configured, so first boot is immediately reachable — no monitor,
    keyboard, or "what's its IP" guessing needed.
 2. Join the same tailnet the PC and your phones are already on
-   (`REMOTE-ACCESS.md` — `Archangel356291@`), so the Pi is reachable from
-   anywhere, not just this LAN.
+   (`REMOTE-ACCESS.md`), so the Pi is reachable from anywhere, not just
+   this LAN.
 3. Install Docker, so there's something for a future deploy action to
    actually target.
 
@@ -32,15 +32,16 @@ Pi — not your personal SSH key, not shared with anything else, so it can
 be revoked independently later if needed:
 
 ```
-C:\Users\redacted-user\.ssh\ultron_pi_ed25519       (private key — stays on this PC)
-C:\Users\redacted-user\.ssh\ultron_pi_ed25519.pub   (public key — goes on the Pi)
+C:\Users\<you>\.ssh\ultron_pi_ed25519       (private key — stays on this PC)
+C:\Users\<you>\.ssh\ultron_pi_ed25519.pub   (public key — goes on the Pi)
 ```
 
 Public key (paste this into the Imager in step 2 — copy it exactly, one
-line, no wrapping):
+line, no wrapping; yours will look like this, a different random string
+after `ssh-ed25519`):
 
 ```
-ssh-ed25519 AAAA...REDACTED-KEY... ultron-pc-to-pi
+ssh-ed25519 AAAA...<your generated key>... ultron-pc-to-pi
 ```
 
 Raspberry Pi Imager is already installed on this PC (`v2.0.11.1`, via
@@ -60,8 +61,8 @@ winget) — no separate download needed.
 6. Click the **gear icon** (or `Ctrl+Shift+X`) for **Advanced options**
    before writing — this is the step that makes the Pi reachable on
    first boot instead of needing a monitor/keyboard:
-   - **Set hostname**: `ultron-pi` (matches the naming pattern the PC
-     and phones already use — `pc-device-name`, `phone-device-name`).
+   - **Set hostname**: `ultron-pi` (or any name that matches whatever
+     naming pattern your other devices already use on the tailnet).
    - **Enable SSH** → **Allow public-key authentication only** (not
      password) → paste the public key from section 0 above.
    - **Set username and password**: pick a username (e.g. your own
@@ -83,7 +84,7 @@ winget) — no separate download needed.
    first boot.
 2. From this PC (PowerShell or the terminal here):
    ```powershell
-   ssh -i C:\Users\redacted-user\.ssh\ultron_pi_ed25519 <username>@ultron-pi.local
+   ssh -i C:\Users\<you>\.ssh\ultron_pi_ed25519 <username>@ultron-pi.local
    ```
    Replace `<username>` with whatever you set in step 1. Raspberry Pi OS
    ships with mDNS (Avahi) enabled by default, so `<hostname>.local`
@@ -116,9 +117,8 @@ sudo tailscale up
 
 The second command prints a URL — open it in a browser (on any device)
 and **sign into the same account already used for this PC and the
-phones** (`Archangel356291@`), not a new one. Signing into a different
-account puts the Pi on a *different* tailnet, invisible to everything
-else.
+phones**, not a new one. Signing into a different account puts the Pi on
+a *different* tailnet, invisible to everything else.
 
 Confirm it worked — from this PC:
 
@@ -126,13 +126,13 @@ Confirm it worked — from this PC:
 tailscale status
 ```
 
-You should now see a 4th device (`ultron-pi`) alongside
-`pc-device-name`, `phone-device-name`, and `phone2-device-name`. Then confirm the SSH
-key still works **over Tailscale specifically** (not just the LAN —
-this is the whole point, reachability from anywhere):
+You should now see the Pi (`ultron-pi`) alongside your other devices.
+Then confirm the SSH key still works **over Tailscale specifically**
+(not just the LAN — this is the whole point, reachability from
+anywhere):
 
 ```powershell
-ssh -i C:\Users\redacted-user\.ssh\ultron_pi_ed25519 <username>@ultron-pi
+ssh -i C:\Users\<you>\.ssh\ultron_pi_ed25519 <username>@ultron-pi
 ```
 
 (MagicDNS resolves the bare Tailscale hostname once both devices are on

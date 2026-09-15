@@ -14,7 +14,7 @@
 GITLEAKS_BIN="$(command -v gitleaks 2>/dev/null)"
 if [ -z "$GITLEAKS_BIN" ]; then
     for candidate in \
-        "/c/Users/redacted-user/AppData/Local/Microsoft/WinGet/Packages/Gitleaks.Gitleaks_Microsoft.Winget.Source_8wekyb3d8bbwe/gitleaks.exe"
+        "$HOME/AppData/Local/Microsoft/WinGet/Packages/Gitleaks.Gitleaks_Microsoft.Winget.Source_8wekyb3d8bbwe/gitleaks.exe"
     do
         if [ -x "$candidate" ]; then GITLEAKS_BIN="$candidate"; break; fi
     done
