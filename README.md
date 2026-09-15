@@ -141,6 +141,10 @@ equivalent section (e.g. no stdio/local-subprocess MCP transport, no
 exchange API integration for trades, no CI integration for the
 Development tab).
 
+## License
+
+MIT — see [`LICENSE`](LICENSE).
+
 ## Contributors
 
 ### Core

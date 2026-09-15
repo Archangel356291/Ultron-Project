@@ -27,6 +27,12 @@ graphify-out/private-nodes.enc.json
 # the real content into graphify-out/graph.json, which IS committed.
 session-write/pending-review.json
 
+# Module 12: machine-local sidecar the graphify skill writes, pointing at
+# THIS machine's own Python interpreter path -- meaningless on a fresh
+# clone and, worse, leaks the local Windows username. Local-environment
+# state, same category as .env; the skill regenerates it on next run.
+graphify-out/.graphify_python
+
 # Python (3.10)
 __pycache__/
 *.py[cod]
