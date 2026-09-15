@@ -21,7 +21,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from retrieve_context import retrieve, format_for_context, _tag_words  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "ultron-backend"))
+from retrieve_context import retrieve, format_for_context  # noqa: E402
+from graph_schema_shared import _tag_words  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 GRAPH_PATH = ROOT / "graphify-out" / "graph.json"
