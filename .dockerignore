@@ -23,6 +23,10 @@
 !ultron-dashboard.html
 !three-pipeline/
 !three-pipeline/**
+# Home-tab knowledge graph: graph.json only -- NOT the rest of
+# graphify-out/ (cache/, obsidian/, private-nodes.enc.json, which must
+# never be shipped even encrypted, per Module 9's own rule).
+!graphify-out/graph.json
 
 # ==============================================================================
 # 3. EXPLICIT BLOCKS (strip junk/secrets back out of the allowlisted tree,

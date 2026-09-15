@@ -287,6 +287,80 @@
     margin-top:10px; line-height:1.5; border-top:1px dotted var(--line); padding-top:10px;
   }
 
+  /* ---------- knowledge graph (Home tab) ----------
+     Real data: graphify-out/graph.json (the vault graph -- code/doc/
+     decision nodes about this project, already privacy-redacted) merged
+     with Ultron's own memory_notes/memory_edges, via GET
+     /api/knowledge-graph. Rendered with the same vendored 3d-force-graph
+     Module 6 already uses for the standalone viewer, forced to 2D --
+     cheaper than a lit 3D scene and matches "read the graph," not just
+     look at it. */
+  .kg-connector{
+    width:1px; height:26px; margin:4px auto 0;
+    background:linear-gradient(180deg, var(--core-gold), var(--cyan));
+    opacity:0.5;
+  }
+  .kg-panel{ margin-top:4px; padding:20px 22px 16px; }
+  .kg-header{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:4px; }
+  .kg-stats{ display:flex; gap:18px; flex-wrap:wrap; font-family:var(--font-mono); font-size:10px; color:var(--text-faint); letter-spacing:0.06em; text-transform:uppercase; }
+  .kg-stats b{ color:var(--cyan); font-weight:600; margin-left:5px; }
+  .kg-controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:14px 0; }
+  #kg-search{
+    background:var(--void); border:1px solid var(--line); border-radius:4px;
+    padding:8px 12px; color:var(--text); font-size:12.5px; font-family:var(--font-mono);
+    min-width:220px; flex:1;
+  }
+  #kg-search:focus{ outline:none; border-color:var(--cyan); }
+  #kg-search::placeholder{ color:var(--text-faint); }
+  .kg-filters{ display:flex; gap:6px; flex-wrap:wrap; }
+  .kg-filter{
+    font-family:var(--font-mono); font-size:10px; padding:5px 11px; border-radius:3px;
+    border:1px solid var(--line); background:var(--panel-raised); color:var(--text-dim);
+    cursor:pointer; text-transform:uppercase; letter-spacing:0.05em; user-select:none;
+  }
+  .kg-filter:hover{ color:var(--text); }
+  .kg-filter.active{ border-color:var(--cyan); color:var(--cyan); background:rgba(61,214,255,0.1); }
+  .kg-graph-wrap{
+    position:relative; width:100%; height:460px;
+    border:1px solid var(--line); background:var(--void);
+    overflow:hidden;
+  }
+  #kg-graph{ position:absolute; inset:0; }
+  .kg-empty{
+    position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+    text-align:center; padding:0 30px; color:var(--text-faint); font-size:12.5px; font-family:var(--font-mono);
+  }
+  .kg-graph-wrap.empty .kg-empty{ display:flex; }
+  .kg-graph-wrap.empty #kg-graph{ display:none; }
+  .kg-inspector{
+    position:absolute; top:12px; right:12px; width:230px;
+    background:rgba(10,17,32,0.95); border:1px solid var(--line);
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    padding:14px 16px; backdrop-filter:blur(4px);
+  }
+  .kg-inspector-close{
+    position:absolute; top:8px; right:10px; background:none; border:none; color:var(--text-faint);
+    font-size:16px; cursor:pointer; line-height:1; padding:2px 4px;
+  }
+  .kg-inspector-close:hover{ color:var(--text); }
+  .kg-inspector-label{ font-family:var(--font-mono); font-size:9px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; }
+  .kg-inspector-title{ font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text); margin:3px 0 10px; word-break:break-word; }
+  .kg-inspector .hud-row{ padding:6px 0; font-size:11.5px; }
+  .kg-inspector-tags{ display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+  .kg-inspector-tags span{
+    font-family:var(--font-mono); font-size:9px; color:var(--text-faint);
+    border:1px solid var(--line); border-radius:3px; padding:2px 6px;
+  }
+  .kg-hover-tip{
+    font-family:var(--font-mono); font-size:11px; line-height:1.6; color:var(--text-dim);
+    background:rgba(10,17,32,0.95); border:1px solid var(--line); border-radius:4px; padding:8px 11px;
+  }
+  .kg-hover-tip b{ color:var(--text); font-family:var(--font-display); font-size:12.5px; }
+  @media(max-width:900px){
+    .kg-graph-wrap{ height:340px; }
+    .kg-inspector{ width:calc(100% - 24px); }
+  }
+
   /* ---------- hero panel ---------- */
   .hero-panel{
     background:radial-gradient(ellipse at 50% 0%, rgba(255,138,30,0.08) 0%, transparent 60%);
@@ -897,6 +971,39 @@
             </div>
           </div>
         </div>
+
+        <div class="kg-connector" aria-hidden="true"></div>
+
+        <div class="hud-card kg-panel">
+          <div class="kg-header">
+            <div class="hud-label">Knowledge matrix</div>
+            <div class="kg-stats">
+              <span>NODES <b id="kg-stat-nodes">—</b></span>
+              <span>RELATIONSHIPS <b id="kg-stat-links">—</b></span>
+              <span>CLUSTERS <b id="kg-stat-clusters">—</b></span>
+              <span>MEMORY STATE <b id="kg-stat-state">—</b></span>
+            </div>
+          </div>
+          <div class="kg-controls">
+            <input type="text" id="kg-search" placeholder="SEARCH KNOWLEDGE…">
+            <div class="kg-filters" id="kg-filters"></div>
+          </div>
+          <div class="kg-graph-wrap">
+            <div id="kg-graph"></div>
+            <div class="kg-empty" id="kg-empty">Knowledge graph unavailable — connect the backend, or run <code>graphify</code> to build one.</div>
+            <div class="kg-inspector" id="kg-inspector" hidden>
+              <button class="kg-inspector-close" id="kg-inspector-close" aria-label="Close">&times;</button>
+              <div class="kg-inspector-label">Knowledge node</div>
+              <div class="kg-inspector-title" id="kg-insp-label">—</div>
+              <div class="hud-row"><span class="k">Type</span><span class="v" id="kg-insp-type">—</span></div>
+              <div class="hud-row"><span class="k">Visibility</span><span class="v" id="kg-insp-visibility">—</span></div>
+              <div class="hud-row"><span class="k">Cluster</span><span class="v" id="kg-insp-cluster">—</span></div>
+              <div class="hud-row"><span class="k">Relationships</span><span class="v" id="kg-insp-relationships">—</span></div>
+              <div class="hud-row"><span class="k">Last updated</span><span class="v" id="kg-insp-updated">—</span></div>
+              <div class="kg-inspector-tags" id="kg-insp-tags"></div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- HOME LAB -->
@@ -1317,6 +1424,10 @@
     const navItem = Array.from(items).find(i => i.dataset.section === id);
     const label = navItem ? navItem.querySelector('.label').textContent : id;
     document.title = 'ULTRON — ' + label;
+    // The knowledge graph's force simulation has no reason to run while
+    // Home isn't the visible section -- a no-op if that script hasn't
+    // loaded (or failed) yet.
+    if (window.__kgSetActive) window.__kgSetActive(id === 'home');
   }
 
   items.forEach(item => {
@@ -1525,6 +1636,14 @@
 
       await refreshAll();
       startPolling();
+      // The real "we just connected" moment -- state.connected is already
+      // true by the time refreshAll() runs from here, so its own internal
+      // false->true hook (which exists for the separate case of recovering
+      // from a mid-session drop, inside the polling loop) never sees a
+      // transition on this path. Verified live: without this call here,
+      // the graph never rendered on initial connect, only when invoked
+      // manually afterward.
+      if (window.__kgRefresh) window.__kgRefresh();
     } catch (err) {
       state.connected = false;
       setConnStatus('could not reach backend — check URL, and that it is running and reachable from this device', 'err');
@@ -1596,7 +1715,13 @@
           fetchConnections(),
         ];
       await Promise.all(calls);
-      if (!state.connected && window.__heroSetState) window.__heroSetState('idle'); // recovered from alert
+      if (!state.connected) {
+        if (window.__heroSetState) window.__heroSetState('idle'); // recovered from alert
+        // Fetched once per connect, not every ~15s poll -- the vault graph
+        // doesn't change within a session, and re-laying-out a force graph
+        // on every poll would jump around distractingly for no benefit.
+        if (window.__kgRefresh) window.__kgRefresh();
+      }
       state.connected = true;
       setConnStatus('connected · last sync ' + new Date().toLocaleTimeString(), 'ok');
     } catch (err) {
@@ -3032,6 +3157,226 @@ function toggleReducedVisuals(el) {
   try { localStorage.setItem('ultron_reduced_visuals', next ? '1' : '0'); } catch (e) { /* ignore */ }
   location.reload();
 }
+</script>
+
+<!-- Home-tab knowledge graph: the same vendored 3d-force-graph Module 6
+     already uses for the standalone viewer (graph-viewer/generate_viewer.py),
+     loaded as a classic script (it's a UMD build defining window.ForceGraph3D,
+     not an ES module). Real data only -- GET /api/knowledge-graph, never a
+     hardcoded demo set -- see app.py's get_knowledge_graph(). -->
+<script src="/three-pipeline/vendor/3d-force-graph.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var wrap = document.getElementById('kg-graph');
+  var graphWrapEl = wrap ? wrap.closest('.kg-graph-wrap') : null;
+  var inspectorEl = document.getElementById('kg-inspector');
+  var searchEl = document.getElementById('kg-search');
+  if (!wrap || !graphWrapEl) return;
+
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reducedVisuals = (function () {
+    try { return localStorage.getItem('ultron_reduced_visuals') === '1'; } catch (e) { return false; }
+  })();
+
+  // Real categories only (code/document/concept/rationale from the vault
+  // graph, memory from Ultron's own runtime notes) -- no invented
+  // home-lab/security/finance node types the actual tagging scheme
+  // doesn't have yet. Unknown/future categories fall back to DEFAULT_COLOR
+  // rather than being silently uncolored.
+  var CATEGORY_COLORS = {
+    code: '#3DD6FF', document: '#4C8DFF', concept: '#33D17A',
+    rationale: '#B084F0', memory: '#FFB238', paper: '#FF8A1E', image: '#5B6B8C',
+  };
+  var PRIVATE_COLOR = '#4C5A78';
+  var DEFAULT_COLOR = '#8D9BBD';
+
+  function colorFor(n) {
+    if (n.visibility === 'private') return PRIVATE_COLOR;
+    return CATEGORY_COLORS[n.category] || DEFAULT_COLOR;
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  var Graph = null;
+  var degree = {};
+  var adjacency = {};
+
+  function buildIndexes(data) {
+    degree = {}; adjacency = {};
+    data.nodes.forEach(function (n) { adjacency[n.id] = new Set(); });
+    data.links.forEach(function (e) {
+      var s = typeof e.source === 'object' ? e.source.id : e.source;
+      var t = typeof e.target === 'object' ? e.target.id : e.target;
+      degree[s] = (degree[s] || 0) + 1;
+      degree[t] = (degree[t] || 0) + 1;
+      if (adjacency[s]) adjacency[s].add(t);
+      if (adjacency[t]) adjacency[t].add(s);
+    });
+  }
+
+  function hoverTipFor(n) {
+    var vis = n.visibility === 'private' ? 'PRIVATE' : 'public';
+    return '<div class="kg-hover-tip"><b>' + escapeHtml(n.label || n.id) + '</b><br>'
+      + 'type: ' + escapeHtml(n.category || 'unknown') + ' &middot; ' + vis + '<br>'
+      + 'relationships: ' + (degree[n.id] || 0) + '</div>';
+  }
+
+  function sizeGraph() {
+    if (!Graph) return;
+    var rect = wrap.getBoundingClientRect();
+    Graph.width(rect.width).height(rect.height);
+  }
+
+  var hoveredId = null;
+  function handleHover(node) {
+    hoveredId = node ? node.id : null;
+    Graph.nodeColor(function (n) {
+      if (!hoveredId) return colorFor(n);
+      if (n.id === hoveredId || (adjacency[hoveredId] && adjacency[hoveredId].has(n.id))) return colorFor(n);
+      return 'rgba(80,90,110,0.15)';
+    });
+    Graph.linkColor(function (l) {
+      var s = typeof l.source === 'object' ? l.source.id : l.source;
+      var t = typeof l.target === 'object' ? l.target.id : l.target;
+      if (!hoveredId) return 'rgba(61,214,255,0.18)';
+      return (s === hoveredId || t === hoveredId) ? 'rgba(61,214,255,0.7)' : 'rgba(61,214,255,0.04)';
+    });
+  }
+
+  function showInspector(node) {
+    if (!node) return;
+    document.getElementById('kg-insp-label').textContent = node.label || node.id;
+    document.getElementById('kg-insp-type').textContent = node.category || 'unknown';
+    document.getElementById('kg-insp-visibility').textContent = node.visibility === 'private' ? 'private' : 'public';
+    document.getElementById('kg-insp-cluster').textContent = node.community_name || (node.community != null ? ('cluster ' + node.community) : '—');
+    document.getElementById('kg-insp-relationships').textContent = degree[node.id] || 0;
+    document.getElementById('kg-insp-updated').textContent = (node.date_updated || node.date_created || '—').slice(0, 10);
+    var tagsEl = document.getElementById('kg-insp-tags');
+    tagsEl.innerHTML = (node.tags || []).slice(0, 6).map(function (t) { return '<span>' + escapeHtml(t) + '</span>'; }).join('');
+    inspectorEl.hidden = false;
+    if (Graph && node.x != null) Graph.centerAt(node.x, node.y, 500);
+  }
+  function hideInspector() { inspectorEl.hidden = true; }
+  var closeBtn = document.getElementById('kg-inspector-close');
+  if (closeBtn) closeBtn.addEventListener('click', hideInspector);
+
+  var currentFilter = 'all';
+  function applyFilterAndSearch() {
+    if (!Graph) return;
+    var q = (searchEl.value || '').trim().toLowerCase();
+    Graph.nodeColor(function (n) {
+      var matchesFilter = currentFilter === 'all' || n.category === currentFilter;
+      var matchesSearch = !q || ((n.label || '') + ' ' + (n.tags || []).join(' ')).toLowerCase().indexOf(q) !== -1;
+      return (matchesFilter && matchesSearch) ? colorFor(n) : 'rgba(80,90,110,0.1)';
+    });
+  }
+  searchEl.addEventListener('input', applyFilterAndSearch);
+
+  function buildFilters(categories) {
+    var el = document.getElementById('kg-filters');
+    var cats = Object.keys(categories);
+    el.innerHTML = '<div class="kg-filter active" data-cat="all">All</div>' + cats.map(function (c) {
+      return '<div class="kg-filter" data-cat="' + escapeHtml(c) + '">' + escapeHtml(c) + ' (' + categories[c] + ')</div>';
+    }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('.kg-filter'), function (btn) {
+      btn.addEventListener('click', function () {
+        currentFilter = btn.dataset.cat;
+        Array.prototype.forEach.call(el.querySelectorAll('.kg-filter'), function (b) { b.classList.toggle('active', b === btn); });
+        applyFilterAndSearch();
+      });
+    });
+  }
+
+  function initGraph() {
+    if (Graph || typeof ForceGraph3D === 'undefined') return;
+    Graph = ForceGraph3D()(wrap)
+      .backgroundColor('rgba(0,0,0,0)')
+      .numDimensions(2)
+      .nodeColor(colorFor)
+      .nodeLabel(hoverTipFor)
+      // "Different node sizes... scale by connection count" -- same
+      // formula generate_viewer.py already uses for the standalone
+      // viewer, reusing `degree` (built in buildIndexes(), before this
+      // ever gets evaluated per-node at render time).
+      .nodeVal(function (n) { return 1 + Math.sqrt(degree[n.id] || 0); })
+      .nodeResolution(8)
+      .linkColor(function () { return 'rgba(61,214,255,0.35)'; })
+      .linkWidth(0.6)
+      .linkOpacity(0.6)
+      // Finite, not infinite -- the layout settles once and stops
+      // simulating, rather than running physics forever. Shorter under
+      // reduced motion/visuals so it settles faster (step 23: "if reduced
+      // motion is enabled, significantly reduce graph animation").
+      .cooldownTicks(reducedVisuals || reducedMotion ? 50 : 160)
+      .onNodeClick(showInspector)
+      .onNodeHover(handleHover)
+      .onBackgroundClick(hideInspector);
+    window.addEventListener('resize', sizeGraph);
+    sizeGraph();
+  }
+
+  window.__kgRefresh = async function () {
+    // state/authHeaders/apiGet are top-level const/function bindings in the
+    // main classic script above -- shared global lexical scope across
+    // <script> tags in the same document, but NOT properties of `window`
+    // for the const ones, so this checks the function (which is a real
+    // window property) as a simple "has the main script run yet" signal
+    // rather than incorrectly gating on window.state (always undefined
+    // regardless, since `const` never attaches to window).
+    if (typeof authHeaders !== 'function') return;
+    try {
+      var narrow = window.innerWidth < 700;
+      var limit = reducedVisuals ? 150 : narrow ? 200 : (window.innerWidth < 1050 ? 320 : null);
+      var url = state.baseUrl + '/api/knowledge-graph' + (limit ? ('?limit=' + limit) : '');
+      var res = await fetch(url, { headers: authHeaders() });
+      if (!res.ok) throw new Error('http ' + res.status);
+      var data = await res.json();
+
+      var nodesEl = document.getElementById('kg-stat-nodes');
+      var linksEl = document.getElementById('kg-stat-links');
+      var clustersEl = document.getElementById('kg-stat-clusters');
+      var stateEl = document.getElementById('kg-stat-state');
+      if (nodesEl) nodesEl.textContent = data.stats.node_count;
+      if (linksEl) linksEl.textContent = data.stats.link_count;
+      if (clustersEl) clustersEl.textContent = data.stats.clusters;
+      if (stateEl) stateEl.textContent = data.stats.node_count ? 'synchronized' : 'empty';
+
+      if (!data.nodes.length) {
+        graphWrapEl.classList.add('empty');
+        return;
+      }
+      graphWrapEl.classList.remove('empty');
+      initGraph();
+      buildIndexes(data);
+      buildFilters(data.stats.categories || {});
+      if (Graph) Graph.graphData({ nodes: data.nodes, links: data.links });
+      sizeGraph();
+    } catch (err) {
+      var stEl = document.getElementById('kg-stat-state');
+      if (stEl) stEl.textContent = 'offline';
+      graphWrapEl.classList.add('empty');
+    }
+  };
+
+  // Pauses the force simulation entirely while Home isn't the visible
+  // section (see switchSection()'s call to this) -- no reason to run a
+  // physics/render loop for a graph nobody can see.
+  window.__kgSetActive = function (isActive) {
+    if (!Graph) return;
+    if (isActive) Graph.resumeAnimation(); else Graph.pauseAnimation();
+  };
+
+  // Catch up immediately if the connection was already established before
+  // this script (loaded last, at the bottom of the file) even ran --
+  // refreshAll()'s own hook only fires __kgRefresh on the false->true
+  // transition, which happens too early for this script to have defined
+  // it yet on a normal page load. Verified live: without this, the graph
+  // never rendered on a real load, only when called manually after the
+  // fact. Real bug, not theoretical.
+  if (typeof state !== 'undefined' && state.connected) window.__kgRefresh();
+})();
 </script>
 </body>
 </html>

@@ -15,6 +15,11 @@ COPY ultron-dashboard.html ultron-dashboard.html
 # Module 13: vendored Three.js + the built hero-head .glb, served by the new
 # /three-pipeline/<file> route in app.py.
 COPY three-pipeline/ three-pipeline/
+# Home-tab knowledge graph: only graph.json itself (already privacy-redacted
+# by Module 4) -- not the rest of graphify-out/ (caches, the Obsidian export,
+# the never-committed private-nodes.enc.json), read server-side by
+# get_knowledge_graph() in app.py, not served as a raw static file.
+COPY graphify-out/graph.json graphify-out/graph.json
 
 WORKDIR /app/ultron-backend
 EXPOSE 5000
