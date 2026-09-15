@@ -10,13 +10,6 @@
 <title>ULTRON — Home Lab Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<!-- Module 13: resolves GLTFLoader.js's own `import ... from 'three'` (a
-     bare specifier) to the vendored, offline three.module.js -- no bundler,
-     no CDN, matching Module 5's "vendor locally" requirement. Must appear
-     before any <script type="module"> that imports 'three' or a loader. -->
-<script type="importmap">
-{ "imports": { "three": "/three-pipeline/three.module.js" } }
-</script>
 <style>
   :root{
     --void:#050810;
@@ -29,6 +22,13 @@
     --signal:#33D17A;
     --amber:#FFC24B;
     --cyan:#3DD6FF;
+    /* Module 14: AI core (Home hero only) -- gold/amber, reserved for
+       Ultron's intelligence specifically. --oxide above stays the
+       site-wide accent everywhere else. */
+    --core-gold:#FFB238;
+    --core-amber:#FF8A1E;
+    --core-glow-a:rgba(255,178,56,0.32);
+    --core-glow-b:rgba(255,178,56,0.06);
     --text:#E9EDF7;
     --text-dim:#8D9BBD;
     --text-faint:#4C5A78;
@@ -235,11 +235,71 @@
   .home-bottom-grid .stack{ display:flex; flex-direction:column; gap:16px; }
   @media(max-width:1050px){ .home-bottom-grid{ grid-template-columns:1fr; } }
 
+  /* ---------- Module 14: Home HUD panels (cyan) ----------
+     Deliberately a NEW class, not a redefinition of .card/.panel-label --
+     this pass is scoped to the Home screen only, so every other section
+     keeps its existing oxide-accented .card exactly as before. */
+  .hud-card{
+    background: linear-gradient(160deg, var(--panel) 0%, var(--panel-raised) 100%);
+    border:1px solid var(--line);
+    clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+    padding:20px 22px;
+    position:relative;
+    box-shadow: 0 8px 28px -14px rgba(0,0,0,0.7);
+  }
+  .hud-card::before{
+    content:''; position:absolute; top:0; left:14px; right:14px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(61,214,255,0.5), transparent);
+  }
+  .hud-label{
+    font-family:var(--font-display); font-size:13px; font-weight:700;
+    color:var(--text-dim); margin-bottom:12px; text-transform:uppercase;
+    letter-spacing:0.08em; display:flex; align-items:center; gap:8px;
+  }
+  .hud-label::before{
+    content:''; width:7px; height:7px; border-radius:50%;
+    background:var(--cyan); box-shadow:0 0 8px var(--cyan); flex-shrink:0;
+  }
+  .hud-label.gold::before{ background:var(--core-gold); box-shadow:0 0 8px var(--core-gold); }
+  .hud-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 0; border-bottom:1px dotted var(--line); font-size:13px;
+  }
+  .hud-row:last-child{ border-bottom:none; }
+  .hud-row .k{ display:flex; align-items:center; gap:9px; color:var(--text-dim); }
+  .hud-row .k svg{ width:15px; height:15px; flex-shrink:0; stroke:var(--cyan); }
+  .hud-row .v{ font-family:var(--font-mono); font-size:11.5px; color:var(--cyan); letter-spacing:0.02em; }
+  .hud-row .v.good{ color:var(--signal); }
+  .hud-row .v.warn{ color:var(--amber); }
+  .hud-row .v.crit{ color:#FF4C4C; }
+  .hud-row .v.muted{ color:var(--text-faint); }
+
+  .core-status-top{ display:flex; align-items:center; gap:12px; margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+  .core-status-dot{ width:10px; height:10px; border-radius:50%; background:var(--text-faint); flex-shrink:0; }
+  .core-status-dot.on{ background:var(--core-gold); box-shadow:0 0 10px var(--core-gold); }
+  .core-status-title{ font-family:var(--font-hud); font-size:15px; font-weight:700; letter-spacing:0.04em; color:var(--text); }
+  .core-status-sub{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-top:2px; text-transform:uppercase; letter-spacing:0.06em; }
+
+  .approval-card{ border-left:2px solid var(--core-gold); }
+  .approval-card .hud-row .v{ color:var(--core-gold); }
+  .approval-note{
+    font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint);
+    margin-top:10px; line-height:1.5; border-top:1px dotted var(--line); padding-top:10px;
+  }
+
   /* ---------- hero panel ---------- */
   .hero-panel{
     background:radial-gradient(ellipse at 50% 0%, rgba(255,138,30,0.08) 0%, transparent 60%);
     padding:26px 30px 22px; position:relative;
   }
+  /* Module 14: HUD corner brackets -- cheap (pure CSS, two pseudo-elements
+     per corner via box-shadow-free borders), no JS, matches the reference
+     HUD's framing language without adding real DOM/animation weight. */
+  .hero-panel::before, .hero-panel::after{
+    content:''; position:absolute; width:22px; height:22px; pointer-events:none; opacity:0.5;
+  }
+  .hero-panel::before{ top:10px; left:10px; border-top:1px solid var(--cyan); border-left:1px solid var(--cyan); }
+  .hero-panel::after{ bottom:10px; right:10px; border-bottom:1px solid var(--cyan); border-right:1px solid var(--cyan); }
   .hero-head{ text-align:center; margin-bottom:6px; }
   .hero-head .eyebrow{
     display:flex; align-items:center; justify-content:center; gap:10px;
@@ -262,31 +322,46 @@
     color:var(--text-dim); text-transform:uppercase;
   }
 
-  /* Module 13: hero centerpiece is a Three.js-rendered original robotic
-     head (see three-pipeline/hero_head.glb + the module script near the
-     end of this file), replacing the previous SVG orange particle sphere.
-     Only this centerpiece is recolored red/dark-chrome -- --oxide etc.
-     stay untouched site-wide, per the roadmap's own "only recolor the
-     centerpiece, not the whole site." */
-  .sphere-wrap{ position:relative; width:280px; height:280px; flex-shrink:0; }
+  /* Module 14: hero centerpiece is a Canvas2D-rendered original particle/
+     filament AI core (see the module script near the end of this file),
+     replacing Module 13's 3D robotic head -- lighter-weight (no WebGL
+     context, no glTF load), closer to the reference HUD's radial gold
+     particle brain, and cheap enough for a Raspberry Pi 400. Gold/amber
+     is reserved for this core specifically; --oxide etc. stay untouched
+     site-wide -- this pass is scoped to the Home screen only. (--core-*
+     tokens themselves live in :root, alongside the rest.) */
+  .sphere-wrap{ position:relative; width:320px; height:320px; flex-shrink:0; }
   .sphere-glow{
-    position:absolute; top:-20px; right:-20px; bottom:-20px; left:-20px; border-radius:50%;
-    background:radial-gradient(circle, rgba(255,20,40,0.30) 0%, rgba(255,20,40,0.07) 45%, transparent 70%);
+    position:absolute; top:-24px; right:-24px; bottom:-24px; left:-24px; border-radius:50%;
+    background:radial-gradient(circle, var(--core-glow-a) 0%, var(--core-glow-b) 45%, transparent 70%);
     filter:blur(4px);
     animation:sphere-breathe 4s ease-in-out infinite;
   }
   @keyframes sphere-breathe{ 0%,100%{ opacity:0.7; transform:scale(0.96); } 50%{ opacity:1; transform:scale(1.02); } }
+  .core-rings{ position:absolute; top:0; right:0; bottom:0; left:0; width:100%; height:100%; pointer-events:none; }
+  .core-rings ellipse{ fill:none; stroke:var(--core-gold); opacity:0.4; }
+  .core-rings .r1{ animation:spin-cw 26s linear infinite; transform-origin:160px 160px; }
+  .core-rings .r2{ animation:spin-ccw 34s linear infinite; opacity:0.28; transform-origin:160px 160px; }
+  .core-rings .r3{ animation:spin-cw 19s linear infinite; opacity:0.5; transform-origin:160px 160px; }
+  @keyframes spin-cw{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+  @keyframes spin-ccw{ from{ transform:rotate(0deg); } to{ transform:rotate(-360deg); } }
   #hero-canvas{ position:absolute; top:0; right:0; bottom:0; left:0; width:100%; height:100%; display:block; }
   .sphere-wrap.offline .sphere-glow{ opacity:0.35; }
-  .sphere-wrap.offline #hero-canvas{ filter:grayscale(0.6) brightness(0.7); }
-  /* prefers-reduced-motion: the module script itself skips the rotation/
-     pulse render loop (rendering one static frame instead) -- this rule
-     only stops the CSS-driven glow breathing, the other half of "reduce/
-     remove rotation and particles, keep the head and CPU indicator
-     visible." */
+  .sphere-wrap.offline #hero-canvas, .sphere-wrap.offline .core-rings{ filter:grayscale(0.6) brightness(0.7); }
+  /* prefers-reduced-motion: the module script itself renders one static
+     frame with no animation loop -- this rule stops the CSS-driven glow
+     breathing and ring rotation, the other half of "reduce/remove
+     rotation and particles, keep the head and CPU indicator visible." */
   @media (prefers-reduced-motion: reduce){
     .sphere-glow{ animation:none; opacity:0.85; }
+    .core-rings ellipse{ animation:none; }
   }
+  /* Manual Reduced Visual Mode (see #visual-mode-toggle) -- same effect as
+     prefers-reduced-motion but user-controlled, for a Pi 400 or any host
+     where the OS-level media feature isn't set but lighter rendering is
+     still wanted. */
+  body.reduced-visuals .sphere-glow{ animation:none; opacity:0.85; }
+  body.reduced-visuals .core-rings ellipse{ animation:none; }
 
   .core-badge{
     position:absolute; bottom:8px; right:8px;
@@ -367,12 +442,12 @@
   .ai-status-card{ display:flex; gap:12px; align-items:flex-start; }
   .ai-status-icon{
     width:38px; height:38px; border-radius:50%; flex-shrink:0;
-    background:radial-gradient(circle, #FFE3B0 0%, var(--oxide) 60%, transparent 100%);
-    box-shadow:0 0 16px 2px rgba(255,138,30,0.5);
+    background:radial-gradient(circle, #FFE9C2 0%, var(--core-gold) 60%, transparent 100%);
+    box-shadow:0 0 16px 2px rgba(255,178,56,0.5);
     animation:core-pulse 2.4s ease-in-out infinite;
   }
   .ai-status-text{ font-size:12.5px; color:var(--text-dim); line-height:1.5; }
-  .ai-status-tags{ margin-top:8px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.08em; color:var(--oxide); text-transform:uppercase; }
+  .ai-status-tags{ margin-top:8px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.08em; color:var(--core-gold); text-transform:uppercase; }
 
   /* ---------- footer ---------- */
   .page-footer{
@@ -672,7 +747,12 @@
               <div class="sphere-row">
                 <div class="sphere-wrap offline" id="sphere-wrap">
                   <div class="sphere-glow"></div>
-                  <canvas id="hero-canvas" aria-label="Ultron's animated hero head"></canvas>
+                  <svg class="core-rings" viewBox="0 0 320 320" aria-hidden="true">
+                    <ellipse class="r1" cx="160" cy="160" rx="150" ry="38" stroke-width="1"/>
+                    <ellipse class="r2" cx="160" cy="160" rx="128" ry="30" stroke-width="0.7"/>
+                    <ellipse class="r3" cx="160" cy="160" rx="105" ry="24" stroke-width="1.2" stroke-dasharray="3 7"/>
+                  </svg>
+                  <canvas id="hero-canvas" aria-label="Ultron's animated AI core"></canvas>
                   <div class="core-badge">
                     <div class="core-pct" id="core-pct">—</div>
                     <div class="core-tag" id="core-tag">cpu</div>
@@ -707,18 +787,33 @@
           </div>
 
           <div class="home-rail">
-            <div class="card">
-              <div class="panel-label">System status</div>
-              <div class="status-list">
-                <div class="status-row"><span class="label"><span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="6" y="6" width="12" height="12" rx="1"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></span>Raspberry Pi 400</span><span class="val">online</span></div>
-                <div class="status-row"><span class="label"><span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="4" width="18" height="6" rx="1"/><rect x="3" y="14" width="18" height="6" rx="1"/><circle cx="7" cy="7" r="0.6" fill="currentColor"/><circle cx="7" cy="17" r="0.6" fill="currentColor"/></svg></span>Home lab servers</span><span class="val">online</span></div>
-                <div class="status-row"><span class="label"><span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg></span>Docker containers</span><span class="val" id="stat-containers">— / — up</span></div>
-                <div class="status-row"><span class="label"><span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 3l8 3.5v5.3C20 16.6 16.6 20.3 12 21c-4.6-.7-8-4.4-8-9.2V6.5L12 3z"/></svg></span>Network security</span><span class="val">enforced</span></div>
-                <div class="status-row"><span class="label"><span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M7 18a4 4 0 01-.5-7.97A5 5 0 0116.9 8.02 3.5 3.5 0 0117.5 18H7z"/></svg></span>Backups</span><span class="val">current</span></div>
-                <div class="status-row"><span class="label"><span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg></span>Updates &amp; patches</span><span class="val warn" id="stat-updates">— pending</span></div>
-                <div class="status-row"><span class="label"><span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M9 4a3 3 0 00-3 3 3 3 0 00-1 5.83A3.5 3.5 0 007 19a3 3 0 003-3V6a2 2 0 00-1-2z"/><path d="M15 4a3 3 0 013 3 3 3 0 011 5.83A3.5 3.5 0 0117 19a3 3 0 01-3-3V6a2 2 0 011-2z"/><path d="M12 6v10"/></svg></span>AI core (Ultron)</span><span class="val">idle</span></div>
-                <div class="status-row"><span class="label"><span class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M10 14.76V4a2 2 0 114 0v10.76a4 4 0 11-4 0z"/></svg></span>Power &amp; temps</span><span class="val" id="stat-power">— · nominal</span></div>
+            <div class="hud-card">
+              <div class="core-status-top">
+                <div class="core-status-dot" id="core-status-dot"></div>
+                <div>
+                  <div class="core-status-title" id="core-status-title">STANDING BY</div>
+                  <div class="core-status-sub">Ultron core</div>
+                </div>
               </div>
+              <div class="hud-row"><span class="k">Mode</span><span class="v" id="core-mode">standby</span></div>
+              <div class="hud-row"><span class="k">AI</span><span class="v" id="core-ai-ready">offline</span></div>
+              <div class="hud-row"><span class="k">CPU load</span><span class="v" id="core-cpu-mini">—%</span></div>
+              <div class="hud-row"><span class="k">Memory</span><span class="v" id="core-mem-mini">—%</span></div>
+            </div>
+
+            <div class="hud-card approval-card">
+              <div class="hud-label gold">Human oversight</div>
+              <div class="hud-row"><span class="k">Command authorization</span><span class="v">user required</span></div>
+              <div class="hud-row"><span class="k">Approval system</span><span class="v">armed</span></div>
+              <div class="approval-note">Destructive actions (backups, container deploys) require a human-confirmed token from this dashboard. Nothing Ultron says in chat can execute one — see Settings for the full policy.</div>
+            </div>
+
+            <div class="hud-card">
+              <div class="hud-label">System telemetry</div>
+              <div class="hud-row"><span class="k"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>Docker containers</span><span class="v" id="stat-containers">— / — up</span></div>
+              <div class="hud-row"><span class="k"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg>Updates &amp; patches</span><span class="v warn" id="stat-updates">— pending</span></div>
+              <div class="hud-row"><span class="k"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M10 14.76V4a2 2 0 114 0v10.76a4 4 0 11-4 0z"/></svg>Power &amp; temps</span><span class="v" id="stat-power">— · nominal</span></div>
+              <div class="hud-row"><span class="k"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 3l8 3.5v5.3C20 16.6 16.6 20.3 12 21c-4.6-.7-8-4.4-8-9.2V6.5L12 3z"/></svg>Storage</span><span class="v" id="home-storage-label">—</span></div>
             </div>
 
             <div class="card">
@@ -754,37 +849,16 @@
         </div>
 
         <div class="home-bottom-grid">
-          <div class="card">
-            <div class="panel-label">Home lab overview</div>
+          <div class="hud-card">
+            <div class="hud-label">Home lab overview</div>
             <div class="hlo-rings">
               <div class="hlo-ring">
                 <svg viewBox="0 0 78 78">
                   <circle class="bg" cx="39" cy="39" r="33"></circle>
-                  <circle class="fg" cx="39" cy="39" r="33" stroke="var(--cyan)" stroke-dasharray="207" stroke-dashoffset="60"></circle>
-                </svg>
-                <div class="lbl"><span class="n">2</span><span class="t">VMs</span></div>
-              </div>
-              <div class="hlo-ring">
-                <svg viewBox="0 0 78 78">
-                  <circle class="bg" cx="39" cy="39" r="33"></circle>
-                  <circle class="fg" id="hlo-containers-fg" cx="39" cy="39" r="33" stroke="var(--signal)" stroke-dasharray="207" stroke-dashoffset="207"></circle>
+                  <circle class="fg" id="hlo-containers-fg" cx="39" cy="39" r="33" stroke="var(--cyan)" stroke-dasharray="207" stroke-dashoffset="207"></circle>
                 </svg>
                 <div class="lbl"><span class="n" id="hlo-containers-n">—</span><span class="t">Containers</span></div>
               </div>
-              <div class="hlo-ring">
-                <svg viewBox="0 0 78 78">
-                  <circle class="bg" cx="39" cy="39" r="33"></circle>
-                  <circle class="fg" cx="39" cy="39" r="33" stroke="var(--amber)" stroke-dasharray="207" stroke-dashoffset="45"></circle>
-                </svg>
-                <div class="lbl"><span class="n">5</span><span class="t">Services</span></div>
-              </div>
-            </div>
-            <div class="hlo-services">
-              <div class="row"><span class="dot"></span><span>Pi-hole</span><span>Active</span></div>
-              <div class="row"><span class="dot"></span><span>Nextcloud</span><span>Active</span></div>
-              <div class="row"><span class="dot"></span><span>Jellyfin</span><span>Active</span></div>
-              <div class="row"><span class="dot"></span><span>Grafana</span><span>Active</span></div>
-              <div class="row"><span class="dot"></span><span>Home Assistant</span><span>Active</span></div>
             </div>
             <div class="hlo-pi-card">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="4" width="18" height="6" rx="1"/><rect x="3" y="14" width="18" height="6" rx="1"/><circle cx="7" cy="7" r="0.6" fill="currentColor"/><circle cx="7" cy="17" r="0.6" fill="currentColor"/></svg>
@@ -795,23 +869,24 @@
             </div>
           </div>
 
-          <div class="card">
-            <div class="panel-label">Latest activity</div>
+          <div class="hud-card">
+            <div class="hud-label">Latest activity</div>
             <div class="activity-list" id="activity-list">
               <div class="activity-item"><span class="activity-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M12 11v5"/></svg></span><span class="activity-text">Connect the backend to see real activity — this only shows backups, deployments, and CVE scans that have actually happened.</span><span class="activity-time">—</span></div>
             </div>
           </div>
 
           <div class="stack">
-            <div class="card">
-              <div class="panel-label">Market &amp; crypto</div>
-              <div class="ticker-row" style="margin-bottom:0">
-                <div class="ticker-card"><div class="sym">BTC</div><div class="price">$64,180</div><div class="chg up">▲ 1.8%</div></div>
-                <div class="ticker-card"><div class="sym">ETH</div><div class="price">$3,410</div><div class="chg down">▼ 0.6%</div></div>
-              </div>
+            <div class="hud-card">
+              <div class="hud-label">Security</div>
+              <div class="hud-row"><span class="k">Authentication</span><span class="v">bearer token</span></div>
+              <div class="hud-row"><span class="k">Audit trail</span><span class="v">activity log</span></div>
+              <button class="qa-btn" onclick="switchSection('security')" style="text-align:left; margin-top:10px; width:100%;">
+                <span class="qa-label">Login activity &amp; CVE scan</span><span class="qa-chevron">&#8250;</span>
+              </button>
             </div>
-            <div class="card">
-              <div class="panel-label">AI status</div>
+            <div class="hud-card">
+              <div class="hud-label gold">AI status</div>
               <div class="ai-status-card">
                 <div class="ai-status-icon"></div>
                 <div>
@@ -1215,6 +1290,10 @@
             <div><div class="stitle">Speak replies aloud</div><div class="sdesc">Requires ULTRON_FISH_AUDIO_API_KEY + ULTRON_FISH_VOICE_ID configured on the backend</div></div>
             <div class="switch" id="cfg-voice-reply" onclick="this.classList.toggle('on')"></div>
           </div>
+          <div class="set-row">
+            <div><div class="stitle">Reduced visual mode</div><div class="sdesc">Fewer AI-core particles, no ring/glow animation — for lower-power hosts (e.g. a Raspberry Pi 400). Reloads the page.</div></div>
+            <div class="switch" id="cfg-reduced-visuals" onclick="toggleReducedVisuals(this)"></div>
+          </div>
         </div>
       </section>
 
@@ -1327,6 +1406,18 @@
         ? "I'm online and watching this host. What would you like to work on?"
         : 'Standing by. Connect the backend to bring me online.';
     }
+
+    // Module 14: Core Status HUD card (Home rail) -- same connect/
+    // disconnect transition setTopbar already handles, not a separate poll.
+    const coreDot = document.getElementById('core-status-dot');
+    if (coreDot) coreDot.classList.toggle('on', ok);
+    const coreTitle = document.getElementById('core-status-title');
+    if (coreTitle) coreTitle.textContent = ok ? 'ONLINE' : 'STANDING BY';
+    const coreMode = document.getElementById('core-mode');
+    if (coreMode) coreMode.textContent = ok ? 'active' : 'standby';
+    const coreAi = document.getElementById('core-ai-ready');
+    if (coreAi) coreAi.textContent = ok ? 'ready' : 'offline';
+    if (coreAi) coreAi.className = 'v' + (ok ? ' good' : ' muted');
   }
 
   // "Remember me" — opt-in only (see the "Remember me on this device"
@@ -1505,8 +1596,15 @@
           fetchConnections(),
         ];
       await Promise.all(calls);
+      if (!state.connected && window.__heroSetState) window.__heroSetState('idle'); // recovered from alert
+      state.connected = true;
       setConnStatus('connected · last sync ' + new Date().toLocaleTimeString(), 'ok');
     } catch (err) {
+      // A lost connection AFTER having been connected is a real fault
+      // condition (distinct from "never configured yet," which the
+      // .offline CSS class alone already communicates neutrally) -- the
+      // one genuine trigger for the AI core's alert state.
+      if (window.__heroSetState) window.__heroSetState('alert');
       state.connected = false;
       setConnStatus('lost connection to backend: ' + err.message, 'err');
       setTopbar('offline · showing last known data', false);
@@ -1518,14 +1616,20 @@
     const data = await apiGet('/api/status');
 
     const pct = Math.round(data.cpu_percent || 0);
+    const memPct = Math.round(data.mem_percent || 0);
     const pctEl = document.getElementById('core-pct');
     const tagEl = document.getElementById('core-tag');
     if (pctEl) pctEl.textContent = pct + '%';
     if (tagEl) tagEl.textContent = 'cpu';
-    // Module 13: optional subtle visor-intensity shift on CPU load, read by
-    // the hero-head module script below -- a no-op if that script hasn't
-    // loaded yet (WebGL unavailable, still loading, etc.).
+    // Module 14: subtle core-brightness shift on CPU load, read by the
+    // particle-system script below -- a no-op if that script hasn't
+    // loaded yet.
     if (window.__heroSetCpu) window.__heroSetCpu(pct);
+
+    const coreCpuEl = document.getElementById('core-cpu-mini');
+    if (coreCpuEl) coreCpuEl.textContent = pct + '%';
+    const coreMemEl = document.getElementById('core-mem-mini');
+    if (coreMemEl) coreMemEl.textContent = memPct + '%';
 
     const containersEl = document.getElementById('stat-containers');
     if (containersEl) {
@@ -1600,6 +1704,10 @@
     if (labelEl) {
       labelEl.textContent = 'Storage — ' + (totalUsed / 1000).toFixed(2) + ' TB / ' +
         (totalCap / 1000).toFixed(2) + ' TB used (live)';
+    }
+    const homeStorageEl = document.getElementById('home-storage-label');
+    if (homeStorageEl) {
+      homeStorageEl.textContent = pct.toFixed(0) + '% · ' + (totalUsed / 1000).toFixed(2) + '/' + (totalCap / 1000).toFixed(2) + ' TB';
     }
   }
 
@@ -2314,13 +2422,14 @@
     recognizer.lang = 'en-US';
     recognizer.interimResults = false;
     recognizer.maxAlternatives = 1;
-    recognizer.onstart = () => micBtn.classList.add('listening');
+    recognizer.onstart = () => { micBtn.classList.add('listening'); if (window.__heroSetState) window.__heroSetState('listening'); };
     recognizer.onresult = (e) => {
       document.getElementById('home-talk-input').value = e.results[0][0].transcript;
     };
     recognizer.onend = () => {
       micBtn.classList.remove('listening');
       recognizer = null;
+      if (window.__heroSetState) window.__heroSetState('idle');
     };
     recognizer.start();
   }
@@ -2417,6 +2526,7 @@
     input.disabled = true;
     btn.disabled = true;
     const thinkingEl = appendChatBubble('ultron', 'thinking…', { thinking: true });
+    if (window.__heroSetState) window.__heroSetState('thinking');
 
     try {
       const data = await postChat(text, state.chatHistory || []);
@@ -2424,9 +2534,14 @@
       appendChatBubble('ultron', data.reply, { tools: data.tools_used });
       speakReply(data.reply);
       state.chatHistory = data.history || state.chatHistory;
+      if (window.__heroSetState) {
+        window.__heroSetState('responding');
+        setTimeout(() => window.__heroSetState('idle'), 2200);
+      }
     } catch (err) {
       thinkingEl.remove();
       appendChatBubble('ultron', 'Something went wrong: ' + err.message, { isError: true });
+      if (window.__heroSetState) window.__heroSetState('idle');
     } finally {
       input.disabled = false;
       btn.disabled = false;
@@ -2693,167 +2808,230 @@
   loadRememberedConnection();
 </script>
 
-<!-- Module 13: the hero head itself. A separate <script type="module"> since
-     ES module imports (the vendored Three.js + GLTFLoader, see the importmap
-     in <head>) require it -- module scripts don't share scope with the
-     classic script above, so the one piece of cross-script state
-     (CPU-driven visor intensity) goes through window.__heroSetCpu, called
-     from fetchStatus() above. Fails silently (leaves the CSS glow visible,
-     nothing else) on any error -- a hero-visual problem must never break the
-     rest of the dashboard, per the roadmap's own scope-control rule. -->
-<script type="module">
-  import * as THREE from 'three';
-  import { GLTFLoader } from '/three-pipeline/loaders/GLTFLoader.js';
+<!-- Module 14: the AI core itself -- a dependency-free Canvas2D particle/
+     filament system, replacing Module 13's Three.js/glTF robotic head.
+     Lighter-weight on purpose (no WebGL context, no model load): the
+     reference HUD's brain reads as particles and energy, not solid
+     geometry, and this needs to stay smooth on a Raspberry Pi 400. A
+     classic script (not type="module") since there's no import to resolve
+     anymore. Fails silently (leaves the CSS glow as the only visual) if
+     canvas 2D isn't available -- a hero-visual problem must never break
+     the rest of the dashboard. -->
+<script>
+(function () {
+  'use strict';
+  var wrap = document.getElementById('sphere-wrap');
+  var canvas = document.getElementById('hero-canvas');
+  if (!wrap || !canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
-  const wrap = document.getElementById('sphere-wrap');
-  const canvas = document.getElementById('hero-canvas');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var REDUCED_KEY = 'ultron_reduced_visuals';
+  function reducedVisualsOn() {
+    try { return localStorage.getItem(REDUCED_KEY) === '1'; } catch (e) { return false; }
+  }
+  if (reducedVisualsOn()) document.body.classList.add('reduced-visuals');
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  (async function initHero() {
-    if (!wrap || !canvas || !window.WebGLRenderingContext) return;
-
-    let renderer;
-    try {
-      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    } catch (err) {
-      return; // no WebGL -- leave the CSS glow as the only hero visual
-    }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 20);
-    camera.position.set(0, -2.35, 0.05);
-    camera.lookAt(0, 0, -0.05);
-
-    // Real lights: the glTF-exported plate materials are PBR (MeshStandard-
-    // Material), which is unlit without them. Only the visor is self-lit
-    // (emissive) -- these lights are for the metal, not the glow.
-    scene.add(new THREE.AmbientLight(0x404050, 1.2));
-    const key = new THREE.DirectionalLight(0xffffff, 1.6);
-    key.position.set(1.4, -1.6, 1.4);
-    scene.add(key);
-    const rim = new THREE.DirectionalLight(0xff3050, 0.9);
-    rim.position.set(-1.6, 1.2, 0.4);
-    scene.add(rim);
-
-    const headGroup = new THREE.Group();
-    scene.add(headGroup);
-
-    let visorMesh = null;
-    let loaded = false;
-    try {
-      const gltf = await new GLTFLoader().loadAsync('/three-pipeline/hero_head.glb');
-      headGroup.add(gltf.scene);
-      visorMesh = gltf.scene.getObjectByName('Visor');
-      loaded = true;
-    } catch (err) {
-      return; // failed load -- same graceful no-op as no-WebGL above
-    }
-
-    // All render-loop state declared BEFORE sizeToContainer/renderFrame are
-    // defined and called below -- renderFrame is called eagerly (from
-    // sizeToContainer, on the very first size pass), and it reads every one
-    // of these. Getting this ordering wrong is a real bug that was live for
-    // one build: cpuBoost/timer were declared with let/const further down
-    // the file, so the immediate sizeToContainer() -> renderFrame() call hit
-    // a temporal-dead-zone ReferenceError on EVERY page load, silently
-    // aborting the rest of initHero() (no listeners, no loop, blank canvas)
-    // -- caught by testing the fix live, not assumed to work.
-    let cpuBoost = 1.0;
-    let parallaxX = 0, parallaxY = 0;
-    let rafId = null;
-    const timer = new THREE.Timer();
-
-    // Step 48 (optional): a subtle visor-intensity lift under CPU load --
-    // there's no existing shared "system state" machine to reuse (checked;
-    // .val.warn elsewhere is specific to the updates-pending row), so this
-    // is deliberately small rather than inventing one.
-    window.__heroSetCpu = function (pct) {
-      cpuBoost = pct > 90 ? 1.4 : pct > 70 ? 1.15 : 1.0;
-    };
-
-    // Step 53: subtle cursor parallax, mouse only (touch scroll must never
-    // be affected), capped small, never engaged under reduced-motion.
-    if (!reducedMotion) {
-      window.addEventListener('mousemove', function (e) {
-        const rect = wrap.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const dx = (e.clientX - cx) / Math.max(window.innerWidth / 2, 1);
-        const dy = (e.clientY - cy) / Math.max(window.innerHeight / 2, 1);
-        parallaxX = Math.max(-1, Math.min(1, dx)) * 0.14;
-        parallaxY = Math.max(-1, Math.min(1, dy)) * 0.08;
-      });
-    }
-
-    function renderFrame() {
-      timer.update();
-      const t = timer.getElapsed();
-      if (!reducedMotion) {
-        headGroup.rotation.y += 0.008;
-        headGroup.rotation.y += (parallaxX - 0) * 0.02;
-        headGroup.rotation.x = parallaxY * 0.4;
-        if (visorMesh && visorMesh.material) {
-          const pulse = 2.4 + Math.sin(t * 1.1) * 0.9; // slow, no rapid flashing
-          visorMesh.material.emissiveIntensity = pulse * cpuBoost;
-        }
+  // ---- node/edge graph, generated once -- not per frame. Nodes fill an
+  // ellipse (taller than wide, density biased toward the center via
+  // sqrt(random)) rather than sitting on a ring outline, so it reads as a
+  // dense energy mass like the reference image, not a hollow circle.
+  // Reduced Visual Mode halves the count at generation time (not just the
+  // animation rate) -- fewer edges is the actual CPU/GPU win on a Pi 400,
+  // slower animation alone wouldn't be. ----
+  var NODE_COUNT = reducedVisualsOn() ? 24 : 46;
+  var nodes = [];
+  for (var i = 0; i < NODE_COUNT; i++) {
+    var angle = Math.random() * Math.PI * 2;
+    var r = Math.sqrt(Math.random());
+    nodes.push({
+      x: Math.cos(angle) * r * 0.92,
+      y: Math.sin(angle) * r * 1.08,
+      phase: Math.random() * Math.PI * 2,
+      freq: 0.6 + Math.random() * 0.8,
+      size: 1.1 + Math.random() * 1.6,
+    });
+  }
+  var edges = [];
+  var edgeKeys = {};
+  nodes.forEach(function (n, ni) {
+    var dists = nodes.map(function (m, mi) {
+      return { j: mi, d: (ni === mi) ? Infinity : Math.hypot(n.x - m.x, n.y - m.y) };
+    });
+    dists.sort(function (a, b) { return a.d - b.d; });
+    var k = 2 + Math.floor(Math.random() * 2);
+    for (var t = 0; t < k && t < dists.length; t++) {
+      var j = dists[t].j;
+      var key = ni < j ? ni + '-' + j : j + '-' + ni;
+      if (!edgeKeys[key]) {
+        edgeKeys[key] = true;
+        edges.push({ a: ni, b: j, phase: Math.random() * Math.PI * 2 });
       }
-      renderer.render(scene, camera);
+    }
+  });
+
+  // ---- state machine: idle/listening/thinking/responding/alert. Wired
+  // from real events elsewhere in this file (mic toggle, chat send/reply,
+  // connection loss) -- see the calls to window.__heroSetState below. ----
+  var STATE_PROFILE = {
+    idle:       { pulseSpeed: 0.9, activity: 0.30, color: [255, 178, 56] },
+    listening:  { pulseSpeed: 1.3, activity: 0.50, color: [255, 190, 80] },
+    thinking:   { pulseSpeed: 2.2, activity: 0.85, color: [255, 178, 56] },
+    responding: { pulseSpeed: 1.8, activity: 1.00, color: [255, 200, 90] },
+    alert:      { pulseSpeed: 2.6, activity: 0.75, color: [255, 70, 60] },
+  };
+  var heroState = 'idle';
+  window.__heroSetState = function (name) {
+    if (STATE_PROFILE[name]) heroState = name;
+  };
+  var cpuBoost = 1.0;
+  window.__heroSetCpu = function (pct) {
+    cpuBoost = pct > 90 ? 1.35 : pct > 70 ? 1.15 : 1.0;
+  };
+
+  var travelers = [];
+  function maybeSpawnTraveler(activity) {
+    if (!edges.length || prefersReducedMotion) return;
+    if (Math.random() < activity * 0.045) {
+      travelers.push({ edge: edges[Math.floor(Math.random() * edges.length)], t: 0, speed: 0.02 + Math.random() * 0.02 });
+    }
+  }
+
+  var W = 0, H = 0, scale = 1;
+  function project(nx, ny) {
+    return { x: W / 2 + nx * scale, y: H / 2 + ny * scale };
+  }
+
+  function sizeToContainer() {
+    var rect = wrap.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = Math.max(1, Math.round(rect.width));
+    H = Math.max(1, Math.round(rect.height));
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    scale = Math.min(W, H) / 2;
+    renderFrame(); // resize always redraws immediately -- see Module 13's
+                    // own note on why a paused loop + a cleared canvas
+                    // otherwise leaves it blank until something else forces
+                    // a redraw. Same fix, carried forward.
+  }
+
+  var startTime = (window.performance && performance.now) ? performance.now() : Date.now();
+  function now() {
+    return (((window.performance && performance.now) ? performance.now() : Date.now()) - startTime) / 1000;
+  }
+
+  function renderFrame() {
+    var t = now();
+    var profile = STATE_PROFILE[heroState];
+    var col = profile.color;
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.lineWidth = 1;
+    edges.forEach(function (e) {
+      var a = nodes[e.a], b = nodes[e.b];
+      var pa = project(a.x, a.y), pb = project(b.x, b.y);
+      var flicker = 0.16 + 0.13 * Math.sin(t * profile.pulseSpeed + e.phase);
+      ctx.strokeStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + flicker.toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.moveTo(pa.x, pa.y);
+      ctx.lineTo(pb.x, pb.y);
+      ctx.stroke();
+    });
+
+    nodes.forEach(function (n) {
+      var p = project(n.x, n.y);
+      var tw = 0.5 + 0.5 * Math.sin(t * n.freq * profile.pulseSpeed + n.phase);
+      var alpha = 0.32 + 0.48 * tw;
+      var size = n.size * (0.85 + 0.3 * tw);
+      var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 2.4);
+      grad.addColorStop(0, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha.toFixed(3) + ')');
+      grad.addColorStop(1, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, size * 2.4, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    for (var i = travelers.length - 1; i >= 0; i--) {
+      var tr = travelers[i];
+      tr.t += tr.speed;
+      if (tr.t >= 1) { travelers.splice(i, 1); continue; }
+      var a2 = nodes[tr.edge.a], b2 = nodes[tr.edge.b];
+      var p2 = project(a2.x + (b2.x - a2.x) * tr.t, a2.y + (b2.y - a2.y) * tr.t);
+      ctx.save();
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0.9)';
+      ctx.fillStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0.95)';
+      ctx.beginPath();
+      ctx.arc(p2.x, p2.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     }
 
-    function loop() {
-      renderFrame();
-      if (!reducedMotion && !document.hidden) rafId = requestAnimationFrame(loop);
-    }
+    var pulse = (0.7 + 0.3 * Math.sin(t * profile.pulseSpeed * 1.4)) * cpuBoost;
+    var coreR = scale * 0.09 * (0.85 + 0.3 * pulse);
+    var pc = project(0, 0);
+    ctx.save();
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0.9)';
+    var coreGrad = ctx.createRadialGradient(pc.x, pc.y, 0, pc.x, pc.y, Math.max(coreR, 1));
+    coreGrad.addColorStop(0, '#FFE9C2');
+    coreGrad.addColorStop(0.5, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0.95)');
+    coreGrad.addColorStop(1, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0)');
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(pc.x, pc.y, Math.max(coreR, 1), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
 
-    function sizeToContainer() {
-      const rect = wrap.getBoundingClientRect();
-      const w = Math.max(1, Math.round(rect.width));
-      const h = Math.max(1, Math.round(rect.height));
-      renderer.setSize(w, h, false); // clears the canvas's drawing buffer
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      // A resize always redraws immediately, whether or not the RAF loop is
-      // currently running -- setSize() clears the canvas, and if the loop
-      // is paused (tab hidden, or reduced-motion's one-shot render) nothing
-      // else will repaint it, leaving a blank canvas until the next
-      // unrelated event. Verified live: this was a real bug, not
-      // theoretical -- a resize while the loop was paused left the canvas
-      // blank (glow still visible, head gone) until something else forced
-      // a redraw.
-      renderFrame();
-    }
-    sizeToContainer();
-    // Both, not either/or: the dashboard's own responsive breakpoints for
-    // .sphere-wrap are viewport-width media queries, so a window resize
-    // listener alone would already cover every real case here -- kept as a
-    // guaranteed fallback since ResizeObserver callback delivery turned out
-    // to be unreliable in at least one real test environment (verified live:
-    // a container resize with no matching window resize event left the
-    // canvas's drawing buffer stuck at its original size).
-    if (window.ResizeObserver) {
-      new ResizeObserver(sizeToContainer).observe(wrap);
-    }
-    window.addEventListener('resize', sizeToContainer);
+  var rafId = null;
+  function loop() {
+    renderFrame();
+    maybeSpawnTraveler(STATE_PROFILE[heroState].activity);
+    if (!document.hidden) rafId = requestAnimationFrame(loop);
+  }
 
-    // Step 51/52: reduced-motion renders exactly one static frame, no RAF
-    // loop at all -- "reduce/remove rotation and particles, keep the head
-    // and CPU indicator visible," and the cheapest possible reading of
-    // "avoid unnecessary render loops."
-    if (reducedMotion) {
-      renderFrame();
-    } else {
-      loop();
-      document.addEventListener('visibilitychange', function () {
-        if (document.hidden) {
-          if (rafId) cancelAnimationFrame(rafId);
-          rafId = null;
-        } else if (!rafId) {
-          loop();
-        }
-      });
-    }
-  })();
+  sizeToContainer();
+  if (window.ResizeObserver) new ResizeObserver(sizeToContainer).observe(wrap);
+  window.addEventListener('resize', sizeToContainer); // guaranteed fallback -- see Module 13's note on ResizeObserver reliability
+
+  // Step 51/52 equivalent: reduced-motion (OS setting or the manual
+  // Reduced Visual Mode toggle) renders exactly one static frame, no RAF
+  // loop at all -- not just a slower one.
+  if (prefersReducedMotion) {
+    renderFrame();
+  } else {
+    loop();
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+      } else if (!rafId) {
+        loop();
+      }
+    });
+  }
+})();
+
+// Manual Reduced Visual Mode switch (Settings -> Preferences) -- persisted,
+// reloads to rebuild the particle graph at the lower node count (see
+// NODE_COUNT above) rather than trying to resize a live graph in place.
+(function () {
+  var sw = document.getElementById('cfg-reduced-visuals');
+  if (!sw) return;
+  try {
+    if (localStorage.getItem('ultron_reduced_visuals') === '1') sw.classList.add('on');
+  } catch (e) { /* ignore */ }
+})();
+function toggleReducedVisuals(el) {
+  var next = !el.classList.contains('on');
+  try { localStorage.setItem('ultron_reduced_visuals', next ? '1' : '0'); } catch (e) { /* ignore */ }
+  location.reload();
+}
 </script>
 </body>
 </html>
