@@ -13,12 +13,16 @@
 
 # ==============================================================================
 # 2. ALLOWLIST — exactly what ultron-backend/Dockerfile COPYs:
-#    ultron-backend/ (requirements.txt + app.py + its own docs/scripts) and
-#    ultron-dashboard.html, which app.py serves from one directory up.
+#    ultron-backend/ (requirements.txt + app.py + its own docs/scripts),
+#    ultron-dashboard.html (app.py serves it from one directory up), and
+#    three-pipeline/ (Module 13: vendored Three.js + the built hero-head
+#    .glb, served by app.py's /three-pipeline/<file> route).
 # ==============================================================================
 !ultron-backend/
 !ultron-backend/**
 !ultron-dashboard.html
+!three-pipeline/
+!three-pipeline/**
 
 # ==============================================================================
 # 3. EXPLICIT BLOCKS (strip junk/secrets back out of the allowlisted tree,
@@ -55,3 +59,13 @@
 **/venv/
 **/.venv/
 **/.pytest_cache/
+
+# three-pipeline/: dev-only smoke tests, the Blender build script, and the
+# render preview -- none of these are fetched by the dashboard at runtime,
+# only three.module.js/three.core.js/loaders/utils and hero_head.glb are.
+three-pipeline/*.html
+three-pipeline/*.py
+three-pipeline/*.png
+three-pipeline/*.glb
+!three-pipeline/hero_head.glb
+three-pipeline/README.md
