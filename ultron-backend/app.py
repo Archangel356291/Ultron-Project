@@ -2001,6 +2001,22 @@ def dashboard():
     return send_from_directory(DASHBOARD_DIR, "ultron-dashboard.html")
 
 
+# Module 13: the dashboard's hero head needs Three.js + the built .glb model
+# served over HTTP (an ES module import needs a real origin, same reason the
+# dashboard itself moved off file:// -- see the comment above). Unauthenticated
+# like the dashboard route above, for the same reason: nothing here is a
+# secret, it's the vendored rendering library and one static 3D asset, no
+# different from handing someone those files directly. send_from_directory
+# already guards against path traversal (a ".." in filename resolves outside
+# THREE_PIPELINE_DIR and is refused), so no extra check is needed here.
+THREE_PIPELINE_DIR = os.path.join(DASHBOARD_DIR, "three-pipeline")
+
+
+@app.route("/three-pipeline/<path:filename>")
+def three_pipeline_asset(filename):
+    return send_from_directory(THREE_PIPELINE_DIR, filename)
+
+
 @app.route("/api/health")
 def health():
     return jsonify({"ok": True})

@@ -10,6 +10,13 @@
 <title>ULTRON — Home Lab Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Module 13: resolves GLTFLoader.js's own `import ... from 'three'` (a
+     bare specifier) to the vendored, offline three.module.js -- no bundler,
+     no CDN, matching Module 5's "vendor locally" requirement. Must appear
+     before any <script type="module"> that imports 'three' or a loader. -->
+<script type="importmap">
+{ "imports": { "three": "/three-pipeline/three.module.js" } }
+</script>
 <style>
   :root{
     --void:#050810;
@@ -255,39 +262,31 @@
     color:var(--text-dim); text-transform:uppercase;
   }
 
+  /* Module 13: hero centerpiece is a Three.js-rendered original robotic
+     head (see three-pipeline/hero_head.glb + the module script near the
+     end of this file), replacing the previous SVG orange particle sphere.
+     Only this centerpiece is recolored red/dark-chrome -- --oxide etc.
+     stay untouched site-wide, per the roadmap's own "only recolor the
+     centerpiece, not the whole site." */
   .sphere-wrap{ position:relative; width:280px; height:280px; flex-shrink:0; }
   .sphere-glow{
     position:absolute; top:-20px; right:-20px; bottom:-20px; left:-20px; border-radius:50%;
-    background:radial-gradient(circle, rgba(255,138,30,0.35) 0%, rgba(255,138,30,0.08) 45%, transparent 70%);
+    background:radial-gradient(circle, rgba(255,20,40,0.30) 0%, rgba(255,20,40,0.07) 45%, transparent 70%);
     filter:blur(4px);
     animation:sphere-breathe 4s ease-in-out infinite;
   }
   @keyframes sphere-breathe{ 0%,100%{ opacity:0.7; transform:scale(0.96); } 50%{ opacity:1; transform:scale(1.02); } }
-  .sphere-wrap svg{ position:absolute; top:0; right:0; bottom:0; left:0; width:100%; height:100%; }
-  .sphere-ring{ fill:none; stroke:var(--oxide); opacity:0.55; transform-origin:100px 100px; }
-  .sphere-ring.a{ animation:spin-cw 22s linear infinite; }
-  .sphere-ring.b{ animation:spin-ccw 30s linear infinite; opacity:0.35; }
-  .sphere-ring.c{ animation:spin-cw 14s linear infinite; opacity:0.7; stroke:var(--amber); }
-  .sphere-ring.d{ animation:spin-ccw 18s linear infinite; opacity:0.3; stroke:var(--cyan); }
-  .sphere-spokes{ animation:spin-cw 40s linear infinite; opacity:0.4; transform-origin:100px 100px; }
-  .sphere-lattice{ fill:none; stroke:var(--oxide); stroke-width:0.5; opacity:0.55; animation:spin-ccw 55s linear infinite; transform-origin:100px 100px; }
-  .sphere-lattice.b{ stroke:var(--amber); opacity:0.4; animation:spin-cw 70s linear infinite; }
-  .sphere-sparks circle{ fill:#FFE3B0; animation:spark-flicker 2.6s ease-in-out infinite; }
-  .sphere-noise{ mix-blend-mode:screen; animation:spin-cw 90s linear infinite; transform-origin:100px 100px; }
-  @keyframes spin-cw{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
-  @keyframes spin-ccw{ from{ transform:rotate(0deg); } to{ transform:rotate(-360deg); } }
-  @keyframes spark-flicker{ 0%,100%{ opacity:0.4; } 50%{ opacity:1; } }
-  .sphere-core{
-    position:absolute; top:0; right:0; bottom:0; left:0; display:flex; align-items:center; justify-content:center;
-  }
-  .sphere-core::before{
-    content:''; width:34px; height:34px; border-radius:50%;
-    background:radial-gradient(circle, #FFE3B0 0%, var(--oxide) 55%, transparent 100%);
-    box-shadow:0 0 40px 10px rgba(255,138,30,0.6), 0 0 90px 30px rgba(255,138,30,0.25);
-    animation:core-pulse 2.4s ease-in-out infinite;
-  }
+  #hero-canvas{ position:absolute; top:0; right:0; bottom:0; left:0; width:100%; height:100%; display:block; }
   .sphere-wrap.offline .sphere-glow{ opacity:0.35; }
-  .sphere-wrap.offline .sphere-core::before{ filter:grayscale(0.6) brightness(0.7); }
+  .sphere-wrap.offline #hero-canvas{ filter:grayscale(0.6) brightness(0.7); }
+  /* prefers-reduced-motion: the module script itself skips the rotation/
+     pulse render loop (rendering one static frame instead) -- this rule
+     only stops the CSS-driven glow breathing, the other half of "reduce/
+     remove rotation and particles, keep the head and CPU indicator
+     visible." */
+  @media (prefers-reduced-motion: reduce){
+    .sphere-glow{ animation:none; opacity:0.85; }
+  }
 
   .core-badge{
     position:absolute; bottom:8px; right:8px;
@@ -672,32 +671,8 @@
 
               <div class="sphere-row">
                 <div class="sphere-wrap offline" id="sphere-wrap">
-                  <svg viewBox="0 0 200 200">
-                    <defs>
-                      <filter id="orb-noise-filter" x="-40%" y="-40%" width="180%" height="180%">
-                        <feTurbulence type="fractalNoise" baseFrequency="0.09 0.11" numOctaves="3" seed="7" result="noise"/>
-                        <feColorMatrix in="noise" type="matrix" values="0 0 0 0 1  0 0 0 0 0.6  0 0 0 0 0.15  0 0 0 1.1 0" result="amberNoise"/>
-                        <feComposite in="amberNoise" in2="SourceAlpha" operator="in"/>
-                      </filter>
-                    </defs>
-                    <circle class="sphere-noise" cx="100" cy="100" r="62" fill="#fff" filter="url(#orb-noise-filter)" opacity="0.5"/>
-                    <path class="sphere-lattice" d="M85.4 82.5L71.4 76.8M96.4 57.3L74.2 34.4M79.8 110.8L68.4 116.7M127.7 104.7L149.4 109.9M107.4 139.5L133.4 156.9M114.9 59.1L106.4 41.4M131.2 91.4L136.1 77.8M123.3 66.8L146.4 52.5M49.4 88.3L34.1 82.2M119.6 64.0L135.7 42.1M93.4 77.5L84.7 66.9M125.6 114.0L137.1 113.4M78.1 75.0L60.7 70.1M94.6 150.6L86.7 171.9M121.1 139.1L130.7 146.9M141.6 97.3L161.8 103.9M125.3 61.7L114.9 43.0M87.9 127.7L71.7 132.2M122.6 77.8L135.7 59.4M131.0 81.5L137.7 67.3M72.1 88.7L59.9 68.6M76.8 117.0L52.4 134.4M119.7 112.7L126.7 120.8M109.1 66.2L108.0 56.3M138.3 99.1L165.9 115.3M144.1 103.2L166.9 106.6M95.6 141.5L96.9 152.1M50.8 114.7L29.4 134.7M72.5 99.9L46.3 85.5M87.5 139.8L96.1 163.0M103.0 61.5L106.4 36.6M132.0 100.1L138.6 112.1M134.4 67.1L129.9 45.2M136.9 64.5L143.6 57.2M141.2 119.1L169.2 112.2M61.5 106.0L47.5 94.4M74.7 113.2L54.1 115.3M109.5 130.1L112.3 160.2M64.9 114.4L59.4 126.7M78.9 134.1L81.4 149.8M137.4 117.9L140.6 136.3M115.4 81.3L127.0 74.1M105.8 125.4L109.5 153.8M54.5 107.9L33.4 127.2M128.9 120.2L143.8 129.1M94.4 57.6L71.0 33.7M73.4 118.6L58.1 142.1M113.1 133.3L126.9 145.8M100.1 150.4L83.0 166.0M77.6 92.7L54.4 71.9M149.6 90.2L170.2 67.9M71.5 102.6L58.2 117.6M62.1 136.1L44.0 135.2M66.4 109.8L36.0 95.9M58.6 84.9L45.7 88.5"/>
-                    <path class="sphere-lattice b" d="M81.1 113.0L77.9 122.9M101.5 75.8L107.6 64.4M59.8 90.1L45.7 90.1M82.3 84.7L64.1 74.9M73.3 122.6L63.5 123.6M115.5 78.6L128.8 62.1M104.5 70.7L98.7 57.9M123.0 101.1L144.8 103.4M60.7 109.5L44.5 92.0M85.4 118.2L82.7 140.6M108.5 68.3L131.6 55.5M89.9 84.0L86.0 78.9M108.5 81.9L103.5 67.4M93.3 116.9L88.7 127.2M111.4 135.8L122.9 138.2M98.7 128.0L103.2 146.2M86.1 61.5L97.3 51.0M70.3 78.5L55.5 72.5M117.7 112.3L128.5 110.4M114.1 118.4L116.2 134.5M111.6 62.7L124.9 60.2M107.8 118.2L110.0 128.7M122.3 106.9L130.4 118.9M77.2 116.7L76.8 132.9M129.8 71.9L139.2 56.5M75.8 108.9L58.9 109.6M85.2 136.9L91.1 156.6M112.7 67.6L109.3 56.2"/>
-                    <g class="sphere-sparks">
-                      <circle cx="88.6" cy="122.9" r="1.3" opacity="0.44"/><circle cx="60.4" cy="90.9" r="0.7" opacity="0.68"/><circle cx="144.1" cy="110.6" r="0.7" opacity="0.45"/><circle cx="35.2" cy="133.3" r="0.7" opacity="0.52"/><circle cx="43.4" cy="41.6" r="1.2" opacity="0.62"/><circle cx="118.1" cy="97.3" r="1.5" opacity="0.56"/><circle cx="114.3" cy="118.3" r="0.9" opacity="0.85"/><circle cx="123.5" cy="150.5" r="1.2" opacity="0.6"/><circle cx="81.5" cy="94.3" r="0.7" opacity="0.51"/><circle cx="81.0" cy="59.3" r="0.9" opacity="0.72"/><circle cx="65.6" cy="110.4" r="1.4" opacity="0.78"/><circle cx="102.0" cy="155.2" r="1.1" opacity="0.88"/><circle cx="95.5" cy="65.1" r="1.6" opacity="0.46"/><circle cx="40.8" cy="133.5" r="0.8" opacity="0.67"/><circle cx="126.2" cy="73.9" r="1.3" opacity="0.73"/><circle cx="58.9" cy="77.4" r="1.4" opacity="0.92"/><circle cx="39.3" cy="110.0" r="0.7" opacity="0.79"/><circle cx="49.1" cy="32.5" r="1.4" opacity="0.56"/><circle cx="111.4" cy="120.2" r="0.7" opacity="0.82"/><circle cx="122.2" cy="123.5" r="1.0" opacity="0.88"/>
-                    </g>
-                    <circle class="sphere-ring a" cx="100" cy="100" r="88" stroke-width="1" stroke-dasharray="4 6"/>
-                    <circle class="sphere-ring b" cx="100" cy="100" r="70" stroke-width="1" stroke-dasharray="1 5"/>
-                    <circle class="sphere-ring c" cx="100" cy="100" r="52" stroke-width="1.4" stroke-dasharray="10 8"/>
-                    <circle class="sphere-ring a" cx="100" cy="100" r="96" stroke-width="0.6" stroke-dasharray="2 10"/>
-                    <circle class="sphere-ring d" cx="100" cy="100" r="80" stroke-width="0.7" stroke-dasharray="1 3"/>
-                    <circle class="sphere-ring b" cx="100" cy="100" r="60" stroke-width="0.6" stroke-dasharray="6 12"/>
-                    <g class="sphere-spokes">
-                      <path d="M100 30v14M170 100h-14M100 170v-14M30 100h14M148 52l-10 10M148 148l-10-10M52 148l10-10M52 52l10 10" fill="none" stroke="var(--oxide)" stroke-width="0.6"/>
-                    </g>
-                  </svg>
                   <div class="sphere-glow"></div>
-                  <div class="sphere-core"></div>
+                  <canvas id="hero-canvas" aria-label="Ultron's animated hero head"></canvas>
                   <div class="core-badge">
                     <div class="core-pct" id="core-pct">—</div>
                     <div class="core-tag" id="core-tag">cpu</div>
@@ -1547,6 +1522,10 @@
     const tagEl = document.getElementById('core-tag');
     if (pctEl) pctEl.textContent = pct + '%';
     if (tagEl) tagEl.textContent = 'cpu';
+    // Module 13: optional subtle visor-intensity shift on CPU load, read by
+    // the hero-head module script below -- a no-op if that script hasn't
+    // loaded yet (WebGL unavailable, still loading, etc.).
+    if (window.__heroSetCpu) window.__heroSetCpu(pct);
 
     const containersEl = document.getElementById('stat-containers');
     if (containersEl) {
@@ -2712,6 +2691,169 @@
 
   initBrainGraph();
   loadRememberedConnection();
+</script>
+
+<!-- Module 13: the hero head itself. A separate <script type="module"> since
+     ES module imports (the vendored Three.js + GLTFLoader, see the importmap
+     in <head>) require it -- module scripts don't share scope with the
+     classic script above, so the one piece of cross-script state
+     (CPU-driven visor intensity) goes through window.__heroSetCpu, called
+     from fetchStatus() above. Fails silently (leaves the CSS glow visible,
+     nothing else) on any error -- a hero-visual problem must never break the
+     rest of the dashboard, per the roadmap's own scope-control rule. -->
+<script type="module">
+  import * as THREE from 'three';
+  import { GLTFLoader } from '/three-pipeline/loaders/GLTFLoader.js';
+
+  const wrap = document.getElementById('sphere-wrap');
+  const canvas = document.getElementById('hero-canvas');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  (async function initHero() {
+    if (!wrap || !canvas || !window.WebGLRenderingContext) return;
+
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    } catch (err) {
+      return; // no WebGL -- leave the CSS glow as the only hero visual
+    }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 20);
+    camera.position.set(0, -2.35, 0.05);
+    camera.lookAt(0, 0, -0.05);
+
+    // Real lights: the glTF-exported plate materials are PBR (MeshStandard-
+    // Material), which is unlit without them. Only the visor is self-lit
+    // (emissive) -- these lights are for the metal, not the glow.
+    scene.add(new THREE.AmbientLight(0x404050, 1.2));
+    const key = new THREE.DirectionalLight(0xffffff, 1.6);
+    key.position.set(1.4, -1.6, 1.4);
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0xff3050, 0.9);
+    rim.position.set(-1.6, 1.2, 0.4);
+    scene.add(rim);
+
+    const headGroup = new THREE.Group();
+    scene.add(headGroup);
+
+    let visorMesh = null;
+    let loaded = false;
+    try {
+      const gltf = await new GLTFLoader().loadAsync('/three-pipeline/hero_head.glb');
+      headGroup.add(gltf.scene);
+      visorMesh = gltf.scene.getObjectByName('Visor');
+      loaded = true;
+    } catch (err) {
+      return; // failed load -- same graceful no-op as no-WebGL above
+    }
+
+    // All render-loop state declared BEFORE sizeToContainer/renderFrame are
+    // defined and called below -- renderFrame is called eagerly (from
+    // sizeToContainer, on the very first size pass), and it reads every one
+    // of these. Getting this ordering wrong is a real bug that was live for
+    // one build: cpuBoost/timer were declared with let/const further down
+    // the file, so the immediate sizeToContainer() -> renderFrame() call hit
+    // a temporal-dead-zone ReferenceError on EVERY page load, silently
+    // aborting the rest of initHero() (no listeners, no loop, blank canvas)
+    // -- caught by testing the fix live, not assumed to work.
+    let cpuBoost = 1.0;
+    let parallaxX = 0, parallaxY = 0;
+    let rafId = null;
+    const timer = new THREE.Timer();
+
+    // Step 48 (optional): a subtle visor-intensity lift under CPU load --
+    // there's no existing shared "system state" machine to reuse (checked;
+    // .val.warn elsewhere is specific to the updates-pending row), so this
+    // is deliberately small rather than inventing one.
+    window.__heroSetCpu = function (pct) {
+      cpuBoost = pct > 90 ? 1.4 : pct > 70 ? 1.15 : 1.0;
+    };
+
+    // Step 53: subtle cursor parallax, mouse only (touch scroll must never
+    // be affected), capped small, never engaged under reduced-motion.
+    if (!reducedMotion) {
+      window.addEventListener('mousemove', function (e) {
+        const rect = wrap.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = (e.clientX - cx) / Math.max(window.innerWidth / 2, 1);
+        const dy = (e.clientY - cy) / Math.max(window.innerHeight / 2, 1);
+        parallaxX = Math.max(-1, Math.min(1, dx)) * 0.14;
+        parallaxY = Math.max(-1, Math.min(1, dy)) * 0.08;
+      });
+    }
+
+    function renderFrame() {
+      timer.update();
+      const t = timer.getElapsed();
+      if (!reducedMotion) {
+        headGroup.rotation.y += 0.008;
+        headGroup.rotation.y += (parallaxX - 0) * 0.02;
+        headGroup.rotation.x = parallaxY * 0.4;
+        if (visorMesh && visorMesh.material) {
+          const pulse = 2.4 + Math.sin(t * 1.1) * 0.9; // slow, no rapid flashing
+          visorMesh.material.emissiveIntensity = pulse * cpuBoost;
+        }
+      }
+      renderer.render(scene, camera);
+    }
+
+    function loop() {
+      renderFrame();
+      if (!reducedMotion && !document.hidden) rafId = requestAnimationFrame(loop);
+    }
+
+    function sizeToContainer() {
+      const rect = wrap.getBoundingClientRect();
+      const w = Math.max(1, Math.round(rect.width));
+      const h = Math.max(1, Math.round(rect.height));
+      renderer.setSize(w, h, false); // clears the canvas's drawing buffer
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      // A resize always redraws immediately, whether or not the RAF loop is
+      // currently running -- setSize() clears the canvas, and if the loop
+      // is paused (tab hidden, or reduced-motion's one-shot render) nothing
+      // else will repaint it, leaving a blank canvas until the next
+      // unrelated event. Verified live: this was a real bug, not
+      // theoretical -- a resize while the loop was paused left the canvas
+      // blank (glow still visible, head gone) until something else forced
+      // a redraw.
+      renderFrame();
+    }
+    sizeToContainer();
+    // Both, not either/or: the dashboard's own responsive breakpoints for
+    // .sphere-wrap are viewport-width media queries, so a window resize
+    // listener alone would already cover every real case here -- kept as a
+    // guaranteed fallback since ResizeObserver callback delivery turned out
+    // to be unreliable in at least one real test environment (verified live:
+    // a container resize with no matching window resize event left the
+    // canvas's drawing buffer stuck at its original size).
+    if (window.ResizeObserver) {
+      new ResizeObserver(sizeToContainer).observe(wrap);
+    }
+    window.addEventListener('resize', sizeToContainer);
+
+    // Step 51/52: reduced-motion renders exactly one static frame, no RAF
+    // loop at all -- "reduce/remove rotation and particles, keep the head
+    // and CPU indicator visible," and the cheapest possible reading of
+    // "avoid unnecessary render loops."
+    if (reducedMotion) {
+      renderFrame();
+    } else {
+      loop();
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = null;
+        } else if (!rafId) {
+          loop();
+        }
+      });
+    }
+  })();
 </script>
 </body>
 </html>

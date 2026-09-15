@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>GLTFLoader vendoring smoke test</title></head>
+<body style="background:#050810; color:#E9EDF7; font-family:monospace; padding:20px;">
+<div id="status">running...</div>
+<script type="importmap">
+{
+  "imports": { "three": "./three.module.js" }
+}
+</script>
+<script type="module">
+  // Proves the vendored GLTFLoader + its transitive utils (BufferGeometryUtils,
+  // SkeletonUtils) actually resolve and load a real .glb, via an import map for
+  // the bare 'three' specifier GLTFLoader.js itself uses -- no patching of the
+  // vendored files. Module 13's real hero-head scene builds on this.
+  import * as THREE from './three.module.js';
+  import { GLTFLoader } from './loaders/GLTFLoader.js';
+
+  const statusEl = document.getElementById('status');
+  const loader = new GLTFLoader();
+  loader.load(
+    './_smoke_test_output.glb',
+    (gltf) => {
+      const meshCount = gltf.scene.children.length;
+      window.__gltfSmokeTestResult = { ok: true, meshCount, revision: THREE.REVISION };
+      statusEl.textContent = 'OK -- loaded .glb via GLTFLoader, scene has ' + meshCount + ' child(ren).';
+    },
+    undefined,
+    (err) => {
+      window.__gltfSmokeTestResult = { ok: false, error: String(err) };
+      statusEl.textContent = 'FAILED: ' + err;
+    }
+  );
+</script>
+</body>
+</html>
