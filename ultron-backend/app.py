@@ -337,18 +337,54 @@ def log_activity(event_type, summary, detail=None, status="success"):
         pass
 
 
-def get_recent_activity(limit=20):
+# --------------------------------------------------------------------------
+# Event severity (master prompt sections 21-26): "proactive but not
+# interruptive" needs a way to tell CRITICAL from routine. Derived from the
+# (event_type, status) log_activity already records, not a new column to
+# keep in sync -- classify_event_severity is pure and deterministic, so it
+# can never drift from what a caller actually logged. NOISE never gets
+# assigned by anything currently logged here, which is honest:
+# log_activity's own docstring above already excludes routine polling
+# before it ever reaches this table, so there's nothing to force into that
+# tier yet.
+# --------------------------------------------------------------------------
+EVENT_SEVERITIES = ("CRITICAL", "IMPORTANT", "INFORMATIONAL", "BACKGROUND", "NOISE")
+# Failures here risk data loss or an unwanted host-level change -- everything
+# else erroring just means a check didn't run, which is real but not urgent.
+_SEVERITY_ERROR_CRITICAL_TYPES = {"backup", "deploy_container"}
+# A completed real action/decision worth knowing about even without an error.
+_SEVERITY_SUCCESS_INFORMATIONAL_TYPES = {"backup", "deploy_container", "evolution_status_change"}
+ACTIVITY_SEVERITY_SCAN_LIMIT = 500  # rows scanned when filtering by severity, since it's not a stored column
+
+
+def classify_event_severity(event_type, status):
+    """Maps one logged event's real (event_type, status) to one of
+    EVENT_SEVERITIES. Deterministic and inspectable -- not a guess."""
+    if status == "error":
+        return "CRITICAL" if event_type in _SEVERITY_ERROR_CRITICAL_TYPES else "IMPORTANT"
+    if status == "warning":
+        return "IMPORTANT"
+    if event_type in _SEVERITY_SUCCESS_INFORMATIONAL_TYPES:
+        return "INFORMATIONAL"
+    return "BACKGROUND"
+
+
+def get_recent_activity(limit=20, severity=None, **_ignored):
     try:
         limit = max(1, min(int(limit), 100))
     except (TypeError, ValueError):
         limit = 20
+    severity = (severity or "").strip().upper() or None
+    if severity is not None and severity not in EVENT_SEVERITIES:
+        return {"error": f"severity must be one of: {', '.join(EVENT_SEVERITIES)}"}
     try:
         conn = _get_db_connection()
         try:
+            scan_limit = limit if severity is None else max(limit, ACTIVITY_SEVERITY_SCAN_LIMIT)
             rows = conn.execute(
                 "SELECT timestamp, event_type, summary, detail, status "
                 "FROM activity_log ORDER BY id DESC LIMIT ?",
-                (limit,),
+                (scan_limit,),
             ).fetchall()
             count_today = conn.execute(
                 "SELECT COUNT(*) as n FROM activity_log WHERE timestamp LIKE ?",
@@ -356,7 +392,12 @@ def get_recent_activity(limit=20):
             ).fetchone()["n"]
         finally:
             conn.close()
-        return {"events": [dict(r) for r in rows], "count_today": count_today}
+        events = [dict(r) for r in rows]
+        for e in events:
+            e["severity"] = classify_event_severity(e["event_type"], e["status"])
+        if severity is not None:
+            events = [e for e in events if e["severity"] == severity][:limit]
+        return {"events": events, "count_today": count_today}
     except Exception as e:
         return {"error": f"could not read activity log: {e}"}
 
@@ -2407,8 +2448,10 @@ def systems():
 @app.route("/api/activity")
 @require_token
 def activity():
-    limit = request.args.get("limit", "20")
-    return _json_result(get_recent_activity(limit=limit))
+    return _json_result(get_recent_activity(
+        limit=request.args.get("limit", "20"),
+        severity=request.args.get("severity"),
+    ))
 
 
 @app.route("/api/metrics-history")
@@ -3277,9 +3320,18 @@ TOOLS = [
         "description": (
             "Get a log of real actions this backend has actually taken — backups run, "
             "containers deployed, CVE scans completed — with outcomes. This is history, "
-            "not a live status check; it does not include chat conversations."
+            "not a live status check; it does not include chat conversations. Each event "
+            "carries a severity (CRITICAL/IMPORTANT/INFORMATIONAL/BACKGROUND/NOISE) derived "
+            "from its real type and outcome — useful for 'what actually needs my attention' "
+            "vs. routine activity, optionally filtered to one severity."
         ),
-        "input_schema": {"type": "object", "properties": {}},
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "limit": {"type": "integer", "description": "Max events to return (default 20)"},
+                "severity": {"type": "string", "description": "Filter to one of: CRITICAL, IMPORTANT, INFORMATIONAL, BACKGROUND, NOISE"},
+            },
+        },
     },
     {
         "name": "remember_note",
