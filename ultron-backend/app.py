@@ -493,6 +493,88 @@ def recall_related_notes(query=None, min_nodes=6, **_ignored):
     return {"notes": notes, "widened": result["widened"]}
 
 
+# --------------------------------------------------------------------------
+# Home-tab knowledge graph -- real data, not a fabricated demo dataset.
+# Merges two things that already existed before tonight: the vault graph
+# (graph-schema/enrich_visibility.py's output, graphify-out/graph.json --
+# real code/doc/decision nodes about this project itself, already
+# privacy-redacted by Module 4 so it's safe to ship whole) and Ultron's own
+# runtime memory (_notes_as_graph(), same helper recall_related_notes uses
+# above). Two genuinely different things ("what Ultron knows about this
+# codebase" vs. "what Ultron has chosen to remember from conversations"),
+# kept as one graph with a distinct "memory" category rather than invented
+# domain categories (home-lab/security/finance) the real tagging scheme
+# doesn't actually have yet.
+# --------------------------------------------------------------------------
+GRAPH_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "graphify-out", "graph.json")
+
+_KG_NODE_FIELDS = ("id", "label", "category", "community", "community_name", "visibility", "tags", "date_created", "date_updated")
+
+
+def get_knowledge_graph(limit=None, **_ignored):
+    nodes = []
+    links = []
+
+    try:
+        with open(GRAPH_PATH, "r", encoding="utf-8") as f:
+            vault = json.load(f)
+        for n in vault.get("nodes", []):
+            nodes.append({k: n.get(k) for k in _KG_NODE_FIELDS})
+        for e in vault.get("links", []):
+            links.append({"source": e.get("source"), "target": e.get("target"), "relation": e.get("relation") or "related"})
+    except (OSError, ValueError):
+        pass  # no graphify-out/graph.json yet (never run) -- memory notes below still work on their own
+
+    try:
+        mem_graph, _ = _notes_as_graph()
+        for n in mem_graph["nodes"]:
+            nodes.append({
+                "id": f"mem:{n['id']}", "label": n.get("label"), "category": "memory",
+                "community": None, "community_name": None, "visibility": n.get("visibility"),
+                "tags": [], "date_created": n.get("created_at"), "date_updated": n.get("created_at"),
+            })
+        for e in mem_graph["links"]:
+            links.append({"source": f"mem:{e['source']}", "target": f"mem:{e['target']}", "relation": e.get("relation") or "relates_to"})
+    except Exception:
+        pass  # memory graph is best-effort here too -- the vault half above must not be taken down by it
+
+    # Reduced Visual Mode / mobile / Pi 400 (step 17): keep the highest-
+    # degree nodes -- the ones actually holding the graph together -- not
+    # an arbitrary prefix of the list.
+    if limit:
+        try:
+            limit = max(20, int(limit))
+        except (TypeError, ValueError):
+            limit = None
+    if limit and len(nodes) > limit:
+        degree = {}
+        for e in links:
+            degree[e["source"]] = degree.get(e["source"], 0) + 1
+            degree[e["target"]] = degree.get(e["target"], 0) + 1
+        nodes.sort(key=lambda n: degree.get(n["id"], 0), reverse=True)
+        nodes = nodes[:limit]
+        keep = {n["id"] for n in nodes}
+        links = [e for e in links if e["source"] in keep and e["target"] in keep]
+
+    categories = {}
+    clusters = set()
+    for n in nodes:
+        categories[n["category"] or "unknown"] = categories.get(n["category"] or "unknown", 0) + 1
+        if n.get("community") is not None:
+            clusters.add(n["community"])
+
+    return {
+        "nodes": nodes,
+        "links": links,
+        "stats": {
+            "node_count": len(nodes),
+            "link_count": len(links),
+            "clusters": len(clusters),
+            "categories": categories,
+        },
+    }
+
+
 # remember_note only captures what the model thinks to save mid-conversation
 # — recurring signal nobody happened to mention in chat would otherwise never
 # reach the notebook. This is the automatic half: look at the activity log
@@ -2058,6 +2140,15 @@ def activity():
 def memory():
     limit = request.args.get("limit", "20")
     return _json_result(recall_notes(limit=limit))
+
+
+@app.route("/api/knowledge-graph")
+@require_token
+def knowledge_graph():
+    # Admin-only, like /api/memory above -- this exposes real internal
+    # project structure (code/doc/decision nodes), not something the beta
+    # role's narrow read-only trading scope should reach.
+    return _json_result(get_knowledge_graph(limit=request.args.get("limit")))
 
 
 @app.route("/api/dev/repos")
