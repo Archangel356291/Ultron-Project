@@ -121,6 +121,39 @@ as permanently `true`); responsive breakpoints for the home grids and
 `.sphere-wrap` sizing were not touched and were not re-verified beyond
 confirming the CSS rules are still present unmodified.
 
+## Addendum: density refinement against the actual reference image
+
+The reference image (`ultron brain referance pic.jpg`, project root —
+confirmed present, inspected directly, not assumed) is a dense
+gold/orange particle-filament wheel/hub with radiating spokes, a bright
+ring-structured core, and scattered sparks. The original v1 particle
+system (46 nodes, 2-3 edges each, a single glowing core dot) was
+noticeably sparser and flatter than this by comparison. Refined,
+without changing the underlying architecture:
+
+- **Fine dust layer** (~190 particles desktop / 70 reduced) — flat
+  `fillStyle`, no per-particle gradient or shadow, kept deliberately
+  cheap since this is the actual density lift, not the structural node
+  graph.
+- **Radiating filament spokes** (~14 desktop / 7 reduced) — fixed
+  organic curves (one random-offset control point each) from near the
+  core outward, generated once, only their flicker animates per frame.
+  This is the specific "wheel/hub" structure the reference's silhouette
+  is built from, distinct from the node-to-node edges.
+- **Depth**: each structural node gets a random `depth` (0-1) set at
+  generation, used to modulate size/opacity (back nodes dimmer and
+  smaller) — a cheap parallax fake, not an actual canvas blur filter
+  per node (which would be real cost at this count).
+- **Core**: two thin concentric ring strokes added around the glow,
+  reading as a tight hub rather than a single dot; the far SVG
+  `.core-rings` ellipses are unchanged and separate.
+- Structural node count raised 46→64 (30 reduced), edge fan-out 2-3→2-4.
+
+Verified live: the `alert` state's color shift (confirmed via the same
+forced-resize technique noted above) correctly recolors every new layer
+together, not just the original elements; console clean; Reduced Visual
+Mode's lower counts confirmed present in the same code path.
+
 ## Known limitations — not solved this round
 
 - **Mobile layout not independently re-verified this pass** — same

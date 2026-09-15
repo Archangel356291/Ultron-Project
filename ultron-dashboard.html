@@ -2964,18 +2964,24 @@
   // dense energy mass like the reference image, not a hollow circle.
   // Reduced Visual Mode halves the count at generation time (not just the
   // animation rate) -- fewer edges is the actual CPU/GPU win on a Pi 400,
-  // slower animation alone wouldn't be. ----
-  var NODE_COUNT = reducedVisualsOn() ? 24 : 46;
+  // slower animation alone wouldn't be. Each node also gets a `depth`
+  // (0=back, 1=front) used to fake parallax/depth cheaply via size+alpha
+  // rather than an actual canvas blur filter per node (expensive at this
+  // count) -- matches the reference image's layered, not-flat look. ----
+  var reduced = reducedVisualsOn() || prefersReducedMotion;
+  var NODE_COUNT = reduced ? 30 : 64;
   var nodes = [];
   for (var i = 0; i < NODE_COUNT; i++) {
     var angle = Math.random() * Math.PI * 2;
     var r = Math.sqrt(Math.random());
+    var depth = Math.random();
     nodes.push({
       x: Math.cos(angle) * r * 0.92,
       y: Math.sin(angle) * r * 1.08,
       phase: Math.random() * Math.PI * 2,
       freq: 0.6 + Math.random() * 0.8,
-      size: 1.1 + Math.random() * 1.6,
+      size: (0.9 + depth * 1.0) * (1.1 + Math.random() * 1.4),
+      depth: depth,
     });
   }
   var edges = [];
@@ -2985,7 +2991,7 @@
       return { j: mi, d: (ni === mi) ? Infinity : Math.hypot(n.x - m.x, n.y - m.y) };
     });
     dists.sort(function (a, b) { return a.d - b.d; });
-    var k = 2 + Math.floor(Math.random() * 2);
+    var k = 2 + Math.floor(Math.random() * 3);
     for (var t = 0; t < k && t < dists.length; t++) {
       var j = dists[t].j;
       var key = ni < j ? ni + '-' + j : j + '-' + ni;
@@ -2995,6 +3001,46 @@
       }
     }
   });
+
+  // ---- fine dust particles -- numerous but individually cheap to draw
+  // (flat fillStyle, no per-particle gradient/blur), for the reference
+  // image's dense particulate field beyond the structural node graph
+  // above. This is the actual density lift; the node/edge graph alone
+  // read as too sparse next to the reference. ----
+  var DUST_COUNT = reduced ? 70 : 190;
+  var dust = [];
+  for (var d = 0; d < DUST_COUNT; d++) {
+    var da = Math.random() * Math.PI * 2;
+    var dr = Math.sqrt(Math.random());
+    dust.push({
+      x: Math.cos(da) * dr * 1.05,
+      y: Math.sin(da) * dr * 1.18,
+      phase: Math.random() * Math.PI * 2,
+      freq: 0.8 + Math.random() * 1.4,
+      size: 0.4 + Math.random() * 0.6,
+    });
+  }
+
+  // ---- radiating filament spokes -- thin organic lines from near the
+  // core outward, the specific thing that reads as "wheel/hub of energy"
+  // in the reference rather than just a node cloud. Fixed at generation
+  // time (only their flicker animates per frame, not their shape) -- an
+  // organic curve via one random-offset control point, not a straight
+  // spoke, but not physically simulated either. ----
+  var SPOKE_COUNT = reduced ? 7 : 14;
+  var spokes = [];
+  for (var s = 0; s < SPOKE_COUNT; s++) {
+    var sa = (s / SPOKE_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+    var len = 0.55 + Math.random() * 0.5;
+    var midR = len * (0.35 + Math.random() * 0.25);
+    var bend = (Math.random() - 0.5) * 0.5;
+    spokes.push({
+      x1: Math.cos(sa) * 0.08, y1: Math.sin(sa) * 0.08,
+      cx: Math.cos(sa + bend) * midR, cy: Math.sin(sa + bend) * midR * 1.1,
+      x2: Math.cos(sa) * len * 0.92, y2: Math.sin(sa) * len * 1.08,
+      phase: Math.random() * Math.PI * 2,
+    });
+  }
 
   // ---- state machine: idle/listening/thinking/responding/alert. Wired
   // from real events elsewhere in this file (mic toggle, chat send/reply,
@@ -3052,14 +3098,42 @@
     var t = now();
     var profile = STATE_PROFILE[heroState];
     var col = profile.color;
+    var colStr = col[0] + ',' + col[1] + ',' + col[2];
     ctx.clearRect(0, 0, W, H);
 
+    // Layer 1 (back): fine dust -- flat fillStyle, no gradient/shadow per
+    // particle, the density lift against the reference image at a cost
+    // that stays negligible even at ~200 particles.
+    dust.forEach(function (p) {
+      var pp = project(p.x, p.y);
+      var tw = 0.4 + 0.6 * Math.max(0, Math.sin(t * p.freq + p.phase));
+      ctx.fillStyle = 'rgba(' + colStr + ',' + (tw * 0.5).toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.arc(pp.x, pp.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Layer 2: radiating filament spokes -- the wheel/hub structure the
+    // reference image's whole silhouette is built from, distinct from the
+    // node-to-node edges below.
+    ctx.lineWidth = 0.7;
+    spokes.forEach(function (sp) {
+      var p1 = project(sp.x1, sp.y1), pc2 = project(sp.cx, sp.cy), p2 = project(sp.x2, sp.y2);
+      var flicker = 0.10 + 0.14 * Math.max(0, Math.sin(t * profile.pulseSpeed * 0.6 + sp.phase));
+      ctx.strokeStyle = 'rgba(' + colStr + ',' + flicker.toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.quadraticCurveTo(pc2.x, pc2.y, p2.x, p2.y);
+      ctx.stroke();
+    });
+
+    // Layer 3: the structural node-to-node graph (edges then nodes).
     ctx.lineWidth = 1;
     edges.forEach(function (e) {
       var a = nodes[e.a], b = nodes[e.b];
       var pa = project(a.x, a.y), pb = project(b.x, b.y);
       var flicker = 0.16 + 0.13 * Math.sin(t * profile.pulseSpeed + e.phase);
-      ctx.strokeStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + flicker.toFixed(3) + ')';
+      ctx.strokeStyle = 'rgba(' + colStr + ',' + flicker.toFixed(3) + ')';
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
@@ -3069,11 +3143,13 @@
     nodes.forEach(function (n) {
       var p = project(n.x, n.y);
       var tw = 0.5 + 0.5 * Math.sin(t * n.freq * profile.pulseSpeed + n.phase);
-      var alpha = 0.32 + 0.48 * tw;
+      // depth (0=back,1=front): back nodes stay dimmer/softer, front
+      // nodes brighter/crisper -- cheap parallax fake, no blur filter.
+      var alpha = (0.22 + 0.35 * n.depth) + 0.4 * tw;
       var size = n.size * (0.85 + 0.3 * tw);
       var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 2.4);
-      grad.addColorStop(0, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha.toFixed(3) + ')');
-      grad.addColorStop(1, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0)');
+      grad.addColorStop(0, 'rgba(' + colStr + ',' + alpha.toFixed(3) + ')');
+      grad.addColorStop(1, 'rgba(' + colStr + ',0)');
       ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(p.x, p.y, size * 2.4, 0, Math.PI * 2);
@@ -3088,24 +3164,36 @@
       var p2 = project(a2.x + (b2.x - a2.x) * tr.t, a2.y + (b2.y - a2.y) * tr.t);
       ctx.save();
       ctx.shadowBlur = 8;
-      ctx.shadowColor = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0.9)';
-      ctx.fillStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0.95)';
+      ctx.shadowColor = 'rgba(' + colStr + ',0.9)';
+      ctx.fillStyle = 'rgba(' + colStr + ',0.95)';
       ctx.beginPath();
       ctx.arc(p2.x, p2.y, 2, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     }
 
+    // Layer 4 (front): the core, as a tight ring-hub (two thin concentric
+    // strokes plus the bright center) rather than a single dot -- matches
+    // the reference's turbine/hub silhouette. The far-out orbital ellipses
+    // are the separate SVG layer (.core-rings) behind this canvas.
     var pulse = (0.7 + 0.3 * Math.sin(t * profile.pulseSpeed * 1.4)) * cpuBoost;
     var coreR = scale * 0.09 * (0.85 + 0.3 * pulse);
     var pc = project(0, 0);
     ctx.save();
-    ctx.shadowBlur = 18;
-    ctx.shadowColor = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0.9)';
+    ctx.lineWidth = 1;
+    [1.6, 2.3].forEach(function (mult, ringIdx) {
+      var ringFlicker = 0.25 + 0.2 * Math.sin(t * profile.pulseSpeed + ringIdx * 2.1);
+      ctx.strokeStyle = 'rgba(' + colStr + ',' + ringFlicker.toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.arc(pc.x, pc.y, Math.max(coreR * mult, 1), 0, Math.PI * 2);
+      ctx.stroke();
+    });
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = 'rgba(' + colStr + ',0.9)';
     var coreGrad = ctx.createRadialGradient(pc.x, pc.y, 0, pc.x, pc.y, Math.max(coreR, 1));
     coreGrad.addColorStop(0, '#FFE9C2');
-    coreGrad.addColorStop(0.5, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0.95)');
-    coreGrad.addColorStop(1, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0)');
+    coreGrad.addColorStop(0.5, 'rgba(' + colStr + ',0.95)');
+    coreGrad.addColorStop(1, 'rgba(' + colStr + ',0)');
     ctx.fillStyle = coreGrad;
     ctx.beginPath();
     ctx.arc(pc.x, pc.y, Math.max(coreR, 1), 0, Math.PI * 2);
