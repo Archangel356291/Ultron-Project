@@ -543,7 +543,20 @@ class UltronBot(commands.Bot):
         return lock
 
     async def setup_hook(self):
-        self.http_session = aiohttp.ClientSession()
+        # This session is used exclusively for backend_*() calls to
+        # BACKEND_URL (the internal Docker service, never an external
+        # host) -- see every self.http_session use in this file. Once
+        # the backend serves TLS (ULTRON_TLS_CERT/KEY, owner-requested
+        # 2026-09-16), that cert is issued for this device's *.ts.net
+        # name, not the Docker-internal hostname "ultron-backend" this
+        # session actually connects to, so hostname verification would
+        # always fail here even though the connection is genuinely to
+        # the right, trusted service -- it's on a private bridge network
+        # this bot and the backend are the only members of. Skip cert
+        # verification only when BACKEND_URL is https; still fully
+        # verified for a plain-http BACKEND_URL (local/non-Docker dev).
+        connector = aiohttp.TCPConnector(ssl=False) if BACKEND_URL.startswith("https://") else None
+        self.http_session = aiohttp.ClientSession(connector=connector)
         if DEV_GUILD_ID:
             guild = discord.Object(id=int(DEV_GUILD_ID))
             self.tree.copy_global_to(guild=guild)

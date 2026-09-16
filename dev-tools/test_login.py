@@ -27,6 +27,10 @@ os.environ["ULTRON_BETA_TOKENS"] = "tester1:beta-test-token"
 os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
 os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
 os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
+# This file's own scenarios make several failed calls by design -- lockout
+# behavior itself is covered separately, deterministically, in
+# test_login_lockout.py with its own low threshold. Keep this one decoupled.
+os.environ["ULTRON_LOGIN_LOCKOUT_MAX_ATTEMPTS"] = "1000"
 
 import app  # noqa: E402
 

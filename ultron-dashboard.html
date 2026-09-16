@@ -825,9 +825,10 @@
     </div>
     <div class="gate-error" id="gate-error"></div>
     <div class="conn-note" style="margin-top:18px;">
-      On this PC, leave the backend URL blank. From another device (phone, another
-      PC) on the same Wi-Fi, use its LAN address; from outside your home network,
-      its Tailscale address instead of opening a port on your router. Your
+      This backend serves HTTPS only now — open it at its Tailscale address
+      (https://&lt;device&gt;.&lt;tailnet&gt;.ts.net:5000) on every device, including
+      this PC; plain http://localhost or a LAN IP no longer connects. Once
+      you're on that address, leave the Backend URL field above blank. Your
       credentials are only kept in this browser if you check "Remember me."
     </div>
   </div>
@@ -1506,7 +1507,7 @@
             Remember me on this device
           </label>
           <div class="conn-note">
-            This page is a static file, so nothing you type here is saved when it reloads unless you check "Remember me" above — that saves the URL, username, and password to this browser's local storage so this page reconnects automatically next time, but means anything that can run script on this page (or anyone with access to this browser) can read them back out. Leave it unchecked to enter them fresh each time instead. On the same Wi-Fi as the backend, use its LAN address (e.g. <code>http://192.168.1.50:5000</code>). From outside your home network — your phone on mobile data, for instance — use its Tailscale address instead of opening a port on your router.
+            This page is a static file, so nothing you type here is saved when it reloads unless you check "Remember me" above — that saves the URL, username, and password to this browser's local storage so this page reconnects automatically next time, but means anything that can run script on this page (or anyone with access to this browser) can read them back out. Leave it unchecked to enter them fresh each time instead. The backend serves HTTPS only now, at its Tailscale address (e.g. <code>https://desktop-name.tailnet.ts.net:5000</code>) — that's the one address to use everywhere, this PC included; a LAN IP or <code>localhost</code> no longer connects.
             <span id="cfg-forget-wrap" hidden> · <a href="#" onclick="forgetConnection(); return false;" style="color:var(--blue);">Forget saved connection</a></span>
           </div>
         </div>

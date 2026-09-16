@@ -38,6 +38,9 @@
 **/secrets/
 **/credentials*.json
 **/*.db
+# Host-issued Tailscale TLS cert/key -- bind-mounted at runtime instead
+# (see docker-compose.yml), never baked into the image.
+ultron-backend/tls/
 
 # Claude Code / AI agent metadata
 **/.claude/

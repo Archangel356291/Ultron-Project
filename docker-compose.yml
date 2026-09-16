@@ -11,6 +11,13 @@ services:
       - .env
     environment:
       - ULTRON_DB_PATH=/data/ultron.db
+      # Real TLS cert issued by `tailscale cert` for this device's
+      # *.ts.net name (owner-requested 2026-09-16) -- see the tls/
+      # volume mount below and ultron-backend/tls/README.md for how to
+      # (re)generate it. Empty/missing files fall back to plain HTTP,
+      # per app.py's own check.
+      - ULTRON_TLS_CERT=/app/tls/ultron.crt
+      - ULTRON_TLS_KEY=/app/tls/ultron.key
     volumes:
       # Ultron's learned/gathered data (trades, memory notes, evolution
       # ideas, metrics history, activity log -- everything in ultron.db)
@@ -20,6 +27,10 @@ services:
       # ULTRON_DATA_DIR there) rather than hardcoded here -- this repo
       # is public, and other clones won't have this exact path.
       - "${ULTRON_DATA_DIR}:/data"
+      # Host-issued TLS material, gitignored/dockerignored (never baked
+      # into the image or committed) -- read-only, this container only
+      # ever reads it.
+      - "./ultron-backend/tls:/app/tls:ro"
       # Lets Ultron see/manage sibling containers on the host (docker_ps,
       # docker_stats, CVE scan, deploy-container). Whoever can write to
       # this socket has root-equivalent power over the whole Docker host —
@@ -39,7 +50,10 @@ services:
     env_file:
       - .env
     environment:
-      - ULTRON_BACKEND_URL=http://ultron-backend:5000
+      # https, not http, since the backend now serves TLS-only on this
+      # port (ULTRON_TLS_CERT/KEY above) -- see bot.py's setup_hook for
+      # why this connection skips cert-hostname verification.
+      - ULTRON_BACKEND_URL=https://ultron-backend:5000
     depends_on:
       - ultron-backend
     networks:

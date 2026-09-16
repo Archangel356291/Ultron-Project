@@ -4147,14 +4147,36 @@ def capabilities():
     return jsonify(get_capabilities())
 
 
+def _resolve_ssl_context(cert_env, key_env):
+    """Pure selection logic for app.run()'s ssl_context, pulled out of the
+    __main__ guard so it's actually unit-testable (that guard never runs
+    under import, which is how every dev-tools/test_*.py exercises this
+    module). Both ULTRON_TLS_CERT and ULTRON_TLS_KEY must be non-empty to
+    enable TLS -- any other combination falls back to plain HTTP rather
+    than a broken half-configured state."""
+    cert = (cert_env or "").strip()
+    key = (key_env or "").strip()
+    return (cert, key) if cert and key else None
+
+
 if __name__ == "__main__":
     # Bind to all interfaces so it's reachable from the dashboard on other
-    # devices on your network. Put this behind Tailscale/WireGuard + a
-    # reverse proxy with HTTPS for anything beyond local-network use —
-    # this dev server is not meant to be exposed directly to the internet.
+    # devices on your network. Never expose this directly to the internet —
+    # Tailscale is the only path in from outside your home network.
     #
     # threaded=True matters once /api/chat is live: a chat request can take
     # several seconds waiting on the LLM, and without this the single-
     # threaded dev server would queue the dashboard's status/container
     # polling behind it instead of serving both concurrently.
-    app.run(host="0.0.0.0", port=5000, threaded=True)
+    #
+    # TLS (owner-requested 2026-09-16): a real cert issued by `tailscale
+    # cert` for this device's *.ts.net name, via ULTRON_TLS_CERT/
+    # ULTRON_TLS_KEY. Only valid for that hostname -- not localhost or a
+    # bare LAN IP -- so once this is set, use the .ts.net address
+    # everywhere, including on the home network. No cert configured falls
+    # back to plain HTTP, so local/non-Docker dev (start-ultron.ps1) keeps
+    # working without needing one.
+    ssl_context = _resolve_ssl_context(
+        os.environ.get("ULTRON_TLS_CERT"), os.environ.get("ULTRON_TLS_KEY"),
+    )
+    app.run(host="0.0.0.0", port=5000, threaded=True, ssl_context=ssl_context)
