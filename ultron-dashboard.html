@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ultron">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="/pixel-assets/app-icon-192.png">
+<link rel="apple-touch-icon" href="/pixel-assets/app-icon-192.png">
 <title>ULTRON — Home Lab Core</title>
 <style>
   /* Typefaces are served by this backend (/fonts/, see app.py) -- no
@@ -836,6 +839,7 @@
     font-family:var(--font-mono); font-size:11px; color:var(--oxide); letter-spacing:0.06em; text-transform:uppercase;
   }
   .speak-bar[hidden]{ display:none; }
+  .set-row[hidden]{ display:none; }
   .speak-bar .eq{ display:inline-flex; gap:2px; align-items:flex-end; height:12px; }
   .speak-bar .eq i{ width:3px; height:4px; background:var(--core-gold); animation:eq-bar .9s ease-in-out infinite; }
   .speak-bar .eq i:nth-child(2){ animation-delay:.15s; } .speak-bar .eq i:nth-child(3){ animation-delay:.3s; }
@@ -1961,6 +1965,13 @@
           <div class="set-row">
             <div><div class="stitle">Economy mode</div><div class="sdesc">Cheaper, shorter answers: a smaller model, at most two tool calls, and only the basic status tools. Same safety rules. Each reply is tagged so you can see which mode answered; real cost is on Data &amp; analytics.</div></div>
             <div class="switch" id="cfg-economy-mode" onclick="toggleEconomyMode(this)"></div>
+          </div>
+          <div class="set-row" id="install-row" hidden>
+            <div><div class="stitle">Install as an app</div><div class="sdesc">Adds Ultron to your home screen or desktop and opens it full-screen. Live data is never cached; only the page shell, fonts and sprites are.</div></div>
+            <button type="button" class="conn-btn" style="padding:5px 12px; font-size:11px;" onclick="installApp()">Install</button>
+          </div>
+          <div class="set-row" id="install-ios-hint" hidden>
+            <div><div class="stitle">Install as an app</div><div class="sdesc">On iPhone or iPad: tap Share, then "Add to Home Screen". Ultron opens full-screen from there.</div></div>
           </div>
         </div>
       </section>
@@ -3553,6 +3564,35 @@
     document.getElementById('backup-confirm-panel').style.display = 'none';
     document.getElementById('backup-status').textContent = 'Cancelled — nothing was backed up.';
   }
+
+  // Installable app: register the shell worker (sw.js never caches /api/*),
+  // and show the Settings "Install" row only when this browser can actually
+  // offer the prompt. iOS never fires beforeinstallprompt -- it gets a
+  // one-line pointer to Share -> Add to Home Screen instead.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function () { /* not fatal: the page works without it */ });
+  }
+  let installPrompt = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    installPrompt = e;
+    const row = document.getElementById('install-row');
+    if (row) row.hidden = false;
+  });
+  async function installApp() {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const choice = await installPrompt.userChoice;
+    installPrompt = null;
+    const row = document.getElementById('install-row');
+    if (row && choice && choice.outcome === 'accepted') row.hidden = true;
+  }
+  (function () {
+    const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) && !window.MSStream;
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    const hint = document.getElementById('install-ios-hint');
+    if (hint && isIOS && !standalone) hint.hidden = false;
+  })();
 
   // Economy mode (Settings -> AI): persisted like Reduced Visual Mode, sent
   // as "lite" on every chat request; the backend decides what it means.

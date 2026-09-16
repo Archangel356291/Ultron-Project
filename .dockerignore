@@ -21,6 +21,7 @@
 !ultron-backend/
 !ultron-backend/**
 !ultron-dashboard.html
+!sw.js
 !three-pipeline/
 !three-pipeline/**
 !pixel-assets/

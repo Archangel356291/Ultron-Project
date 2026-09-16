@@ -684,6 +684,19 @@ point it at `venv\Scripts\python.exe app.py` with the working directory set
 to the project folder and `ULTRON_API_TOKEN` set as a service environment
 variable.
 
+## Installable app (PWA)
+
+The dashboard can be added to a phone's home screen or a desktop and
+opened full-screen. `app.py` serves `/manifest.webmanifest` and a
+service worker at `/sw.js` (source: `sw.js` at the repo root) whose cache
+name carries a version hashed from the dashboard's own content at
+startup, so a redeploy invalidates old caches on the next visit. The
+worker caches only the page shell, `/fonts/*` and `/pixel-assets/*`;
+**it never intercepts `/api/*`** — live data and anything behind the
+token always go to the network. Settings → "Install as an app" appears
+only when the browser can offer the prompt; iOS users get the Share →
+"Add to Home Screen" pointer. `dev-tools/test_pwa.py` covers all of it.
+
 ## Exposing it beyond your LAN
 
 The backend serves the dashboard itself at `/` — open

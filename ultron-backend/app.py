@@ -84,6 +84,7 @@ import contextlib
 import csv
 import hmac
 import io
+import hashlib
 import json
 import os
 import platform
@@ -2453,6 +2454,59 @@ DASHBOARD_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 @app.route("/")
 def dashboard():
     return send_from_directory(DASHBOARD_DIR, "ultron-dashboard.html")
+
+
+# --- installable app (PWA) -------------------------------------------------
+# Manifest + service worker so the dashboard can be added to a phone's home
+# screen and opened full-screen. The worker (sw.js, repo root) caches only
+# the page shell, fonts and sprites; it never touches /api/*. Its cache
+# name carries a version derived from the dashboard's content, computed
+# once at startup, so a redeploy that changes the page invalidates every
+# old cache on the next visit -- no manual bump to forget.
+def _shell_version():
+    h = hashlib.sha1()
+    for name in ("ultron-dashboard.html", "sw.js"):
+        try:
+            with open(os.path.join(DASHBOARD_DIR, name), "rb") as f:
+                h.update(f.read())
+        except OSError:
+            pass
+    return h.hexdigest()[:12]
+
+
+SHELL_VERSION = _shell_version()
+
+
+@app.route("/manifest.webmanifest")
+def web_manifest():
+    manifest = {
+        "name": "Ultron",
+        "short_name": "Ultron",
+        "description": "Your personal AI assistant and home lab orchestrator.",
+        "start_url": "/",
+        "scope": "/",
+        "display": "standalone",
+        "orientation": "any",
+        "background_color": "#08090A",
+        "theme_color": "#0A0B0D",
+        "icons": [
+            {"src": "/pixel-assets/app-icon-192.png", "sizes": "192x192", "type": "image/png"},
+            {"src": "/pixel-assets/app-icon-512.png", "sizes": "512x512", "type": "image/png"},
+            {"src": "/pixel-assets/app-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+        ],
+    }
+    return Response(json.dumps(manifest), mimetype="application/manifest+json")
+
+
+@app.route("/sw.js")
+def service_worker():
+    with open(os.path.join(DASHBOARD_DIR, "sw.js"), "r", encoding="utf-8") as f:
+        source = f.read().replace("__VERSION__", SHELL_VERSION)
+    resp = Response(source, mimetype="application/javascript")
+    # Browsers re-fetch a worker on their own schedule; make sure what they
+    # get is always the current one, never an HTTP-cached copy.
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 # Module 13: the dashboard's hero head needs Three.js + the built .glb model

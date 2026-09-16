@@ -12,6 +12,8 @@ RUN pip install --no-cache-dir -r ultron-backend/requirements.txt
 
 COPY ultron-backend/ ultron-backend/
 COPY ultron-dashboard.html ultron-dashboard.html
+# Installable-app service worker, served (versioned) by /sw.js in app.py.
+COPY sw.js sw.js
 # Module 13: vendored Three.js + the built hero-head .glb, served by the new
 # /three-pipeline/<file> route in app.py.
 COPY three-pipeline/ three-pipeline/

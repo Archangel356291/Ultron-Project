@@ -491,6 +491,34 @@ def draw_room_background(w, h, floor_y):
     return img
 
 
+def draw_app_icon(size, maskable=False):
+    """Installable-app icon: the dashboard header's own mark (a hexagon
+    outline in the site's oxide orange with a gold core pulse), drawn large
+    on the void background. Original geometry, no source image. `maskable`
+    keeps everything inside Android's safe zone (the centre 80%) so nothing
+    is clipped when the launcher masks it to a circle or squircle."""
+    s = size
+    img = Image.new("RGBA", (s, s), (10, 11, 13, 255))
+    layer = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    cx = cy = s / 2
+    r = s * (0.30 if maskable else 0.40)
+    oxide = (255, 138, 30, 255)
+    gold = (255, 178, 56, 255)
+    import math
+    hexagon = [(cx + r * math.cos(math.radians(90 + 60 * i)), cy - r * math.sin(math.radians(90 + 60 * i))) for i in range(6)]
+    d.polygon(hexagon, outline=oxide, width=max(2, s // 24))
+    inner = r * 0.62
+    d.ellipse([cx - inner, cy - inner, cx + inner, cy + inner], outline=(255, 178, 56, 110), width=max(1, s // 64))
+    core = r * 0.30
+    core_layer = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    ImageDraw.Draw(core_layer).ellipse([cx - core, cy - core, cx + core, cy + core], fill=gold)
+    img.alpha_composite(glow(core_layer, gold, blur=max(4, s // 16)))
+    img.alpha_composite(layer)
+    ImageDraw.Draw(img).ellipse([cx - core * 0.45, cy - core * 0.45, cx + core * 0.45, cy + core * 0.45], fill=(255, 233, 194, 255))
+    return img
+
+
 def save(img, name):
     path = os.path.join(OUT_DIR, name)
     img.save(path)
@@ -514,6 +542,11 @@ def main():
         save(draw_tube(6, 2, 9, color), f"tube_{name}.png")
 
     save(draw_room_background(1280, 560, 440), "room_bg.png")
+
+    # Installable-app icons, referenced by /manifest.webmanifest in app.py.
+    save(draw_app_icon(192), "app-icon-192.png")
+    save(draw_app_icon(512), "app-icon-512.png")
+    save(draw_app_icon(512, maskable=True), "app-icon-maskable-512.png")
 
 
 if __name__ == "__main__":

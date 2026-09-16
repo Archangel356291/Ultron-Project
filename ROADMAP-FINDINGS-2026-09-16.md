@@ -134,7 +134,18 @@ Native (Capacitor / Trusted Web Activity / Electron): rejected. It adds
 a build toolchain and app-store or sideload distribution for no
 capability this dashboard needs.
 
-**Not built yet** — same reason as item 3. It is a yes/no.
+**Built (owner approved 2026-09-16):** `/manifest.webmanifest` and a
+versioned `/sw.js` served by `app.py`, three original icons generated
+from the header's hex mark (`gen_pixel_assets.py`, incl. a maskable
+one), the manifest/icon links and worker registration in the dashboard,
+and a Settings row that offers "Install" only when the browser fires
+`beforeinstallprompt` (iOS gets the Share → Add to Home Screen pointer
+instead). The worker is network-first for the page, stale-while-
+revalidate for fonts and sprites, and **never intercepts `/api/*`** —
+`dev-tools/test_pwa.py` asserts that bypass is present in the served
+source, that the cache version tracks the dashboard's content, and that
+every manifest icon serves as a real PNG. Also in the findings for item
+3: Economy mode was built and verified the same day.
 
 ## 5. Tools, plugins and skills survey
 
