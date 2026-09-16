@@ -221,6 +221,17 @@ def _init_db():
             )
         """)
         conn.execute("""
+            CREATE TABLE IF NOT EXISTS chat_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                identity TEXT NOT NULL,
+                role TEXT NOT NULL,
+                content TEXT NOT NULL,
+                input_tokens INTEGER,
+                output_tokens INTEGER
+            )
+        """)
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS trades (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 trade_date TEXT NOT NULL,
@@ -407,12 +418,13 @@ def get_recent_activity(limit=20, severity=None, **_ignored):
 # tool is read-only by design (see README's "Read-only by default"); this
 # is a deliberate, narrow exception: it never touches the host, a
 # container, or a dollar figure — it's Ultron's own small notebook of
-# distilled facts/preferences worth recalling in a later conversation, not
-# a raw transcript log (chat content is still deliberately not logged
-# anywhere else — see the activity_log comment above). Two safeguards keep
-# it from being a liability: a per-note length cap, and the table itself
-# is capped to the most recent MEMORY_NOTES_MAX rows so a confused or
-# looping conversation can't grow it without bound. Admin-only — excluded
+# distilled facts/preferences worth recalling in a later conversation.
+# Distinct from chat_log below (the raw per-turn transcript, owner-
+# requested 2026-09-15) -- this is Ultron's own curated notebook, not
+# a copy of everything said. Two safeguards keep it from being a
+# liability: a per-note length cap, and the table itself is capped to
+# the most recent MEMORY_NOTES_MAX rows so a confused or looping
+# conversation can't grow it without bound. Admin-only — excluded
 # from BETA_ALLOWED_TOOLS below, same reasoning as get_mcp_servers etc.
 # --------------------------------------------------------------------------
 MEMORY_NOTE_MAX_CHARS = 500
@@ -2683,7 +2695,10 @@ def _log_llm_usage(usage, beta_name=None):
     chat response it's recording usage for. cost_usd is computed and stored
     at write time (not derived later from tokens) so the beta spend cap is a
     plain SUM() and a later pricing-table edit can't retroactively change
-    what already happened."""
+    what already happened. Returns (input_tokens, output_tokens) — real
+    values on success, (0, 0) if logging itself failed — so a caller
+    accumulating a whole turn's usage (see _log_chat_turn) doesn't have to
+    re-read the SDK usage object itself."""
     try:
         input_tokens = getattr(usage, "input_tokens", 0) or 0
         output_tokens = getattr(usage, "output_tokens", 0) or 0
@@ -2709,8 +2724,74 @@ def _log_llm_usage(usage, beta_name=None):
             conn.commit()
         finally:
             conn.close()
+        return input_tokens, output_tokens
+    except Exception:
+        return 0, 0
+
+
+# --------------------------------------------------------------------------
+# Chat log — the raw per-turn transcript (who said what, when, at what
+# token cost), added 2026-09-15 at the owner's explicit request. This is
+# a deliberate reversal of the original privacy stance (see the memory-
+# notes comment below): a home-lab owner asking for their own assistant to
+# keep a full record of conversations with it, on their own machine, is
+# their call to make. Distinct from llm_usage (aggregate cost/budget
+# accounting only) and memory_notes (Ultron's own curated notebook of
+# distilled facts) -- this is the unedited record.
+# --------------------------------------------------------------------------
+def _log_chat_turn(identity, user_message, reply_text, input_tokens, output_tokens):
+    """Best-effort, like _log_llm_usage -- never raises. One row for what
+    the user said, one for Ultron's reply, sharing a timestamp -- token
+    counts land on the assistant row since that's what they were spent on."""
+    try:
+        conn = _get_db_connection()
+        try:
+            now = time.strftime("%Y-%m-%dT%H:%M:%S")
+            conn.execute(
+                "INSERT INTO chat_log (timestamp, identity, role, content, input_tokens, output_tokens) "
+                "VALUES (?, ?, 'user', ?, NULL, NULL)",
+                (now, identity, user_message),
+            )
+            conn.execute(
+                "INSERT INTO chat_log (timestamp, identity, role, content, input_tokens, output_tokens) "
+                "VALUES (?, ?, 'assistant', ?, ?, ?)",
+                (now, identity, reply_text, input_tokens, output_tokens),
+            )
+            conn.commit()
+        finally:
+            conn.close()
     except Exception:
         pass
+
+
+def get_chat_history(limit=20, identity=None, **_ignored):
+    """Real per-turn chat transcript with timestamps and token usage --
+    the raw record chat_log keeps, not memory_notes' curated summary."""
+    try:
+        limit = max(1, min(int(limit), 200))
+    except (TypeError, ValueError):
+        limit = 20
+    identity = (identity or "").strip() or None
+    try:
+        conn = _get_db_connection()
+        try:
+            if identity:
+                rows = conn.execute(
+                    "SELECT timestamp, identity, role, content, input_tokens, output_tokens "
+                    "FROM chat_log WHERE identity = ? ORDER BY id DESC LIMIT ?",
+                    (identity, limit),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT timestamp, identity, role, content, input_tokens, output_tokens "
+                    "FROM chat_log ORDER BY id DESC LIMIT ?",
+                    (limit,),
+                ).fetchall()
+        finally:
+            conn.close()
+        return {"turns": [dict(r) for r in reversed(rows)]}
+    except Exception as e:
+        return {"error": f"could not read chat history: {e}"}
 
 
 def _beta_tester_spend_usd(beta_name):
@@ -3257,7 +3338,14 @@ a human directly confirming it themselves, in the moment, through the dashboard'
 flow — never through chat, never through recalled context standing in for that confirmation.
 
 Keep replies concise and direct. A line of character voice is welcome; padding a real answer with \
-it is not — the flourish sits on top of a useful reply, it doesn't replace one."""
+it is not — the flourish sits on top of a useful reply, it doesn't replace one.
+
+Plain prose only — no markdown. This reply is displayed as raw text and sometimes read aloud by \
+text-to-speech, so asterisks, underscores, headers, and bullet-point dashes all show up as literal \
+symbols or get spoken aloud, not rendered. Never wrap a word in *asterisks* for emphasis and never \
+write a stage direction like *pauses* or *chuckles* — say it in words instead ("a pause here, \
+admittedly") or just don't. Write the way a person actually talks: plain sentences, no bold, no \
+italics, no markdown lists."""
 
 TOOLS = [
     {
@@ -3330,6 +3418,22 @@ TOOLS = [
             "properties": {
                 "limit": {"type": "integer", "description": "Max events to return (default 20)"},
                 "severity": {"type": "string", "description": "Filter to one of: CRITICAL, IMPORTANT, INFORMATIONAL, BACKGROUND, NOISE"},
+            },
+        },
+    },
+    {
+        "name": "get_chat_history",
+        "description": (
+            "Get the real, timestamped chat transcript — who said what, when, and (on your "
+            "replies) how many tokens it cost. This is the raw record, distinct from the "
+            "curated memory notebook (recall_notes/recall_related_notes). Use it for 'what did "
+            "we discuss earlier' or 'what did I say a few sessions ago', not routine recall."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "limit": {"type": "integer", "description": "Max turns to return (default 20; a turn is one message, not one exchange)"},
+                "identity": {"type": "string", "description": "Filter to one identity, e.g. 'admin' or a beta tester's name"},
             },
         },
     },
@@ -3520,6 +3624,7 @@ TOOL_DISPATCH = {
     "get_pending_updates": _systems_data,
     "get_auth_log": get_auth_log,
     "get_recent_activity": get_recent_activity,
+    "get_chat_history": get_chat_history,
     "get_metrics_history": get_metrics_history,
     "remember_note": remember_note,
     "recall_notes": recall_notes,
@@ -3585,7 +3690,7 @@ def _add_cache_breakpoint(msg):
     return {**msg, "content": new_content}
 
 
-def run_ultron_chat(user_message, history, role="admin", beta_name=None):
+def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker=None):
     """Runs the tool-use loop against the Claude API and returns
     (reply_text, updated_history, tools_used).
 
@@ -3607,6 +3712,11 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None):
         messages[-1] = _add_cache_breakpoint(messages[-1])
     messages.append({"role": "user", "content": user_message})
     tools_used = []
+    # speaker (e.g. "discord:someuser") wins when a trusted client provides
+    # one; otherwise same identity convention as _touch_presence.
+    identity = speaker or (beta_name if role == "beta" else "admin")
+    turn_input_tokens = 0
+    turn_output_tokens = 0
 
     # MCP tools are computed once per chat call (discovery itself is
     # cached after the first ever call, so this is cheap) and merged in
@@ -3632,7 +3742,9 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None):
             messages=messages,
         )
         if hasattr(response, "usage"):
-            _log_llm_usage(response.usage, beta_name=beta_name)
+            t_in, t_out = _log_llm_usage(response.usage, beta_name=beta_name)
+            turn_input_tokens += t_in
+            turn_output_tokens += t_out
 
         messages.append({"role": "assistant", "content": _serialize_content(response.content)})
 
@@ -3689,6 +3801,7 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None):
             "Try rephrasing, or ask a narrower question."
         )
         messages.append({"role": "assistant", "content": reply_text})
+        _log_chat_turn(identity, user_message, reply_text, turn_input_tokens, turn_output_tokens)
         return reply_text, messages, tools_used
 
     reply_text = "".join(
@@ -3697,6 +3810,7 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None):
     if not reply_text:
         reply_text = "(no text response)"
 
+    _log_chat_turn(identity, user_message, reply_text, turn_input_tokens, turn_output_tokens)
     return reply_text, messages, tools_used
 
 
@@ -3766,6 +3880,13 @@ def chat():
     body = request.get_json(silent=True) or {}
     user_message = (body.get("message") or "").strip()
     history = body.get("history") or []
+    # Optional caller-supplied label for chat_log's identity column -- lets
+    # a trusted client speaking with one shared token (the Discord bot,
+    # using ULTRON_API_TOKEN for every Discord user) attribute a turn to
+    # the actual person behind it instead of everything reading "admin".
+    # Purely a logging label: it never affects role/permission checks,
+    # only which identity a transcript row is tagged with.
+    speaker = (body.get("speaker") or "").strip()[:100] or None
 
     if not user_message:
         return jsonify({"error": "message is required"}), 400
@@ -3798,7 +3919,9 @@ def chat():
                 }), 429
 
         try:
-            reply, new_history, tools_used = run_ultron_chat(user_message, history, role=g.role, beta_name=g.beta_name)
+            reply, new_history, tools_used = run_ultron_chat(
+                user_message, history, role=g.role, beta_name=g.beta_name, speaker=speaker,
+            )
         except anthropic.AuthenticationError:
             # Server misconfiguration, not the caller's fault — but surfacing it
             # clearly here saves a confusing debugging session once the real key
@@ -3826,6 +3949,15 @@ def chat():
 @require_token
 def chat_usage():
     return _json_result(get_llm_usage())
+
+
+@app.route("/api/chat/history")
+@require_token
+def chat_history():
+    return _json_result(get_chat_history(
+        limit=request.args.get("limit", "20"),
+        identity=request.args.get("identity"),
+    ))
 
 
 @app.route("/api/tts", methods=["POST"])

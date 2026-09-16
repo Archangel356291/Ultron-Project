@@ -397,10 +397,15 @@ async def backend_get(session, path):
         raise BackendError(f"Could not reach the backend at {BACKEND_URL}: {e or 'timed out'}")
 
 
-async def backend_chat(session, message, history):
+async def backend_chat(session, message, history, speaker=None):
     url = BACKEND_URL.rstrip("/") + "/api/chat"
     headers = {"Authorization": "Bearer " + API_TOKEN, "Content-Type": "application/json"}
     body = {"message": message, "history": history}
+    if speaker:
+        # The bot talks to the backend with one shared admin token, so
+        # without this every Discord user's turn would log as "admin" --
+        # this labels the backend's chat_log with who actually asked.
+        body["speaker"] = speaker
     try:
         # Chat can take a while (LLM + tool calls) — give it real room, matching
         # the backend's own ULTRON_LLM_TIMEOUT_SECONDS default of 60s.
@@ -868,7 +873,8 @@ async def ask_command(interaction: discord.Interaction, message: str):
     async with bot._chat_lock(interaction.user.id):
         history = bot.chat_histories.get(interaction.user.id, [])
         try:
-            data = await backend_chat(bot.http_session, message, history)
+            speaker = "discord:" + interaction.user.display_name
+            data = await backend_chat(bot.http_session, message, history, speaker=speaker)
             bot.chat_histories[interaction.user.id] = data.get("history", history)
             await interaction.followup.send(embed=format_chat_embed(data["reply"], data.get("tools_used", [])))
         except BackendError as e:
