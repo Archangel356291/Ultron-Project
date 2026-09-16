@@ -14,6 +14,10 @@ ultron-discord-bot/   Thin remote-control layer; every command is an
 ultron-dashboard.html Single-file dashboard, opens directly in a browser
 fonts/                Self-hosted dashboard typefaces (OFL) — the page makes
                        no third-party requests
+searxng/              Settings for Scout's private search engine (the
+                       ultron-searxng compose service behind web_search)
+sw.js                 Service worker for the installable app (never
+                       caches /api/*)
 dev-tools/            Testing infrastructure (fake SDKs, a real local
                        MCP test server) — not part of the shipped product
 ```

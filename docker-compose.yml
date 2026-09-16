@@ -11,6 +11,10 @@ services:
       - .env
     environment:
       - ULTRON_DB_PATH=/data/ultron.db
+      # Activity/chat/metrics timestamps are written with the container's
+      # clock; without this they were UTC while everything else on the
+      # dashboard (and the Pi-hole/Jellyfin stacks) is local time.
+      - TZ=America/Los_Angeles
       # Real TLS cert issued by `tailscale cert` for this device's
       # *.ts.net name (owner-requested 2026-09-16) -- see the tls/
       # volume mount below and ultron-backend/tls/README.md for how to
@@ -56,6 +60,26 @@ services:
       - ULTRON_BACKEND_URL=https://ultron-backend:5000
     depends_on:
       - ultron-backend
+    networks:
+      - ultron
+
+  # Scout's search engine (owner-approved 2026-09-16): a private, self-hosted
+  # SearXNG the backend's web_search chat tool queries. Free, no account,
+  # no per-query cost. Deliberately NOT published on any host port -- only
+  # ultron-backend can reach it, over the ultron network, so it is never a
+  # search box exposed to the LAN or the tailnet. settings.yml enables the
+  # JSON format the tool needs and turns the rate limiter off (it would
+  # otherwise want a Valkey/Redis container for one internal caller).
+  searxng:
+    image: searxng/searxng:latest
+    container_name: ultron-searxng
+    restart: unless-stopped
+    environment:
+      - SEARXNG_BASE_URL=http://searxng:8080/
+      - SEARXNG_SECRET=${SEARXNG_SECRET:?Add SEARXNG_SECRET to .env (any long random string)}
+      - TZ=America/Los_Angeles
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
     networks:
       - ultron
 

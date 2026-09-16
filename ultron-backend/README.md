@@ -538,6 +538,37 @@ can see what's available before deciding what to add to `auto_approve`.
 Ultron can also answer questions about this directly via the
 `get_mcp_servers` chat tool, which is the same read the endpoint uses.
 
+## Scout — web search through your own engine (`web_search` chat tool)
+
+The owner's web-research subagent, built to cost as close to nothing as
+possible: `docker-compose.yml` runs a private **SearXNG** instance
+(`ultron-searxng`, free, no account, no per-query fee) that is **not
+published on any host port** — only `ultron-backend` can reach it, over
+the compose network. The `web_search` chat tool queries it and returns up
+to 5 titles, URLs and 300-character snippets, so a lookup costs a short
+question plus a few hundred tokens of results, and zero when nobody asks.
+
+Setup is two lines in `.env` (already added on this host):
+
+```
+SEARXNG_SECRET=<any long random string>
+ULTRON_SEARXNG_URL=http://searxng:8080
+```
+
+Without `ULTRON_SEARXNG_URL` the tool is inert and says so. `searxng/
+settings.yml` enables the JSON format the tool needs and turns SearXNG's
+rate limiter off (one internal caller; the limiter would otherwise want a
+Valkey container).
+
+Safety, deliberately: results reach the model inside the same
+`<untrusted_external_data>` wrapper MCP results get, so a web page can
+never instruct Ultron; the tool is admin-only (not in the beta
+allowlist) and not part of Economy mode's cheap set; and **nothing found
+on the web is stored unless you explicitly ask Ultron to remember it**
+(`remember_note`), never by automatic ingestion. `dev-tools/test_web_search.py`
+covers the request shape, trimming, every failure mode, the wrapper, and
+the scope.
+
 ## Cost controls — real safeguards, not just documentation
 
 Every one of these is enforced in code, verified with tests that check the

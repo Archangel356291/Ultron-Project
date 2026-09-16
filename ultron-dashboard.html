@@ -3898,6 +3898,7 @@
         },
       });
       speakReply(data.reply);
+      if ((data.tools_used || []).indexOf('web_search') !== -1 && window.__scoutBusy) window.__scoutBusy(20000);
       state.chatHistory = data.history || state.chatHistory;
     } catch (err) {
       thinkingEl.remove();
@@ -4749,6 +4750,10 @@ function toggleReducedVisuals(el) {
   var LABEL_COLORS = { amber: '#c9973a', violet: '#8c6bc0' };
   var sentinelAlert = false;
   window.__sentinelAlert = function (on) { sentinelAlert = !!on; };
+  // Scout lights up for a while after a reply that actually used
+  // web_search (sendChatMessage calls this from the reply's tools_used).
+  var scoutBusyUntil = 0;
+  window.__scoutBusy = function (ms) { scoutBusyUntil = now() + (ms || 20000) / 1000; };
   var ULTRON_DESK_X = 1050, ULTRON_TUBE_X = 1195;
 
   // Conveyor belt: carries little pixel packages from the workstations to
@@ -4825,14 +4830,16 @@ function toggleReducedVisuals(el) {
     var flicker = Math.sin(t * 0.8) > -0.2;
     SUBAGENTS.forEach(function (a) {
       var alarmed = a.alertable && sentinelAlert;
+      var busy = a.color === 'violet' && t < scoutBusyUntil;
       drawFloored(IMG['tube_' + a.color], a.tubeX, SUBAGENT_TUBE_SCALE);
-      var desk = drawFloored(IMG['desk_' + a.color + (alarmed || flicker ? '_active' : '_idle')], a.deskX, DESK_SCALE);
+      var desk = drawFloored(IMG['desk_' + a.color + (alarmed || busy || flicker ? '_active' : '_idle')], a.deskX, DESK_SCALE);
       if (desk.w) drawFloored(IMG['agent_' + a.color], a.deskX + desk.w * 0.18, AGENT_SCALE);
       if (a.label && desk.w) {
-        ctx.fillStyle = alarmed ? '#ff3b3b' : LABEL_COLORS[a.color];
+        ctx.fillStyle = alarmed ? '#ff3b3b' : busy ? '#b084f0' : LABEL_COLORS[a.color];
         ctx.font = '7px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText(alarmed ? a.label + ' · ALERT' : a.label, a.deskX + desk.w / 2, FLOOR_Y + 22);
+        var plate = alarmed ? a.label + ' · ALERT' : busy ? a.label + ' · SEARCHING' : a.label;
+        ctx.fillText(plate, a.deskX + desk.w / 2, FLOOR_Y + 22);
       }
     });
 

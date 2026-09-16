@@ -1,0 +1,29 @@
+# SearXNG settings for Ultron's Scout (web_search chat tool). Everything not
+# listed here comes from SearXNG's own defaults. The secret key is supplied
+# by the SEARXNG_SECRET environment variable (see docker-compose.yml), never
+# written into this file.
+use_default_settings: true
+
+general:
+  instance_name: "Ultron Scout"
+  debug: false
+  enable_metrics: false
+
+server:
+  # Single internal caller (ultron-backend) on a private Docker network --
+  # the limiter would only add a Valkey dependency for nothing.
+  limiter: false
+  image_proxy: false
+  method: "GET"
+
+search:
+  # The backend asks for format=json; SearXNG refuses it unless listed.
+  formats:
+    - html
+    - json
+  safe_search: 1
+  autocomplete: ""
+  default_lang: "en"
+
+ui:
+  static_use_hash: true

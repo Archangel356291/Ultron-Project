@@ -250,5 +250,20 @@ fee). The honest low-cost shape is:
    Economy mode makes the summarising step Haiku-priced.
 
 The token cost is then a short question plus a few snippets per lookup,
-and zero when nobody is asking. **Decision needed:** run SearXNG on this
-PC (free, but a new container), or skip web access. Not built yet.
+and zero when nobody is asking.
+
+**Both built 2026-09-16 (SearXNG approved by the owner):**
+
+- *Sentinel* — `_sentinel_run_once()` on a daemon thread
+  (`ULTRON_SENTINEL_INTERVAL_SECONDS`, default 300), admin-only
+  `GET /api/security/threats`, chat tool `get_threat_summary`, a live
+  Security-tab card replacing the old illustrative "Posture" card, and
+  `dev-tools/test_sentinel.py`. Zero LLM tokens.
+- *Scout* — `ultron-searxng` service in `docker-compose.yml` (no host
+  port, compose-network only, `searxng/settings.yml` enables JSON and
+  disables the limiter), the `web_search` chat tool (inert until
+  `ULTRON_SEARXNG_URL`; results wrapped as `<untrusted_external_data>`;
+  admin-only; outside Economy mode), the room's Scout desk lighting up
+  after a reply that used it, and `dev-tools/test_web_search.py`.
+  Verified end-to-end: a real chat reply cited a real URL from the
+  self-hosted engine.
