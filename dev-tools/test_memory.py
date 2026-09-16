@@ -68,6 +68,10 @@ def demo():
     body = res.get_json()
     assert len(body["notes"]) == 3, body
     assert body["notes"][0]["note"] == newest, body
+    # Real fullness figures for the dashboard's memory-gauge percentage —
+    # count is the true row total, not just len(notes) which is capped by ?limit.
+    assert body["count"] == app.MEMORY_NOTES_MAX_ROWS, body
+    assert body["capacity"] == app.MEMORY_NOTES_MAX_ROWS, body
 
     # No token at all -> unauthorized, same as every other admin-only route.
     res = client.get("/api/memory")

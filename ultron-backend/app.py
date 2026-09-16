@@ -555,9 +555,10 @@ def recall_notes(query=None, limit=20, **_ignored):
                     "SELECT created_at, note FROM memory_notes ORDER BY id DESC LIMIT ?",
                     (limit,),
                 ).fetchall()
+            total = conn.execute("SELECT COUNT(*) FROM memory_notes").fetchone()[0]
         finally:
             conn.close()
-        return {"notes": [dict(r) for r in rows]}
+        return {"notes": [dict(r) for r in rows], "count": total, "capacity": MEMORY_NOTES_MAX_ROWS}
     except Exception as e:
         return {"error": f"could not read memory notes: {e}"}
 
