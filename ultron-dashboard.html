@@ -489,6 +489,58 @@
   .core-badge .core-pct{ font-family:var(--font-mono); font-size:13px; font-weight:600; color:var(--text); }
   .core-badge .core-tag{ font-family:var(--font-mono); font-size:7px; color:var(--text-faint); letter-spacing:0.04em; }
 
+  /* Ultron tab: the same core, copied and enlarged, recolored red via a
+     locally-scoped override of the --core-gold/--core-glow-a/b custom
+     properties .core-rings/.sphere-glow already reference -- the ring/
+     glow CSS itself is untouched, this just changes what it resolves to
+     inside this one element's subtree. The canvas particle colors are a
+     separate JS-side state profile (see the Module 14 script) since
+     canvas fill/stroke colors aren't CSS and can't be overridden this way. */
+  #sphere-wrap-xl{
+    --core-gold: var(--red-bright);
+    --core-glow-a: rgba(255,59,59,0.34);
+    --core-glow-b: rgba(255,59,59,0.05);
+  }
+  .sphere-wrap.sphere-wrap-xl{ width:420px; height:420px; }
+  @media(max-width:420px){ .sphere-wrap.sphere-wrap-xl{ width:220px; height:220px; } }
+  @media(max-width:760px){ .sphere-wrap.sphere-wrap-xl{ width:260px; height:260px; } }
+
+  /* Ultron tab: pixel-art companion scene below the core. Rendered at a
+     small native resolution and scaled up via CSS with image-rendering
+     set to keep hard pixel edges (no smoothing/blur) at any container
+     width -- the actual chunky-retro look, not just a small smooth image. */
+  .pixel-room-wrap{
+    /* No padding, deliberately -- the bubble overlay is positioned by
+       percentage-of-canvas (see the pixel-room script), which only lines
+       up exactly if the canvas fills this wrap edge to edge with nothing
+       else offsetting it. The room's own border/frame look comes from
+       this wrap's border below, not inset padding. */
+    position:relative; margin-top:14px; width:100%; max-width:960px;
+    background:var(--void); border:1px solid var(--line); border-radius:4px;
+    overflow:hidden;
+  }
+  .pixel-room-wrap canvas{
+    display:block; width:100%; height:auto;
+    image-rendering:pixelated; image-rendering:crisp-edges;
+  }
+  /* Speech/thought bubble -- an HTML overlay rather than canvas-drawn
+     text, positioned by percentage (see pixel-room script) so it tracks
+     the character correctly at any rendered size despite the canvas
+     itself being a small native resolution scaled up by CSS. */
+  .pixel-bubble{
+    position:absolute; transform:translate(-50%, -100%);
+    background:var(--panel-raised); border:1px solid var(--red);
+    border-radius:6px; padding:3px 8px;
+    font-family:var(--font-mono); font-size:10px; color:var(--text);
+    white-space:nowrap; pointer-events:none;
+    opacity:0; transition:opacity 0.25s ease;
+  }
+  .pixel-bubble.show{ opacity:1; }
+  .pixel-bubble::after{
+    content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+    border:5px solid transparent; border-top-color:var(--red);
+  }
+
   /* ---------- talk bar ---------- */
   .talk-bar{
     max-width:640px; margin:10px auto 0;
@@ -877,6 +929,10 @@
 
   <aside class="sidebar">
     <nav id="nav">
+      <div class="nav-item" data-section="ultron-core" data-role="admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><polygon points="12,2.5 21,7.5 21,16.5 12,21.5 3,16.5 3,7.5"/><circle cx="12" cy="12" r="3.2"/></svg>
+        <span class="nav-text"><span class="label">Ultron</span><span class="nav-sub">The Core, Up Close</span></span>
+      </div>
       <div class="nav-item active" data-section="home" data-role="admin">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
         <span class="nav-text"><span class="label">Home</span><span class="nav-sub">Overview &amp; Quick Actions</span></span>
@@ -926,6 +982,39 @@
 
   <main>
     <div class="content">
+
+      <!-- ULTRON (hero orb, copied from Home and enlarged, recolored red/
+           reactive; pixel companion scene below it) -->
+      <section class="section" id="sec-ultron-core">
+        <div class="hero-panel">
+          <div class="hero-head">
+            <div class="eyebrow"><span class="bolt"></span><span>ULTRON</span><span class="bolt r"></span></div>
+            <div class="sub">The core, up close.</div>
+          </div>
+
+          <div class="sphere-row" style="margin-top:8px;">
+            <div class="sphere-wrap sphere-wrap-xl offline" id="sphere-wrap-xl">
+              <div class="sphere-glow"></div>
+              <svg class="core-rings" viewBox="0 0 320 320" aria-hidden="true">
+                <ellipse class="r1" cx="160" cy="160" rx="150" ry="38" stroke-width="1"/>
+                <ellipse class="r2" cx="160" cy="160" rx="128" ry="30" stroke-width="0.7"/>
+                <ellipse class="r3" cx="160" cy="160" rx="105" ry="24" stroke-width="1.2" stroke-dasharray="3 7"/>
+              </svg>
+              <canvas id="hero-canvas-xl" aria-label="Ultron's animated AI core, enlarged"></canvas>
+              <div class="core-badge">
+                <div class="core-pct" id="core-pct-xl">—</div>
+                <div class="core-tag" id="core-tag-xl">cpu</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-label" style="margin-top:28px;">Ultron's corner</div>
+          <div class="pixel-room-wrap">
+            <canvas id="pixel-room-canvas" aria-label="A small pixel-art room where Ultron walks around when idle and sits at his terminal when working"></canvas>
+            <div class="pixel-bubble" id="pixel-bubble" hidden></div>
+          </div>
+        </div>
+      </section>
 
       <!-- HOME -->
       <section class="section active" id="sec-home">
@@ -3452,11 +3541,22 @@
 <script>
 (function () {
   'use strict';
-  var wrap = document.getElementById('sphere-wrap');
-  var canvas = document.getElementById('hero-canvas');
-  if (!wrap || !canvas || !canvas.getContext) return;
+  // Owner-requested 2026-09-16: a second, larger, red-reactive copy of
+  // this same core on the new Ultron tab, without touching the Home
+  // tab's original. initAiCore() is the same module as before, just
+  // parameterized (element ids + a color/state profile) so it can be
+  // instantiated more than once -- each call gets its own node/edge/
+  // dust/spoke graph, canvas, and animation loop; nothing is shared
+  // between instances except the broadcast below. Returns null (and
+  // does nothing) if the ids it's given aren't on the page, so a
+  // section that hasn't loaded (or a page without the Ultron tab) is a
+  // silent no-op, same as the original's own missing-canvas guard.
+  function initAiCore(wrapId, canvasId, STATE_PROFILE) {
+  var wrap = document.getElementById(wrapId);
+  var canvas = document.getElementById(canvasId);
+  if (!wrap || !canvas || !canvas.getContext) return null;
   var ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  if (!ctx) return null;
 
   var REDUCED_KEY = 'ultron_reduced_visuals';
   function reducedVisualsOn() {
@@ -3551,22 +3651,12 @@
 
   // ---- state machine: idle/listening/thinking/responding/alert. Wired
   // from real events elsewhere in this file (mic toggle, chat send/reply,
-  // connection loss) -- see the calls to window.__heroSetState below. ----
-  var STATE_PROFILE = {
-    idle:       { pulseSpeed: 0.9, activity: 0.30, color: [255, 178, 56] },
-    listening:  { pulseSpeed: 1.3, activity: 0.50, color: [255, 190, 80] },
-    thinking:   { pulseSpeed: 2.2, activity: 0.85, color: [255, 178, 56] },
-    responding: { pulseSpeed: 1.8, activity: 1.00, color: [255, 200, 90] },
-    alert:      { pulseSpeed: 2.6, activity: 0.75, color: [255, 70, 60] },
-  };
+  // connection loss) -- STATE_PROFILE is now a parameter (see the two
+  // calls to initAiCore below) so each instance can react in its own
+  // colors; heroSetState/setCpu below on window.__heroSetState broadcast
+  // to every instance, this instance just applies it against its own profile. ----
   var heroState = 'idle';
-  window.__heroSetState = function (name) {
-    if (STATE_PROFILE[name]) heroState = name;
-  };
   var cpuBoost = 1.0;
-  window.__heroSetCpu = function (pct) {
-    cpuBoost = pct > 90 ? 1.35 : pct > 70 ? 1.15 : 1.0;
-  };
 
   var travelers = [];
   function maybeSpawnTraveler(activity) {
@@ -3712,7 +3802,18 @@
   function loop() {
     renderFrame();
     maybeSpawnTraveler(STATE_PROFILE[heroState].activity);
-    if (!document.hidden) rafId = requestAnimationFrame(loop);
+    // Deliberately NOT gated on document.hidden -- browsers already
+    // throttle/suspend rAF for backgrounded tabs on their own, natively,
+    // and resume it at full rate the moment the tab is visible again
+    // with no help needed here. A manual "stop rescheduling when
+    // hidden, only resume on a visibilitychange event" gate (the
+    // previous approach) breaks completely in any context where
+    // document.hidden reads true but visibilitychange never actually
+    // fires -- verified true of the Chrome automation this was tested
+    // in this session, and plausible in other embedding/preview
+    // contexts too -- permanently freezing the animation and any state
+    // reaction (color, sitting/standing) after the very first paint.
+    rafId = requestAnimationFrame(loop);
   }
 
   sizeToContainer();
@@ -3726,15 +3827,48 @@
     renderFrame();
   } else {
     loop();
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) {
-        if (rafId) cancelAnimationFrame(rafId);
-        rafId = null;
-      } else if (!rafId) {
-        loop();
-      }
-    });
   }
+
+  return {
+    setState: function (name) { if (STATE_PROFILE[name]) heroState = name; },
+    setCpu: function (pct) { cpuBoost = pct > 90 ? 1.35 : pct > 70 ? 1.15 : 1.0; },
+  };
+  } // end initAiCore
+
+  // Home tab's original -- unchanged colors/behavior.
+  var HOME_STATE_PROFILE = {
+    idle:       { pulseSpeed: 0.9, activity: 0.30, color: [255, 178, 56] },
+    listening:  { pulseSpeed: 1.3, activity: 0.50, color: [255, 190, 80] },
+    thinking:   { pulseSpeed: 2.2, activity: 0.85, color: [255, 178, 56] },
+    responding: { pulseSpeed: 1.8, activity: 1.00, color: [255, 200, 90] },
+    alert:      { pulseSpeed: 2.6, activity: 0.75, color: [255, 70, 60] },
+  };
+  // Ultron tab's copy -- same state names, red throughout instead of
+  // amber: dim ember at rest, blazing red while actively doing
+  // something (thinking/tool use) or replying, per the owner's request.
+  var ULTRON_TAB_STATE_PROFILE = {
+    idle:       { pulseSpeed: 0.8, activity: 0.22, color: [150, 25, 25] },
+    listening:  { pulseSpeed: 1.3, activity: 0.55, color: [210, 40, 30] },
+    thinking:   { pulseSpeed: 2.4, activity: 0.95, color: [255, 30, 30] },
+    responding: { pulseSpeed: 2.0, activity: 1.00, color: [255, 60, 40] },
+    alert:      { pulseSpeed: 2.9, activity: 0.90, color: [255, 0, 0] },
+  };
+
+  var coreInstances = [];
+  var homeCore = initAiCore('sphere-wrap', 'hero-canvas', HOME_STATE_PROFILE);
+  if (homeCore) coreInstances.push(homeCore);
+  var ultronTabCore = initAiCore('sphere-wrap-xl', 'hero-canvas-xl', ULTRON_TAB_STATE_PROFILE);
+  if (ultronTabCore) coreInstances.push(ultronTabCore);
+
+  // Broadcast to every live instance -- callers elsewhere in this file
+  // (mic toggle, chat send/reply, connection loss) don't need to know
+  // how many copies of the core exist on the page.
+  window.__heroSetState = function (name) {
+    coreInstances.forEach(function (inst) { inst.setState(name); });
+  };
+  window.__heroSetCpu = function (pct) {
+    coreInstances.forEach(function (inst) { inst.setCpu(pct); });
+  };
 })();
 
 // Manual Reduced Visual Mode switch (Settings -> Preferences) -- persisted,
@@ -3752,6 +3886,230 @@ function toggleReducedVisuals(el) {
   try { localStorage.setItem('ultron_reduced_visuals', next ? '1' : '0'); } catch (e) { /* ignore */ }
   location.reload();
 }
+</script>
+
+<!-- Ultron tab: pixel-art companion scene (owner-requested 2026-09-16) --
+     walks the floor when idle, sits at the desk/monitor when actively
+     doing something, with a speech bubble reusing the same state names
+     the AI core above already broadcasts. Two smaller silhouettes at
+     their own workstations represent subagents -- decorative company in
+     the room, not a live status readout: this project's whole ethos is
+     never faking activity/telemetry (see README's "read-only by
+     default"), and there's no real per-subagent signal from the backend
+     to wire them to honestly, so they sit at their desks as scenery,
+     the same honest register as the server rack, not a claim about
+     what's actually running.
+
+     Sprites/backdrop are real PNGs (dev-tools/gen_pixel_assets.py,
+     served from /pixel-assets/) generated with Pillow, not hand-typed
+     ASCII grids -- built from an owner-supplied reference pair (a red/
+     gunmetal armored-robot portrait, a teal-lit sci-fi control room).
+     The character reference is itself styled on Marvel's copyrighted
+     Ultron design, so this draws an ORIGINAL silhouette matching its
+     palette/mood (angular armor, glowing red core and crest) rather
+     than tracing or reproducing that artwork -- the same principle this
+     project's own Module 13 already applied to the 3D hero head. The
+     room reference was isometric; this stays a straight-on 2D scene --
+     redoing the character-movement/layout math for a true isometric
+     camera was out of scope for this pass, flagged rather than
+     half-attempted.
+
+     Independent module: it hooks window.__heroSetState by wrapping it
+     (call the previous handler, then this one) rather than editing the
+     core module, so the two stay decoupled -- this can be removed
+     without touching that script, and vice versa. -->
+<script>
+(function () {
+  'use strict';
+  var canvas = document.getElementById('pixel-room-canvas');
+  var bubble = document.getElementById('pixel-bubble');
+  if (!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  ctx.imageSmoothingEnabled = false;
+
+  // Native size of room_bg.png -- see dev-tools/gen_pixel_assets.py.
+  var W = 1280, H = 560;
+  canvas.width = W;
+  canvas.height = H;
+  var FLOOR_Y = 440;
+
+  var ASSET_BASE = '/pixel-assets/';
+  function loadImg(name) { var img = new Image(); img.src = ASSET_BASE + name; return img; }
+  var IMG = {
+    room: loadImg('room_bg.png'),
+    ultronWalkA: loadImg('ultron_walk_a.png'),
+    ultronWalkB: loadImg('ultron_walk_b.png'),
+    ultronSit: loadImg('ultron_sit.png'),
+    agentCyan: loadImg('agent_cyan_sit.png'),
+    agentGreen: loadImg('agent_green_sit.png'),
+    deskUltronIdle: loadImg('desk_ultron_idle.png'),
+    deskUltronActive: loadImg('desk_ultron_active.png'),
+    deskCyanIdle: loadImg('desk_cyan_idle.png'),
+    deskCyanActive: loadImg('desk_cyan_active.png'),
+    deskGreenIdle: loadImg('desk_green_idle.png'),
+    deskGreenActive: loadImg('desk_green_active.png'),
+    tubeRed: loadImg('tube_red.png'),
+    tubeCyan: loadImg('tube_cyan.png'),
+    tubeGreen: loadImg('tube_green.png'),
+  };
+
+  var CHAR_SCALE = 0.9, AGENT_SCALE = 0.8, DESK_SCALE = 1.15, TUBE_SCALE = 1.1;
+  var WALK_MIN_X = 470, WALK_MAX_X = 630;
+
+  // Draws an image anchored to the floor line, scaled by `scale` --
+  // returns the box drawn (or a zero box while the image is still
+  // loading, so callers can skip depending on it that frame rather than
+  // throw on a 0x0 drawImage).
+  function drawFloored(img, x, scale) {
+    if (!img.complete || !img.naturalWidth) return { x: x, y: FLOOR_Y, w: 0, h: 0 };
+    var w = img.naturalWidth * scale, h = img.naturalHeight * scale;
+    var y = FLOOR_Y - h;
+    ctx.drawImage(img, x, y, w, h);
+    return { x: x, y: y, w: w, h: h };
+  }
+
+  var SUBAGENTS = [
+    { deskX: 780, idle: 'deskCyanIdle', active: 'deskCyanActive', agent: 'agentCyan', tubeX: 850, tube: 'tubeCyan' },
+    { deskX: 900, idle: 'deskGreenIdle', active: 'deskGreenActive', agent: 'agentGreen', tubeX: 970, tube: 'tubeGreen' },
+  ];
+  var ULTRON_DESK_X = 1050, ULTRON_TUBE_X = 1195;
+
+  function drawRoom(active, t) {
+    ctx.clearRect(0, 0, W, H);
+    if (IMG.room.complete) ctx.drawImage(IMG.room, 0, 0, W, H);
+
+    // Subagent workstations -- a slow shared flicker, never in lockstep
+    // with Ultron's own real active/idle state (see this module's top
+    // comment on why these are scenery, not a live status readout).
+    var flicker = Math.sin(t * 0.8) > -0.2;
+    SUBAGENTS.forEach(function (a) {
+      drawFloored(IMG[a.tube], a.tubeX, TUBE_SCALE);
+      var desk = drawFloored(IMG[flicker ? a.active : a.idle], a.deskX, DESK_SCALE);
+      if (desk.w) drawFloored(IMG[a.agent], a.deskX + desk.w * 0.18, AGENT_SCALE);
+    });
+
+    // Ultron's own recharge tube + desk/monitor -- bigger, red, front
+    // and center. Desk swaps to the "active" (brighter, warmer) image
+    // while actually working -- the one state-reactive piece of the
+    // room itself, separate from the sprite/bubble.
+    drawFloored(IMG.tubeRed, ULTRON_TUBE_X, TUBE_SCALE);
+    drawFloored(IMG[active ? 'deskUltronActive' : 'deskUltronIdle'], ULTRON_DESK_X, DESK_SCALE);
+  }
+
+  // ---- character state: 'walk' (idle/listening) or 'sit' (thinking/
+  // responding/alert) -- see the window.__heroSetState hook below for
+  // the real mapping. ----
+  var charMode = 'walk';
+  var walkX = WALK_MIN_X, walkDir = 1;
+  var walkFrameToggle = false;
+  var lastWalkStep = 0;
+  var lastCharBox = { x: WALK_MIN_X, y: FLOOR_Y, w: 0, h: 0 };
+
+  function drawCharacter() {
+    var img = charMode === 'sit' ? IMG.ultronSit : (walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA);
+    var x = charMode === 'sit' ? ULTRON_DESK_X + 10 : walkX;
+    lastCharBox = drawFloored(img, x, CHAR_SCALE);
+  }
+
+  function stepWalk(t) {
+    if (charMode !== 'walk') return;
+    if (t - lastWalkStep < 0.35) return;
+    lastWalkStep = t;
+    walkFrameToggle = !walkFrameToggle;
+    walkX += walkDir * 14;
+    if (walkX >= WALK_MAX_X) { walkX = WALK_MAX_X; walkDir = -1; }
+    if (walkX <= WALK_MIN_X) { walkX = WALK_MIN_X; walkDir = 1; }
+  }
+
+  function positionBubble() {
+    if (!bubble) return;
+    bubble.style.left = ((lastCharBox.x + lastCharBox.w / 2) / W * 100).toFixed(2) + '%';
+    bubble.style.top = (lastCharBox.y / H * 100).toFixed(2) + '%';
+  }
+
+  var IDLE_QUIPS = ['systems nominal.', 'watching.', 'all quiet.', '...'];
+  var THINKING_QUIPS = ['thinking…', 'working on it…', 'processing…', 'one sec…'];
+  var RESPONDING_QUIPS = ['got it.', 'here you go.', 'replying…', 'done.'];
+  var ALERT_QUIPS = ['uh oh.', 'alert.', "that's not right."];
+
+  var bubbleTimer = null;
+  function sayBubble(text, holdMs) {
+    if (!bubble) return;
+    if (bubbleTimer) { clearTimeout(bubbleTimer); bubbleTimer = null; }
+    positionBubble();
+    bubble.textContent = text;
+    bubble.hidden = false;
+    requestAnimationFrame(function () { bubble.classList.add('show'); });
+    bubbleTimer = setTimeout(function () {
+      bubble.classList.remove('show');
+      bubbleTimer = setTimeout(function () { bubble.hidden = true; }, 260);
+    }, holdMs);
+  }
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  var idleQuipTimer = null;
+  function scheduleIdleQuip() {
+    if (idleQuipTimer) clearTimeout(idleQuipTimer);
+    idleQuipTimer = setTimeout(function () {
+      if (charMode === 'walk') sayBubble(pick(IDLE_QUIPS), 2600);
+      scheduleIdleQuip();
+    }, 14000 + Math.random() * 10000);
+  }
+  scheduleIdleQuip();
+
+  // Hook the AI core's broadcast rather than editing it -- see this
+  // module's own top comment.
+  var prevHeroSetState = window.__heroSetState;
+  window.__heroSetState = function (name) {
+    if (prevHeroSetState) prevHeroSetState(name);
+    var wasSit = charMode === 'sit';
+    if (name === 'thinking' || name === 'responding' || name === 'alert') {
+      charMode = 'sit';
+      if (!wasSit || name === 'alert') {
+        var quip = name === 'alert' ? pick(ALERT_QUIPS) : name === 'responding' ? pick(RESPONDING_QUIPS) : pick(THINKING_QUIPS);
+        sayBubble(quip, 3200);
+      }
+    } else {
+      charMode = 'walk';
+    }
+  };
+
+  var startTime = (window.performance && performance.now) ? performance.now() : Date.now();
+  function now() { return (((window.performance && performance.now) ? performance.now() : Date.now()) - startTime) / 1000; }
+
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function frame() {
+    var t = now();
+    stepWalk(t);
+    drawRoom(charMode === 'sit', t);
+    drawCharacter();
+    if (charMode === 'sit' && bubble && bubble.classList.contains('show')) positionBubble();
+    // Deliberately NOT gated on document.hidden -- see the AI-core
+    // module's own comment on why: it reads true with no
+    // visibilitychange ever firing in some embedding contexts
+    // (confirmed of the Chrome automation this was tested in), which
+    // would permanently freeze this on a blank/stale frame instead of
+    // just not animating while backgrounded.
+    if (!prefersReducedMotion) requestAnimationFrame(frame);
+  }
+  if (prefersReducedMotion) {
+    drawRoom(false, 0);
+    drawCharacter();
+    // No loop in this branch, so without this an image that hadn't
+    // finished loading yet at the single static draw above would stay
+    // blank forever instead of appearing once it's actually ready.
+    var pending = Object.keys(IMG).length;
+    Object.keys(IMG).forEach(function (k) {
+      IMG[k].addEventListener('load', function () {
+        if (--pending <= 0) { drawRoom(false, 0); drawCharacter(); }
+      }, { once: true });
+    });
+  } else {
+    frame();
+  }
+})();
 </script>
 
 <!-- Home-tab knowledge graph: the same vendored 3d-force-graph Module 6

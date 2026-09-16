@@ -15,6 +15,8 @@ COPY ultron-dashboard.html ultron-dashboard.html
 # Module 13: vendored Three.js + the built hero-head .glb, served by the new
 # /three-pipeline/<file> route in app.py.
 COPY three-pipeline/ three-pipeline/
+# Pixel-art sprites/backdrop for the Ultron tab, served by /pixel-assets/<file>.
+COPY pixel-assets/ pixel-assets/
 # Home-tab knowledge graph: only graph.json itself (already privacy-redacted
 # by Module 4) -- not the rest of graphify-out/ (caches, the Obsidian export,
 # the never-committed private-nodes.enc.json), read server-side by
