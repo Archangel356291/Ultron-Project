@@ -752,6 +752,31 @@
   .conn-status.err{ color:var(--red-bright); }
   .conn-note{ font-size:12px; color:var(--text-faint); margin-top:12px; line-height:1.5; border-left:2px solid var(--line); padding:8px 12px; }
 
+  /* Sign-in gate -- covers the viewport at a high z-index rather than
+     using display:none on #app-shell underneath: the brain map, hero AI
+     core, and knowledge graph all size themselves off getBoundingClientRect
+     at load time, and display:none collapses that to 0x0. #app-shell uses
+     visibility:hidden instead (see .app-hidden below), which keeps normal
+     layout/dimensions while still being invisible and unreachable by
+     keyboard/tab, so those visuals come up correctly sized once revealed. */
+  #login-gate{
+    position:fixed; inset:0; z-index:1000; display:flex; align-items:center; justify-content:center;
+    background: radial-gradient(ellipse at center, var(--panel) 0%, var(--void) 100%);
+    padding:20px;
+  }
+  #login-gate[hidden]{ display:none; }
+  .app-hidden{ visibility:hidden; }
+  body.gate-open{ overflow:hidden; }
+  .gate-card{ width:100%; max-width:380px; }
+  .gate-title{
+    font-family:var(--font-hud); font-size:24px; letter-spacing:0.1em; color:var(--text);
+    text-transform:uppercase; text-align:center;
+  }
+  .gate-sub{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint); text-align:center; margin-top:6px; margin-bottom:22px; }
+  .gate-error{ color:var(--red-bright); font-size:12px; font-family:var(--font-mono); margin-top:10px; min-height:1em; text-align:center; }
+  .gate-signed-in-as{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
+  .gate-signed-in-as b{ color:var(--blue-bright); font-weight:600; }
+
   @media(max-width:420px){
     .sphere-wrap{ width:180px; height:180px; }
     .sphere-labels-row{ justify-content:center; }
@@ -769,6 +794,45 @@
 </style>
 </head>
 <body>
+<div id="login-gate">
+  <div class="card gate-card">
+    <div class="gate-title">ULTRON</div>
+    <div class="gate-sub">Sign in to continue</div>
+    <div class="conn-row">
+      <div class="conn-field">
+        <label>Backend URL</label>
+        <input type="text" id="gate-base-url" placeholder="Blank = this page's own address">
+      </div>
+    </div>
+    <div class="conn-row">
+      <div class="conn-field">
+        <label>Username</label>
+        <input type="text" id="gate-username" placeholder="Your admin or beta tester username" autocomplete="username">
+      </div>
+    </div>
+    <div class="conn-row">
+      <div class="conn-field">
+        <label>Password</label>
+        <input type="password" id="gate-password" placeholder="Your password" autocomplete="current-password">
+      </div>
+    </div>
+    <label style="display:flex; align-items:center; gap:7px; margin:2px 0 16px; font-size:12px; color:var(--text-dim); cursor:pointer;">
+      <input type="checkbox" id="gate-remember" style="accent-color:var(--blue);">
+      Remember me on this device
+    </label>
+    <div class="conn-actions" style="justify-content:center;">
+      <button class="conn-btn" id="gate-signin-btn" onclick="signIn()" style="width:100%;">Sign in</button>
+    </div>
+    <div class="gate-error" id="gate-error"></div>
+    <div class="conn-note" style="margin-top:18px;">
+      On this PC, leave the backend URL blank. From another device (phone, another
+      PC) on the same Wi-Fi, use its LAN address; from outside your home network,
+      its Tailscale address instead of opening a port on your router. Your
+      credentials are only kept in this browser if you check "Remember me."
+    </div>
+  </div>
+</div>
+<div id="app-shell" class="app-hidden">
 <div class="topheader">
   <div class="th-brand">
     <div class="th-mark">
@@ -793,11 +857,12 @@
     <div class="th-user">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 3l8 3.5v5.3C20 16.6 16.6 20.3 12 21c-4.6-.7-8-4.4-8-9.2V6.5L12 3z"/><rect x="9.3" y="11" width="5.4" height="4.2" rx="0.8"/><path d="M10.3 11V9.3a1.7 1.7 0 013.4 0V11"/></svg>
       <div>
-        <div class="th-user-label">Operator</div>
-        <div class="th-user-sub">Admin Access</div>
+        <div class="th-user-label" id="th-user-label">Operator</div>
+        <div class="th-user-sub" id="th-user-sub">Admin Access</div>
         <div class="th-status">
           <span class="status-pip" id="topbar-pip"></span>
           <span id="topbar-status-text">standing by (mock data)</span>
+          <a href="#" onclick="signOut(); return false;" style="color:var(--text-faint); margin-left:8px; font-size:10px;">sign out</a>
         </div>
       </div>
     </div>
@@ -1421,9 +1486,15 @@
               <label>Backend URL</label>
               <input type="text" id="cfg-base-url" placeholder="http://192.168.1.50:5000 (LAN) or http://ultron.tailXXXX.ts.net:5000 (Tailscale)">
             </div>
+          </div>
+          <div class="conn-row">
             <div class="conn-field">
-              <label>API token</label>
-              <input type="password" id="cfg-token" placeholder="ULTRON_API_TOKEN">
+              <label>Username</label>
+              <input type="text" id="cfg-username" placeholder="Your admin or beta tester username" autocomplete="username">
+            </div>
+            <div class="conn-field">
+              <label>Password</label>
+              <input type="password" id="cfg-password" placeholder="Your password" autocomplete="current-password">
             </div>
           </div>
           <div class="conn-actions">
@@ -1435,7 +1506,7 @@
             Remember me on this device
           </label>
           <div class="conn-note">
-            This page is a static file, so nothing you type here is saved when it reloads unless you check "Remember me" above — that saves the URL and token to this browser's local storage so this page reconnects automatically next time, but means anything that can run script on this page (or anyone with access to this browser) can read them back out. Leave it unchecked to enter both fresh each time instead. On the same Wi-Fi as the backend, use its LAN address (e.g. <code>http://192.168.1.50:5000</code>). From outside your home network — your phone on mobile data, for instance — use its Tailscale address instead of opening a port on your router.
+            This page is a static file, so nothing you type here is saved when it reloads unless you check "Remember me" above — that saves the URL, username, and password to this browser's local storage so this page reconnects automatically next time, but means anything that can run script on this page (or anyone with access to this browser) can read them back out. Leave it unchecked to enter them fresh each time instead. On the same Wi-Fi as the backend, use its LAN address (e.g. <code>http://192.168.1.50:5000</code>). From outside your home network — your phone on mobile data, for instance — use its Tailscale address instead of opening a port on your router.
             <span id="cfg-forget-wrap" hidden> · <a href="#" onclick="forgetConnection(); return false;" style="color:var(--blue);">Forget saved connection</a></span>
           </div>
         </div>
@@ -1506,6 +1577,7 @@
     </div>
   </main>
 </div>
+</div><!-- #app-shell -->
 
 <script>
   const items = document.querySelectorAll('.nav-item');
@@ -1633,16 +1705,16 @@
   }
 
   // "Remember me" — opt-in only (see the "Remember me on this device"
-  // checkbox in Settings → Connection). Saves the URL/token to this
-  // browser's own localStorage, which never leaves this browser/device,
-  // but is readable by any script that ever runs on this page and by
-  // anyone with access to this browser profile — that tradeoff is spelled
-  // out in the connection note next to the checkbox, not hidden here.
+  // checkbox in Settings → Connection). Saves the URL/username/password to
+  // this browser's own localStorage, which never leaves this browser/
+  // device, but is readable by any script that ever runs on this page and
+  // by anyone with access to this browser profile — that tradeoff is
+  // spelled out in the connection note next to the checkbox, not hidden here.
   const REMEMBER_KEY = 'ultron_remembered_connection';
 
-  function saveRememberedConnection(url, token) {
+  function saveRememberedConnection(url, username, password) {
     try {
-      localStorage.setItem(REMEMBER_KEY, JSON.stringify({ url, token }));
+      localStorage.setItem(REMEMBER_KEY, JSON.stringify({ url, username, password }));
     } catch (err) { /* private browsing, storage disabled, etc. — just skip */ }
     const wrap = document.getElementById('cfg-forget-wrap');
     if (wrap) wrap.hidden = false;
@@ -1658,9 +1730,9 @@
     clearRememberedConnection();
     const rememberEl = document.getElementById('cfg-remember');
     if (rememberEl) rememberEl.checked = false;
-    const tokenInput = document.getElementById('cfg-token');
-    if (tokenInput) tokenInput.value = '';
-    setConnStatus('saved connection forgotten — enter your token to reconnect');
+    const passwordInput = document.getElementById('cfg-password');
+    if (passwordInput) passwordInput.value = '';
+    setConnStatus('saved connection forgotten — enter your username and password to reconnect');
   }
 
   function loadRememberedConnection() {
@@ -1669,91 +1741,197 @@
       const raw = localStorage.getItem(REMEMBER_KEY);
       if (raw) saved = JSON.parse(raw);
     } catch (err) { /* ignore corrupt/inaccessible storage */ }
-    if (!saved || !saved.url || !saved.token) return;
+    // saved.url === '' is a legitimate "same origin as this page" choice,
+    // not "nothing saved" -- only username/password being empty means no
+    // real saved connection exists.
+    if (!saved || !saved.username || !saved.password) { showGate(); return; }
 
-    const urlInput = document.getElementById('cfg-base-url');
-    const tokenInput = document.getElementById('cfg-token');
-    const rememberEl = document.getElementById('cfg-remember');
+    const urlInput = document.getElementById('gate-base-url');
+    const userInput = document.getElementById('gate-username');
+    const passInput = document.getElementById('gate-password');
+    const rememberEl = document.getElementById('gate-remember');
     const wrap = document.getElementById('cfg-forget-wrap');
     if (urlInput) urlInput.value = saved.url;
-    if (tokenInput) tokenInput.value = saved.token;
+    if (userInput) userInput.value = saved.username;
+    if (passInput) passInput.value = saved.password;
     if (rememberEl) rememberEl.checked = true;
     if (wrap) wrap.hidden = false;
-    connectBackend();
+    signIn();
+  }
+
+  // The actual "is this a real, working credential" check, shared by the
+  // sign-in gate and the Settings page's reconnect button. Requires a
+  // genuinely successful POST /api/login (username AND password both
+  // correct, checked server-side -- see that route's own comment) rather
+  // than the old scheme, which only required /api/health (no auth) to
+  // succeed and silently fell back to an assumed admin role if the token
+  // check failed. That's not a real sign-in check; this is. Sets state on
+  // success; leaves state untouched on failure. The password doubles as
+  // the bearer token for every other call afterward -- same value, no
+  // separate session token to manage.
+  async function performConnect(rawUrl, rawUsername, rawPassword) {
+    let url = (rawUrl || '').trim();
+    if (url.endsWith('/')) url = url.slice(0, -1);
+    const username = (rawUsername || '').trim();
+    const password = (rawPassword || '').trim();
+    if (!username || !password) return { ok: false, error: 'enter both a username and password' };
+
+    try {
+      const res = await fetch(url + '/api/health', { method: 'GET' });
+      if (!res.ok) throw new Error('health check failed: ' + res.status);
+      await res.json();
+    } catch (err) {
+      return { ok: false, error: 'could not reach the backend — check the URL, and that it is running and reachable from this device' };
+    }
+
+    let role = 'admin', name = '';
+    try {
+      const loginRes = await fetch(url + '/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await loginRes.json().catch(function () { return {}; });
+      if (!loginRes.ok) {
+        return { ok: false, error: data.error || ('sign-in failed: ' + loginRes.status) };
+      }
+      role = data.role === 'beta' ? 'beta' : 'admin';
+      name = data.name || '';
+    } catch (err) {
+      return { ok: false, error: 'reached the backend, but could not sign in — try again' };
+    }
+
+    state.baseUrl = url;
+    state.token = password;
+    state.connected = true;
+    state.role = role;
+    state.betaName = name;
+    return { ok: true, role: role, name: name };
+  }
+
+  function updateUserLabel() {
+    const labelEl = document.getElementById('th-user-label');
+    const subEl = document.getElementById('th-user-sub');
+    if (labelEl) labelEl.textContent = state.betaName || (state.role === 'beta' ? 'Beta tester' : 'Operator');
+    if (subEl) subEl.textContent = state.role === 'beta' ? 'Beta Access' : 'Admin Access';
+  }
+
+  function showApp() {
+    const gate = document.getElementById('login-gate');
+    const shell = document.getElementById('app-shell');
+    if (gate) gate.hidden = true;
+    if (shell) shell.classList.remove('app-hidden');
+    document.body.classList.remove('gate-open');
+  }
+
+  function showGate() {
+    const gate = document.getElementById('login-gate');
+    const shell = document.getElementById('app-shell');
+    if (gate) gate.hidden = false;
+    if (shell) shell.classList.add('app-hidden');
+    document.body.classList.add('gate-open');
+  }
+
+  function afterSuccessfulSignIn(url, username, password, remember) {
+    if (remember) {
+      saveRememberedConnection(url, username, password);
+    } else {
+      clearRememberedConnection();
+    }
+    // Mirror into the Settings fields too, so reopening Settings shows the
+    // live connection instead of blank inputs next to an already-connected app.
+    const cfgUrl = document.getElementById('cfg-base-url');
+    const cfgUser = document.getElementById('cfg-username');
+    const cfgPass = document.getElementById('cfg-password');
+    const cfgRemember = document.getElementById('cfg-remember');
+    if (cfgUrl) cfgUrl.value = url;
+    if (cfgUser) cfgUser.value = username;
+    if (cfgPass) cfgPass.value = password;
+    if (cfgRemember) cfgRemember.checked = !!remember;
+
+    applyRoleUI();
+    updateUserLabel();
+    const betaLabel = state.role === 'beta' ? (' · beta tester' + (state.betaName ? ' (' + state.betaName + ')' : '')) : '';
+    setConnStatus('connected · live data' + betaLabel, 'ok');
+    setTopbar('live · connected to backend', true);
+    state.chatHistory = [];
+    const hostLabel = document.getElementById('hlo-host-label');
+    if (hostLabel) hostLabel.textContent = (state.baseUrl || location.host).replace(/^https?:\/\//, '');
+    showApp();
+
+    refreshAll().then(function () {
+      startPolling();
+      // See the removed connectBackend() note this replaced: state.connected
+      // is already true by the time refreshAll() runs, so its internal
+      // false->true hook (for recovering from a mid-session drop) never
+      // fires here -- this call is what actually renders the graph on
+      // first connect.
+      if (window.__kgRefresh) window.__kgRefresh();
+    });
+  }
+
+  async function signIn() {
+    const urlInput = document.getElementById('gate-base-url');
+    const userInput = document.getElementById('gate-username');
+    const passInput = document.getElementById('gate-password');
+    const rememberEl = document.getElementById('gate-remember');
+    const btn = document.getElementById('gate-signin-btn');
+    const errEl = document.getElementById('gate-error');
+    const url = (urlInput.value || '').trim();
+    const username = (userInput.value || '').trim();
+    const password = (passInput.value || '').trim();
+
+    btn.disabled = true;
+    if (errEl) errEl.textContent = '';
+    const result = await performConnect(url, username, password);
+    btn.disabled = false;
+
+    if (!result.ok) {
+      if (errEl) errEl.textContent = result.error;
+      return;
+    }
+    afterSuccessfulSignIn(url, username, password, !!(rememberEl && rememberEl.checked));
+  }
+
+  function signOut() {
+    if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+    state.connected = false;
+    state.token = '';
+    state.chatHistory = [];
+    clearRememberedConnection();
+    const gatePass = document.getElementById('gate-password');
+    if (gatePass) gatePass.value = '';
+    const gateRemember = document.getElementById('gate-remember');
+    if (gateRemember) gateRemember.checked = false;
+    const cfgPass = document.getElementById('cfg-password');
+    if (cfgPass) cfgPass.value = '';
+    showGate();
   }
 
   async function connectBackend() {
     const urlInput = document.getElementById('cfg-base-url');
-    const tokenInput = document.getElementById('cfg-token');
+    const userInput = document.getElementById('cfg-username');
+    const passInput = document.getElementById('cfg-password');
+    const rememberEl = document.getElementById('cfg-remember');
     const btn = document.getElementById('cfg-connect-btn');
-    let url = (urlInput.value || '').trim();
-    if (url.endsWith('/')) url = url.slice(0, -1);
-    const token = (tokenInput.value || '').trim();
+    const url = (urlInput.value || '').trim();
+    const username = (userInput.value || '').trim();
+    const password = (passInput.value || '').trim();
 
-    if (!url || !token) {
-      setConnStatus('enter both a backend URL and a token', 'err');
-      return;
-    }
-
-    state.baseUrl = url;
-    state.token = token;
     btn.disabled = true;
     setConnStatus('connecting…');
+    const result = await performConnect(url, username, password);
+    btn.disabled = false;
 
-    try {
-      const res = await fetch(state.baseUrl + '/api/health', { method: 'GET' });
-      if (!res.ok) throw new Error('health check failed: ' + res.status);
-      await res.json();
-      state.connected = true;
-
-      state.role = 'admin';
-      state.betaName = '';
-      try {
-        const whoRes = await fetch(state.baseUrl + '/api/whoami', { headers: authHeaders() });
-        if (whoRes.ok) {
-          const who = await whoRes.json();
-          state.role = who.role === 'beta' ? 'beta' : 'admin';
-          state.betaName = who.name || '';
-        }
-      } catch (err) {
-        // whoami not reachable — stay on the safe default (admin UI, but
-        // every admin-only call will still 401/403 if the token is bad).
-      }
-      applyRoleUI();
-
-      const betaLabel = state.role === 'beta' ? (' · beta tester' + (state.betaName ? ' (' + state.betaName + ')' : '')) : '';
-      setConnStatus('connected · live data' + betaLabel, 'ok');
-      setTopbar('live · connected to backend', true);
-      state.chatHistory = [];
-      const hostLabel = document.getElementById('hlo-host-label');
-      if (hostLabel) hostLabel.textContent = state.baseUrl.replace(/^https?:\/\//, '');
-
-      const rememberEl = document.getElementById('cfg-remember');
-      if (rememberEl && rememberEl.checked) {
-        saveRememberedConnection(url, token);
-      } else {
-        clearRememberedConnection();
-      }
-
-      await refreshAll();
-      startPolling();
-      // The real "we just connected" moment -- state.connected is already
-      // true by the time refreshAll() runs from here, so its own internal
-      // false->true hook (which exists for the separate case of recovering
-      // from a mid-session drop, inside the polling loop) never sees a
-      // transition on this path. Verified live: without this call here,
-      // the graph never rendered on initial connect, only when invoked
-      // manually afterward.
-      if (window.__kgRefresh) window.__kgRefresh();
-    } catch (err) {
+    if (!result.ok) {
       state.connected = false;
-      setConnStatus('could not reach backend — check URL, and that it is running and reachable from this device', 'err');
+      setConnStatus(result.error, 'err');
       setTopbar('offline · showing mock data', false);
       const hostLabel = document.getElementById('hlo-host-label');
       if (hostLabel) hostLabel.textContent = 'Not connected';
-    } finally {
-      btn.disabled = false;
+      return;
     }
+    afterSuccessfulSignIn(url, username, password, !!(rememberEl && rememberEl.checked));
   }
 
   function startPolling() {

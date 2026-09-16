@@ -119,6 +119,12 @@ if not API_TOKEN:
         "ULTRON_API_TOKEN is not set. Refusing to start with no auth token.\n"
         "Set it with (PowerShell): $env:ULTRON_API_TOKEN = '<a long random string>'"
     )
+# The admin's username for the dashboard sign-in page (/api/login below)
+# and display identity (chat_log/presence/whoami). The password is
+# API_TOKEN above -- still the one real secret, still compared with
+# hmac.compare_digest; this is never part of that check by itself, see
+# /api/login's own comment for how the two combine.
+ADMIN_USERNAME = (os.environ.get("ULTRON_ADMIN_USERNAME") or "admin").strip() or "admin"
 
 # Optional, weaker tokens for beta testers — a restricted role, not a
 # second admin. Unset by default, so the beta_tester role doesn't exist
@@ -1065,7 +1071,7 @@ _PRESENCE_ONLINE_WINDOW_SECONDS = 5 * 60
 
 
 def _touch_presence(role, beta_name):
-    identity = beta_name if role == "beta" else "admin"
+    identity = beta_name if role == "beta" else ADMIN_USERNAME
     with _PRESENCE_LOCK:
         entry = _PRESENCE.setdefault(identity, {"role": role, "devices": set()})
         entry["role"] = role
@@ -3714,7 +3720,7 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
     tools_used = []
     # speaker (e.g. "discord:someuser") wins when a trusted client provides
     # one; otherwise same identity convention as _touch_presence.
-    identity = speaker or (beta_name if role == "beta" else "admin")
+    identity = speaker or (beta_name if role == "beta" else ADMIN_USERNAME)
     turn_input_tokens = 0
     turn_output_tokens = 0
 
@@ -3814,16 +3820,48 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
     return reply_text, messages, tools_used
 
 
-@app.route("/api/whoami")
-@require_role
-def whoami():
-    result = {"role": g.role, "name": g.beta_name}
-    if g.role == "beta":
-        spent = _beta_tester_spend_usd(g.beta_name)
+def _identity_result(role, beta_name):
+    result = {"role": role, "name": beta_name if role == "beta" else ADMIN_USERNAME}
+    if role == "beta":
+        spent = _beta_tester_spend_usd(beta_name)
         result["spend_usd"] = round(spent, 4)
         result["spend_limit_usd"] = BETA_MAX_SPEND_USD
         result["spend_remaining_usd"] = round(max(0.0, BETA_MAX_SPEND_USD - spent), 4)
-    return jsonify(result)
+    return result
+
+
+@app.route("/api/whoami")
+@require_role
+def whoami():
+    return jsonify(_identity_result(g.role, g.beta_name))
+
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    """The dashboard sign-in gate's real check: username AND password must
+    both be correct, not just the password/token alone. Every other route
+    still only checks the bearer token (require_token/require_role above) --
+    this is deliberately the one place username is actually verified,
+    server-side, so it can't be bypassed by hitting the API directly with
+    just a valid token and an arbitrary username. Never reveals which
+    field was wrong -- same "invalid credentials" either way, so this
+    can't be used to enumerate valid usernames."""
+    body = request.get_json(silent=True) or {}
+    username = (body.get("username") or "").strip()
+    password = (body.get("password") or "").strip()
+    if not username or not password:
+        return jsonify({"error": "invalid credentials"}), 401
+
+    role, beta_name = _resolve_role(password)
+    if role is None:
+        return jsonify({"error": "invalid credentials"}), 401
+
+    expected_username = ADMIN_USERNAME if role == "admin" else (beta_name or "")
+    if not hmac.compare_digest(username, expected_username):
+        return jsonify({"error": "invalid credentials"}), 401
+
+    _touch_presence(role, beta_name)
+    return jsonify(_identity_result(role, beta_name))
 
 
 @app.route("/api/connections")
