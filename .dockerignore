@@ -25,6 +25,10 @@
 !three-pipeline/**
 !pixel-assets/
 !pixel-assets/**
+# Self-hosted dashboard typefaces (OFL woff2 + their README), served by
+# app.py's /fonts/<file> route.
+!fonts/
+!fonts/**
 # Home-tab knowledge graph: graph.json only -- NOT the rest of
 # graphify-out/ (cache/, obsidian/, private-nodes.enc.json, which must
 # never be shipped even encrypted, per Module 9's own rule).

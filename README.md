@@ -12,6 +12,8 @@ ultron-backend/       Flask backend — all the real logic lives here
 ultron-discord-bot/   Thin remote-control layer; every command is an
                        HTTP call to the backend, no duplicated logic
 ultron-dashboard.html Single-file dashboard, opens directly in a browser
+fonts/                Self-hosted dashboard typefaces (OFL) — the page makes
+                       no third-party requests
 dev-tools/            Testing infrastructure (fake SDKs, a real local
                        MCP test server) — not part of the shipped product
 ```

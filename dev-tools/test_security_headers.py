@@ -43,9 +43,19 @@ def demo():
     csp = res.headers["Content-Security-Policy"]
     # The real things the dashboard needs still work under this CSP.
     assert "script-src 'self' 'unsafe-inline'" in csp, csp  # inline <script> blocks, no nonce setup
-    assert "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com" in csp, csp
-    assert "font-src https://fonts.gstatic.com" in csp, csp
+    assert "style-src 'self' 'unsafe-inline'" in csp, csp
+    # Fonts are self-hosted now (fonts/ + the /fonts/ route) -- no Google
+    # Fonts origin may be allowed, or the "no third-party request" property
+    # the self-hosting bought is silently gone.
+    assert "font-src 'self'" in csp, csp
+    assert "googleapis" not in csp and "gstatic" not in csp, csp
     assert "connect-src *" in csp, csp  # Settings -> Connection points at an arbitrary backend origin
+
+    # The self-hosted fonts actually serve (a real woff2, not a 404), and
+    # path traversal out of fonts/ is refused.
+    res = client.get("/fonts/orbitron.woff2")
+    assert res.status_code == 200 and res.data[:4] == b"wOF2", (res.status_code, res.data[:8])
+    assert client.get("/fonts/../ultron-backend/app.py").status_code == 404
     # The real things it should still block.
     assert "object-src 'none'" in csp, csp
     assert "frame-ancestors 'none'" in csp, csp
@@ -59,7 +69,7 @@ def demo():
 
     print("OK: security headers (nosniff, frame-deny, no-referrer, a scoped Permissions-Policy, "
           "and a CSP that blocks third-party scripts/framing/base-hijack while still allowing "
-          "the dashboard's real inline scripts, Google Fonts, and arbitrary-backend connections) "
+          "the dashboard's real inline scripts, self-hosted fonts, and arbitrary-backend connections) "
           "land on real responses, including unauthenticated and 401 ones.")
 
 

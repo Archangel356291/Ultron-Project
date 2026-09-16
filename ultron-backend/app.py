@@ -1066,8 +1066,8 @@ def add_security_headers(response):
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; "
         "script-src 'self' 'unsafe-inline'; "
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-        "font-src https://fonts.gstatic.com; "
+        "style-src 'self' 'unsafe-inline'; "
+        "font-src 'self'; "
         "img-src 'self' data:; "
         "connect-src *; "
         "object-src 'none'; "
@@ -2479,6 +2479,21 @@ PIXEL_ASSETS_DIR = os.path.join(DASHBOARD_DIR, "pixel-assets")
 @app.route("/pixel-assets/<path:filename>")
 def pixel_asset(filename):
     return send_from_directory(PIXEL_ASSETS_DIR, filename)
+
+
+# Self-hosted copies of the dashboard's four typefaces (all SIL Open Font
+# License), formerly pulled from fonts.googleapis.com on every load. Same
+# serving pattern as above. This was the dashboard's only third-party
+# request: removing it means the page renders identically with no
+# internet at all, and nobody outside this host sees a page view.
+FONTS_DIR = os.path.join(DASHBOARD_DIR, "fonts")
+
+
+@app.route("/fonts/<path:filename>")
+def font_asset(filename):
+    # Explicit type: python:slim's mimetypes table doesn't know .woff2 and
+    # would send application/octet-stream.
+    return send_from_directory(FONTS_DIR, filename, mimetype="font/woff2", max_age=60 * 60 * 24 * 30)
 
 
 @app.route("/api/health")

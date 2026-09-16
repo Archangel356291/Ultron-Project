@@ -17,6 +17,8 @@ COPY ultron-dashboard.html ultron-dashboard.html
 COPY three-pipeline/ three-pipeline/
 # Pixel-art sprites/backdrop for the Ultron tab, served by /pixel-assets/<file>.
 COPY pixel-assets/ pixel-assets/
+# Self-hosted dashboard typefaces (OFL), served by /fonts/<file>.
+COPY fonts/ fonts/
 # Home-tab knowledge graph: only graph.json itself (already privacy-redacted
 # by Module 4) -- not the rest of graphify-out/ (caches, the Obsidian export,
 # the never-committed private-nodes.enc.json), read server-side by
