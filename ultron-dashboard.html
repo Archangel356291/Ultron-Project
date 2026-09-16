@@ -1356,6 +1356,14 @@
               <div class="hud-row"><span class="k">Memory</span><span class="v" id="core-mem-mini">—%</span></div>
             </div>
 
+            <div class="hud-card" id="briefing-card">
+              <div class="hud-label gold">Ultron's read</div>
+              <div id="briefing-lines" style="font-size:12.5px; line-height:1.55; color:var(--text-dim);">
+                <div class="hud-row" style="border:none; color:var(--text-faint);">Gathering…</div>
+              </div>
+              <div style="font-family:var(--font-mono); font-size:9px; color:var(--text-faint); margin-top:8px; letter-spacing:0.06em; text-transform:uppercase;" id="briefing-stamp"></div>
+            </div>
+
             <div class="hud-card approval-card">
               <div class="hud-label gold">Human oversight</div>
               <div class="hud-row"><span class="k">Command authorization</span><span class="v">user required</span></div>
@@ -1396,7 +1404,7 @@
                 </button>
                 <button class="qa-btn" onclick="switchSection('crypto')" style="text-align:left">
                   <span class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 17l5-6 4 3 6-8 3 3"/></svg></span>
-                  <span class="qa-label">View market analysis</span><span class="qa-chevron">&#8250;</span>
+                  <span class="qa-label">View trade ledger</span><span class="qa-chevron">&#8250;</span>
                 </button>
               </div>
             </div>
@@ -2414,6 +2422,7 @@
           fetchSystems(),
           fetchActivity(),
           fetchThreats(),
+          fetchBriefing(),
           fetchMemory(),
           fetchDevRepos(),
           fetchTrades(),
@@ -2870,6 +2879,29 @@
         '<span class="activity-text">' + escapeHtml(summary) + '</span>' +
         '<span class="activity-time">' + escapeHtml(shortTime) + '</span></div>';
     }).join('');
+  }
+
+  // "Ultron's read" (Home rail): the same deterministic briefing the
+  // backend hands Ultron at the start of every turn -- what he already
+  // knows before you say anything. No LLM call behind it.
+  async function fetchBriefing() {
+    let data;
+    try {
+      data = await apiGet('/api/briefing');
+    } catch (err) {
+      return;
+    }
+    const el = document.getElementById('briefing-lines');
+    const stamp = document.getElementById('briefing-stamp');
+    if (!el) return;
+    const lines = data.lines || [];
+    el.innerHTML = lines.length
+      ? lines.map(function (l) {
+          const hot = /critical|not running|finding|above its|warning\/error/i.test(l);
+          return '<div style="padding:5px 0; border-bottom:1px dotted var(--line);' + (hot ? ' color:var(--amber);' : '') + '">' + escapeHtml(l) + '</div>';
+        }).join('')
+      : '<div style="color:var(--text-faint);">Nothing to report yet.</div>';
+    if (stamp) stamp.textContent = 'checked ' + ((data.generated_at || '').split('T')[1] || '').slice(0, 5) + ' · local data only, no tokens';
   }
 
   async function fetchThreats() {

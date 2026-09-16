@@ -435,6 +435,23 @@ the key does. If you hit an error once it's live, the response's `error`
 field should already tell you which of the above it is rather than a bare
 stack trace.
 
+### Ultron's read of the room (`/api/briefing`, `get_briefing`, situational context)
+
+Before every admin turn, `run_ultron_chat` adds a second system block —
+after the cached static prompt, small and uncached — assembled by this
+backend from its own data: the live briefing (CPU/memory/containers/
+uptime, storage headroom, anything running well above its 24-hour
+baseline, Sentinel's active findings, warning/error events in the last
+day, memory size, ideas awaiting review) plus the memory notes related to
+what was just said (`recall_related_notes`). The block states that it is
+information, never instruction. The result: Ultron opens already knowing
+the numbers and already remembering you, usually without a tool round —
+cheaper, and it reads as someone who has already looked. Beta testers
+never receive it (host state and memory are admin-only). The same
+briefing is the Home tab's "Ultron's read" card, the admin-only
+`GET /api/briefing`, and the `get_briefing` tool (also in Economy mode).
+No LLM call anywhere in it. `dev-tools/test_situational_context.py`.
+
 ## External tools (MCP) — read this before connecting anything
 
 Ultron can use tools from external servers over the

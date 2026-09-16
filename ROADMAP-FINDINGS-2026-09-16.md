@@ -147,6 +147,52 @@ source, that the cache version tracks the dashboard's content, and that
 every manifest icon serves as a real PNG. Also in the findings for item
 3: Economy mode was built and verified the same day.
 
+## 8. Intelligence — "real knowledge, smarter than anyone in the room"
+
+Owner's ask (2026-09-16, after the roadmap items). The honest reading:
+Ultron's raw reasoning is Claude's; what this project can add is that
+he *already knows the room and already remembers you* when a
+conversation starts, learns on request with provenance, and carries
+himself like someone who has already looked. Built, all at zero
+recurring token cost:
+
+- **Situational context** — before every admin turn `run_ultron_chat`
+  appends a second, uncached system block assembled locally: the live
+  briefing (below) plus the memory notes related to what was just said
+  (`recall_related_notes`, graph retrieval, no LLM). Marked as
+  information, never instruction. Beta testers never receive it. Effect
+  measured live: "anything I should know?" answered with CPU, memory,
+  containers, free disk and Sentinel's state in one reply and **no tool
+  round at all** (previously two or three).
+- **`get_briefing()`** — a deterministic read of the host: status,
+  storage headroom with a plain verdict, anything ≥15 points above its
+  24-hour baseline, Sentinel findings, warning/error events in the last
+  day, memory size and pace, ideas awaiting review. Home tab card
+  "Ultron's read", admin-only `GET /api/briefing`, chat tool (also in
+  Economy mode). `dev-tools/test_situational_context.py`.
+- **Bearing** (system prompt): lead with the answer, then the fact it
+  rests on, then the next thing you'll ask; say what was checked; keep
+  verified / inferred / unknown distinct; use memory naturally and with
+  dates; never hedge vaguely.
+- **Learning with provenance** (system prompt): research via Scout,
+  answer in his own words with the source URL, *offer* to keep it, save
+  one distilled fact with its URL only when you say yes.
+
+**Two more, each with a real cost — your call:**
+
+1. **Deep thought mode** — the mirror of Economy: a per-request
+   `"deep": true` that answers with `claude-opus-5` (pricing row already
+   present, ~2.5× Sonnet per token), a higher `max_tokens`, and up to 8
+   tool rounds, for the questions where you want the strongest reasoning
+   available. About 20 lines; the Settings switch pattern exists.
+2. **Learn from our conversations** — an opt-in switch: after each
+   admin turn, one Haiku call (~$0.001) extracts at most one durable fact
+   or preference and saves it through `remember_note` if it isn't already
+   there (`recall_related_notes` dedup). Turns every conversation into
+   memory without you having to say "remember that". Risk is noise in
+   the notebook; mitigations are the one-per-turn cap, the dedup, and the
+   existing 200-note trim.
+
 ## Also fixed on the way
 
 - **Crypto & Markets no longer shows fake data.** The hardcoded
