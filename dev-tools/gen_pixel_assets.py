@@ -106,22 +106,36 @@ def draw_ultron(scale, accent, pose):
     def hline(x0, x1, y, color, w=0.5):
         rect(x0, y, x1, y + w, color)
 
-    # Crested head -- an original angular silhouette (a peaked crown, a
-    # single horizontal red visor band) rather than the reference's
-    # actual horn/face design.
-    poly([(6, 0), (10, -2), (14, 0), (15, 5), (5, 5)], BODY_MID)
-    poly([(6, 0), (10, -2), (10, 5), (5, 5)], shade(BODY_MID, 1.25))  # left-face highlight
-    rect(5, 5, 15, 8, BODY_LIGHT)
-    rect(6, 6.2, 14, 7.4, accent)  # visor
-    rect(6, 7.0, 14, 7.4, shade(accent, 0.55))  # visor undershade
-    d.ellipse([px(9.3, 6.3), px(10.7, 7.1)], fill=(255, 255, 255, 235))  # visor hot-spot
-    # Crown of small teeth across the top, matching the owner's pixel
-    # reference (a row of even spikes) rather than two crossed horns.
-    tooth_xs = (6.3, 8.1, 9.9, 11.7)
-    tooth_heights = (3.5, 5.5, 5.5, 3.5)
-    for tx, th in zip(tooth_xs, tooth_heights):
-        poly([(tx, 0.3), (tx + 0.9, -th), (tx + 1.8, 0.3)], accent)
-        poly([(tx, 0.3), (tx + 0.5, -th * 0.6), (tx + 0.9, -th)], shade(accent, 1.3))
+    # Crested head, pushed much closer to the owner's pixel-Ultron
+    # reference's proportions/palette placement (full glowing red faceplate
+    # with dark eye cutouts and a mouth grille, a fuller jagged crown) while
+    # still an independently-drawn silhouette, not a traced copy.
+    poly([(5.5, 5.5), (5.8, 2.2), (7, -1), (10, -2.3), (13, -1), (14.2, 2.2), (14.5, 5.5)], BODY_MID)
+    poly([(5.5, 5.5), (5.8, 2.2), (7, -1), (10, -2.3), (10, 5.5)], shade(BODY_MID, 1.25))  # left-face highlight
+    rect(5.5, 5.5, 14.5, 8.4, BODY_LIGHT)
+    # Full glowing faceplate (not just a brow band) -- covers eyes through
+    # jaw, per the reference's mostly-red lit face.
+    poly([(6.0, 5.9), (14.0, 5.9), (13.6, 8.2), (6.4, 8.2)], accent)
+    poly([(6.0, 5.9), (14.0, 5.9), (13.7, 6.5), (6.3, 6.5)], shade(accent, 1.3))  # top-edge highlight
+    poly([(6.4, 8.2), (13.6, 8.2), (13.3, 8.6), (6.7, 8.6)], shade(accent, 0.55))  # jaw undershade
+    # Dark almond eye cutouts within the glow (negative space, not glowing
+    # dots) -- the reference's eyes read as dark slits inside the red mask.
+    for ex in (8.1, 11.9):
+        d.ellipse([px(ex - 1.15, 6.25), px(ex + 1.15, 7.35)], fill=(8, 6, 6, 255))
+        d.ellipse([px(ex - 0.7, 6.5), px(ex + 0.7, 7.1)], fill=shade(accent, 0.7))  # faint inner glow rim
+    # Mouth grille -- vertical dark slats across the lower faceplate.
+    for gx in (7.3, 8.5, 9.7, 10.9, 12.1):
+        rect(gx, 7.6, gx + 0.5, 8.5, (8, 6, 6, 255))
+    # Fuller jagged crown -- five uneven spikes instead of a smooth
+    # three-point ridge, matching the reference's spikier crest silhouette.
+    # y=0 is the actual canvas top at this scale (negative y clips flat,
+    # confirmed by render) -- tips kept just above 0 so the points stay
+    # sharp instead of getting cut into a flat bar.
+    tips = ((6.3, 0.7), (7.9, 0.25), (10.0, 0.05), (12.1, 0.25), (13.7, 0.7))
+    bases = (6.0, 7.1, 8.5, 11.5, 12.9, 14.0)
+    for i in range(5):
+        poly([(bases[i], 1.4), tips[i], (bases[i + 1], 1.4)], accent)
+        poly([(bases[i], 1.4), tips[i], ((bases[i] + tips[i][0]) / 2, 0.2)], shade(accent, 1.3))
 
     # Neck + shoulders -- wide, armored.
     rect(8, 8, 12, 9.5, BODY_MID)
@@ -406,13 +420,18 @@ def draw_room_background(w, h, floor_y):
     sky = draw_skyline(sky_w, sky_h)
     img.alpha_composite(sky, (int(w * 0.06), int(floor_y * 0.08)))
 
-    # Wall consoles in the empty stretch between the skyline window and
-    # where the desks/tubes get drawn live each frame (see SUBAGENTS/
-    # ULTRON_DESK_X in the dashboard's own pixel-room script) -- per the
-    # owner's workstation-room reference, this is the detail that turns a
-    # bare wall into a lived-in control room.
+    # Wall consoles across the whole back wall (not just one cluster) --
+    # quality pass per the owner's second workstation-room reference,
+    # whose room reads as densely instrumented floor-to-ceiling on every
+    # wall segment, not just near the window. Live desks/tubes still get
+    # drawn on top each frame further right (see SUBAGENTS/ULTRON_DESK_X
+    # in the dashboard's own pixel-room script); these are just the static
+    # backdrop filling what would otherwise be bare wall between/behind them.
     draw_console_panel(d, img, int(w * 0.34), int(floor_y * 0.18), int(w * 0.09), int(floor_y * 0.5), seed=11)
     draw_console_panel(d, img, int(w * 0.46), int(floor_y * 0.22), int(w * 0.07), int(floor_y * 0.42), seed=23)
+    for i, wx in enumerate((0.58, 0.68, 0.78, 0.88)):
+        draw_console_panel(d, img, int(w * wx), int(floor_y * (0.16 + 0.05 * (i % 2))),
+                            int(w * 0.055), int(floor_y * (0.4 - 0.04 * (i % 2))), seed=31 + i * 7)
 
     # Floor: reflection gradient (brighter near the wall, fading to void)
     # under the existing tile grid, plus the tile seams themselves.
@@ -444,12 +463,21 @@ def draw_room_background(w, h, floor_y):
         d.rectangle([rack_x + 6, ly, rack_x + 6 + 8, ly + 8], fill=c)
         d.rectangle([rack_x + 6, ly, rack_x + 6 + 8, ly + 2], fill=(255, 255, 255, 90))
 
+    # Ambient teal wash across the whole wall -- the owner's reference room
+    # reads as bathed in teal light throughout, not just near individual
+    # screens; a flat low-alpha tint over the wall area is the cheap way to
+    # push the room's overall cast without re-tinting every element above.
+    ambient = Image.new("RGBA", (w, floor_y), (61, 214, 255, 20))
+    img.alpha_composite(ambient)
+
     # Vignette: darken the corners a touch so the room reads as lit from
-    # the ceiling strip/tubes rather than uniformly flat-lit.
+    # the ceiling strip/tubes rather than uniformly flat-lit -- lighter
+    # than before so the newly-added consoles across the back wall stay
+    # visible instead of falling into the darkened edges.
     vignette = Image.new("L", (w, h), 0)
     vd = ImageDraw.Draw(vignette)
-    vd.ellipse([-w * 0.25, -h * 0.4, w * 1.25, h * 1.25], fill=90)
-    vignette = vignette.filter(ImageFilter.GaussianBlur(60))
+    vd.ellipse([-w * 0.25, -h * 0.4, w * 1.25, h * 1.25], fill=60)
+    vignette = vignette.filter(ImageFilter.GaussianBlur(70))
     dark = Image.new("RGBA", (w, h), (0, 0, 0, 255))
     dark.putalpha(ImageChops.invert(vignette))
     img.alpha_composite(dark)

@@ -192,6 +192,13 @@
   .nav-item .label{ color:var(--text); font-family:var(--font-display); font-size:13.5px; font-weight:600; letter-spacing:0.01em; text-transform:uppercase; white-space:nowrap; }
   .nav-item .nav-sub{ font-family:var(--font-mono); font-size:9px; color:var(--text-faint); margin-top:1px; }
   .nav-item:hover{ color:var(--text); background:var(--panel-raised); }
+  /* Nav items are keyboard-focusable (see the tabIndex/role JS above) but
+     had no visible focus indicator at all -- this is that indicator,
+     :focus-visible so it only shows for keyboard users, not every click. */
+  .nav-item:focus-visible, .mode-pill:focus-visible, .talk-mic:focus-visible,
+  .talk-send:focus-visible, button:focus-visible{
+    outline:2px solid var(--cyan); outline-offset:2px;
+  }
   /* Active page: metal + blue, matching "the navigation should feel like
      the control interface of an AI system" -- with one small red left
      accent as the "selected state" indicator (a status LED, not a wash)
@@ -249,12 +256,19 @@
     background:var(--blue); box-shadow:0 0 8px var(--blue); flex-shrink:0;
   }
   .card{
-    background: linear-gradient(160deg, var(--panel) 0%, var(--panel-raised) 100%);
+    /* Glass pass (owner-requested "cinematic/alive," evolving rather than
+       replacing this HUD): translucent instead of solid, blurred backdrop
+       for a real layered-glass read, plus a hairline inset highlight for
+       a soft top reflection -- same border/chamfer/shadow otherwise, so
+       every .card/.hud-card sitewide picks this up for free. */
+    background: linear-gradient(160deg, rgba(15,17,19,0.82) 0%, rgba(22,25,28,0.82) 100%);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
     border:1px solid var(--line);
     clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
     padding:20px 22px;
     position:relative;
-    box-shadow: 0 8px 28px -14px rgba(0,0,0,0.7);
+    box-shadow: 0 8px 28px -14px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05);
   }
   .card::before{
     content:''; position:absolute; top:0; left:14px; right:14px; height:1px;
@@ -283,12 +297,14 @@
      this pass is scoped to the Home screen only, so every other section
      keeps its existing oxide-accented .card exactly as before. */
   .hud-card{
-    background: linear-gradient(160deg, var(--panel) 0%, var(--panel-raised) 100%);
+    background: linear-gradient(160deg, rgba(15,17,19,0.82) 0%, rgba(22,25,28,0.82) 100%);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
     border:1px solid var(--line);
     clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
     padding:20px 22px;
     position:relative;
-    box-shadow: 0 8px 28px -14px rgba(0,0,0,0.7);
+    box-shadow: 0 8px 28px -14px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05);
   }
   .hud-card::before{
     content:''; position:absolute; top:0; left:14px; right:14px; height:1px;
@@ -605,6 +621,33 @@
     margin-top:12px; line-height:1.5;
   }
 
+  /* ---------- vitals panel (Ultron tab) ---------- */
+  /* Real system telemetry re-rendered in a denser scan/diagnostic-HUD
+     style (owner reference: a cyan CT-scan-style status readout) --
+     reuses .hlo-ring/.chart-wrap/.bar-track wholesale rather than
+     inventing a second gauge or chart system for one panel. */
+  .vitals-panel{
+    margin-top:12px; padding:18px; background:var(--panel-raised);
+    border:1px solid var(--line); border-radius:4px;
+  }
+  .vitals-rows{ margin-top:14px; display:flex; flex-direction:column; gap:9px; }
+  .vitals-row{ display:flex; align-items:center; gap:12px; }
+  .vitals-row .vr-k{
+    width:96px; flex-shrink:0; font-family:var(--font-mono); font-size:10px;
+    color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em;
+  }
+  .vitals-row .bar-track{ flex:1; }
+  .vitals-row .vr-v{
+    width:64px; flex-shrink:0; text-align:right; font-family:var(--font-mono);
+    font-size:11.5px; color:var(--cyan);
+  }
+  .vitals-row .vr-v.good{ color:var(--signal); }
+  .vitals-row .vr-v.warn{ color:var(--amber); }
+  .vitals-row .vr-v.crit{ color:#FF4C4C; }
+  .vitals-row .bar-fill.good{ background:var(--signal); }
+  .vitals-row .bar-fill.warn{ background:var(--amber); }
+  .vitals-row .bar-fill.crit{ background:#FF4C4C; }
+
   /* ---------- talk bar ---------- */
   .talk-bar{
     max-width:640px; margin:10px auto 0;
@@ -787,6 +830,34 @@
     text-transform:uppercase; letter-spacing:0.02em; display:block; margin-bottom:3px;
   }
   .brain-tooltip .cat{ color:var(--text-faint); text-transform:capitalize; }
+  /* Category filter chips -- reuses .mode-pill's shape/sizing, just
+     recolored per category via inline style since the colors are
+     data-driven (BRAIN_CATEGORIES), not enumerable in static CSS. */
+  .brain-filters{ display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 12px; }
+  .brain-filters .mode-pill{ display:flex; align-items:center; gap:6px; }
+  .brain-filters .mode-pill .swatch{
+    width:7px; height:7px; border-radius:50%; flex-shrink:0; background:currentColor;
+  }
+  /* Persistent selection detail panel (click a node to pin it) --
+     distinct from .brain-tooltip, which follows the cursor and vanishes
+     on mouseleave; this stays until another node is clicked or the same
+     one is clicked again to deselect. */
+  .brain-detail{
+    position:absolute; top:14px; right:14px; z-index:5; width:220px;
+    background:var(--panel-raised); border:1px solid var(--line); border-radius:6px;
+    padding:12px 14px; font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim);
+    box-shadow:0 8px 24px -8px rgba(0,0,0,0.7);
+  }
+  .brain-detail b{
+    color:var(--oxide); font-family:var(--font-display); font-size:13px;
+    text-transform:uppercase; letter-spacing:0.02em; display:block; margin-bottom:5px;
+  }
+  .brain-detail .cat{ color:var(--text-faint); text-transform:capitalize; margin-top:6px; display:block; }
+  .brain-detail .close{
+    position:absolute; top:8px; right:10px; cursor:pointer; color:var(--text-faint);
+    font-family:var(--font-mono); font-size:14px; line-height:1;
+  }
+  .brain-detail .close:hover{ color:var(--text); }
   .brain-stats{
     display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
     gap:0 20px; padding:14px 18px 18px; border-top:1px solid var(--line);
@@ -1082,6 +1153,35 @@
           <div class="pixel-room-wrap">
             <canvas id="pixel-room-canvas" aria-label="A small pixel-art room where Ultron walks around when idle and sits at his terminal when working"></canvas>
             <div class="pixel-bubble" id="pixel-bubble" hidden></div>
+          </div>
+
+          <div class="panel-label" style="margin-top:28px;">Vitals</div>
+          <div class="vitals-panel">
+            <div class="hlo-rings">
+              <div class="hlo-ring">
+                <svg viewBox="0 0 78 78">
+                  <circle class="bg" cx="39" cy="39" r="33"></circle>
+                  <circle class="fg" id="vitals-cpu-fg" cx="39" cy="39" r="33" stroke="var(--cyan)" stroke-dasharray="207" stroke-dashoffset="207"></circle>
+                </svg>
+                <div class="lbl"><span class="n" id="vitals-cpu-n">—</span><span class="t">CPU</span></div>
+              </div>
+              <div class="hlo-ring">
+                <svg viewBox="0 0 78 78">
+                  <circle class="bg" cx="39" cy="39" r="33"></circle>
+                  <circle class="fg" id="vitals-mem-fg" cx="39" cy="39" r="33" stroke="var(--blue)" stroke-dasharray="207" stroke-dashoffset="207"></circle>
+                </svg>
+                <div class="lbl"><span class="n" id="vitals-mem-n">—</span><span class="t">Memory</span></div>
+              </div>
+            </div>
+            <div class="chart-wrap"><svg id="chart-vitals-cpu" viewBox="0 0 300 120"></svg><div class="metric-chart-tooltip" id="chart-vitals-cpu-tooltip" hidden></div></div>
+            <div class="vitals-rows">
+              <div class="vitals-row"><span class="vr-k">CPU load</span><span class="bar-track"><span class="bar-fill" id="vitals-cpu-bar"></span></span><span class="vr-v" id="vitals-cpu-v">—</span></div>
+              <div class="vitals-row"><span class="vr-k">Memory</span><span class="bar-track"><span class="bar-fill" id="vitals-mem-bar"></span></span><span class="vr-v" id="vitals-mem-v">—</span></div>
+              <div class="vitals-row"><span class="vr-k">Disk</span><span class="bar-track"><span class="bar-fill" id="vitals-disk-bar"></span></span><span class="vr-v" id="vitals-disk-v">—</span></div>
+              <div class="vitals-row"><span class="vr-k">Containers</span><span class="bar-track"><span class="bar-fill" id="vitals-containers-bar"></span></span><span class="vr-v" id="vitals-containers-v">—</span></div>
+              <div class="vitals-row"><span class="vr-k">Temp</span><span class="bar-track"><span class="bar-fill" id="vitals-temp-bar"></span></span><span class="vr-v" id="vitals-temp-v">—</span></div>
+              <div class="vitals-row"><span class="vr-k">Uptime</span><span class="bar-track" style="visibility:hidden"></span><span class="vr-v" id="vitals-uptime-v">—</span></div>
+            </div>
           </div>
         </div>
       </section>
@@ -1420,9 +1520,11 @@
           <span>Ultron's brain</span>
           <span style="font-family:var(--font-mono); font-size:9px; color:var(--text-faint); text-transform:none;">tools, skills, memory &amp; usage — hover a node</span>
         </div>
+        <div class="brain-filters" id="brain-filters"></div>
         <div class="card brain-card" style="margin-bottom:20px;">
           <canvas id="brain-canvas"></canvas>
           <div class="brain-tooltip" id="brain-tooltip" hidden></div>
+          <div class="brain-detail" id="brain-detail" hidden></div>
           <div class="brain-stats">
             <div class="status-row"><span class="label">Built-in tools</span><span class="val" id="brain-stat-tools">—</span></div>
             <div class="status-row"><span class="label">Memory notes</span><span class="val" id="brain-stat-memory">—</span></div>
@@ -1826,6 +1928,14 @@
 
   items.forEach(item => {
     item.addEventListener('click', () => switchSection(item.dataset.section));
+    // Nav items are plain divs (not <button>/<a>), so without this they're
+    // mouse-only -- a real keyboard-nav gap, not a style choice. Same
+    // click handler, just reachable via Tab and activated via Enter/Space.
+    item.tabIndex = 0;
+    item.setAttribute('role', 'button');
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); switchSection(item.dataset.section); }
+    });
   });
   capLinks.forEach(cap => {
     cap.addEventListener('click', () => switchSection(cap.dataset.section));
@@ -2255,6 +2365,19 @@
     fgEl.style.strokeDashoffset = (circumference * (1 - Math.max(0, Math.min(1, ratio)))).toFixed(1);
   }
 
+  // Vitals panel (Ultron tab) rows -- pct is 0-100. invert=true means
+  // higher is better (e.g. containers running ratio), so the good/warn/
+  // crit thresholds flip direction.
+  function setVitalRow(prefix, pct, text, invert) {
+    const bar = document.getElementById('vitals-' + prefix + '-bar');
+    const val = document.getElementById('vitals-' + prefix + '-v');
+    const cls = invert
+      ? (pct >= 99 ? 'good' : pct >= 50 ? 'warn' : 'crit')
+      : (pct >= 90 ? 'crit' : pct >= 70 ? 'warn' : 'good');
+    if (bar) { bar.style.width = Math.max(0, Math.min(100, pct)) + '%'; bar.className = 'bar-fill ' + cls; }
+    if (val) { val.textContent = text; val.className = 'vr-v ' + cls; }
+  }
+
   async function fetchStatus() {
     const data = await apiGet('/api/status');
 
@@ -2293,6 +2416,29 @@
     if (powerEl) {
       powerEl.textContent = data.cpu_temp_c != null ? data.cpu_temp_c + '°C · live' : 'sensor unavailable';
     }
+
+    // Vitals panel (Ultron tab) -- same /api/status payload, no extra fetch.
+    setRingGauge(document.getElementById('vitals-cpu-fg'), pct / 100);
+    const vitalsCpuN = document.getElementById('vitals-cpu-n');
+    if (vitalsCpuN) vitalsCpuN.textContent = pct + '%';
+    setVitalRow('cpu', pct, pct + '%');
+
+    setRingGauge(document.getElementById('vitals-mem-fg'), memPct / 100);
+    const vitalsMemN = document.getElementById('vitals-mem-n');
+    if (vitalsMemN) vitalsMemN.textContent = memPct + '%';
+    setVitalRow('mem', memPct, memPct + '%');
+
+    setVitalRow('containers', data.containers_error ? 0 : (data.containers_total ? data.containers_running / data.containers_total * 100 : 100),
+      data.containers_error ? 'n/a' : data.containers_running + '/' + data.containers_total, true);
+
+    if (data.cpu_temp_c != null) {
+      setVitalRow('temp', Math.min(100, data.cpu_temp_c / 85 * 100), data.cpu_temp_c + '°C');
+    } else {
+      setVitalRow('temp', 0, 'n/a');
+    }
+
+    const vitalsUptimeV = document.getElementById('vitals-uptime-v');
+    if (vitalsUptimeV) vitalsUptimeV.textContent = data.uptime || '—';
 
     setTopbar('live · cpu ' + pct + '% · mem ' + Math.round(data.mem_percent || 0) + '%', true);
   }
@@ -2359,6 +2505,8 @@
     if (homeStorageEl) {
       homeStorageEl.textContent = pct.toFixed(0) + '% · ' + (totalUsed / 1000).toFixed(2) + '/' + (totalCap / 1000).toFixed(2) + ' TB';
     }
+
+    setVitalRow('disk', pct, pct.toFixed(0) + '%');
   }
 
   async function fetchSystems() {
@@ -2406,6 +2554,9 @@
     { id: 'cpu', key: 'cpu_percent', colorHex: '#3DD6FF', unit: '%' },
     { id: 'mem', key: 'mem_percent', colorHex: '#4FA6E0', unit: '%' },
     { id: 'temp', key: 'cpu_temp_c', colorHex: '#8FD6FF', unit: '°C' },
+    // Ultron tab's Vitals panel waveform -- same cpu_percent series, its
+    // own chart id so it renders independently of the Systems tab chart.
+    { id: 'vitals-cpu', key: 'cpu_percent', colorHex: '#3DD6FF', unit: '%' },
   ];
 
   function setMetricsPeriod(period) {
@@ -3538,11 +3689,20 @@
     { id: 'get_mcp_servers', label: 'MCP servers', category: 'usage', desc: 'Connected external tool servers' },
   ];
 
-  let brainCanvas, brainCtx, brainTooltipEl;
+  let brainCanvas, brainCtx, brainTooltipEl, brainDetailEl, brainFiltersEl;
   let brainNodes = [];
   let brainSkillNodes = [];
   let brainHover = null;
+  let brainPinned = null;
+  let brainFilter = null; // category key, or null = show all
   let brainRotation = 0;
+
+  function brainNodeInfoHtml(node) {
+    const cat = BRAIN_CATEGORIES[node.category];
+    return '<b>' + escapeHtml(node.label) + '</b>' +
+      (node.desc ? escapeHtml(node.desc) : '') +
+      (cat ? '<div class="cat">' + escapeHtml(cat.label) + '</div>' : '');
+  }
 
   function layoutBrainNodes() {
     const cats = Object.keys(BRAIN_CATEGORIES).filter(function (c) { return c !== 'skill'; });
@@ -3564,6 +3724,11 @@
           baseRadius: 0.78 + (i % 2) * 0.14,
           phase: Math.random() * Math.PI * 2,
           freq: 0.3 + Math.random() * 0.4,
+          // Fixed per-node curve bend (owner reference: Ultron's "brain" is
+          // a radiant web of organically-bent filaments, not ruler-straight
+          // spokes) -- set once at layout time so it doesn't jitter every
+          // frame, only the node's own orbit does.
+          curveBend: (Math.random() - 0.5) * 0.5,
         }));
       });
     });
@@ -3613,26 +3778,70 @@
       n.y = cy + Math.sin(a) * r;
     });
 
+    // Hub glow -- a soft gold radial burst behind everything, per the
+    // owner's "Ultron's brain" reference (a bright radiant core throwing
+    // light through the whole web), drawn before the filaments/nodes so it
+    // sits underneath them.
+    const hubGlowR = ringR * 0.5;
+    const hubGlow = brainCtx.createRadialGradient(cx, cy, 0, cx, cy, hubGlowR);
+    hubGlow.addColorStop(0, 'rgba(255,178,56,0.30)');
+    hubGlow.addColorStop(0.5, 'rgba(255,138,30,0.10)');
+    hubGlow.addColorStop(1, 'rgba(255,138,30,0)');
+    brainCtx.fillStyle = hubGlow;
+    brainCtx.fillRect(cx - hubGlowR, cy - hubGlowR, hubGlowR * 2, hubGlowR * 2);
+
     all.forEach(function (n) {
       if (n.kind === 'hub') return;
-      brainCtx.strokeStyle = hexToRgba(BRAIN_CATEGORIES[n.category].color, 0.22);
+      // Category filter chips dim everything outside the chosen category
+      // instead of hiding it -- keeps the layout stable (no re-flow) while
+      // still making the filtered set obvious.
+      const dimmed = brainFilter && n.category !== brainFilter;
+      // Gold at the hub end fading to the node's own category color --
+      // reads as "everything radiates out from Ultron's core," matching
+      // this site's own gold-is-AI-identity convention, instead of a flat
+      // single-color spoke.
+      const lineMul = dimmed ? 0.18 : 1;
+      const grad = brainCtx.createLinearGradient(cx, cy, n.x, n.y);
+      grad.addColorStop(0, hexToRgba('#FF8A1E', 0.28 * lineMul));
+      grad.addColorStop(1, hexToRgba(BRAIN_CATEGORIES[n.category].color, 0.20 * lineMul));
+      brainCtx.strokeStyle = grad;
       brainCtx.lineWidth = 1;
       brainCtx.beginPath();
       brainCtx.moveTo(cx, cy);
-      brainCtx.lineTo(n.x, n.y);
+      // A gently bent filament rather than a ruler-straight spoke: offset
+      // the midpoint perpendicular to the hub->node line by a fixed
+      // fraction of its length.
+      const mx = (cx + n.x) / 2, my = (cy + n.y) / 2;
+      const dx = n.x - cx, dy = n.y - cy;
+      const bendX = mx - dy * n.curveBend, bendY = my + dx * n.curveBend;
+      brainCtx.quadraticCurveTo(bendX, bendY, n.x, n.y);
       brainCtx.stroke();
     });
 
     all.forEach(function (n) {
       const color = n.kind === 'hub' ? '#FF8A1E' : BRAIN_CATEGORIES[n.category].color;
+      const dimmed = n.kind !== 'hub' && brainFilter && n.category !== brainFilter;
       const hovered = n === brainHover;
+      const pinned = n === brainPinned;
       brainCtx.save();
+      brainCtx.globalAlpha = dimmed ? 0.25 : 1;
       brainCtx.shadowColor = color;
       brainCtx.shadowBlur = hovered ? 18 : (n.kind === 'hub' ? 14 : 8);
       brainCtx.fillStyle = color;
       brainCtx.beginPath();
       brainCtx.arc(n.x, n.y, hovered ? n.r * 1.4 : n.r, 0, Math.PI * 2);
       brainCtx.fill();
+      if (pinned) {
+        // A steady selection ring, distinct from the hover glow -- stays
+        // put while the mouse moves elsewhere, so "which node did I pick"
+        // remains legible while reading its detail panel.
+        brainCtx.shadowBlur = 0;
+        brainCtx.strokeStyle = '#fff';
+        brainCtx.lineWidth = 1.5;
+        brainCtx.beginPath();
+        brainCtx.arc(n.x, n.y, n.r + 5, 0, Math.PI * 2);
+        brainCtx.stroke();
+      }
       brainCtx.restore();
     });
 
@@ -3649,14 +3858,55 @@
     return null;
   }
 
+  function renderBrainDetail() {
+    if (!brainDetailEl) return;
+    if (!brainPinned) { brainDetailEl.hidden = true; return; }
+    brainDetailEl.innerHTML = '<span class="close" onclick="brainUnpin()">&times;</span>' + brainNodeInfoHtml(brainPinned);
+    brainDetailEl.hidden = false;
+  }
+  window.brainUnpin = function () { brainPinned = null; renderBrainDetail(); };
+
+  // Category filter chips -- "All" plus one per real category actually in
+  // use, each showing its node count. Rebuildable on demand (not just at
+  // init) because skill/MCP nodes arrive later, asynchronously, once
+  // loadMcpServers() actually checks them -- see updateBrainSkillNodes().
+  // Reuses the existing .mode-pill look rather than a new chip component.
+  window.__brainRebuildFilters = function () {
+    if (!brainFiltersEl) return;
+    const counts = {};
+    brainNodes.concat(brainSkillNodes).forEach(function (n) {
+      if (n.kind === 'hub') return;
+      counts[n.category] = (counts[n.category] || 0) + 1;
+    });
+    const cats = Object.keys(BRAIN_CATEGORIES).filter(function (c) { return counts[c]; });
+    function chipHtml(key, label, color, count) {
+      const active = brainFilter === key ? ' active' : '';
+      const swatch = color ? '<span class="swatch" style="color:' + color + '"></span>' : '';
+      return '<span class="mode-pill' + active + '" data-brain-filter="' + key + '" style="' +
+        (brainFilter === key && color ? 'border-color:' + color + ';color:' + color + ';' : '') + '">' +
+        swatch + escapeHtml(label) + (count != null ? ' (' + count + ')' : '') + '</span>';
+    }
+    brainFiltersEl.innerHTML = chipHtml('', 'All', null, null) +
+      cats.map(function (c) { return chipHtml(c, BRAIN_CATEGORIES[c].label, BRAIN_CATEGORIES[c].color, counts[c]); }).join('');
+    brainFiltersEl.querySelectorAll('[data-brain-filter]').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        brainFilter = chip.dataset.brainFilter || null;
+        window.__brainRebuildFilters();
+      });
+    });
+  };
+
   function initBrainGraph() {
     brainCanvas = document.getElementById('brain-canvas');
     brainTooltipEl = document.getElementById('brain-tooltip');
+    brainDetailEl = document.getElementById('brain-detail');
+    brainFiltersEl = document.getElementById('brain-filters');
     if (!brainCanvas) return;
     brainCtx = brainCanvas.getContext('2d');
     brainNodes = layoutBrainNodes();
     sizeBrainCanvas();
     window.addEventListener('resize', sizeBrainCanvas);
+    window.__brainRebuildFilters();
 
     brainCanvas.addEventListener('mousemove', function (e) {
       const rect = brainCanvas.getBoundingClientRect();
@@ -3664,10 +3914,7 @@
       brainHover = node;
       brainCanvas.style.cursor = node ? 'pointer' : 'default';
       if (!node) { brainTooltipEl.hidden = true; return; }
-      const cat = BRAIN_CATEGORIES[node.category];
-      brainTooltipEl.innerHTML = '<b>' + escapeHtml(node.label) + '</b>' +
-        (node.desc ? escapeHtml(node.desc) : '') +
-        (cat ? '<div class="cat">' + escapeHtml(cat.label) + '</div>' : '');
+      brainTooltipEl.innerHTML = brainNodeInfoHtml(node);
       brainTooltipEl.hidden = false;
       const left = Math.min(e.clientX - rect.left + 14, rect.width - 230);
       brainTooltipEl.style.left = Math.max(4, left) + 'px';
@@ -3676,6 +3923,15 @@
     brainCanvas.addEventListener('mouseleave', function () {
       brainHover = null;
       brainTooltipEl.hidden = true;
+    });
+    // Click to pin a node's detail panel in place (persists after the
+    // mouse moves away, unlike the hover tooltip) -- click the same node
+    // again, or its panel's close button, to unpin.
+    brainCanvas.addEventListener('click', function (e) {
+      const rect = brainCanvas.getBoundingClientRect();
+      const node = brainNodeAt(e.clientX - rect.left, e.clientY - rect.top);
+      brainPinned = (node && node !== brainPinned) ? node : null;
+      renderBrainDetail();
     });
 
     const toolsStat = document.getElementById('brain-stat-tools');
@@ -3712,8 +3968,13 @@
         angle: a, baseRadius: 1.12,
         phase: Math.random() * Math.PI * 2, freq: 0.3 + Math.random() * 0.4,
         desc: 'from MCP server "' + t.server + '"',
+        curveBend: (Math.random() - 0.5) * 0.5,
       };
     });
+    // Skill nodes arrive after the filter chips were first built (this runs
+    // once servers are actually checked) -- rebuild so a "Skill" chip shows
+    // up if it wasn't there yet, rather than staying permanently absent.
+    if (window.__brainRebuildFilters) window.__brainRebuildFilters();
   }
 
   initBrainGraph();
@@ -4145,7 +4406,12 @@ function toggleReducedVisuals(el) {
     tubeGreen: loadImg('tube_green.png'),
   };
 
-  var CHAR_SCALE = 0.9, AGENT_SCALE = 0.8, DESK_SCALE = 1.15, TUBE_SCALE = 1.1;
+  // AGENT_SCALE/SUBAGENT_TUBE_SCALE bumped up from the desk/Ultron-tube
+  // scale's earlier, smaller values -- owner feedback was that the
+  // subagents and their own recharge tubes read as a throwaway accent
+  // next to Ultron's, when each is meant to be its own clearly-present
+  // bot with its own tube, not a miniature afterthought.
+  var CHAR_SCALE = 0.9, AGENT_SCALE = 1.0, DESK_SCALE = 1.15, TUBE_SCALE = 1.1, SUBAGENT_TUBE_SCALE = 1.35;
   var WALK_MIN_X = 470, WALK_MAX_X = 630;
 
   // Draws an image anchored to the floor line, scaled by `scale` --
@@ -4198,6 +4464,12 @@ function toggleReducedVisuals(el) {
     ctx.fillRect(OUTPUT_X + 5, BELT_Y - 16, OUTPUT_W - 10, 16);
     ctx.fillStyle = t < outputFlashUntil ? '#ff3b3b' : '#5a1414';
     ctx.fillRect(OUTPUT_X + OUTPUT_W / 2 - 3, FLOOR_Y - 84, 6, 6);
+    // Small "OUT" plate so this reads as a real exit node rather than an
+    // unlabeled wall slot -- cheap (native canvas text, no new asset).
+    ctx.fillStyle = '#8b93a0';
+    ctx.font = '7px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('OUT', OUTPUT_X + OUTPUT_W / 2, FLOOR_Y - 100);
   }
 
   function updatePackages(t, dt) {
@@ -4233,7 +4505,7 @@ function toggleReducedVisuals(el) {
     // comment on why these are scenery, not a live status readout).
     var flicker = Math.sin(t * 0.8) > -0.2;
     SUBAGENTS.forEach(function (a) {
-      drawFloored(IMG[a.tube], a.tubeX, TUBE_SCALE);
+      drawFloored(IMG[a.tube], a.tubeX, SUBAGENT_TUBE_SCALE);
       var desk = drawFloored(IMG[flicker ? a.active : a.idle], a.deskX, DESK_SCALE);
       if (desk.w) drawFloored(IMG[a.agent], a.deskX + desk.w * 0.18, AGENT_SCALE);
     });

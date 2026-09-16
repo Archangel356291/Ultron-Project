@@ -40,6 +40,11 @@ PANEL = (15, 17, 19, 255)
 LINE = (44, 47, 51, 255)
 
 
+def shade_tuple(color, factor):
+    r, g, b = (max(0, min(255, int(c * factor))) for c in color[:3])
+    return (r, g, b, color[3] if len(color) > 3 else 255)
+
+
 def glow(img, color, blur=6):
     alpha = img.split()[3].filter(ImageFilter.GaussianBlur(blur))
     tint = Image.new("RGBA", img.size, color)
@@ -66,34 +71,52 @@ def outline(img, color=(5, 6, 8, 255), size=3):
 
 def draw_vein_texture(w, h, seed=3):
     """Branching glowing-vein pattern for the relic chamber's interior --
-    per the owner's reference photo (a vertical relic with a red circuit/
-    vein pattern etched into its dark chamber), rather than a flat black
-    fill. Drawn once, low-cost (a handful of random-walk line segments),
-    sits *underneath* the dashboard's live percentage-fill DOM element
-    (see .relic-gauge-fill in ultron-dashboard.html), which fully covers
-    whatever's here below its own fill line -- so this only shows through
-    the unfilled portion, same as the reference's resting glow."""
+    per the owner's reference photo (a vertical relic with a dense red
+    circuit/vein pattern etched across nearly the whole dark chamber face),
+    rather than a flat black fill. Drawn once, low-cost (a handful of
+    random-walk line segments), sits *underneath* the dashboard's live
+    percentage-fill DOM element (see .relic-gauge-fill in
+    ultron-dashboard.html), which fully covers whatever's here below its
+    own fill line -- so this only shows through the unfilled portion, same
+    as the reference's resting glow.
+
+    Quality pass (2026-09-15, owner-supplied relic photo): the reference's
+    veins cover most of the chamber's height, not just a small band near
+    the bottom -- more seed points, spread across the full height, longer
+    reach, deeper branching, and a brighter core line under the soft glow
+    line so thin veins don't just read as blur."""
+    import math
     random.seed(seed)
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
 
     def branch(x, y, angle, length, depth):
-        if depth <= 0 or length < 4:
+        if depth <= 0 or length < 3:
             return
-        # random-walk segment biased upward (angle measured from vertical)
-        import math
         dx = math.sin(angle) * length
-        dy = -math.cos(angle) * length
+        dy = math.cos(angle) * length
         nx, ny = x + dx, y + dy
-        d.line([(x, y), (nx, ny)], fill=(255, 90, 70, random.randint(90, 160)), width=1)
-        if random.random() < 0.7:
-            branch(nx, ny, angle + random.uniform(-0.6, 0.6), length * random.uniform(0.6, 0.85), depth - 1)
-        if random.random() < 0.45:
-            branch(nx, ny, angle + random.uniform(0.6, 1.4), length * random.uniform(0.4, 0.6), depth - 1)
+        d.line([(x, y), (nx, ny)], fill=(255, 70, 55, random.randint(120, 200)), width=1)
+        if random.random() < 0.75:
+            branch(nx, ny, angle + random.uniform(-0.7, 0.7), length * random.uniform(0.62, 0.85), depth - 1)
+        if random.random() < 0.55:
+            branch(nx, ny, angle + random.uniform(0.7, 1.6), length * random.uniform(0.45, 0.65), depth - 1)
+        if random.random() < 0.3:
+            branch(nx, ny, angle + random.uniform(-1.6, -0.7), length * random.uniform(0.4, 0.6), depth - 1)
 
-    for _ in range(5):
-        branch(w * random.uniform(0.3, 0.7), h * random.uniform(0.85, 1.0), random.uniform(-0.3, 0.3), h * 0.16, 5)
-    return img.filter(ImageFilter.GaussianBlur(0.4))
+    # Seed branches from points spread across the whole chamber height,
+    # each growing both up and down, so the pattern fills the face instead
+    # of clustering at one edge.
+    for _ in range(11):
+        sx, sy = w * random.uniform(0.15, 0.85), h * random.uniform(0.08, 0.92)
+        branch(sx, sy, random.uniform(-0.5, 0.5), h * 0.16, 6)
+        branch(sx, sy, math.pi + random.uniform(-0.5, 0.5), h * 0.14, 5)
+
+    glow_layer = img.filter(ImageFilter.GaussianBlur(1.1))
+    out = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    out.alpha_composite(glow_layer)
+    out.alpha_composite(img)  # crisp core vein on top of its own soft bloom
+    return out
 
 
 # The fillable interior rect -- exported so the JS side can hardcode the
@@ -104,45 +127,96 @@ CANVAS_W, CANVAS_H = 200, 560
 FILL_RECT = (70, 130, 130, 460)  # x0, y0, x1, y1 -- y1 is the chamber's bottom (0% fill line)
 
 
+CHROME_DARK = (60, 64, 70, 255)
+CHROME_MID = (150, 156, 166, 255)
+CHROME_LIGHT = (222, 227, 234, 255)
+CHROME_HOT = (255, 255, 255, 255)
+
+
+def chrome_gradient(w, h, vertical=True):
+    """A banded light/mid/dark/mid/light sweep -- cheap stand-in for a real
+    specular reflection, the single biggest lever for flat Pillow rects to
+    read as polished metal instead of solid gray (per the owner's relic
+    photo, whose fittings are clearly brushed/polished chrome, not flat
+    steel)."""
+    grad = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    stops = [CHROME_DARK, CHROME_MID, CHROME_LIGHT, CHROME_HOT, CHROME_LIGHT, CHROME_MID, CHROME_DARK]
+    n = len(stops) - 1
+    span = h if vertical else w
+    for i in range(span):
+        t = i / max(1, span - 1)
+        seg = min(n - 1, int(t * n))
+        local_t = t * n - seg
+        c0, c1 = stops[seg], stops[seg + 1]
+        col = tuple(int(c0[k] + (c1[k] - c0[k]) * local_t) for k in range(3)) + (255,)
+        if vertical:
+            ImageDraw.Draw(grad).line([(0, i), (w, i)], fill=col)
+        else:
+            ImageDraw.Draw(grad).line([(i, 0), (i, h)], fill=col)
+    return grad
+
+
 def draw_relic_casing():
     img = Image.new("RGBA", (CANVAS_W, CANVAS_H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     x0, y0, x1, y1 = FILL_RECT
     cx = (x0 + x1) / 2
 
-    # Base plate + stand.
-    d.rectangle([40, 520, 160, 550], fill=(5, 5, 6, 255), outline=STEEL, width=2)
-    d.rectangle([60, 505, 140, 522], fill=BODY_DARK, outline=LINE, width=1)
-    d.rectangle([x0 - 8, y1, x1 + 8, 508], fill=BODY_MID)
+    # Base: a museum-plaque stand -- wide dark plinth, a bright chrome lip,
+    # and a small engraved-look nameplate strip -- per the reference photo's
+    # display-stand base rather than a bare rectangle.
+    d.rectangle([30, 526, 170, 552], fill=(6, 6, 7, 255), outline=LINE, width=1)
+    plinth_lip = chrome_gradient(140, 6, vertical=True)
+    img.alpha_composite(plinth_lip, (30, 520))
+    d.rectangle([70, 534, 130, 546], fill=(3, 3, 4, 255), outline=shade_tuple(STEEL, 0.6), width=1)
+    for tx in range(74, 126, 7):
+        d.rectangle([tx, 538, tx + 4, 540], fill=(90, 96, 104, 160))  # faint engraved ticks
+    d.rectangle([60, 507, 140, 522], fill=BODY_DARK, outline=LINE, width=1)
+    col_grad = chrome_gradient(int(x1 - x0 + 16), int(508 - y1), vertical=False)
+    img.alpha_composite(col_grad, (int(x0 - 8), int(y1)))
     d.rectangle([x0 - 8, y1, x1 + 8, 508], outline=LINE, width=2)
 
     # Chamber (dark by default -- JS fills it live, see FILL_RECT/
-    # .relic-gauge-fill). A faint glowing vein texture underneath, per the
+    # .relic-gauge-fill). A dense glowing vein texture underneath, per the
     # owner's reference photo, instead of flat black.
     d.rectangle([x0, y0, x1, y1], fill=(4, 4, 5, 255))
     veins = draw_vein_texture(int(x1 - x0), int(y1 - y0))
     img.alpha_composite(veins, (int(x0), int(y0)))
 
-    # Side fittings along the chamber -- angular notches echoing the
-    # reference's stepped metal side-plates.
-    for ny in range(int(y0) + 10, int(y1) - 10, 34):
-        d.polygon([(x0 - 14, ny), (x0, ny + 6), (x0, ny + 18), (x0 - 14, ny + 24)], fill=STEEL)
-        d.polygon([(x1 + 14, ny), (x1, ny + 6), (x1, ny + 18), (x1 + 14, ny + 24)], fill=STEEL)
+    # Side fittings running the full chamber height -- dense stepped
+    # chrome blades (reference: a continuous finned edge, not a few
+    # isolated notches), each blade individually gradient-shaded.
+    fin_h = 22
+    for ny in range(int(y0), int(y1) - fin_h // 2, fin_h):
+        for side, fx0, fx1 in ((-1, x0 - 16, x0), (1, x1, x1 + 16)):
+            fin = chrome_gradient(int(fx1 - fx0), fin_h - 4, vertical=True)
+            fin_shape = Image.new("RGBA", fin.size, (0, 0, 0, 0))
+            pts = [(0, 2), (fin.size[0] if side < 0 else fin.size[0] * 0.35, 0),
+                   (fin.size[0], fin.size[1] * 0.5), (fin.size[0] if side < 0 else fin.size[0] * 0.35, fin.size[1]),
+                   (0, fin.size[1] - 2)]
+            mask = Image.new("L", fin.size, 0)
+            ImageDraw.Draw(mask).polygon(pts, fill=255)
+            fin_shape.paste(fin, (0, 0), mask)
+            img.alpha_composite(fin_shape, (int(fx0), ny + 1))
 
-    # Top fitting block + four spiky prongs (the reference's most
-    # distinctive silhouette element).
-    d.rectangle([x0 - 10, y0 - 34, x1 + 10, y0], fill=BODY_LIGHT, outline=LINE, width=2)
+    # Top fitting block (chrome-shaded) + four spiky prongs, the
+    # reference's most distinctive silhouette element.
+    top_block = chrome_gradient(int(x1 - x0 + 20), 34, vertical=True)
+    img.alpha_composite(top_block, (int(x0 - 10), int(y0 - 34)))
+    d.rectangle([x0 - 10, y0 - 34, x1 + 10, y0], outline=LINE, width=2)
     prong_w = (x1 - x0 - 10) / 4
     for i in range(4):
         px = x0 + 5 + i * prong_w
-        d.polygon([(px, y0 - 34), (px + prong_w * 0.6, y0 - 70), (px + prong_w, y0 - 34)], fill=STEEL)
+        d.polygon([(px, y0 - 34), (px + prong_w * 0.6, y0 - 70), (px + prong_w, y0 - 34)], fill=CHROME_MID)
+        d.polygon([(px, y0 - 34), (px + prong_w * 0.3, y0 - 55), (px + prong_w * 0.6, y0 - 70)], fill=CHROME_LIGHT)
     d.rectangle([x0 - 10, y0 - 40, x1 + 10, y0 - 34], fill=(10, 10, 11, 255))
 
     # A small always-on indicator light near the base, independent of
     # the fill level -- just a "power on" tell, not a data readout.
     d.ellipse([cx - 6, 480, cx + 6, 492], fill=RED_BRIGHT)
+    d.ellipse([cx - 3, 483, cx - 1, 485], fill=(255, 220, 210, 230))  # hot-spot catch-light
 
-    return glow(outline(img, size=3), RED_BRIGHT, blur=4)
+    return glow(outline(img, size=3), RED_BRIGHT, blur=5)
 
 
 GOLD = (255, 178, 56, 255)
@@ -192,9 +266,18 @@ def draw_body_design():
     node(cx - 100, 203, 8)
     node(cx + 100, 203, 8)
 
-    # Chest core -- a bright scan hot-spot, the reference's brightest point.
+    # Chest core -- a bright scan hot-spot, the reference's brightest point,
+    # with thin radiating spokes (per the owner's hologram-bay reference,
+    # whose brightest point throws visible light rays, not just a glow).
     rect(cx - 32, 175, cx + 32, 260)
     node(cx, 221, 20)
+    import math as _math
+    for i in range(10):
+        ang = i * (_math.pi * 2 / 10)
+        r1, r2 = 22, random.uniform(34, 58)
+        d.line([(cx + _math.cos(ang) * r1, 221 + _math.sin(ang) * r1),
+                (cx + _math.cos(ang) * r2, 221 + _math.sin(ang) * r2)],
+               fill=(255, 210, 140, 130), width=1)
     d.ellipse([cx - 10, 211, cx + 10, 231], fill=(255, 245, 220, 240))
 
     # Torso, with a couple of horizontal "scan ring" bands (per the
@@ -225,6 +308,35 @@ def draw_body_design():
         rect(lx - 20, 452, lx + 20, 540)
         rect(lx - 24, 540, lx + 24, 566)
 
+    # Exploded fragment field -- small floating panel pieces just outside
+    # the main silhouette, per the owner's hologram-bay reference (a body
+    # assembled from many small suspended plates, not one solid outline).
+    # Cheap: a scatter of tiny translucent trapezoids anchored along the
+    # figure's own left/right edges at varying depth (size/opacity).
+    random.seed(41)
+    frag_anchors_y = list(range(20, H - 40, 14))
+    for fy in frag_anchors_y:
+        for side in (-1, 1):
+            if random.random() < 0.4:
+                continue
+            depth = random.uniform(0.4, 1.0)  # 1.0 = near/bright, 0.4 = far/dim
+            fx = cx + side * random.uniform(60, 150) * depth
+            fw, fh = random.uniform(8, 20) * depth, random.uniform(10, 26) * depth
+            skew = random.uniform(-4, 4)
+            pts = [(fx, fy), (fx + fw, fy + skew), (fx + fw * 0.85, fy + fh), (fx - fw * 0.15, fy + fh - skew)]
+            alpha_fill = int(18 * depth) + 6
+            alpha_line = int(140 * depth) + 40
+            d.polygon(pts, fill=(255, 178, 56, alpha_fill), outline=(255, 200, 110, alpha_line))
+
+    # Two faint vertical scan-beam columns crossing the whole figure, per
+    # the reference's hologram-bay lighting (thin bright verticals cutting
+    # through the projection volume).
+    beams = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    bd = ImageDraw.Draw(beams)
+    for bx in (cx - 70, cx + 55):
+        bd.rectangle([bx, 0, bx + 3, H], fill=(255, 220, 160, 20))
+    img.alpha_composite(beams)
+
     # Scanline texture across the whole figure -- the "being read out by
     # a scanner" cue, cheap (one line per 3px row, low alpha).
     scan = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -237,12 +349,13 @@ def draw_body_design():
     # reference's field of small bright points around the main geometry,
     # not just on it.
     random.seed(9)
-    for _ in range(22):
-        nx = cx + random.uniform(-130, 130)
+    for _ in range(48):
+        nx = cx + random.uniform(-150, 150)
         ny = random.uniform(0, H)
-        d.ellipse([nx - 1, ny - 1, nx + 1, ny + 1], fill=(255, 200, 110, random.randint(90, 200)))
+        r = random.uniform(0.6, 2.2)
+        d.ellipse([nx - r, ny - r, nx + r, ny + r], fill=(255, 200, 110, random.randint(70, 210)))
 
-    return glow(img, GOLD, blur=5)
+    return glow(img, GOLD, blur=6)
 
 
 def save(img, name):
