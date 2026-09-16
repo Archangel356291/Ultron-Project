@@ -205,6 +205,12 @@ DB_PATH = os.environ.get(
     "ULTRON_DB_PATH",
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "ultron.db"),
 )
+# Plain-text mirror of chat_log, owner-requested 2026-09-15: a file in the
+# same directory as ultron.db (D:\ultron's Brain&Knowledge on the host)
+# that's directly readable without a SQLite client -- every identity/
+# source (dashboard admin, beta testers, Discord) writes here since they
+# all funnel through the one _log_chat_turn function below.
+CHAT_LOG_FILE_PATH = os.path.join(os.path.dirname(DB_PATH), "chat_logs.txt")
 
 
 def _get_db_connection():
@@ -2749,10 +2755,10 @@ def _log_chat_turn(identity, user_message, reply_text, input_tokens, output_toke
     """Best-effort, like _log_llm_usage -- never raises. One row for what
     the user said, one for Ultron's reply, sharing a timestamp -- token
     counts land on the assistant row since that's what they were spent on."""
+    now = time.strftime("%Y-%m-%dT%H:%M:%S")
     try:
         conn = _get_db_connection()
         try:
-            now = time.strftime("%Y-%m-%dT%H:%M:%S")
             conn.execute(
                 "INSERT INTO chat_log (timestamp, identity, role, content, input_tokens, output_tokens) "
                 "VALUES (?, ?, 'user', ?, NULL, NULL)",
@@ -2766,6 +2772,16 @@ def _log_chat_turn(identity, user_message, reply_text, input_tokens, output_toke
             conn.commit()
         finally:
             conn.close()
+    except Exception:
+        pass
+
+    # Plain-text mirror, best-effort like the DB write above -- a failure
+    # here (disk full, permissions) must not break the chat response.
+    try:
+        with open(CHAT_LOG_FILE_PATH, "a", encoding="utf-8") as f:
+            f.write(f"[{now}] {identity} (user):\n{user_message}\n\n")
+            token_note = f" [tokens: in={input_tokens}, out={output_tokens}]" if input_tokens or output_tokens else ""
+            f.write(f"[{now}] {identity} (assistant){token_note}:\n{reply_text}\n\n")
     except Exception:
         pass
 

@@ -59,6 +59,15 @@ def demo():
     # The user row carries no token cost of its own.
     assert user_turn["input_tokens"] is None and user_turn["output_tokens"] is None, user_turn
 
+    # Plain-text mirror (owner-requested 2026-09-15): same directory as
+    # ultron.db, human-readable, both sides of the turn with token usage.
+    assert os.path.exists(app.CHAT_LOG_FILE_PATH), app.CHAT_LOG_FILE_PATH
+    assert os.path.dirname(app.CHAT_LOG_FILE_PATH) == os.path.dirname(app.DB_PATH)
+    with open(app.CHAT_LOG_FILE_PATH, encoding="utf-8") as f:
+        file_text = f.read()
+    assert "(user):\nhi Ultron" in file_text, file_text
+    assert "(assistant) [tokens: in=42, out=17]:\nhello there" in file_text, file_text
+
     # A Discord-origin turn with a speaker logs under that identity, not "admin" --
     # this is the whole point: one shared bot token, distinguishable people.
     _queue_reply("hey there, Discord")
@@ -98,8 +107,9 @@ def demo():
 
     print("OK: /api/chat logs every real turn to chat_log with timestamps and real token usage, "
           "a caller-supplied speaker overrides the default 'admin' identity (Discord attribution), "
-          "get_chat_history filters by identity, stays admin-only, and the system prompt carries "
-          "the plain-prose/no-markdown rule.")
+          "get_chat_history filters by identity, stays admin-only, the plain-text mirror file lands "
+          "next to ultron.db with both sides of the turn, and the system prompt carries the "
+          "plain-prose/no-markdown rule.")
 
 
 if __name__ == "__main__":
