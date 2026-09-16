@@ -2068,7 +2068,11 @@
   let presenceState = 'idle';
   function renderPresence() {
     const ok = state.connected;
-    const label = ok ? PRESENCE_LABELS[presenceState] || 'online' : 'standing by';
+    // 'alert' outranks the connected flag: a drop after being connected
+    // reads "connection lost," not the neutral "standing by" of never
+    // having connected at all.
+    const label = presenceState === 'alert' ? PRESENCE_LABELS.alert
+      : ok ? PRESENCE_LABELS[presenceState] || 'online' : 'standing by';
     const heroTitle = document.getElementById('hero-title');
     if (heroTitle) heroTitle.textContent = 'ULTRON ' + label.toUpperCase();
     const coreTitle = document.getElementById('core-status-title');
@@ -2350,10 +2354,12 @@
   function startPolling() {
     if (state.pollTimer) clearInterval(state.pollTimer);
     if (!state.autoRefresh) return;
-    state.pollTimer = setInterval(() => {
-      if (state.connected) refreshAll();
-    }, 15000);
+    // Not gated on state.connected: while disconnected, each tick IS the
+    // reconnect attempt. ponytail: fixed 15s retry, add backoff if a dead
+    // backend ever makes this chatty enough to matter.
+    state.pollTimer = setInterval(refreshAll, 15000);
   }
+  setInterval(renderStaleTopbar, 30000);
 
   function toggleAutoRefresh(el) {
     el.classList.toggle('on');
@@ -2408,16 +2414,30 @@
           fetchEvolutionIdeas(),
           fetchMetricsHistory(),
         ];
-      await Promise.all(calls);
-      if (!state.connected) {
+      // One explicit heartbeat decides "connected"; the feeds decide
+      // nothing. Before, Promise.all over the feeds did double duty: one
+      // flaky feed (a 502 from /api/systems, say) failed the whole refresh,
+      // flipped the core to alert and killed the poll timer for good --
+      // and since most feeds swallow their own errors, loss detection
+      // actually hinged on fetchStatus happening to be the one that threw.
+      // /api/whoami is cheap, needs the token (so a revoked session shows
+      // up as 401 here), and has no subsystem behind it that can 502.
+      const results = await Promise.allSettled([apiGet('/api/whoami')].concat(calls));
+      if (results[0].status === 'rejected') throw results[0].reason;
+      const failed = results.slice(1).filter(r => r.status === 'rejected');
+      state.lastSyncAt = Date.now();
+      const recovered = !state.connected;
+      state.connected = true; // before the presence broadcast below reads it
+      if (recovered) {
         if (window.__heroSetState) window.__heroSetState('idle'); // recovered from alert
         // Fetched once per connect, not every ~15s poll -- the vault graph
         // doesn't change within a session, and re-laying-out a force graph
         // on every poll would jump around distractingly for no benefit.
         if (window.__kgRefresh) window.__kgRefresh();
       }
-      state.connected = true;
-      setConnStatus('connected · last sync ' + new Date().toLocaleTimeString(), 'ok');
+      setConnStatus(failed.length
+        ? 'connected · ' + failed.length + ' of ' + calls.length + ' feeds failed: ' + failed[0].reason.message
+        : 'connected · last sync ' + new Date().toLocaleTimeString(), 'ok');
     } catch (err) {
       // A lost connection AFTER having been connected is a real fault
       // condition (distinct from "never configured yet," which the
@@ -2425,10 +2445,27 @@
       // one genuine trigger for the AI core's alert state.
       if (window.__heroSetState) window.__heroSetState('alert');
       state.connected = false;
+      if (/^unauthorized/.test(err.message)) {
+        // The token was rejected, not the network: retrying can't help.
+        setConnStatus('session rejected by the backend — sign in again', 'err');
+        setTopbar('signed out by backend', false);
+        if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+        return;
+      }
       setConnStatus('lost connection to backend: ' + err.message, 'err');
-      setTopbar('offline · showing last known data', false);
-      if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+      renderStaleTopbar();
+      // The poll timer keeps running (see startPolling): the next tick is
+      // the reconnect attempt, so recovery needs no reload.
     }
+  }
+
+  function staleAge() {
+    const s = Math.round((Date.now() - (state.lastSyncAt || Date.now())) / 1000);
+    return s < 60 ? s + 's' : s < 3600 ? Math.round(s / 60) + 'm' : Math.round(s / 3600) + 'h';
+  }
+  function renderStaleTopbar() {
+    if (state.connected || !state.lastSyncAt) return;
+    setTopbar('reconnecting · showing data from ' + staleAge() + ' ago', false);
   }
 
   // Shared by every ring gauge on the dashboard (Home Lab Overview's
