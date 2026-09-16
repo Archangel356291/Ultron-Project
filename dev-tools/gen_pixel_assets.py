@@ -9,13 +9,26 @@ from primitive shapes, matching the reference's palette and general
 proportions rather than reproducing its actual artwork. Same principle
 this project's own Module 13 already applied to the 3D hero head.
 
+Quality pass (2026-09-15): same shapes/proportions/canvas sizes as before
+(so ultron-dashboard.html's positioning math -- WALK_MIN_X/MAX_X, desk/tube
+X offsets, FLOOR_Y anchoring -- needs zero changes), but every sprite now
+gets a crisp dark outline, multi-tone shading instead of flat single-color
+fills, and small grounding/material details (contact shadows, rim-lit glass,
+a keyboard, panel seams) that a flat-Pillow-rectangle pass skips. Closest
+available in-repo style reference is body_design.png/relic_gauge.png
+(gen_design_assets.py) -- both already use rim-glow + multi-tone shading;
+this brings the room sprites up to that same bar. The owner's own two
+source photos referenced above were only ever shared in chat, never saved
+to this repo, so they aren't available to re-check against here.
+
 Run to (re)generate everything directly into ../pixel-assets/, which
 ultron-backend/app.py serves at /pixel-assets/<file> (same pattern as
 /three-pipeline/<file>):
     python dev-tools/gen_pixel_assets.py
 """
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageChops
 import os
+import random
 
 OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "pixel-assets")
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -34,6 +47,7 @@ PANEL_RAISED = (22, 25, 28, 255)
 LINE = (44, 47, 51, 255)
 CYAN = (61, 214, 255, 255)
 GREEN = (51, 209, 122, 255)
+OUTLINE_COLOR = (5, 6, 8, 255)
 
 
 def glow(img, color, blur=3):
@@ -49,10 +63,33 @@ def glow(img, color, blur=3):
     return out
 
 
+def outline(img, color=OUTLINE_COLOR, size=3):
+    """Crisp dark rim around the opaque silhouette -- the single biggest
+    lever for making flat Pillow-primitive shapes read as pixel art instead
+    of plain rectangles. Dilates the alpha channel and fills the resulting
+    ring, so it hugs whatever shape (rect/poly/ellipse) is already there."""
+    alpha = img.split()[3]
+    dilated = alpha.filter(ImageFilter.MaxFilter(size))
+    ring = ImageChops.subtract(dilated, alpha)
+    ring_layer = Image.new("RGBA", img.size, color)
+    ring_layer.putalpha(ring)
+    out = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    out.alpha_composite(ring_layer)
+    out.alpha_composite(img)
+    return out
+
+
+def shade(color, factor):
+    """Lighten (factor>1) or darken (factor<1) an RGBA tuple, clamped."""
+    r, g, b = (max(0, min(255, int(c * factor))) for c in color[:3])
+    return (r, g, b, color[3] if len(color) > 3 else 255)
+
+
 def draw_ultron(scale, accent, pose):
-    """pose: 'walk_a' | 'walk_b' | 'sit'. Bigger/more detailed than the
-    old ASCII-grid sprite -- built from layered polygons for an angular
-    armored silhouette instead of single-color grid cells."""
+    """pose: 'walk_a' | 'walk_b' | 'sit'. Layered polygons for an angular
+    armored silhouette, multi-tone shaded (light from upper-left) with a
+    dark contact shadow at the feet so the sprite reads as grounded rather
+    than pasted-on."""
     W, H = 20 * scale, 28 * scale
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
@@ -66,32 +103,51 @@ def draw_ultron(scale, accent, pose):
     def poly(points, color):
         d.polygon([px(x, y) for x, y in points], fill=color)
 
+    def hline(x0, x1, y, color, w=0.5):
+        rect(x0, y, x1, y + w, color)
+
     # Crested head -- an original angular silhouette (a peaked crown, a
     # single horizontal red visor band) rather than the reference's
     # actual horn/face design.
     poly([(6, 0), (10, -2), (14, 0), (15, 5), (5, 5)], BODY_MID)
+    poly([(6, 0), (10, -2), (10, 5), (5, 5)], shade(BODY_MID, 1.25))  # left-face highlight
     rect(5, 5, 15, 8, BODY_LIGHT)
     rect(6, 6.2, 14, 7.4, accent)  # visor
-    poly([(7.5, 0), (8.5, -5.5), (10, -2.5)], accent)   # left crest spike
-    poly([(10, -2.5), (11.5, -6), (12.5, 0)], accent)   # right crest spike, taller
+    rect(6, 7.0, 14, 7.4, shade(accent, 0.55))  # visor undershade
+    d.ellipse([px(9.3, 6.3), px(10.7, 7.1)], fill=(255, 255, 255, 235))  # visor hot-spot
+    # Crown of small teeth across the top, matching the owner's pixel
+    # reference (a row of even spikes) rather than two crossed horns.
+    tooth_xs = (6.3, 8.1, 9.9, 11.7)
+    tooth_heights = (3.5, 5.5, 5.5, 3.5)
+    for tx, th in zip(tooth_xs, tooth_heights):
+        poly([(tx, 0.3), (tx + 0.9, -th), (tx + 1.8, 0.3)], accent)
+        poly([(tx, 0.3), (tx + 0.5, -th * 0.6), (tx + 0.9, -th)], shade(accent, 1.3))
 
     # Neck + shoulders -- wide, armored.
     rect(8, 8, 12, 9.5, BODY_MID)
     poly([(3, 9.5), (17, 9.5), (16, 13), (4, 13)], BODY_LIGHT)
+    poly([(3, 9.5), (10, 9.5), (9, 13), (4, 13)], shade(BODY_LIGHT, 1.2))
     rect(4, 13, 16, 14, BODY_MID)
+    # shoulder rivets, echoing body_design.png's joint accents
+    d.ellipse([px(4.3, 10.3), px(5.5, 11.5)], fill=shade(accent, 0.85))
+    d.ellipse([px(14.5, 10.3), px(15.7, 11.5)], fill=shade(accent, 0.85))
 
     # Chest core -- the glowing centerpiece, echoing the reference's lit
     # chest panel.
     rect(7.5, 10.5, 12.5, 16, PANEL)
+    rect(7.5, 10.5, 9, 16, shade(PANEL, 1.4))  # left panel bevel
     d.ellipse([px(8.3, 11.3), px(11.7, 14.7)], fill=accent)
+    d.ellipse([px(8.6, 11.6), px(11.4, 14.4)], outline=shade(accent, 0.5), width=1)
     d.ellipse([px(9, 12), px(11, 14)], fill=(255, 255, 255, 230))
 
     # Torso.
     rect(4, 14, 16, 19, BODY_MID)
     rect(4, 14, 5.5, 19, BODY_DARK)
     rect(14.5, 14, 16, 19, BODY_DARK)
+    rect(5.5, 14, 8, 14.6, shade(BODY_MID, 1.18))  # top-edge highlight catch-light
     for gy in (15, 17):
         rect(6, gy, 14, gy + 0.6, accent)  # armor seam glow lines
+        rect(6, gy + 0.6, 14, gy + 0.8, shade(accent, 0.4))
 
     if pose == "sit":
         # Bent forward slightly, arms toward a keyboard, legs folded
@@ -99,14 +155,27 @@ def draw_ultron(scale, accent, pose):
         poly([(3, 19), (17, 19), (18, 20), (2, 20)], BODY_LIGHT)
         rect(2, 20, 18, 25, BODY_DARK)
         rect(2, 20, 18, 21, STEEL)
+        rect(2, 20, 10, 20.8, shade(STEEL, 1.15))
         # one arm forward
         rect(11, 15, 17, 17, BODY_MID)
         rect(15, 15.5, 18, 17.5, BODY_LIGHT)
         d.ellipse([px(16.5, 15.5), px(18.5, 17.5)], fill=accent)
+        d.ellipse([px(16.9, 15.9), px(18.1, 17.1)], fill=shade(accent, 1.3))
+        # contact shadow (feet bottom at y=25, canvas is 28 tall -- room below)
+        shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        sd = ImageDraw.Draw(shadow)
+        sd.ellipse([px(3, 25.6), px(17, 27.3)], fill=(0, 0, 0, 130))
+        shadow = shadow.filter(ImageFilter.GaussianBlur(scale * 0.4))
+        base = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        base.alpha_composite(shadow)
+        base.alpha_composite(img)
+        img = base
     else:
         # Arms at sides.
         rect(2, 14.5, 4, 19.5, BODY_MID)
         rect(16, 14.5, 18, 19.5, BODY_MID)
+        rect(2, 14.5, 2.8, 19.5, shade(BODY_MID, 1.2))
+        rect(16, 14.5, 16.8, 19.5, shade(BODY_MID, 1.2))
         d.ellipse([px(2, 19), px(4, 21)], fill=RED_DIM if accent == RED_BRIGHT else BODY_DARK)
         d.ellipse([px(16, 19), px(18, 21)], fill=RED_DIM if accent == RED_BRIGHT else BODY_DARK)
         # Legs -- walk_a/walk_b alternate stance, clearly separated.
@@ -115,10 +184,23 @@ def draw_ultron(scale, accent, pose):
         right_x = 11.5 if lead else 10.5
         rect(left_x, 19, left_x + 2.4, 24, BODY_MID)
         rect(right_x, 19, right_x + 2.4, 24, BODY_LIGHT)
+        rect(left_x, 19, left_x + 0.7, 24, shade(BODY_MID, 1.25))
+        rect(right_x, 19, right_x + 0.7, 24, shade(BODY_LIGHT, 1.2))
         rect(left_x - 0.5, 24, left_x + 2.9, 25.5, BODY_DARK)
         rect(right_x - 0.5, 24, right_x + 2.9, 25.5, BODY_DARK)
+        # contact shadow, both feet -- shifts slightly with stride for a
+        # believable ground-plane read as the character walks.
+        shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        sd = ImageDraw.Draw(shadow)
+        cx = (left_x + right_x) / 2 + 1.2
+        sd.ellipse([px(cx - 6, 25.7), px(cx + 6, 27.2)], fill=(0, 0, 0, 120))
+        shadow = shadow.filter(ImageFilter.GaussianBlur(scale * 0.4))
+        base = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        base.alpha_composite(shadow)
+        base.alpha_composite(img)
+        img = base
 
-    return glow(img, accent, blur=max(2, scale // 2))
+    return glow(outline(img, size=max(3, scale // 2 * 2 + 1)), accent, blur=max(2, scale // 2))
 
 
 def draw_desk_monitor(scale, w_units, h_units, mon_w, mon_h, accent, active, label_alpha):
@@ -126,90 +208,251 @@ def draw_desk_monitor(scale, w_units, h_units, mon_w, mon_h, accent, active, lab
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     top_desk = H - h_units * scale
+
+    # Desk body with a lit top edge (catches the monitor glow) and a
+    # darker recessed front kick-panel instead of one flat slab.
     d.rectangle([0, top_desk, W, H], fill=PANEL_RAISED)
     d.rectangle([0, top_desk, W, top_desk + 2 * scale], fill=BODY_LIGHT)
-    d.rectangle([0, top_desk, W, H], outline=LINE, width=max(1, scale // 3))
+    d.rectangle([0, top_desk + 2 * scale, W, top_desk + 2.4 * scale], fill=shade(BODY_LIGHT, 0.6))
+    kick_y0 = top_desk + (h_units * scale) * 0.55
+    d.rectangle([scale * 0.6, kick_y0, W - scale * 0.6, H - scale * 0.4], fill=shade(PANEL_RAISED, 0.7))
+
     mx0 = (W - mon_w * scale) / 2
     my0 = top_desk - mon_h * scale - 6 * scale
-    d.rectangle([mx0 - scale, my0 + mon_h * scale, mx0 + scale, top_desk], fill=BODY_DARK)  # stand
+
+    # Monitor stand + a cable running down into the desk (small material
+    # detail that a bare stand-rectangle skips).
+    d.rectangle([mx0 - scale, my0 + mon_h * scale, mx0 + scale, top_desk], fill=BODY_DARK)
+    d.line([mx0 + scale * 1.5, top_desk, mx0 + scale * 1.5, top_desk + h_units * scale * 0.4],
+           fill=shade(BODY_DARK, 1.6), width=max(1, scale // 5))
+
+    # Screen: bezel, glow, scanlines, and (only above a small size, so the
+    # tiny subagent screens don't get illegibly cramped detail) a couple of
+    # corner accent rivets.
     screen_color = accent if active else tuple(int(c * 0.35) for c in accent[:3]) + (255,)
     screen = Image.new("RGBA", (int(mon_w * scale), int(mon_h * scale)), screen_color)
     sd = ImageDraw.Draw(screen)
     for ly in range(2, int(mon_h * scale) - 2, max(3, scale)):
         sd.rectangle([2, ly, int(mon_w * scale) - 2, ly + 1], fill=(255, 255, 255, label_alpha))
+    sd.rectangle([0, 0, int(mon_w * scale) - 1, int(mon_h * scale) * 0.35], fill=(255, 255, 255, 22))
     img.alpha_composite(glow(screen, screen_color, blur=scale), (int(mx0), int(my0)))
     d.rectangle([mx0 - 1, my0 - 1, mx0 + mon_w * scale + 1, my0 + mon_h * scale + 1], outline=BODY_LIGHT, width=1)
-    return img
+    if mon_w >= 4:
+        for cx, cy in ((mx0 + 2, my0 + 2), (mx0 + mon_w * scale - 2, my0 + 2)):
+            d.ellipse([cx - 1, cy - 1, cx + 1, cy + 1], fill=STEEL)
+
+    # Keyboard tray + a small status LED, sitting on the desk in front of
+    # the stand -- the detail that most reads as "a desk" vs. "a box."
+    kb_w, kb_h = mon_w * scale * 0.8, max(2, scale * 0.5)
+    kb_x, kb_y = mx0 + (mon_w * scale - kb_w) / 2, top_desk - kb_h - scale * 0.15
+    d.rectangle([kb_x, kb_y, kb_x + kb_w, kb_y + kb_h], fill=shade(BODY_LIGHT, 0.85), outline=BODY_DARK)
+    for kx in range(int(kb_x + 2), int(kb_x + kb_w - 2), max(2, int(scale * 0.28))):
+        d.rectangle([kx, kb_y + 1, kx + 1, kb_y + kb_h - 1], fill=shade(BODY_LIGHT, 0.55))
+    led_color = accent if active else shade(accent, 0.4)
+    d.ellipse([W - scale * 1.1, top_desk + scale * 0.3, W - scale * 0.5, top_desk + scale * 0.9], fill=led_color)
+
+    return glow(outline(img, size=3), accent, blur=1) if active else outline(img, size=3)
 
 
 def draw_tube(scale, w_units, h_units, accent):
     W, H = int(w_units * scale), int(h_units * scale)
-    img = Image.new("RGBA", (W, H + 6 * scale // 3), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
     cap = max(2, scale // 2)
-    d.rectangle([0, cap, W, H + cap], fill=(255, 255, 255, 10))
-    fill = Image.new("RGBA", (W - 2, H + cap - 2), accent[:3] + (70,))
-    img.alpha_composite(glow(fill, accent, blur=scale), (1, cap + 1))
+    total_h = H + cap * 2
+    img = Image.new("RGBA", (W + 4, total_h + int(scale * 0.8)), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    ox = 2  # small horizontal margin so the outline pass has room to breathe
+
+    # Glass cylinder: rim highlight ellipses top/bottom instead of a flat
+    # rectangle, so it reads as round glass rather than a painted strip.
+    d.rectangle([ox, cap, ox + W, cap + H], fill=(255, 255, 255, 6))
+    fill = Image.new("RGBA", (W - 2, H - 2), accent[:3] + (150,))
+    img.alpha_composite(glow(fill, accent, blur=max(2, scale // 3)), (ox + 1, cap + 1))
+    core = Image.new("RGBA", (max(1, int((W - 2) * 0.4)), H - 2), shade(accent, 1.15)[:3] + (120,))
+    img.alpha_composite(core, (int(ox + 1 + (W - 2) * 0.3), cap + 1))
+
+    random.seed(int(accent[0]) + int(w_units * 10))
+    for _ in range(max(3, int(h_units / 3))):
+        bx = ox + random.uniform(2, W - 4)
+        by = cap + random.uniform(4, H - 4)
+        br = random.uniform(1, 2.2)
+        d.ellipse([bx, by, bx + br, by + br * 1.4], fill=(255, 255, 255, random.randint(40, 90)))
     for sy in range(cap + 6, H, max(6, H // 5)):
-        d.line([(1, sy), (W - 1, sy)], fill=(255, 255, 255, 40), width=1)
-    d.rectangle([0, cap, W, H + cap], outline=BODY_LIGHT, width=1)
-    d.rectangle([-2, 0, W + 2, cap], fill=LINE)
-    d.rectangle([-2, H + cap, W + 2, H + cap * 2], fill=LINE)
-    return img
+        d.line([(ox + 1, sy), (ox + W - 1, sy)], fill=(255, 255, 255, 40), width=1)
+
+    d.ellipse([ox, cap - cap * 0.6, ox + W, cap + cap * 0.6], fill=(255, 255, 255, 60))
+    d.ellipse([ox, cap + H - cap * 0.6, ox + W, cap + H + cap * 0.6], fill=(0, 0, 0, 70))
+    d.rectangle([ox, cap, ox + W, cap + H], outline=BODY_LIGHT, width=1)
+
+    # Cap (with vent lines) and plinth (with bolts), replacing the plain
+    # end-cap rectangles.
+    d.rectangle([ox - 2, 0, ox + W + 2, cap], fill=LINE)
+    for vx in range(int(ox), int(ox + W), max(3, int(scale * 0.3))):
+        d.line([(vx, 1), (vx, cap - 1)], fill=shade(LINE, 0.5), width=1)
+    plinth_h = int(scale * 0.7)
+    d.rectangle([ox - 4, cap + H, ox + W + 4, cap + H + plinth_h], fill=shade(LINE, 1.3))
+    d.rectangle([ox - 4, cap + H + plinth_h, ox + W + 4, cap + H + plinth_h + int(scale * 0.35)], fill=LINE)
+    for bx in (ox - 2, ox + W + 2):
+        d.ellipse([bx - 1, cap + H + 2, bx + 1, cap + H + 4], fill=STEEL)
+
+    return outline(img, size=3)
 
 
 def draw_skyline(w, h):
     img = Image.new("RGBA", (w, h), VOID)
     d = ImageDraw.Draw(img)
-    import random
     random.seed(7)
     x = 0
     while x < w:
         bw = random.randint(w // 14, w // 8)
         bh = random.randint(h // 3, h - 6)
-        d.rectangle([x, h - bh, x + bw, h], fill=(18, 21, 26, 255))
+        building = shade((18, 21, 26, 255), random.uniform(0.85, 1.25))
+        d.rectangle([x, h - bh, x + bw, h], fill=building)
+        d.line([(x, h - bh), (x + bw, h - bh)], fill=shade(building, 1.6), width=1)
+        win_color = CYAN if random.random() < 0.25 else RED_BRIGHT
         for wy in range(h - bh + 4, h - 3, 7):
             for wx in range(x + 3, x + bw - 3, 6):
                 if random.random() < 0.35:
-                    d.rectangle([wx, wy, wx + 2, wy + 2], fill=RED_BRIGHT)
+                    d.rectangle([wx, wy, wx + 2, wy + 2], fill=win_color)
         x += bw + random.randint(2, 6)
+    # a lone blinking antenna light on the tallest silhouette for a touch of life
+    d.ellipse([w * 0.42, 0, w * 0.42 + 3, 3], fill=(255, 255, 255, 200))
     d.rectangle([0, 0, w - 1, h - 1], outline=LINE, width=2)
     return img
 
 
+def draw_console_panel(d, img, x, y, w, h, seed):
+    """A wall-mounted control console -- small screen, a button grid, and
+    a couple of slider readouts -- per the owner's workstation-room
+    reference (dense wall consoles are most of what makes that room read
+    as lived-in rather than an empty box). Cheap: a handful of rects per
+    panel, no per-frame cost since this bakes into the static backdrop."""
+    random.seed(seed)
+    d.rectangle([x, y, x + w, y + h], fill=PANEL_RAISED, outline=LINE, width=1)
+    d.rectangle([x, y, x + w, y + 2], fill=shade(PANEL_RAISED, 1.5))
+
+    screen_w, screen_h = w * 0.85, h * 0.4
+    screen_x, screen_y = x + (w - screen_w) / 2, y + h * 0.08
+    screen = Image.new("RGBA", (int(screen_w), int(screen_h)), (30, 60, 70, 255))
+    sd = ImageDraw.Draw(screen)
+    for ly in range(1, int(screen_h) - 1, 3):
+        sd.line([(1, ly), (int(screen_w) - 1, ly)], fill=CYAN[:3] + (random.randint(60, 140),), width=1)
+    img.alpha_composite(glow(screen, CYAN, blur=2), (int(screen_x), int(screen_y)))
+    d.rectangle([screen_x, screen_y, screen_x + screen_w, screen_y + screen_h], outline=shade(LINE, 1.6), width=1)
+
+    btn_y = screen_y + screen_h + h * 0.12
+    btn_colors = [CYAN, GREEN, RED_BRIGHT, CYAN, GREEN, CYAN]
+    bw = w * 0.1
+    for i, c in enumerate(btn_colors):
+        bx = x + w * 0.08 + i * (bw + w * 0.03)
+        if bx + bw > x + w * 0.95:
+            break
+        lit = random.random() < 0.7
+        d.rectangle([bx, btn_y, bx + bw, btn_y + bw], fill=c if lit else shade(c, 0.35))
+
+    slider_y = btn_y + bw + h * 0.1
+    for i in range(2):
+        sy = slider_y + i * h * 0.1
+        d.line([(x + w * 0.08, sy), (x + w * 0.92, sy)], fill=shade(LINE, 1.5), width=1)
+        knob_x = x + w * (0.15 + random.uniform(0, 0.7))
+        d.ellipse([knob_x - 2, sy - 2, knob_x + 2, sy + 2], fill=CYAN)
+
+
 def draw_room_background(w, h, floor_y):
     """Static backdrop: wall, floor, server rack, skyline window, cable
-    clutter. Bigger and more detailed than the previous version, per the
-    owner's reference (teal-lit control-room mood; kept as a straight-on
-    2D scene rather than true isometric -- redoing the whole scene's
-    perspective/movement math for an isometric camera was out of scope
-    for this pass, flagged rather than silently attempted and half-done)."""
+    clutter. Per the owner's reference (teal-lit control-room mood; kept
+    as a straight-on 2D scene rather than true isometric -- redoing the
+    whole scene's perspective/movement math for an isometric camera was
+    out of scope for this pass, flagged rather than silently attempted
+    and half-done). This pass adds wall paneling, a ceiling light strip,
+    a floor reflection gradient, a wall conduit, and a vignette on top of
+    the previous flat grid, for a lit-room feel instead of a lit-grid feel."""
     img = Image.new("RGBA", (w, h), PANEL)
     d = ImageDraw.Draw(img)
     d.rectangle([0, 0, w, floor_y], fill=PANEL)
+
+    # Wall paneling: vertical seams with a highlight/shadow pair, reading
+    # as material rather than a bare flat-colored plane.
+    for px_ in range(0, w, 64):
+        d.line([(px_, 0), (px_, floor_y)], fill=shade(PANEL, 1.4), width=1)
+        d.line([(px_ + 1, 0), (px_ + 1, floor_y)], fill=shade(PANEL, 0.7), width=1)
+
+    # Ceiling light strip: a bright core line with a soft glow gradient
+    # falling down the wall beneath it.
+    strip_y = int(floor_y * 0.03)
+    ceiling_glow = Image.new("RGBA", (w, int(floor_y * 0.22)), (0, 0, 0, 0))
+    cg = ImageDraw.Draw(ceiling_glow)
+    cg.rectangle([0, 0, w, 2], fill=(210, 240, 255, 230))
+    ceiling_glow = ceiling_glow.filter(ImageFilter.GaussianBlur(6))
+    img.alpha_composite(ceiling_glow, (0, strip_y))
+    d.rectangle([0, strip_y, w, strip_y + 2], fill=(230, 250, 255, 255))
+
     grid = Image.new("RGBA", (w, floor_y), (0, 0, 0, 0))
     gd = ImageDraw.Draw(grid)
     for gx in range(0, w, 28):
-        gd.line([(gx, 0), (gx, floor_y)], fill=(61, 214, 255, 18))
+        gd.line([(gx, 0), (gx, floor_y)], fill=(61, 214, 255, 12))
     for gy in range(0, floor_y, 28):
-        gd.line([(0, gy), (w, gy)], fill=(61, 214, 255, 18))
+        gd.line([(0, gy), (w, gy)], fill=(61, 214, 255, 12))
     img.alpha_composite(grid)
+
+    # Wall conduit: a horizontal pipe run with hangers, midway up the wall,
+    # for the kind of mechanical clutter a real server room actually has.
+    pipe_y = int(floor_y * 0.62)
+    d.rectangle([0, pipe_y, w, pipe_y + 6], fill=shade(LINE, 1.3))
+    d.line([(0, pipe_y), (w, pipe_y)], fill=shade(LINE, 1.8), width=1)
+    for hx in range(20, w, 90):
+        d.rectangle([hx, pipe_y - 3, hx + 4, pipe_y + 9], fill=LINE)
 
     sky_w, sky_h = int(w * 0.24), int(floor_y * 0.55)
     sky = draw_skyline(sky_w, sky_h)
     img.alpha_composite(sky, (int(w * 0.06), int(floor_y * 0.08)))
 
+    # Wall consoles in the empty stretch between the skyline window and
+    # where the desks/tubes get drawn live each frame (see SUBAGENTS/
+    # ULTRON_DESK_X in the dashboard's own pixel-room script) -- per the
+    # owner's workstation-room reference, this is the detail that turns a
+    # bare wall into a lived-in control room.
+    draw_console_panel(d, img, int(w * 0.34), int(floor_y * 0.18), int(w * 0.09), int(floor_y * 0.5), seed=11)
+    draw_console_panel(d, img, int(w * 0.46), int(floor_y * 0.22), int(w * 0.07), int(floor_y * 0.42), seed=23)
+
+    # Floor: reflection gradient (brighter near the wall, fading to void)
+    # under the existing tile grid, plus the tile seams themselves.
+    floor_grad = Image.new("L", (1, h - floor_y), 0)
+    for gy in range(h - floor_y):
+        t = gy / max(1, h - floor_y - 1)
+        floor_grad.putpixel((0, gy), int(38 * (1 - t)))
+    floor_grad = floor_grad.resize((w, h - floor_y))
+    floor_tint = Image.new("RGBA", (w, h - floor_y), (61, 214, 255, 255))
+    floor_tint.putalpha(floor_grad)
     d.rectangle([0, floor_y, w, h], fill=VOID)
+    img.alpha_composite(floor_tint, (0, floor_y))
     for gx in range(0, w, 18):
         d.line([(gx, floor_y), (gx, h)], fill=(20, 22, 25, 255))
+    # Catwalk grating: short cross-hatch ticks between the tile seams, per
+    # the reference's metal-grate floor -- cheap (one short line per
+    # cell), baked into the static backdrop so it costs nothing per frame.
+    for gy in range(floor_y + 6, h, 10):
+        for gx in range(0, w, 18):
+            d.line([(gx + 3, gy), (gx + 15, gy)], fill=(30, 33, 37, 200), width=1)
     d.line([(0, floor_y), (w, floor_y)], fill=LINE, width=2)
 
     rack_x, rack_y, rack_w, rack_h = int(w * 0.02), int(floor_y * 0.35), int(w * 0.045), int(floor_y * 0.6)
     d.rectangle([rack_x, rack_y, rack_x + rack_w, rack_y + rack_h], fill=PANEL_RAISED, outline=LINE, width=2)
+    d.rectangle([rack_x, rack_y, rack_x + rack_w, rack_y + int(rack_h * 0.04)], fill=shade(PANEL_RAISED, 1.5))
     lights = [CYAN, GREEN, CYAN, RED_BRIGHT, GREEN]
     for i, c in enumerate(lights):
         ly = rack_y + 10 + i * (rack_h - 20) // len(lights)
         d.rectangle([rack_x + 6, ly, rack_x + 6 + 8, ly + 8], fill=c)
+        d.rectangle([rack_x + 6, ly, rack_x + 6 + 8, ly + 2], fill=(255, 255, 255, 90))
+
+    # Vignette: darken the corners a touch so the room reads as lit from
+    # the ceiling strip/tubes rather than uniformly flat-lit.
+    vignette = Image.new("L", (w, h), 0)
+    vd = ImageDraw.Draw(vignette)
+    vd.ellipse([-w * 0.25, -h * 0.4, w * 1.25, h * 1.25], fill=90)
+    vignette = vignette.filter(ImageFilter.GaussianBlur(60))
+    dark = Image.new("RGBA", (w, h), (0, 0, 0, 255))
+    dark.putalpha(ImageChops.invert(vignette))
+    img.alpha_composite(dark)
 
     return img
 

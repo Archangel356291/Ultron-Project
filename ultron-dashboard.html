@@ -1633,11 +1633,36 @@
       <section class="section" id="sec-data">
         <h2 class="section-title">Data &amp; analytics</h2>
         <p class="section-desc">Insights and reports drawn from the lab and the core's activity.</p>
-        <div class="grid cols-4">
-          <div class="card stat-card"><div class="num" id="stat-data-tokens">—</div><div class="lbl">Tokens today</div></div>
-          <div class="card stat-card"><div class="num" id="stat-data-cost">—</div><div class="lbl">Cost today</div></div>
-          <div class="card stat-card"><div class="num" id="stat-data-commands">—</div><div class="lbl">Commands routed today</div></div>
-          <div class="card stat-card"><div class="num" id="stat-data-uptime">—</div><div class="lbl">Uptime (current)</div></div>
+        <div class="hud-card">
+          <div class="hud-label">System telemetry</div>
+          <div class="hlo-rings">
+            <div class="hlo-ring">
+              <svg viewBox="0 0 78 78">
+                <circle class="bg" cx="39" cy="39" r="33"></circle>
+                <circle class="fg" id="data-cpu-fg" cx="39" cy="39" r="33" stroke="var(--cyan)" stroke-dasharray="207" stroke-dashoffset="207"></circle>
+              </svg>
+              <div class="lbl"><span class="n" id="data-cpu-n">—</span><span class="t">CPU</span></div>
+            </div>
+            <div class="hlo-ring">
+              <svg viewBox="0 0 78 78">
+                <circle class="bg" cx="39" cy="39" r="33"></circle>
+                <circle class="fg" id="data-mem-fg" cx="39" cy="39" r="33" stroke="var(--blue)" stroke-dasharray="207" stroke-dashoffset="207"></circle>
+              </svg>
+              <div class="lbl"><span class="n" id="data-mem-n">—</span><span class="t">Memory</span></div>
+            </div>
+            <div class="hlo-ring">
+              <svg viewBox="0 0 78 78">
+                <circle class="bg" cx="39" cy="39" r="33"></circle>
+                <circle class="fg" id="data-containers-fg" cx="39" cy="39" r="33" stroke="var(--signal)" stroke-dasharray="207" stroke-dashoffset="207"></circle>
+              </svg>
+              <div class="lbl"><span class="n" id="data-containers-n">—</span><span class="t">Containers</span></div>
+            </div>
+          </div>
+          <div class="hud-row"><span class="k">Tokens today</span><span class="v" id="stat-data-tokens">—</span></div>
+          <div class="bar-track" id="stat-data-token-barwrap" hidden style="margin:6px 0 10px;"><div class="bar-fill" id="stat-data-token-fill" style="width:0%"></div></div>
+          <div class="hud-row"><span class="k">Cost today</span><span class="v" id="stat-data-cost">—</span></div>
+          <div class="hud-row"><span class="k">Commands routed today</span><span class="v" id="stat-data-commands">—</span></div>
+          <div class="hud-row"><span class="k">Uptime (current)</span><span class="v" id="stat-data-uptime">—</span></div>
         </div>
 
         <div class="panel-label" style="margin-top:20px" data-role="admin">Ultron Evolution — self-improvement ideas</div>
@@ -2219,11 +2244,30 @@
     }
   }
 
+  // Shared by every ring gauge on the dashboard (Home Lab Overview's
+  // container ring, and the Data & Analytics telemetry rings below) --
+  // same r=33 circle, same dasharray/dashoffset trick, pulled into one
+  // place instead of re-deriving the circumference at each call site.
+  function setRingGauge(fgEl, ratio) {
+    if (!fgEl) return;
+    const circumference = 2 * Math.PI * 33;
+    fgEl.style.strokeDasharray = circumference.toFixed(1);
+    fgEl.style.strokeDashoffset = (circumference * (1 - Math.max(0, Math.min(1, ratio)))).toFixed(1);
+  }
+
   async function fetchStatus() {
     const data = await apiGet('/api/status');
 
     const pct = Math.round(data.cpu_percent || 0);
     const memPct = Math.round(data.mem_percent || 0);
+
+    const dataCpuN = document.getElementById('data-cpu-n');
+    if (dataCpuN) dataCpuN.textContent = pct + '%';
+    setRingGauge(document.getElementById('data-cpu-fg'), pct / 100);
+    const dataMemN = document.getElementById('data-mem-n');
+    if (dataMemN) dataMemN.textContent = memPct + '%';
+    setRingGauge(document.getElementById('data-mem-fg'), memPct / 100);
+
     const pctEl = document.getElementById('core-pct');
     const tagEl = document.getElementById('core-tag');
     if (pctEl) pctEl.textContent = pct + '%';
@@ -2271,15 +2315,14 @@
       runningEl.textContent = runningCount;
     }
 
+    const ratio = containers.length ? runningCount / containers.length : 0;
     const hloN = document.getElementById('hlo-containers-n');
-    const hloFg = document.getElementById('hlo-containers-fg');
     if (hloN) hloN.textContent = runningCount;
-    if (hloFg) {
-      const circumference = 2 * Math.PI * 33; // matches r=33 on the mini ring
-      const ratio = containers.length ? runningCount / containers.length : 0;
-      hloFg.style.strokeDasharray = circumference.toFixed(1);
-      hloFg.style.strokeDashoffset = (circumference * (1 - ratio)).toFixed(1);
-    }
+    setRingGauge(document.getElementById('hlo-containers-fg'), ratio);
+
+    const dataContainersN = document.getElementById('data-containers-n');
+    if (dataContainersN) dataContainersN.textContent = runningCount;
+    setRingGauge(document.getElementById('data-containers-fg'), ratio);
 
     tbody.innerHTML = containers.map(c => {
       const pillClass = c.state === 'running' ? 'on' : 'off';
@@ -2741,6 +2784,19 @@
     if (dataTokensEl) dataTokensEl.textContent = (data.total_tokens || 0).toLocaleString();
     const dataCostEl = document.getElementById('stat-data-cost');
     if (dataCostEl && data.cost_usd_today != null) dataCostEl.textContent = '$' + data.cost_usd_today.toFixed(2);
+
+    const tokenBarWrap = document.getElementById('stat-data-token-barwrap');
+    const tokenBarFill = document.getElementById('stat-data-token-fill');
+    if (tokenBarWrap && tokenBarFill) {
+      if (data.daily_budget != null && data.daily_budget > 0) {
+        const budgetPct = Math.min(100, (data.total_tokens || 0) / data.daily_budget * 100);
+        tokenBarWrap.hidden = false;
+        tokenBarFill.style.width = budgetPct.toFixed(0) + '%';
+        tokenBarFill.style.background = budgetPct >= 90 ? 'var(--red-bright)' : (budgetPct >= 70 ? 'var(--amber)' : 'var(--blue)');
+      } else {
+        tokenBarWrap.hidden = true;
+      }
+    }
 
     const cacheTotal = (data.cache_read_tokens || 0) + (data.cache_creation_tokens || 0);
     const cacheNote = cacheTotal > 0
