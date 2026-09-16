@@ -2841,6 +2841,14 @@
     if (commandsEl && data.count_today != null) commandsEl.textContent = data.count_today.toLocaleString();
 
     const events = data.events || [];
+    // Sentinel's desk in the pixel room: lit while anything here went
+    // wrong in the last hour. Same data the feed shows, no extra fetch.
+    const hourAgo = Date.now() - 3600e3;
+    if (window.__sentinelAlert) {
+      window.__sentinelAlert(events.some(function (e) {
+        return (e.status === 'error' || e.status === 'warning') && new Date(e.timestamp).getTime() > hourAgo;
+      }));
+    }
     if (!events.length) {
       listEl.innerHTML = '<div class="activity-item"><span class="activity-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M12 11v5"/></svg></span><span class="activity-text">No activity recorded yet — backups, deployments, and CVE scans will show up here once you run one.</span><span class="activity-time">—</span></div>';
       return;
@@ -4624,18 +4632,16 @@ function toggleReducedVisuals(el) {
     ultronWalkA: loadImg('ultron_walk_a.png'),
     ultronWalkB: loadImg('ultron_walk_b.png'),
     ultronSit: loadImg('ultron_sit.png'),
-    agentCyan: loadImg('agent_cyan_sit.png'),
-    agentGreen: loadImg('agent_green_sit.png'),
     deskUltronIdle: loadImg('desk_ultron_idle.png'),
     deskUltronActive: loadImg('desk_ultron_active.png'),
-    deskCyanIdle: loadImg('desk_cyan_idle.png'),
-    deskCyanActive: loadImg('desk_cyan_active.png'),
-    deskGreenIdle: loadImg('desk_green_idle.png'),
-    deskGreenActive: loadImg('desk_green_active.png'),
     tubeRed: loadImg('tube_red.png'),
-    tubeCyan: loadImg('tube_cyan.png'),
-    tubeGreen: loadImg('tube_green.png'),
   };
+  ['cyan', 'green', 'amber', 'violet'].forEach(function (c) {
+    IMG['agent_' + c] = loadImg('agent_' + c + '_sit.png');
+    IMG['desk_' + c + '_idle'] = loadImg('desk_' + c + '_idle.png');
+    IMG['desk_' + c + '_active'] = loadImg('desk_' + c + '_active.png');
+    IMG['tube_' + c] = loadImg('tube_' + c + '.png');
+  });
 
   // AGENT_SCALE/SUBAGENT_TUBE_SCALE bumped up from the desk/Ultron-tube
   // scale's earlier, smaller values -- owner feedback was that the
@@ -4643,7 +4649,9 @@ function toggleReducedVisuals(el) {
   // next to Ultron's, when each is meant to be its own clearly-present
   // bot with its own tube, not a miniature afterthought.
   var CHAR_SCALE = 0.9, AGENT_SCALE = 1.0, DESK_SCALE = 1.15, TUBE_SCALE = 1.1, SUBAGENT_TUBE_SCALE = 1.35;
-  var WALK_MIN_X = 470, WALK_MAX_X = 630;
+  // Walk range ends where the first subagent desk begins (sprite is ~108px
+  // wide at CHAR_SCALE), now that four desks share the right half.
+  var WALK_MIN_X = 470, WALK_MAX_X = 580;
 
   // Draws an image anchored to the floor line, scaled by `scale` --
   // returns the box drawn (or a zero box while the image is still
@@ -4657,10 +4665,23 @@ function toggleReducedVisuals(el) {
     return { x: x, y: y, w: w, h: h };
   }
 
+  // The owner's four subagents. Sentinel (security watchdog) and Scout
+  // (web research) were named 2026-09-16; the cyan and green pair predate
+  // that and have no recorded role yet, so no plate. Sentinel is the one
+  // desk with a live input: its screen stays lit and its plate turns red
+  // while the activity log holds a warning/error from the last hour (see
+  // window.__sentinelAlert, fed by fetchActivity) -- the first real cue
+  // in a room that was otherwise pure scenery.
   var SUBAGENTS = [
-    { deskX: 780, idle: 'deskCyanIdle', active: 'deskCyanActive', agent: 'agentCyan', tubeX: 850, tube: 'tubeCyan' },
-    { deskX: 900, idle: 'deskGreenIdle', active: 'deskGreenActive', agent: 'agentGreen', tubeX: 970, tube: 'tubeGreen' },
+    { color: 'cyan', deskX: 696 },
+    { color: 'green', deskX: 786 },
+    { color: 'amber', deskX: 876, label: 'SENTINEL', alertable: true },
+    { color: 'violet', deskX: 966, label: 'SCOUT' },
   ];
+  SUBAGENTS.forEach(function (a) { a.tubeX = a.deskX + 60; });
+  var LABEL_COLORS = { amber: '#c9973a', violet: '#8c6bc0' };
+  var sentinelAlert = false;
+  window.__sentinelAlert = function (on) { sentinelAlert = !!on; };
   var ULTRON_DESK_X = 1050, ULTRON_TUBE_X = 1195;
 
   // Conveyor belt: carries little pixel packages from the workstations to
@@ -4668,9 +4689,9 @@ function toggleReducedVisuals(el) {
   // like the rest of the room (see this module's top comment), just a
   // second ambient motion cue alongside the subagent desk flicker.
   var BELT_Y = FLOOR_Y - 10;
-  var BELT_X0 = 760, BELT_X1 = 1242;
+  var BELT_X0 = 696, BELT_X1 = 1242;
   var OUTPUT_X = 1244, OUTPUT_W = 30;
-  var PACKAGE_SOURCES = [780, 900, ULTRON_DESK_X];
+  var PACKAGE_SOURCES = SUBAGENTS.map(function (a) { return a.deskX; }).concat([ULTRON_DESK_X]);
   var packages = [];
   var lastPackageSpawn = 0;
   var outputFlashUntil = 0;
@@ -4736,9 +4757,16 @@ function toggleReducedVisuals(el) {
     // comment on why these are scenery, not a live status readout).
     var flicker = Math.sin(t * 0.8) > -0.2;
     SUBAGENTS.forEach(function (a) {
-      drawFloored(IMG[a.tube], a.tubeX, SUBAGENT_TUBE_SCALE);
-      var desk = drawFloored(IMG[flicker ? a.active : a.idle], a.deskX, DESK_SCALE);
-      if (desk.w) drawFloored(IMG[a.agent], a.deskX + desk.w * 0.18, AGENT_SCALE);
+      var alarmed = a.alertable && sentinelAlert;
+      drawFloored(IMG['tube_' + a.color], a.tubeX, SUBAGENT_TUBE_SCALE);
+      var desk = drawFloored(IMG['desk_' + a.color + (alarmed || flicker ? '_active' : '_idle')], a.deskX, DESK_SCALE);
+      if (desk.w) drawFloored(IMG['agent_' + a.color], a.deskX + desk.w * 0.18, AGENT_SCALE);
+      if (a.label && desk.w) {
+        ctx.fillStyle = alarmed ? '#ff3b3b' : LABEL_COLORS[a.color];
+        ctx.font = '7px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(alarmed ? a.label + ' · ALERT' : a.label, a.deskX + desk.w / 2, FLOOR_Y + 22);
+      }
     });
 
     // Ultron's own recharge tube + desk/monitor -- bigger, red, front

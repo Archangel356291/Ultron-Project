@@ -185,10 +185,59 @@ plugin was installed: nothing in reach materially improved on what was
 already present, and the one gap (viewport control) is an installed
 plugin that needs reconnecting, not a missing one.
 
-## 6. (Carried) Two of four subagents missing from the pixel room
+## 6. Two of four subagents missing from the pixel room — done
 
-Only the cyan and green agents are recorded anywhere in this repo (the
-`SUBAGENTS` array in `ultron-dashboard.html`, `gen_pixel_assets.py`).
-The other two are not documented. **Blocked on the owner:** their names
-or roles and a colour each; then they get a desk, tube and sprite in
-the existing pattern.
+The owner named them on 2026-09-16: a **security watchdog** ("any and
+all security threats") and a **web-research agent** that should cost
+next to nothing in tokens. In the room they are **Sentinel** (amber,
+the dashboard's `--amber`) and **Scout** (violet, the purple the
+activity feed already uses). All four agents now share one sprite/desk/
+tube set generated from the same code in four colours; the desks sit at
+x = 696/786/876/966 with the conveyor starting at the first desk and
+Ultron's walk range shortened so he never overlaps them.
+
+Sentinel is the room's first non-scenery element: its screen stays lit
+and its plate reads `SENTINEL · ALERT` in red while the activity log
+holds a warning or error from the last hour (fed by the existing
+`fetchActivity` poll, no new request). The cyan and green agents still
+have no recorded role, so no name plate yet.
+
+## 7. Making Sentinel and Scout real — proposals
+
+The owner's phrasing reads as feature asks, not just sprites. Both can
+be built inside this project's rules; one needs a decision first.
+
+**Sentinel — a zero-token security watchdog.** A backend scheduler
+thread (same shape as `_start_metrics_history_scheduler`, every 5 min)
+that checks what the backend can already see: failed logins and
+lockouts (`get_auth_log`, `_login_lockouts`), containers that exited or
+restarted since the last check (`docker_ps`), the cached CVE scan's
+critical count (`scan_container_cves`), and expired/rotated tokens. It
+writes to the activity log only on a *change* (a new threat, or a
+threat clearing) with `status: warning|error`, which is exactly what
+already lights Sentinel's desk and lands in the Home feed and the
+Security tab — and it uses no LLM call at all. Read-only, host-safe,
+inert until `ULTRON_SENTINEL_INTERVAL_SECONDS` is set. Ultron himself
+can be asked about it through a new read tool (`get_threat_summary`).
+**No decision needed; about 120 lines plus a test.**
+
+**Scout — web research at minimal token cost.** "Minimal to no tokens"
+rules out the obvious route (Anthropic's `web_search` server tool
+inside chat: every result page becomes input tokens, plus a per-search
+fee). The honest low-cost shape is:
+
+1. A search backend that costs nothing per query and stays private —
+   **SearXNG self-hosted in a container on this PC** (free, no account,
+   aggregates other engines, one more `docker compose` service beside
+   Pi-hole and Jellyfin). Inert until `ULTRON_SEARXNG_URL` is set.
+2. A read-only `web_search` chat tool returning titles + snippets only
+   (a few hundred tokens), wrapped in the same
+   `<untrusted_external_data>` tag MCP results get, so a page can't
+   instruct Ultron.
+3. Knowledge is kept only when the owner says so: "remember that" →
+   the existing `remember_note`, never automatic ingestion of web text.
+   Economy mode makes the summarising step Haiku-priced.
+
+The token cost is then a short question plus a few snippets per lookup,
+and zero when nobody is asking. **Decision needed:** run SearXNG on this
+PC (free, but a new container), or skip web access. Not built yet.

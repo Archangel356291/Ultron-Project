@@ -28575,7 +28575,7 @@
       "file_type": "code",
       "norm_label": "draw_console_panel()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L337"
+      "source_location": "L343"
     },
     {
       "id": "dev_tools_gen_pixel_assets_draw_desk_monitor",
@@ -28587,7 +28587,7 @@
       "file_type": "code",
       "norm_label": "draw_desk_monitor()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L220"
+      "source_location": "L226"
     },
     {
       "id": "dev_tools_gen_pixel_assets_draw_room_background",
@@ -28599,7 +28599,7 @@
       "file_type": "code",
       "norm_label": "draw_room_background()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L374"
+      "source_location": "L380"
     },
     {
       "id": "dev_tools_gen_pixel_assets_draw_skyline",
@@ -28611,7 +28611,7 @@
       "file_type": "code",
       "norm_label": "draw_skyline()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L314"
+      "source_location": "L320"
     },
     {
       "id": "dev_tools_gen_pixel_assets_draw_tube",
@@ -28623,7 +28623,7 @@
       "file_type": "code",
       "norm_label": "draw_tube()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L271"
+      "source_location": "L277"
     },
     {
       "id": "dev_tools_gen_pixel_assets_draw_ultron",
@@ -28635,7 +28635,7 @@
       "file_type": "code",
       "norm_label": "draw_ultron()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L88"
+      "source_location": "L94"
     },
     {
       "id": "dev_tools_gen_pixel_assets_draw_ultron_hline",
@@ -28647,7 +28647,7 @@
       "file_type": "code",
       "norm_label": "hline()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L106"
+      "source_location": "L112"
     },
     {
       "id": "dev_tools_gen_pixel_assets_draw_ultron_poly",
@@ -28659,7 +28659,7 @@
       "file_type": "code",
       "norm_label": "poly()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L103"
+      "source_location": "L109"
     },
     {
       "id": "dev_tools_gen_pixel_assets_draw_ultron_px",
@@ -28671,7 +28671,7 @@
       "file_type": "code",
       "norm_label": "px()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L97"
+      "source_location": "L103"
     },
     {
       "id": "dev_tools_gen_pixel_assets_draw_ultron_rect",
@@ -28683,7 +28683,7 @@
       "file_type": "code",
       "norm_label": "rect()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L100"
+      "source_location": "L106"
     },
     {
       "id": "dev_tools_gen_pixel_assets_glow",
@@ -28695,7 +28695,7 @@
       "file_type": "code",
       "norm_label": "glow()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L53"
+      "source_location": "L59"
     },
     {
       "id": "dev_tools_gen_pixel_assets_main",
@@ -28707,7 +28707,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L494"
+      "source_location": "L500"
     },
     {
       "id": "dev_tools_gen_pixel_assets_outline",
@@ -28719,7 +28719,7 @@
       "file_type": "code",
       "norm_label": "outline()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L66"
+      "source_location": "L72"
     },
     {
       "id": "dev_tools_gen_pixel_assets_save",
@@ -28731,7 +28731,7 @@
       "file_type": "code",
       "norm_label": "save()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L488"
+      "source_location": "L494"
     },
     {
       "id": "dev_tools_gen_pixel_assets_shade",
@@ -28743,7 +28743,7 @@
       "file_type": "code",
       "norm_label": "shade()",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L82"
+      "source_location": "L88"
     },
     {
       "id": "session_read_measure_savings_est_tokens",
@@ -79966,7 +79966,7 @@
       "source_location": "L1"
     },
     {
-      "id": "dev_tools_gen_pixel_assets_rationale_338",
+      "id": "dev_tools_gen_pixel_assets_rationale_344",
       "label": "A wall-mounted control console -- small screen, a button grid, and a couple of\u2026",
       "_origin": "ast",
       "community": 148,
@@ -79974,10 +79974,10 @@
       "file_type": "rationale",
       "norm_label": "a wall-mounted control console -- small screen, a button grid, and a couple of...",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L338"
+      "source_location": "L344"
     },
     {
-      "id": "dev_tools_gen_pixel_assets_rationale_375",
+      "id": "dev_tools_gen_pixel_assets_rationale_381",
       "label": "Static backdrop: wall, floor, server rack, skyline window, cable clutter. Per\u2026",
       "_origin": "ast",
       "community": 148,
@@ -79985,10 +79985,10 @@
       "file_type": "rationale",
       "norm_label": "static backdrop: wall, floor, server rack, skyline window, cable clutter. per...",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L375"
+      "source_location": "L381"
     },
     {
-      "id": "dev_tools_gen_pixel_assets_rationale_54",
+      "id": "dev_tools_gen_pixel_assets_rationale_60",
       "label": "Soft glow layer: a blurred copy of the opaque shapes, tinted, composited behind\u2026",
       "_origin": "ast",
       "community": 148,
@@ -79996,10 +79996,10 @@
       "file_type": "rationale",
       "norm_label": "soft glow layer: a blurred copy of the opaque shapes, tinted, composited behind...",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L54"
+      "source_location": "L60"
     },
     {
-      "id": "dev_tools_gen_pixel_assets_rationale_67",
+      "id": "dev_tools_gen_pixel_assets_rationale_73",
       "label": "Crisp dark rim around the opaque silhouette -- the single biggest lever for\u2026",
       "_origin": "ast",
       "community": 148,
@@ -80007,10 +80007,10 @@
       "file_type": "rationale",
       "norm_label": "crisp dark rim around the opaque silhouette -- the single biggest lever for...",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L67"
+      "source_location": "L73"
     },
     {
-      "id": "dev_tools_gen_pixel_assets_rationale_83",
+      "id": "dev_tools_gen_pixel_assets_rationale_89",
       "label": "Lighten (factor>1) or darken (factor<1) an RGBA tuple, clamped.",
       "_origin": "ast",
       "community": 148,
@@ -80018,10 +80018,10 @@
       "file_type": "rationale",
       "norm_label": "lighten (factor>1) or darken (factor<1) an rgba tuple, clamped.",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L83"
+      "source_location": "L89"
     },
     {
-      "id": "dev_tools_gen_pixel_assets_rationale_89",
+      "id": "dev_tools_gen_pixel_assets_rationale_95",
       "label": "pose: 'walk_a' | 'walk_b' | 'sit'. Layered polygons for an angular armored\u2026",
       "_origin": "ast",
       "community": 148,
@@ -80029,7 +80029,7 @@
       "file_type": "rationale",
       "norm_label": "pose: 'walk_a' | 'walk_b' | 'sit'. layered polygons for an angular armored...",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L89"
+      "source_location": "L95"
     },
     {
       "id": "session_read_measure_savings",
@@ -90288,7 +90288,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L345",
+      "source_location": "L351",
       "weight": 1.0
     },
     {
@@ -90300,7 +90300,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L353",
+      "source_location": "L359",
       "weight": 1.0
     },
     {
@@ -90312,7 +90312,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L230",
+      "source_location": "L236",
       "weight": 1.0
     },
     {
@@ -90324,7 +90324,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L252",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -90336,7 +90336,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L268",
+      "source_location": "L274",
       "weight": 1.0
     },
     {
@@ -90348,7 +90348,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L390",
+      "source_location": "L396",
       "weight": 1.0
     },
     {
@@ -90360,7 +90360,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L420",
+      "source_location": "L426",
       "weight": 1.0
     },
     {
@@ -90372,7 +90372,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L430",
+      "source_location": "L436",
       "weight": 1.0
     },
     {
@@ -90384,7 +90384,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L322",
+      "source_location": "L328",
       "weight": 1.0
     },
     {
@@ -90396,7 +90396,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L283",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -90408,7 +90408,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L284",
+      "source_location": "L290",
       "weight": 1.0
     },
     {
@@ -90420,7 +90420,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L311",
+      "source_location": "L317",
       "weight": 1.0
     },
     {
@@ -90432,7 +90432,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L114",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -90444,7 +90444,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L217",
+      "source_location": "L223",
       "weight": 1.0
     },
     {
@@ -90456,7 +90456,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L217",
+      "source_location": "L223",
       "weight": 1.0
     },
     {
@@ -90468,7 +90468,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L107",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -90480,7 +90480,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L104",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
@@ -90492,7 +90492,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L101",
+      "source_location": "L107",
       "weight": 1.0
     },
     {
@@ -90504,7 +90504,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L497",
+      "source_location": "L503",
       "weight": 1.0
     },
     {
@@ -90516,7 +90516,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L497",
+      "source_location": "L503",
       "weight": 1.0
     },
     {
@@ -90528,7 +90528,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L501",
+      "source_location": "L504",
       "weight": 1.0
     },
     {
@@ -90540,7 +90540,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L508",
+      "source_location": "L506",
       "weight": 1.0
     },
     {
@@ -90552,7 +90552,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L512",
+      "source_location": "L516",
       "weight": 1.0
     },
     {
@@ -198521,19 +198521,7 @@
     },
     {
       "source": "dev_tools_gen_pixel_assets_draw_ultron",
-      "target": "dev_tools_gen_pixel_assets_draw_ultron_rect",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L100",
-      "weight": 1.0
-    },
-    {
-      "source": "dev_tools_gen_pixel_assets_draw_ultron",
-      "target": "dev_tools_gen_pixel_assets_draw_ultron_poly",
+      "target": "dev_tools_gen_pixel_assets_draw_ultron_px",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -198545,14 +198533,26 @@
     },
     {
       "source": "dev_tools_gen_pixel_assets_draw_ultron",
-      "target": "dev_tools_gen_pixel_assets_draw_ultron_px",
+      "target": "dev_tools_gen_pixel_assets_draw_ultron_rect",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L97",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "dev_tools_gen_pixel_assets_draw_ultron",
+      "target": "dev_tools_gen_pixel_assets_draw_ultron_poly",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "dev-tools/gen_pixel_assets.py",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
@@ -208964,7 +208964,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L220",
+      "source_location": "L226",
       "weight": 1.0
     },
     {
@@ -208975,7 +208975,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L271",
+      "source_location": "L277",
       "weight": 1.0
     },
     {
@@ -208986,7 +208986,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L314",
+      "source_location": "L320",
       "weight": 1.0
     },
     {
@@ -208997,7 +208997,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L337",
+      "source_location": "L343",
       "weight": 1.0
     },
     {
@@ -209008,7 +209008,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L374",
+      "source_location": "L380",
       "weight": 1.0
     },
     {
@@ -209019,7 +209019,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L488",
+      "source_location": "L494",
       "weight": 1.0
     },
     {
@@ -209030,7 +209030,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L494",
+      "source_location": "L500",
       "weight": 1.0
     },
     {
@@ -209041,7 +209041,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L53",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -209052,7 +209052,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L66",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -209063,7 +209063,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L82",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -209074,7 +209074,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L88",
+      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -209085,7 +209085,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L106",
+      "source_location": "L112",
       "weight": 1.0
     },
     {
@@ -283031,69 +283031,69 @@
       "weight": 1.0
     },
     {
-      "source": "dev_tools_gen_pixel_assets_rationale_338",
+      "source": "dev_tools_gen_pixel_assets_rationale_344",
       "target": "dev_tools_gen_pixel_assets_draw_console_panel",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L338",
+      "source_location": "L344",
       "weight": 1.0
     },
     {
-      "source": "dev_tools_gen_pixel_assets_rationale_375",
+      "source": "dev_tools_gen_pixel_assets_rationale_381",
       "target": "dev_tools_gen_pixel_assets_draw_room_background",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L375",
+      "source_location": "L381",
       "weight": 1.0
     },
     {
-      "source": "dev_tools_gen_pixel_assets_rationale_54",
+      "source": "dev_tools_gen_pixel_assets_rationale_60",
       "target": "dev_tools_gen_pixel_assets_glow",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L54",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
-      "source": "dev_tools_gen_pixel_assets_rationale_67",
+      "source": "dev_tools_gen_pixel_assets_rationale_73",
       "target": "dev_tools_gen_pixel_assets_outline",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L67",
+      "source_location": "L73",
       "weight": 1.0
     },
     {
-      "source": "dev_tools_gen_pixel_assets_rationale_83",
+      "source": "dev_tools_gen_pixel_assets_rationale_89",
       "target": "dev_tools_gen_pixel_assets_shade",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L83",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
-      "source": "dev_tools_gen_pixel_assets_rationale_89",
+      "source": "dev_tools_gen_pixel_assets_rationale_95",
       "target": "dev_tools_gen_pixel_assets_draw_ultron",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "dev-tools/gen_pixel_assets.py",
-      "source_location": "L89",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -294725,5 +294725,5 @@
       "source_file": "PROJECT-SUMMARY-FOR-CLAUDE-CODE.md"
     }
   ],
-  "built_at_commit": "67d0d58e9dbf66bd517ff768f7e2abe261e8841d"
+  "built_at_commit": "434cb3e4c5b776e1dc43b09aa0cd012107c75fe5"
 }

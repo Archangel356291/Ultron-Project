@@ -47,6 +47,12 @@ PANEL_RAISED = (22, 25, 28, 255)
 LINE = (44, 47, 51, 255)
 CYAN = (61, 214, 255, 255)
 GREEN = (51, 209, 122, 255)
+# The two subagents the owner named on 2026-09-16: Sentinel (security
+# watchdog) in the dashboard's --amber, Scout (web research) in the violet
+# the activity feed already uses for its backup icon -- both colours the
+# UI already speaks, not new ones.
+AMBER = (255, 194, 75, 255)
+VIOLET = (176, 132, 240, 255)
 OUTLINE_COLOR = (5, 6, 8, 255)
 
 
@@ -495,19 +501,17 @@ def main():
     SCALE = 6  # character sprite pixel-cell size
     for pose in ("walk_a", "walk_b", "sit"):
         save(draw_ultron(SCALE, RED_BRIGHT, pose), f"ultron_{pose}.png")
-    save(draw_ultron(int(SCALE * 0.6), CYAN, "sit"), "agent_cyan_sit.png")
-    save(draw_ultron(int(SCALE * 0.6), GREEN, "sit"), "agent_green_sit.png")
-
     save(draw_desk_monitor(10, 11, 3.6, 4.6, 4.4, RED_BRIGHT, False, 60), "desk_ultron_idle.png")
     save(draw_desk_monitor(10, 11, 3.6, 4.6, 4.4, RED_BRIGHT, True, 90), "desk_ultron_active.png")
-    save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, CYAN, False, 50), "desk_cyan_idle.png")
-    save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, CYAN, True, 80), "desk_cyan_active.png")
-    save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, GREEN, False, 50), "desk_green_idle.png")
-    save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, GREEN, True, 80), "desk_green_active.png")
-
     save(draw_tube(10, 3, 14, RED_BRIGHT), "tube_red.png")
-    save(draw_tube(6, 2, 9, CYAN), "tube_cyan.png")
-    save(draw_tube(6, 2, 9, GREEN), "tube_green.png")
+
+    # One sprite/desk/tube set per subagent, all from the same drawing code
+    # so the four read as one team in four colours.
+    for name, color in (("cyan", CYAN), ("green", GREEN), ("amber", AMBER), ("violet", VIOLET)):
+        save(draw_ultron(int(SCALE * 0.6), color, "sit"), f"agent_{name}_sit.png")
+        save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, color, False, 50), f"desk_{name}_idle.png")
+        save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, color, True, 80), f"desk_{name}_active.png")
+        save(draw_tube(6, 2, 9, color), f"tube_{name}.png")
 
     save(draw_room_background(1280, 560, 440), "room_bg.png")
 

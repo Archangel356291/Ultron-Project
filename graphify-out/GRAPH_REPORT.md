@@ -1,7 +1,7 @@
 # Graph Report - Ultron Project  (2026-09-16)
 
 ## Corpus Check
-- 99 files · ~490,418 words
+- 99 files · ~491,163 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 17 file(s) not represented in the graph (top: (none) 8, .woff2 6, .glb 2)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `67d0d58e`
+- Built from commit: `434cb3e4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
