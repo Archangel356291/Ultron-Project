@@ -375,7 +375,7 @@ def log_activity(event_type, summary, detail=None, status="success"):
 EVENT_SEVERITIES = ("CRITICAL", "IMPORTANT", "INFORMATIONAL", "BACKGROUND", "NOISE")
 # Failures here risk data loss or an unwanted host-level change -- everything
 # else erroring just means a check didn't run, which is real but not urgent.
-_SEVERITY_ERROR_CRITICAL_TYPES = {"backup", "deploy_container"}
+_SEVERITY_ERROR_CRITICAL_TYPES = {"backup", "deploy_container", "sentinel"}
 # A completed real action/decision worth knowing about even without an error.
 _SEVERITY_SUCCESS_INFORMATIONAL_TYPES = {"backup", "deploy_container", "evolution_status_change"}
 ACTIVITY_SEVERITY_SCAN_LIMIT = 500  # rows scanned when filtering by severity, since it's not a stored column
@@ -2725,6 +2725,12 @@ def security_cve_scan():
     return _json_result(scan_container_cves(force=force))
 
 
+@app.route("/api/security/threats")
+@require_token
+def security_threats():
+    return jsonify(get_threat_summary())
+
+
 @app.route("/api/actions/backup", methods=["POST"])
 @require_token
 def action_backup():
@@ -2859,6 +2865,119 @@ def _login_lockout_clear(source):
     with _login_lock:
         _login_failures.pop(source, None)
         _login_lockouts.pop(source, None)
+
+
+# --------------------------------------------------------------------------
+# Sentinel -- the security-watchdog subagent (owner-requested 2026-09-16),
+# built the cheap way: a background thread that re-reads what this backend
+# can already see and costs zero LLM tokens. Pure reads, host-safe. Writes
+# only to the activity log, and only on a CHANGE (a finding appearing or
+# clearing), never on every tick -- so the Home feed, the Security tab and
+# the pixel room's Sentinel desk light up for real events, not for polling.
+# Never starts a CVE scan itself (slow, and the owner's call): it reads the
+# scan cache the Security tab's "Scan now" already fills.
+# ULTRON_SENTINEL_INTERVAL_SECONDS=0 disables the thread (tests do this and
+# drive _sentinel_run_once() directly).
+# --------------------------------------------------------------------------
+SENTINEL_INTERVAL_SECONDS = max(0, int(os.environ.get("ULTRON_SENTINEL_INTERVAL_SECONDS", "300")))
+SENTINEL_FAILED_LOGIN_WARN = 3  # failed sign-ins in the lockout window before Sentinel says so
+_sentinel_lock = threading.Lock()
+_sentinel_state = {"last_run": None, "findings": {}, "runs": 0}
+
+
+def _sentinel_checks():
+    """Everything currently wrong, as {key: (status, summary)}. A pure
+    read -- no scan started, nothing mutated. Keys are stable per problem
+    (one per locked-out source, one per stopped container, one per image
+    with critical CVEs) so the diff in _sentinel_run_once is exact."""
+    findings = {}
+    now = time.time()
+
+    with _login_lock:
+        locked = [src for src, until in _login_lockouts.items() if until > now]
+        cutoff = now - LOGIN_LOCKOUT_WINDOW_SECONDS
+        recent_failures = sum(len([t for t in ts if t > cutoff]) for ts in _login_failures.values())
+    for src in locked:
+        findings["lockout:" + src] = ("error", f"sign-in lockout active for {src} after repeated failed attempts")
+    if recent_failures >= SENTINEL_FAILED_LOGIN_WARN and not locked:
+        findings["failed_logins"] = (
+            "warning", f"{recent_failures} failed sign-ins in the last {LOGIN_LOCKOUT_WINDOW_SECONDS // 60} minutes")
+
+    containers, err = docker_ps()
+    if containers is not None:
+        for c in containers:
+            if c["state"] != "running":
+                findings["container_down:" + c["name"]] = (
+                    "warning", f"container {c['name']} is not running ({c['status'] or 'no status'})")
+
+    for image, entry in list(_cve_scan_cache.items()):
+        critical = ((entry.get("data") or {}).get("by_severity") or {}).get("critical", 0)
+        if critical:
+            findings["cve_critical:" + image] = (
+                "error", f"{critical} critical CVE(s) in {image} (last scan)")
+
+    return findings
+
+
+def _sentinel_run_once():
+    """One watchdog pass. Logs each new finding once (at its own status)
+    and each cleared finding once (as success), then remembers the set."""
+    findings = _sentinel_checks()
+    with _sentinel_lock:
+        previous = _sentinel_state["findings"]
+        for key in sorted(set(findings) - set(previous)):
+            status, summary = findings[key]
+            log_activity("sentinel", "Sentinel: " + summary, detail=key, status=status)
+        for key in sorted(set(previous) - set(findings)):
+            log_activity("sentinel", "Sentinel: cleared — " + previous[key][1], detail=key, status="success")
+        _sentinel_state["findings"] = findings
+        _sentinel_state["last_run"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+        _sentinel_state["runs"] += 1
+    return findings
+
+
+def get_threat_summary(**_ignored):
+    """Sentinel's current view: what is wrong right now, and when it last
+    looked. A chat tool and the /api/security/threats route share this."""
+    with _sentinel_lock:
+        active = [
+            {"key": key, "status": status, "summary": summary}
+            for key, (status, summary) in sorted(_sentinel_state["findings"].items())
+        ]
+        last_run = _sentinel_state["last_run"]
+        runs = _sentinel_state["runs"]
+    return {
+        "enabled": SENTINEL_INTERVAL_SECONDS > 0,
+        "interval_seconds": SENTINEL_INTERVAL_SECONDS,
+        "last_run": last_run,
+        "runs": runs,
+        "active_findings": active,
+        "active_count": len(active),
+        "checks": [
+            "sign-in lockouts and repeated failed sign-ins",
+            "containers not running",
+            "critical CVEs in the last scan (Security -> Scan now fills this; Sentinel never scans itself)",
+        ],
+    }
+
+
+def _start_sentinel_scheduler():
+    if SENTINEL_INTERVAL_SECONDS <= 0:
+        return
+
+    def _loop():
+        time.sleep(15)  # let the app finish importing before the first pass
+        while True:
+            try:
+                _sentinel_run_once()
+            except Exception:
+                pass  # a failed pass must never kill the watchdog thread
+            time.sleep(SENTINEL_INTERVAL_SECONDS)
+
+    threading.Thread(target=_loop, daemon=True, name="sentinel").start()
+
+
+_start_sentinel_scheduler()
 
 
 # --------------------------------------------------------------------------
@@ -3574,6 +3693,15 @@ TOOLS = [
         "input_schema": {"type": "object", "properties": {}},
     },
     {
+        "name": "get_threat_summary",
+        "description": (
+            "Sentinel's current security view: active findings right now (sign-in lockouts, "
+            "repeated failed sign-ins, containers not running, critical CVEs from the last scan) "
+            "and when it last checked. Fast, read-only, no scan is started."
+        ),
+        "input_schema": {"type": "object", "properties": {}},
+    },
+    {
         "name": "get_metrics_history",
         "description": (
             "Get sampled system/storage/container history for trend or baseline questions "
@@ -3810,6 +3938,7 @@ TOOL_DISPATCH = {
     "get_storage_usage": _storage_data,
     "get_pending_updates": _systems_data,
     "get_auth_log": get_auth_log,
+    "get_threat_summary": get_threat_summary,
     "get_recent_activity": get_recent_activity,
     "get_chat_history": get_chat_history,
     "get_metrics_history": get_metrics_history,

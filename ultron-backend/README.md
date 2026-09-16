@@ -332,6 +332,23 @@ Scans the images of currently running containers for known CVEs, via
   while building this, so parsing failures degrade to an honest "couldn't
   parse" result rather than guessing.
 
+### `/api/security/threats` — Sentinel, the watchdog subagent
+
+Sentinel is a background thread (every `ULTRON_SENTINEL_INTERVAL_SECONDS`,
+default 300; `0` disables it) that re-reads what this backend can already
+see and **uses no LLM tokens at all**: active sign-in lockouts and
+repeated failed sign-ins, containers that aren't running, and critical
+CVEs in the last scan's cache (it never starts a scan itself — that stays
+the manual "Scan now"). It writes to the activity log **only on a
+change** — a finding appearing (`warning`, or `error` for lockouts and
+critical CVEs, which classify as CRITICAL) or clearing (`success`) — so
+the Home feed, the Security tab's Sentinel card, and the pixel room's
+Sentinel desk react to real events, never to polling. This endpoint
+returns the current view: `enabled`, `interval_seconds`, `last_run`,
+`active_findings` (`key`/`status`/`summary`), `active_count`, and the
+list of `checks`. Admin-only. The same view is Ultron's `get_threat_summary`
+chat tool, so "anything wrong right now?" is a cheap, honest answer.
+
 ## Ultron's brain (`/api/chat`)
 
 `POST /api/chat` is the AI Assistant panel's backend — a Claude API chat loop

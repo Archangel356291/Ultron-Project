@@ -1634,13 +1634,15 @@
             </div>
           </div>
           <div class="card">
-            <div class="panel-label">Posture <span style="font-family:var(--font-mono); font-size:9px; color:var(--text-faint); text-transform:none;">(illustrative — not backed by a live check yet)</span></div>
+            <div class="panel-label">Sentinel <span style="font-family:var(--font-mono); font-size:9px; color:var(--text-faint); text-transform:none;">security watchdog — live</span></div>
             <div class="status-list">
-              <div class="status-row"><span class="label">Firewall (UFW)</span><span class="val">enforced</span></div>
-              <div class="status-row"><span class="label">2FA</span><span class="val">enabled</span></div>
-              <div class="status-row"><span class="label">VPN (WireGuard)</span><span class="val">connected</span></div>
-              <div class="status-row"><span class="label">Last full backup</span><span class="val">06:00 today</span></div>
-              <div class="status-row"><span class="label">Open ports</span><span class="val warn">2 non-standard</span></div>
+              <div class="status-row"><span class="label">Watching</span><span class="val" id="sentinel-status">—</span></div>
+              <div class="status-row"><span class="label">Last check</span><span class="val" id="sentinel-last">—</span></div>
+              <div class="status-row"><span class="label">Active findings</span><span class="val" id="sentinel-count">—</span></div>
+            </div>
+            <div id="sentinel-findings" style="margin-top:10px;"></div>
+            <div style="font-size:11.5px; color:var(--text-faint); margin-top:10px; line-height:1.5;">
+              Checks sign-in lockouts and repeated failed sign-ins, containers that aren't running, and critical CVEs from the last scan. Read-only, no LLM — new and cleared findings land in the activity feed and light Sentinel's desk in Ultron's corner.
             </div>
           </div>
         </div>
@@ -2430,6 +2432,7 @@
           fetchStorage(),
           fetchSystems(),
           fetchActivity(),
+          fetchThreats(),
           fetchMemory(),
           fetchDevRepos(),
           fetchTrades(),
@@ -2885,6 +2888,30 @@
         '"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">' + badgeIcon + '</svg></span>' +
         '<span class="activity-text">' + escapeHtml(summary) + '</span>' +
         '<span class="activity-time">' + escapeHtml(shortTime) + '</span></div>';
+    }).join('');
+  }
+
+  async function fetchThreats() {
+    let data;
+    try {
+      data = await apiGet('/api/security/threats');
+    } catch (err) {
+      return;
+    }
+    const statusEl = document.getElementById('sentinel-status');
+    const lastEl = document.getElementById('sentinel-last');
+    const countEl = document.getElementById('sentinel-count');
+    const listEl = document.getElementById('sentinel-findings');
+    if (!statusEl) return;
+    statusEl.textContent = data.enabled ? 'every ' + Math.round(data.interval_seconds / 60) + ' min' : 'disabled';
+    statusEl.className = 'val' + (data.enabled ? ' good' : ' muted');
+    lastEl.textContent = data.last_run ? ((data.last_run.split('T')[1] || '').slice(0, 5) || data.last_run) : (data.enabled ? 'first pass pending' : '—');
+    const n = data.active_count || 0;
+    countEl.textContent = n === 0 ? 'none' : String(n);
+    countEl.className = 'val' + (n === 0 ? ' good' : ' warn');
+    listEl.innerHTML = (data.active_findings || []).map(function (f) {
+      return '<div class="log-line"><span class="sev ' + (f.status === 'error' ? 'crit' : 'warn') + '">' +
+        (f.status === 'error' ? 'CRIT' : 'WARN') + '</span><span>' + escapeHtml(f.summary) + '</span></div>';
     }).join('');
   }
 
