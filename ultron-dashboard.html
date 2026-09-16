@@ -1958,6 +1958,10 @@
             <div><div class="stitle">Reduced visual mode</div><div class="sdesc">Fewer AI-core particles, no ring/glow animation — for lower-power hosts (e.g. a Raspberry Pi 400). Reloads the page.</div></div>
             <div class="switch" id="cfg-reduced-visuals" onclick="toggleReducedVisuals(this)"></div>
           </div>
+          <div class="set-row">
+            <div><div class="stitle">Economy mode</div><div class="sdesc">Cheaper, shorter answers: a smaller model, at most two tool calls, and only the basic status tools. Same safety rules. Each reply is tagged so you can see which mode answered; real cost is on Data &amp; analytics.</div></div>
+            <div class="switch" id="cfg-economy-mode" onclick="toggleEconomyMode(this)"></div>
+          </div>
         </div>
       </section>
 
@@ -3542,13 +3546,27 @@
     document.getElementById('backup-status').textContent = 'Cancelled — nothing was backed up.';
   }
 
+  // Economy mode (Settings -> AI): persisted like Reduced Visual Mode, sent
+  // as "lite" on every chat request; the backend decides what it means.
+  function economyModeOn() {
+    try { return localStorage.getItem('ultron_economy_mode') === '1'; } catch (e) { return false; }
+  }
+  function toggleEconomyMode(el) {
+    el.classList.toggle('on');
+    try { localStorage.setItem('ultron_economy_mode', el.classList.contains('on') ? '1' : '0'); } catch (e) { /* ignore */ }
+  }
+  (function () {
+    const sw = document.getElementById('cfg-economy-mode');
+    if (sw && economyModeOn()) sw.classList.add('on');
+  })();
+
   async function postChat(message, history) {
     let res;
     try {
       res = await fetch(state.baseUrl + '/api/chat', {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
-        body: JSON.stringify({ message: message, history: history }),
+        body: JSON.stringify({ message: message, history: history, lite: economyModeOn() }),
       });
     } catch (err) {
       throw new Error('network error reaching backend');
@@ -3794,7 +3812,9 @@
       thinkingEl.remove();
       if (window.__heroSetState) window.__heroSetState('responding');
       appendChatBubble('ultron', data.reply, {
-        tools: data.tools_used,
+        // "economy" rides along with the tool tags so it's always visible
+        // which mode answered -- the backend says, the switch only asks.
+        tools: (data.tools_used || []).concat(data.lite ? ['economy'] : []),
         reveal: true,
         // The light follows the words: stay 'responding' until the last
         // word lands, then hand off to 'speaking' if voice took over, else idle.

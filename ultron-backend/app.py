@@ -921,11 +921,12 @@ LLM_PRICING_PER_MTOK = {
 }
 
 
-def _usage_cost_usd(input_tokens, output_tokens, cache_read_tokens, cache_write_tokens):
+def _usage_cost_usd(input_tokens, output_tokens, cache_read_tokens, cache_write_tokens, model=None):
     """Real dollar cost of one API call from its actual usage counts. Returns
     0.0 for a model with no pricing row here rather than raising — an
-    unpriced model should still log usage, just without a cost figure."""
-    pricing = LLM_PRICING_PER_MTOK.get(LLM_MODEL)
+    unpriced model should still log usage, just without a cost figure.
+    `model` defaults to LLM_MODEL; Economy mode passes LITE_MODEL."""
+    pricing = LLM_PRICING_PER_MTOK.get(model or LLM_MODEL)
     if pricing is None:
         return 0.0
     return (
@@ -2812,7 +2813,7 @@ def _login_lockout_clear(source):
 # actual spend rather than a guess, and so /api/chat/usage can show you
 # exactly what's been used.
 # --------------------------------------------------------------------------
-def _log_llm_usage(usage, beta_name=None):
+def _log_llm_usage(usage, beta_name=None, model=None):
     """Best-effort — never raises. A logging failure must not break the
     chat response it's recording usage for. cost_usd is computed and stored
     at write time (not derived later from tokens) so the beta spend cap is a
@@ -2826,7 +2827,7 @@ def _log_llm_usage(usage, beta_name=None):
         output_tokens = getattr(usage, "output_tokens", 0) or 0
         cache_read = getattr(usage, "cache_read_input_tokens", 0) or 0
         cache_write = getattr(usage, "cache_creation_input_tokens", 0) or 0
-        cost_usd = _usage_cost_usd(input_tokens, output_tokens, cache_read, cache_write)
+        cost_usd = _usage_cost_usd(input_tokens, output_tokens, cache_read, cache_write, model=model)
         conn = _get_db_connection()
         try:
             conn.execute(
@@ -3780,6 +3781,21 @@ TOOL_DISPATCH = {
 BETA_ALLOWED_TOOLS = {"get_trades", "get_trade_summary", "get_trade_tax_lots"}
 
 MAX_TOOL_ITERATIONS = 5   # hard cap so a confused loop can't run up API spend
+
+# Economy mode ("lite": true on /api/chat, the dashboard's Settings switch):
+# a cheaper conversation, not a different Ultron. Smaller model, shorter
+# replies, two tool rounds instead of five, and only the six basic reads --
+# the levers that actually move the dollar figure. Every safety boundary
+# (read-only tools, beta allowlist, spend caps, MCP opt-in) is unchanged;
+# the tool set here is intersected with the role's, never widened. The
+# model must have a row in LLM_PRICING_PER_MTOK or its usage logs at $0.
+LITE_MODEL = os.environ.get("ULTRON_LITE_MODEL", "claude-haiku-4-5")
+LITE_MAX_TOKENS = min(LLM_MAX_TOKENS, 400)
+LITE_MAX_TOOL_ITERATIONS = 2
+LITE_ALLOWED_TOOLS = {
+    "get_system_status", "list_containers", "get_storage_usage",
+    "get_pending_updates", "recall_notes", "get_recent_activity",
+}
 MAX_HISTORY_MESSAGES = 40  # ~20 turns; keeps context (and cost) bounded
 MAX_MESSAGE_CHARS = 4000
 # Caps each individual history entry's content, on top of the message-count
@@ -3822,7 +3838,7 @@ def _add_cache_breakpoint(msg):
     return {**msg, "content": new_content}
 
 
-def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker=None):
+def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker=None, lite=False):
     """Runs the tool-use loop against the Claude API and returns
     (reply_text, updated_history, tools_used).
 
@@ -3864,17 +3880,25 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
     else:
         mcp_schemas, mcp_dispatch = get_mcp_tools_and_dispatch()
         effective_tools = TOOLS + mcp_schemas
+    # Economy mode narrows, never widens: intersect with whatever the role
+    # already had (so MCP tools and the beta allowlist are both respected),
+    # and enforce the same set again at dispatch time below.
+    if lite:
+        effective_tools = [t for t in effective_tools if t["name"] in LITE_ALLOWED_TOOLS]
+    model = LITE_MODEL if lite else LLM_MODEL
+    max_tokens = LITE_MAX_TOKENS if lite else LLM_MAX_TOKENS
+    max_rounds = LITE_MAX_TOOL_ITERATIONS if lite else MAX_TOOL_ITERATIONS
 
-    for _ in range(MAX_TOOL_ITERATIONS):
+    for _ in range(max_rounds):
         response = anthropic_client.messages.create(
-            model=LLM_MODEL,
-            max_tokens=LLM_MAX_TOKENS,
+            model=model,
+            max_tokens=max_tokens,
             system=[{"type": "text", "text": ULTRON_SYSTEM_PROMPT, "cache_control": {"type": "ephemeral"}}],
             tools=effective_tools,
             messages=messages,
         )
         if hasattr(response, "usage"):
-            t_in, t_out = _log_llm_usage(response.usage, beta_name=beta_name)
+            t_in, t_out = _log_llm_usage(response.usage, beta_name=beta_name, model=model)
             turn_input_tokens += t_in
             turn_output_tokens += t_out
 
@@ -3888,7 +3912,7 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
             if block.type != "tool_use":
                 continue
             tools_used.append(block.name)
-            if role == "beta" and block.name not in BETA_ALLOWED_TOOLS:
+            if (role == "beta" and block.name not in BETA_ALLOWED_TOOLS) or (lite and block.name not in LITE_ALLOWED_TOOLS):
                 result = {"error": "forbidden"}
             else:
                 handler = TOOL_DISPATCH.get(block.name) or mcp_dispatch.get(block.name)
@@ -4063,6 +4087,10 @@ def chat():
     # Purely a logging label: it never affects role/permission checks,
     # only which identity a transcript row is tagged with.
     speaker = (body.get("speaker") or "").strip()[:100] or None
+    # Economy mode is a request-level choice (see LITE_* above): anything
+    # truthy opts in, and the response echoes the decision so the client
+    # can label the reply honestly.
+    lite = bool(body.get("lite"))
 
     if not user_message:
         return jsonify({"error": "message is required"}), 400
@@ -4096,7 +4124,7 @@ def chat():
 
         try:
             reply, new_history, tools_used = run_ultron_chat(
-                user_message, history, role=g.role, beta_name=g.beta_name, speaker=speaker,
+                user_message, history, role=g.role, beta_name=g.beta_name, speaker=speaker, lite=lite,
             )
         except anthropic.AuthenticationError:
             # Server misconfiguration, not the caller's fault — but surfacing it
@@ -4118,7 +4146,7 @@ def chat():
             # Anything else — malformed tool result, unexpected SDK behavior, etc.
             return jsonify({"error": "unexpected error: " + str(e)}), 500
 
-    return jsonify({"reply": reply, "history": new_history, "tools_used": tools_used})
+    return jsonify({"reply": reply, "history": new_history, "tools_used": tools_used, "lite": lite})
 
 
 @app.route("/api/chat/usage")

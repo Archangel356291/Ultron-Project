@@ -384,6 +384,16 @@ that's grounded in this backend's own data rather than guessing:
   turn-level cap.
 - Model defaults to `claude-sonnet-5`; override with `ULTRON_LLM_MODEL` if
   you want to point it at a different model.
+- **Economy mode** — a per-request `"lite": true` in the `/api/chat` body
+  (the dashboard's Settings → "Economy mode" switch sends it) answers with
+  `ULTRON_LITE_MODEL` (default `claude-haiku-4-5`, about half the price),
+  `max_tokens` capped at 400, at most 2 tool rounds, and only the six
+  basic read tools (status, containers, storage, updates, recall notes,
+  recent activity). It never widens a role's tool set — a beta tester in
+  economy mode gets the intersection of both allowlists — and every other
+  safeguard is unchanged. The response carries `"lite": true/false` so the
+  caller can label the reply. Usage is priced at the lite model's rate, so
+  the saving shows as real dollars in `/api/chat/usage`.
 - Requests to the Anthropic API time out after 60s by default (override with
   `ULTRON_LLM_TIMEOUT_SECONDS`), and errors are mapped to distinct, useful
   responses instead of one generic failure: a bad/rejected key comes back
