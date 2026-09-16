@@ -80,6 +80,18 @@
     min-height:100vh;
     overflow-x:hidden;
   }
+  /* Dimensional ground behind every panel: a faint gold cast from above
+     (Ultron's light), a cooler blue floor, and a fine 48px grid the glass
+     panels let show through. Fixed and static -- zero per-frame cost, so
+     it stays on in Reduced Visual Mode. */
+  body::before{
+    content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% -5%, rgba(255,178,56,0.07), transparent 70%),
+      radial-gradient(ellipse 80% 60% at 50% 110%, rgba(79,166,224,0.05), transparent 70%),
+      repeating-linear-gradient(0deg, rgba(139,147,160,0.035) 0 1px, transparent 1px 48px),
+      repeating-linear-gradient(90deg, rgba(139,147,160,0.035) 0 1px, transparent 1px 48px);
+  }
   ::selection{background:var(--oxide-dim); color:var(--text);}
 
   /* ---------- top header ---------- */
@@ -792,10 +804,46 @@
   /* ---------- chat ---------- */
   .chat-wrap{ display:flex; flex-direction:column; height:520px; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
   .chat-log{ flex:1; overflow-y:auto; padding:20px 22px; display:flex; flex-direction:column; gap:16px; background:var(--panel); }
-  .msg{ max-width:72%; font-size:13.5px; line-height:1.5; }
+  .msg{ max-width:72%; font-size:13.5px; line-height:1.5; animation:msg-in .32s cubic-bezier(.2,.7,.2,1); }
+  @keyframes msg-in{ from{ opacity:0; transform:translateY(6px); } }
   .msg.user{ align-self:flex-end; background:var(--panel-raised); border:1px solid var(--line); padding:10px 14px; border-radius:9px 9px 2px 9px; }
-  .msg.ultron{ align-self:flex-start; color:var(--text-dim); }
+  .msg.ultron{ align-self:flex-start; color:var(--text-dim); border-left:1px solid rgba(255,178,56,0.35); padding-left:12px; }
   .msg.ultron .who{ font-family:var(--font-mono); font-size:10px; color:var(--oxide); margin-bottom:4px; letter-spacing:0.04em; }
+  /* Thinking: three gold particles breathing in the core's own rhythm --
+     the same light as the hero brain, not a text placeholder. */
+  .msg.ultron.thinking .dots{ display:inline-flex; gap:5px; align-items:center; height:16px; vertical-align:middle; }
+  .msg.ultron.thinking .dots i{
+    width:6px; height:6px; border-radius:50%; background:var(--core-gold);
+    box-shadow:0 0 8px var(--core-glow-a); animation:think-breathe 1.2s ease-in-out infinite;
+  }
+  .msg.ultron.thinking .dots i:nth-child(2){ animation-delay:.2s; }
+  .msg.ultron.thinking .dots i:nth-child(3){ animation-delay:.4s; }
+  @keyframes think-breathe{ 0%,100%{ opacity:.25; transform:scale(.7); } 50%{ opacity:1; transform:scale(1); } }
+  /* Speaking: shows while a voice reply is playing, with the only way to
+     stop it -- the user can always see and halt what Ultron is doing. */
+  .speak-bar{
+    display:flex; align-items:center; gap:10px; padding:8px 14px;
+    border-top:1px solid var(--line); background:var(--panel);
+    font-family:var(--font-mono); font-size:11px; color:var(--oxide); letter-spacing:0.06em; text-transform:uppercase;
+  }
+  .speak-bar[hidden]{ display:none; }
+  .speak-bar .eq{ display:inline-flex; gap:2px; align-items:flex-end; height:12px; }
+  .speak-bar .eq i{ width:3px; height:4px; background:var(--core-gold); animation:eq-bar .9s ease-in-out infinite; }
+  .speak-bar .eq i:nth-child(2){ animation-delay:.15s; } .speak-bar .eq i:nth-child(3){ animation-delay:.3s; }
+  .speak-bar .eq i:nth-child(4){ animation-delay:.45s; } .speak-bar .eq i:nth-child(5){ animation-delay:.6s; }
+  @keyframes eq-bar{ 0%,100%{ height:4px; } 50%{ height:12px; } }
+  .speak-bar button{
+    margin-left:auto; background:none; border:1px solid var(--line); border-radius:5px;
+    color:var(--text); font-family:var(--font-mono); font-size:11px; padding:4px 12px; cursor:pointer;
+  }
+  .speak-bar button:hover{ border-color:var(--oxide); color:var(--oxide); }
+  .speak-bar kbd{ color:var(--text-faint); font-family:inherit; font-size:10px; text-transform:none; letter-spacing:0; }
+  @media (prefers-reduced-motion: reduce){
+    .msg{ animation:none; }
+    .msg.ultron.thinking .dots i, .speak-bar .eq i{ animation:none; opacity:.8; }
+  }
+  body.reduced-visuals .msg{ animation:none; }
+  body.reduced-visuals .msg.ultron.thinking .dots i, body.reduced-visuals .speak-bar .eq i{ animation:none; opacity:.8; }
   .chat-input{ display:flex; gap:10px; padding:14px; border-top:1px solid var(--line); background:var(--panel-raised); }
   .chat-input input{
     flex:1; background:var(--void); border:1px solid var(--line); border-radius:6px;
@@ -1114,8 +1162,7 @@
       </div>
     </nav>
     <div class="sidebar-foot">
-      <span class="live">● standing by</span>
-      <span>pi400</span>
+      <span class="live" id="presence-foot">● standing by</span>
     </div>
   </aside>
 
@@ -1543,8 +1590,14 @@
         </div>
 
         <div class="chat-wrap">
-          <div class="chat-log" id="chat-log">
+          <div class="chat-log" id="chat-log" aria-live="polite" aria-relevant="additions">
             <div class="msg ultron"><div class="who">ULTRON</div>Standing by. Connect the backend under Settings → Connection, then ask me about this host's status, containers, storage, or updates — I'll check the real numbers before answering.</div>
+          </div>
+          <div class="speak-bar" id="speak-bar" hidden>
+            <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            <span>Speaking</span>
+            <kbd>esc</kbd>
+            <button type="button" onclick="stopSpeaking()">Stop</button>
           </div>
           <div class="chat-input">
             <input type="text" id="chat-input-field" placeholder="Type your request, question, or command…">
@@ -2003,6 +2056,33 @@
     if (kind) el.classList.add(kind);
   }
 
+  // ---- presence: the one word that says what Ultron is doing right now.
+  // Every core state change (mic, chat, voice, connection) routes through
+  // window.__heroSetState, which the presence wrapper near the end of this
+  // file hooks -- so the hero title, sidebar foot, Home rail card and
+  // speaking bar all agree without each caller updating them by hand. ----
+  const PRESENCE_LABELS = {
+    idle: 'online', listening: 'listening', thinking: 'thinking',
+    responding: 'replying', speaking: 'speaking', alert: 'connection lost',
+  };
+  let presenceState = 'idle';
+  function renderPresence() {
+    const ok = state.connected;
+    const label = ok ? PRESENCE_LABELS[presenceState] || 'online' : 'standing by';
+    const heroTitle = document.getElementById('hero-title');
+    if (heroTitle) heroTitle.textContent = 'ULTRON ' + label.toUpperCase();
+    const coreTitle = document.getElementById('core-status-title');
+    if (coreTitle) coreTitle.textContent = label.toUpperCase();
+    const foot = document.getElementById('presence-foot');
+    if (foot) {
+      foot.textContent = '● ' + label;
+      foot.style.color = !ok ? 'var(--steel)' : presenceState === 'alert' ? 'var(--red-bright)'
+        : presenceState === 'idle' ? 'var(--signal)' : 'var(--oxide)';
+    }
+    const speakBar = document.getElementById('speak-bar');
+    if (speakBar) speakBar.hidden = presenceState !== 'speaking';
+  }
+
   function setTopbar(text, ok) {
     const pip = document.getElementById('topbar-pip');
     const txt = document.getElementById('topbar-status-text');
@@ -2017,8 +2097,7 @@
     const sphere = document.getElementById('sphere-wrap');
     if (sphere) sphere.classList.toggle('offline', !ok);
 
-    const heroTitle = document.getElementById('hero-title');
-    if (heroTitle) heroTitle.textContent = ok ? 'ULTRON ONLINE' : 'ULTRON STANDING BY';
+    renderPresence();
 
     const aiStatusText = document.getElementById('ai-status-text');
     if (aiStatusText) {
@@ -2031,8 +2110,6 @@
     // disconnect transition setTopbar already handles, not a separate poll.
     const coreDot = document.getElementById('core-status-dot');
     if (coreDot) coreDot.classList.toggle('on', ok);
-    const coreTitle = document.getElementById('core-status-title');
-    if (coreTitle) coreTitle.textContent = ok ? 'ONLINE' : 'STANDING BY';
     const coreMode = document.getElementById('core-mode');
     if (coreMode) coreMode.textContent = ok ? 'active' : 'standby';
     const coreAi = document.getElementById('core-ai-ready');
@@ -2391,10 +2468,10 @@
     if (dataMemN) dataMemN.textContent = memPct + '%';
     setRingGauge(document.getElementById('data-mem-fg'), memPct / 100);
 
-    const pctEl = document.getElementById('core-pct');
-    const tagEl = document.getElementById('core-tag');
-    if (pctEl) pctEl.textContent = pct + '%';
-    if (tagEl) tagEl.textContent = 'cpu';
+    ['core-pct', 'core-pct-xl'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = pct + '%';
+    });
     // Module 14: subtle core-brightness shift on CPU load, read by the
     // particle-system script below -- a no-op if that script hasn't
     // loaded yet.
@@ -3453,19 +3530,66 @@
       who.className = 'who';
       who.textContent = 'ULTRON';
       div.appendChild(who);
-      div.appendChild(document.createTextNode(text));
-      if (opts.tools && opts.tools.length) {
-        opts.tools.forEach(function (t) {
-          const tag = document.createElement('span');
-          tag.className = 'tool-tag';
-          tag.textContent = t;
-          div.appendChild(tag);
-        });
+      if (opts.thinking) {
+        const dots = document.createElement('span');
+        dots.className = 'dots';
+        dots.setAttribute('role', 'img');
+        dots.setAttribute('aria-label', 'Ultron is thinking');
+        dots.innerHTML = '<i></i><i></i><i></i>';
+        div.appendChild(dots);
+      } else {
+        const body = document.createElement('span');
+        div.appendChild(body);
+        const finish = function () {
+          (opts.tools || []).forEach(function (t) {
+            const tag = document.createElement('span');
+            tag.className = 'tool-tag';
+            tag.textContent = t;
+            div.appendChild(tag);
+          });
+          log.scrollTop = log.scrollHeight;
+          if (opts.onDone) opts.onDone();
+        };
+        if (opts.reveal && !motionReduced()) revealWords(body, text, log, finish);
+        else { body.textContent = text; finish(); }
       }
     }
     log.appendChild(div);
     log.scrollTop = log.scrollHeight;
     return div;
+  }
+
+  function motionReduced() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('reduced-visuals');
+  }
+
+  // Reply text lands a few words at a time, paced to its length (0.35-1.8s
+  // total) -- the core is in its 'responding' state for exactly this span,
+  // so the words and the light arrive together.
+  function revealWords(node, text, scroller, onDone) {
+    const words = text.split(' ');
+    const total = Math.min(1800, Math.max(350, words.length * 24));
+    const start = performance.now();
+    let finished = false;
+    function finish() {
+      if (finished) return;
+      finished = true;
+      node.textContent = text;
+      scroller.scrollTop = scroller.scrollHeight;
+      onDone();
+    }
+    // Time-based, not step-based: a throttled or paused frame clock can
+    // only make the reveal skip ahead, never leave it half-finished --
+    // and the timer below finalizes it even if frames never come at all
+    // (a backgrounded tab), so the presence state can't get stuck.
+    (function frame(now) {
+      if (finished) return;
+      const k = Math.min(1, (now - start) / total);
+      node.textContent = words.slice(0, Math.max(1, Math.ceil(k * words.length))).join(' ');
+      scroller.scrollTop = scroller.scrollHeight;
+      if (k < 1) requestAnimationFrame(frame); else finish();
+    })(start);
+    setTimeout(finish, total + 250);
   }
 
   // --- voice input: browser SpeechRecognition, free, entirely client-side ---
@@ -3501,10 +3625,35 @@
   // On by default (see the "Speak replies aloud" switch's markup) but still
   // opt-out and best-effort — a missing/misconfigured backend key just means
   // no audio, never a broken chat reply. ---
+  // One voice at a time. A new question, the Stop button, or Esc halts
+  // whatever is playing; the core drops back to idle when speech ends.
+  let currentSpeech = null;
+  function beginSpeaking(audio, cancel) {
+    const done = function () {
+      if (currentSpeech && currentSpeech.audio === audio) {
+        currentSpeech = null;
+        if (presenceState === 'speaking' && window.__heroSetState) window.__heroSetState('idle');
+      }
+    };
+    currentSpeech = { audio: audio, cancel: cancel, done: done };
+    if (window.__heroSetState) window.__heroSetState('speaking');
+    audio.addEventListener('ended', done);
+    audio.addEventListener('error', done);
+  }
+  function stopSpeaking() {
+    const s = currentSpeech;
+    if (!s) return;
+    try { s.cancel && s.cancel(); } catch (e) { /* ignore */ }
+    try { s.audio.pause(); } catch (e) { /* ignore */ }
+    s.done();
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') stopSpeaking(); });
+
   async function speakReply(text) {
     const toggle = document.getElementById('cfg-voice-reply');
     if (!toggle || !toggle.classList.contains('on')) return;
     if (!state.connected || !text) return;
+    stopSpeaking();
     try {
       const res = await fetch(state.baseUrl + '/api/tts', {
         method: 'POST',
@@ -3534,6 +3683,7 @@
           mediaSource.removeEventListener('sourceopen', onOpen);
           const sourceBuffer = mediaSource.addSourceBuffer(mime);
           const reader = res.body.getReader();
+          beginSpeaking(audio, function () { reader.cancel(); });
           let started = false;
           (async function pump() {
             try {
@@ -3547,7 +3697,7 @@
                   sourceBuffer.addEventListener('updateend', resolve, { once: true });
                   sourceBuffer.appendBuffer(value);
                 });
-                if (!started) { started = true; audio.play().catch(function () {}); }
+                if (!started) { started = true; audio.play().catch(function () { stopSpeaking(); }); }
               }
             } catch (e) { /* stream error mid-playback — best-effort, let what already played stand */ }
           })();
@@ -3557,7 +3707,8 @@
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
         audio.onended = () => URL.revokeObjectURL(url);
-        audio.play();
+        beginSpeaking(audio, null);
+        audio.play().catch(function () { stopSpeaking(); });
       }
     } catch (e) { /* voice is best-effort — never break chat over it */ }
   }
@@ -3584,23 +3735,29 @@
     }
 
     chatSending = true;
+    stopSpeaking();
     appendChatBubble('user', text);
     input.value = '';
     input.disabled = true;
     btn.disabled = true;
-    const thinkingEl = appendChatBubble('ultron', 'thinking…', { thinking: true });
+    const thinkingEl = appendChatBubble('ultron', '', { thinking: true });
     if (window.__heroSetState) window.__heroSetState('thinking');
 
     try {
       const data = await postChat(text, state.chatHistory || []);
       thinkingEl.remove();
-      appendChatBubble('ultron', data.reply, { tools: data.tools_used });
+      if (window.__heroSetState) window.__heroSetState('responding');
+      appendChatBubble('ultron', data.reply, {
+        tools: data.tools_used,
+        reveal: true,
+        // The light follows the words: stay 'responding' until the last
+        // word lands, then hand off to 'speaking' if voice took over, else idle.
+        onDone: function () {
+          if (presenceState === 'responding' && window.__heroSetState) window.__heroSetState('idle');
+        },
+      });
       speakReply(data.reply);
       state.chatHistory = data.history || state.chatHistory;
-      if (window.__heroSetState) {
-        window.__heroSetState('responding');
-        setTimeout(() => window.__heroSetState('idle'), 2200);
-      }
     } catch (err) {
       thinkingEl.remove();
       appendChatBubble('ultron', 'Something went wrong: ' + err.message, { isError: true });
@@ -4293,6 +4450,7 @@
     listening:  { pulseSpeed: 1.3, activity: 0.50, color: [255, 190, 80] },
     thinking:   { pulseSpeed: 2.2, activity: 0.85, color: [255, 178, 56] },
     responding: { pulseSpeed: 1.8, activity: 1.00, color: [255, 200, 90] },
+    speaking:   { pulseSpeed: 1.5, activity: 0.90, color: [255, 210, 110] },
     alert:      { pulseSpeed: 2.6, activity: 0.75, color: [255, 70, 60] },
   };
   // Ultron tab's copy -- same state names, red throughout instead of
@@ -4303,6 +4461,7 @@
     listening:  { pulseSpeed: 1.3, activity: 0.55, color: [210, 40, 30] },
     thinking:   { pulseSpeed: 2.4, activity: 0.95, color: [255, 30, 30] },
     responding: { pulseSpeed: 2.0, activity: 1.00, color: [255, 60, 40] },
+    speaking:   { pulseSpeed: 1.7, activity: 0.90, color: [255, 80, 60] },
     alert:      { pulseSpeed: 2.9, activity: 0.90, color: [255, 0, 0] },
   };
 
@@ -4317,6 +4476,12 @@
   // how many copies of the core exist on the page.
   window.__heroSetState = function (name) {
     coreInstances.forEach(function (inst) { inst.setState(name); });
+    // Presence readout (hero title, sidebar foot, Home rail, speaking bar)
+    // -- see renderPresence() in the main script.
+    if (typeof renderPresence === 'function' && PRESENCE_LABELS[name]) {
+      presenceState = name;
+      renderPresence();
+    }
   };
   window.__heroSetCpu = function (pct) {
     coreInstances.forEach(function (inst) { inst.setCpu(pct); });
@@ -4586,7 +4751,7 @@ function toggleReducedVisuals(el) {
   window.__heroSetState = function (name) {
     if (prevHeroSetState) prevHeroSetState(name);
     var wasSit = charMode === 'sit';
-    if (name === 'thinking' || name === 'responding' || name === 'alert') {
+    if (name === 'thinking' || name === 'responding' || name === 'speaking' || name === 'alert') {
       charMode = 'sit';
       if (!wasSit || name === 'alert') {
         var quip = name === 'alert' ? pick(ALERT_QUIPS) : name === 'responding' ? pick(RESPONDING_QUIPS) : pick(THINKING_QUIPS);
