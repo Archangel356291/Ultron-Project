@@ -1047,6 +1047,35 @@ def add_cors_headers(response):
     return response
 
 
+@app.after_request
+def add_security_headers(response):
+    """Standard response hardening headers (owner-requested 2026-09-16).
+    CSP here is deliberately not maximally strict: the dashboard is one
+    big HTML file with inline <script>/<style> (no nonce/hash setup) and
+    deliberately supports pointing at a backend on a different origin
+    (LAN/Tailscale address, typed into Settings -> Connection) rather
+    than only itself -- 'unsafe-inline' and a wide-open connect-src are
+    the real tradeoffs that keep those working. What this still blocks
+    for real: any THIRD-PARTY script/object loading, embedding this page
+    in someone else's frame (clickjacking), and a <base> tag hijack."""
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "camera=(), geolocation=(), microphone=(self)"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src https://fonts.gstatic.com; "
+        "img-src 'self' data:; "
+        "connect-src *; "
+        "object-src 'none'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'"
+    )
+    return response
+
+
 # --------------------------------------------------------------------------
 # auth
 # --------------------------------------------------------------------------
@@ -2697,6 +2726,60 @@ def _check_rate_limit():
 
 
 # --------------------------------------------------------------------------
+# Login lockout -- a backstop against brute-forcing /api/login (owner-
+# requested 2026-09-16, alongside the sign-in page itself). Same shape as
+# the chat rate limiter above: in-memory, per-source, thread-safe. Failures
+# within LOGIN_LOCKOUT_WINDOW_SECONDS accumulate per source IP; hitting
+# LOGIN_LOCKOUT_MAX_ATTEMPTS locks that source out for LOGIN_LOCKOUT_SECONDS.
+# A successful login clears that source's record. ponytail: per-process/
+# in-memory, like _PRESENCE -- a restart clears it, and a multi-worker
+# deployment would give each worker its own view; fine for the single
+# `python app.py` process this runs as. Never blocks by username, only by
+# source -- a wrong guess against one account can't be used to lock out
+# the real user from a different source.
+# --------------------------------------------------------------------------
+LOGIN_LOCKOUT_MAX_ATTEMPTS = max(1, int(os.environ.get("ULTRON_LOGIN_LOCKOUT_MAX_ATTEMPTS", "5")))
+LOGIN_LOCKOUT_WINDOW_SECONDS = max(1, int(os.environ.get("ULTRON_LOGIN_LOCKOUT_WINDOW_SECONDS", "900")))
+LOGIN_LOCKOUT_SECONDS = max(1, int(os.environ.get("ULTRON_LOGIN_LOCKOUT_SECONDS", "900")))
+
+_login_failures = {}
+_login_lockouts = {}
+_login_lock = threading.Lock()
+
+
+def _login_lockout_check(source):
+    """Returns an error message if `source` is currently locked out, else None."""
+    now = time.time()
+    with _login_lock:
+        expires = _login_lockouts.get(source)
+        if expires is None:
+            return None
+        if now < expires:
+            return f"too many failed sign-in attempts — try again in {int(expires - now)}s"
+        del _login_lockouts[source]
+        _login_failures.pop(source, None)
+        return None
+
+
+def _login_lockout_record_failure(source):
+    now = time.time()
+    with _login_lock:
+        times = _login_failures.setdefault(source, [])
+        cutoff = now - LOGIN_LOCKOUT_WINDOW_SECONDS
+        while times and times[0] < cutoff:
+            times.pop(0)
+        times.append(now)
+        if len(times) >= LOGIN_LOCKOUT_MAX_ATTEMPTS:
+            _login_lockouts[source] = now + LOGIN_LOCKOUT_SECONDS
+
+
+def _login_lockout_clear(source):
+    with _login_lock:
+        _login_failures.pop(source, None)
+        _login_lockouts.pop(source, None)
+
+
+# --------------------------------------------------------------------------
 # LLM usage tracking — real token counts from the API's own response,
 # logged per call, so the daily budget (if configured) is enforced against
 # actual spend rather than a guess, and so /api/chat/usage can show you
@@ -3861,21 +3944,33 @@ def login():
     server-side, so it can't be bypassed by hitting the API directly with
     just a valid token and an arbitrary username. Never reveals which
     field was wrong -- same "invalid credentials" either way, so this
-    can't be used to enumerate valid usernames."""
+    can't be used to enumerate valid usernames. Also the one place that
+    checks the login lockout -- every failed attempt counts against the
+    calling source, a lockout returns 429 before even looking at the
+    submitted credentials, and a genuine success clears that source's count."""
+    source = request.remote_addr or "unknown"
+    lockout_error = _login_lockout_check(source)
+    if lockout_error:
+        return jsonify({"error": lockout_error}), 429
+
     body = request.get_json(silent=True) or {}
     username = (body.get("username") or "").strip()
     password = (body.get("password") or "").strip()
     if not username or not password:
+        _login_lockout_record_failure(source)
         return jsonify({"error": "invalid credentials"}), 401
 
     role, beta_name = _resolve_role(password)
     if role is None:
+        _login_lockout_record_failure(source)
         return jsonify({"error": "invalid credentials"}), 401
 
     expected_username = ADMIN_USERNAME if role == "admin" else (beta_name or "")
     if not hmac.compare_digest(username, expected_username):
+        _login_lockout_record_failure(source)
         return jsonify({"error": "invalid credentials"}), 401
 
+    _login_lockout_clear(source)
     _touch_presence(role, beta_name)
     return jsonify(_identity_result(role, beta_name))
 
