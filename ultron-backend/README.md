@@ -101,6 +101,9 @@ New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol T
 | `GET /api/trades/export`       | CSV download — transactions or tax-lots format      |
 | `GET /api/security/auth-log` | Recent login attempts (fast)                    |
 | `GET /api/security/cve-scan` | CVE scan of running containers' images (slow — see below) |
+| `GET /api/security/threats` | **Admin-only.** Sentinel's live watchdog view — active findings, last check — see below |
+| `GET /manifest.webmanifest`, `GET /sw.js` | Installable-app manifest and service worker (no auth; the worker never caches `/api/*`) |
+| `GET /fonts/<file>`, `GET /pixel-assets/<file>` | Static dashboard assets (no auth; self-hosted typefaces, sprites, app icons) |
 | `POST /api/actions/backup` | **Mutates the host.** Two-step confirm — see below    |
 | `POST /api/actions/deploy-container` | **Mutates the host.** Two-step confirm — see below |
 | `POST /api/chat`          | Chat with Ultron — see below                       |

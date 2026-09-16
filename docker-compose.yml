@@ -58,6 +58,7 @@ services:
       # port (ULTRON_TLS_CERT/KEY above) -- see bot.py's setup_hook for
       # why this connection skips cert-hostname verification.
       - ULTRON_BACKEND_URL=https://ultron-backend:5000
+      - TZ=America/Los_Angeles
     depends_on:
       - ultron-backend
     networks:

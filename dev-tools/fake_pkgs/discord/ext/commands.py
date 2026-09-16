@@ -2,6 +2,12 @@ import sys
 import discord
 
 
+def when_mentioned(bot, message):
+    """Mirrors discord.ext.commands.when_mentioned's shape; bot.py only
+    passes it as command_prefix, never calls it in tests."""
+    return [f"<@{bot.user.id}> ", f"<@!{bot.user.id}> "]
+
+
 class Bot:
     def __init__(self, command_prefix="!", intents=None):
         self.command_prefix = command_prefix

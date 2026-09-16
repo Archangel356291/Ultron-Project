@@ -146,6 +146,28 @@ def format_status_embed(data):
     return embed
 
 
+def format_threats_embed(data):
+    """Sentinel's live view (GET /api/security/threats) -- same numbers as
+    the dashboard's Security-tab card and Ultron's get_threat_summary tool."""
+    findings = data.get("active_findings") or []
+    color = ERROR_COLOR if any(f.get("status") == "error" for f in findings) else BRAND_COLOR
+    embed = discord.Embed(title="Sentinel — security watchdog", color=color)
+    if data.get("enabled"):
+        interval = int(data.get("interval_seconds") or 0)
+        watching = f"every {interval // 60} min" if interval >= 60 else f"every {interval}s"
+    else:
+        watching = "disabled (ULTRON_SENTINEL_INTERVAL_SECONDS=0)"
+    embed.add_field(name="Watching", value=watching, inline=True)
+    embed.add_field(name="Last check", value=(data.get("last_run") or "not yet").replace("T", " "), inline=True)
+    embed.add_field(name="Active findings", value=str(len(findings)) if findings else "none", inline=True)
+    for f in findings[:10]:
+        tag = "CRIT" if f.get("status") == "error" else "WARN"
+        embed.add_field(name=tag, value=(f.get("summary") or "")[:1000], inline=False)
+    if len(findings) > 10:
+        embed.set_footer(text=f"+{len(findings) - 10} more — see the dashboard's Security tab")
+    return embed
+
+
 def format_containers_embed(data):
     containers = data.get("containers", [])
     embed = discord.Embed(title="Docker Containers", color=BRAND_COLOR)
@@ -658,6 +680,18 @@ async def status_command(interaction: discord.Interaction):
     try:
         data = await backend_get(bot.http_session, "/api/status")
         await interaction.followup.send(embed=format_status_embed(data))
+    except BackendError as e:
+        await interaction.followup.send(embed=format_error_embed(str(e)))
+
+
+@bot.tree.command(name="threats", description="Sentinel's live security view: active findings and last check")
+async def threats_command(interaction: discord.Interaction):
+    if not await require_auth(interaction):
+        return
+    await interaction.response.defer()
+    try:
+        data = await backend_get(bot.http_session, "/api/security/threats")
+        await interaction.followup.send(embed=format_threats_embed(data))
     except BackendError as e:
         await interaction.followup.send(embed=format_error_embed(str(e)))
 

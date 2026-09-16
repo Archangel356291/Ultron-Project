@@ -1,5 +1,12 @@
 # Scheduled work — begin 2026-09-19 (Saturday) 02:00
 
+> **Status (2026-09-16):** pulled forward and worked through at the owner's
+> request three days early — see `ROADMAP-FINDINGS-2026-09-16.md` for what
+> each item found and what was built (items 2–6 done, 3 and 4 built after
+> owner approval, item 1 advanced with the presence layer and continues
+> to be open-ended). A session starting on the 19th should read that file
+> first and continue from item 1's remaining ideas rather than restart.
+
 Owner-requested task list, to be started automatically at the date/time in
 this file's name, and worked through **in the order listed**. Do not
 reorder or skip items; if an item turns out to be infeasible, say so

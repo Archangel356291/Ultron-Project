@@ -1,22 +1,22 @@
 # Graph Report - Ultron Project  (2026-09-16)
 
 ## Corpus Check
-- 103 files · ~497,646 words
+- 104 files · ~498,297 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 17 file(s) not represented in the graph (top: (none) 8, .woff2 6, .glb 2)
 
 ## Summary
-- 7430 nodes · 17700 edges · 292 communities (147 shown, 134 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 780 edges (avg confidence: 0.85)
+- 7439 nodes · 17716 edges · 307 communities (161 shown, 135 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 781 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3e066ba3`
+- Built from commit: `f4f8164a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- bot.py
+- Interaction
 - constructor
 - Tonight: chat feature work + roadmap Modules 1-6 (2026-09-14)
 - discord/__init__.py
@@ -24,7 +24,7 @@
 - ultron-discord-bot (Thin Remote-Control Layer)
 - app.py
 - run_ultron_chat
-- View
+- export_command
 - route
 - ClientSession
 - enrich_visibility.py
@@ -32,13 +32,13 @@
 - require_role
 - PerspectiveCamera
 - _fifo_engine
-- _sample_metrics
+- docker_ps
 - [private]
 - fake_pkgs/ (drop-in fake SDKs)
 - three.core.js
 - 3d-force-graph.min.js
 - test_mcp_server.py
-- UltronBot
+- ConfirmActionView
 - [private]
 - Action Endpoints (backup, deploy-container)
 - aiultronproject Slack Workspace
@@ -74,19 +74,19 @@
 - WMI (==1.5.1, Windows only)
 - .get
 - three.module.js
-- BufferGeometry
+- .push
 - n
 - BatchedMesh
-- EllipseCurve
-- .add
+- tw
+- .copy
 - xr
 - .normalize
 - cn
 - Object3D
 - em
 - CI
-- vr
-- .getDataFromNode
+- Fn
+- .getNodeProperties
 - Euler
 - rn
 - .parseObject
@@ -95,17 +95,17 @@
 - get
 - rc
 - Ii
-- .getTypeLength
+- .getNodeType
 - dn
 - Vector4
 - Vector3
 - ui
 - test_beta_spend_cap.py
 - gu
-- RT
+- .setup
 - Curve
-- .copy
-- Vector2
+- VideoTexture
+- Material
 - Matrix3
 - WebGLRenderer
 - hn
@@ -113,18 +113,18 @@
 - getMaterialExtension
 - .constructor
 - yn
-- .render
+- .dispose
 - wn
 - KeyframeTrack
-- .dispose
+- .add
 - .setValues
 - Qf
 - .serialize
 - Pn
-- mn
+- Vector2
 - .multiplyScalar
-- qt
-- push
+- .push
+- .render
 - ra
 - PropertyBinding
 - Lr
@@ -143,32 +143,32 @@
 - GLTFLoader.js
 - on
 - ms
-- WebXRManager
+- LoadingManager
 - Loader
-- error
+- WebGLState
 - AnimationMixer
 - i
 - .build
 - nr
-- iy
+- .render
 - WebGLBindingStates
 - log_activity
 - sr
 - cc
-- .generateConst
+- vs
 - Ga
 - ln
 - gen_pixel_assets.py
 - graph_schema_shared.py
-- warnOnce
+- yc
 - bs
-- an
+- Xa
 - Texture
-- getParameters
+- WebGLPrograms
 - pu
 - NI
 - wf
-- .fromArray
+- Is
 - yr
 - PropertyMixer
 - Audio
@@ -177,49 +177,49 @@
 - ay
 - xn
 - VE
-- Light
+- .toJSON
 - Timer
 - FR
 - ja
 - ww
 - nn
 - Km
-- Interaction
+- bot.py
 - .parse
-- IT
-- my
-- .setupEnvironment
+- fs
+- Interpolant
+- ks
 - summarize_session.py
 - qs
 - Ki
 - Cw
 - PolyhedronGeometry
-- hw
+- Yt
 - BufferGeometryUtils.js
 - addShape
 - Gv
 - test_backup_restore.py
 - iu
 - build_hero_head.py
-- setProgram
-- sc
-- vc
-- .getUniformFromNode
+- WebGLMaterials
+- uc
+- .load
+- CubicBezierCurve
 - pF
-- _s
+- .getMemberType
 - Zt
-- Vx
-- export_command
+- .setup
+- QuadraticBezierCurve
 - .loadTextureImage
 - Remote access — Tailscale setup
-- wa
+- gc
 - test_web_search.py
-- qr
+- ma
 - ow
 - CompressedArrayTexture
 - ultron-backend index (_index.md)
 - Dashboard hero visual redesign (Module 13) — v1
-- na
+- RenderTarget
 - Home dashboard visual redesign (Module 14) — v1
 - Ultron's runtime knowledge graph (Module 10) — v1
 - Knowledge graph schema design (Module 4) — v1
@@ -234,55 +234,59 @@
 - session-write (Module 7)
 - GLTFLightsExtension
 - .copy
-- createColorManagement
+- Line
 - Clock
-- .createRenderPipeline
+- qt
 - Site-wide visual polish: black + metal + blue + gold + red
 - backup (Module 9)
-- .setStyle
+- sc
 - test_runtime_graph.py
-- warn
+- createElementNS
 - Open-sourcing Ultron (Module 12) — v1
-- .setGroup
+- AudioListener
 - .load
-- ey
-- .update
+- TextureSource
+- .constructor
 - GLBufferAttribute
 - lI
-- FI
-- .toJSON
+- .connect
+- PositionalAudio
 - test_knowledge_graph_route.py
-- .setStyle
-- .setHSL
-- .push
-- WebGLClipping
-- ks
+- .negate
+- Yv
+- Path
+- gF
+- RT
 - _get_db_connection
 - Financial action boundary (Module 11) — permanent, no sunset condition
 - Git secret audit (Module 3) — 2026-09-14
 - three-pipeline (Module 5)
-- ws
-- .add
+- Bot
+- zm
 - Master Index (Obsidian Vault Root)
 - test_login.py
 - test_login_lockout.py
 - test_economy_mode.py
-- lx
+- View
+- .setGroup
 - Ew
-- pc
+- DataTexture
 - TLS cert for the backend
 - test_chat_log.py
 - test_sentinel.py
 - lc
-- test_evolution_ideas.py
-- test_metrics_history.py
+- Cylindrical
+- AudioAnalyser
+- DataArrayTexture
 - generate_viewer.py
 - approve_session_summary.py
-- test_data_analytics_stats.py
+- Wt
+- LE
 - pre-commit
 - blender_smoke_test.py
-- test_pwa.py
-- test_tls_fallback.py
+- GLTFCubicSplineInterpolant
+- MaterialLoader
+- wm
 - TextureUtils
 - [private]
 - [private]
@@ -295,8 +299,19 @@
 - [private]
 - [private]
 - [private]
-- hx
+- cloneUniforms
+- ta
+- za
 - sw.js
+- Fog
+- FogExp2
+- pI
+- test_hero_assets_route.py
+- test_pixel_assets_route.py
+- GLTFMeshoptCompression
+- MultiDrawRenderList
+- CatmullRom
+- getKeyframeOrder
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn` - 160 edges
@@ -331,15 +346,15 @@
 - **MCP Discovery/Execution Separation Security Model** — project_summary_for_claude_code_mcp_support, readme_mcp_opt_in_principle, ultron_backend_readme_mcp_external_tools [INFERRED 0.85]
 - **Original Four-Agent Spec Plus Emergent Fifth** — project_summary_for_claude_code_ethical_hacking_agent, project_summary_for_claude_code_investment_agent, project_summary_for_claude_code_crypto_trade_agent, project_summary_for_claude_code_home_lab_monitor_agent, project_summary_for_claude_code_coding_subagent [INFERRED 0.85]
 
-## Communities (292 total, 134 thin omitted)
+## Communities (307 total, 135 thin omitted)
 
-### Community 0 - "bot.py"
-Cohesion: 0.14
-Nodes (35): command, describe, event, ask_command(), backend_get(), connections_command(), containers_command(), diff_command() (+27 more)
+### Community 0 - "Interaction"
+Cohesion: 0.13
+Nodes (35): button, command, Interaction, Fake interaction for testing command and button handlers directly., backend_get(), connections_command(), containers_command(), diff_command() (+27 more)
 
 ### Community 1 - "constructor"
-Cohesion: 0.08
-Nodes (14): bl(), i(), constructor(), et(), it(), je(), nt(), qe() (+6 more)
+Cohesion: 0.04
+Nodes (22): bl(), constructor(), et(), it(), je(), nt(), qe(), tt() (+14 more)
 
 ### Community 2 - "Tonight: chat feature work + roadmap Modules 1-6 (2026-09-14)"
 Cohesion: 0.09
@@ -347,7 +362,7 @@ Nodes (17): demo(), _fake_mcp_lookup(), Self-check for the <untrusted_external_d
 
 ### Community 3 - "discord/__init__.py"
 Cohesion: 0.06
-Nodes (15): Bot, ButtonStyle, Embed, File, _Followup, HTTPException, Intents, _InteractionResponse (+7 more)
+Nodes (16): ButtonStyle, Embed, File, _Followup, HTTPException, Intents, _InteractionResponse, _MockMessage (+8 more)
 
 ### Community 4 - "anthropic/__init__.py"
 Cohesion: 0.09
@@ -358,20 +373,20 @@ Cohesion: 0.18
 Nodes (11): ultron-discord-bot Service (Docker Compose), Bug: Discord backend_get Showed Raw Error Text, Bug: Discord Field-Truncation Off-By-N, Bug: Tool-Registration Ordering (get_llm_usage NameError Risk), ultron-dashboard.html (Single-file Dashboard), ultron-discord-bot (Thin Remote-Control Layer), [private], Bug: Discord Bot Only Caught ClientError, Not TimeoutError (+3 more)
 
 ### Community 6 - "app.py"
-Cohesion: 0.05
-Nodes (43): after_request, Self-check for Ultron's capability registry (get_capabilities -- master prompt…, Self-check for event severity classification (master prompt sections 21-26 --…, Self-check for Module 13's /three-pipeline/<file> route -- the piece of the…, Module 11: the permanent, not training-wheels, rule -- Ultron never executes a…, Self-check for the /pixel-assets/<file> route (owner-requested 2026-09-16 --…, Self-check for response security headers (owner-requested 2026-09-16). Proves…, action_backup() (+35 more)
+Cohesion: 0.04
+Nodes (45): after_request, Self-check for Ultron's capability registry (get_capabilities -- master prompt…, Self-check for the Data & analytics tab stat cards (evolution idea #2):…, Self-check for event severity classification (master prompt sections 21-26 --…, Self-check for Ultron's Evolution/Ideas tracker (propose_idea / get_ideas /…, Self-check for Ultron's metrics-history sampler (master prompt section 9 --…, Module 11: the permanent, not training-wheels, rule -- Ultron never executes a…, Self-check for the installable-app (PWA) surface: manifest, service worker and… (+37 more)
 
 ### Community 7 - "run_ultron_chat"
 Cohesion: 0.08
 Nodes (30): _add_cache_breakpoint(), _ensure_mcp_discovered(), get_mcp_tools_and_dispatch(), _log_chat_turn(), _log_llm_usage(), _make_mcp_tool_handler(), handler(), _mcp_call_tool() (+22 more)
 
-### Community 8 - "View"
-Cohesion: 0.09
-Nodes (7): app_commands, Button, CommandTree, Matches @discord.ui.button(...). The fake doesn't need the full component-…, ui, decorator(), View
+### Community 8 - "export_command"
+Cohesion: 0.12
+Nodes (7): choices, app_commands, Choice, CommandTree, Matches @discord.ui.button(...). The fake doesn't need the full component-…, decorator(), export_command()
 
 ### Community 9 - "route"
-Cohesion: 0.06
-Nodes (52): activity(), capabilities(), chat_history(), chat_usage(), classify_event_severity(), connections(), containers(), _containers_data() (+44 more)
+Cohesion: 0.05
+Nodes (54): activity(), capabilities(), chat_history(), chat_usage(), classify_event_severity(), connections(), containers(), _containers_data() (+46 more)
 
 ### Community 10 - "ClientSession"
 Cohesion: 0.12
@@ -382,24 +397,24 @@ Cohesion: 0.21
 Nodes (14): decrypt_private_node(), enrich(), _file_mtime_iso(), _get_or_create_key(), _load_json(), Post-processing enrichment for graphify's graph.json -- adds what KNOWLEDGE-…, Retrieval-time helper (for Module 8's read path later): returns the full…, Reuse ULTRON_GRAPH_ENCRYPTION_KEY from .env if present, else generate one and… (+6 more)
 
 ### Community 12 - "Plane"
-Cohesion: 0.05
-Nodes (4): Frustum, FrustumArray, Plane, _points
+Cohesion: 0.06
+Nodes (3): Frustum, FrustumArray, Plane
 
 ### Community 13 - "require_role"
 Cohesion: 0.10
 Nodes (25): _beta_tester_spend_usd(), chat(), _check_rate_limit(), _fish_audio_tts(), _identity_result(), login(), _login_lockout_check(), _login_lockout_clear() (+17 more)
 
 ### Community 14 - "PerspectiveCamera"
-Cohesion: 0.06
+Cohesion: 0.07
 Nodes (6): ArrayCamera, Layers, OrthographicCamera, PerspectiveCamera, SpotLightShadow, StereoCamera
 
 ### Community 15 - "_fifo_engine"
-Cohesion: 0.20
-Nodes (10): _fifo_engine(), get_trade_summary(), get_trade_tax_lots(), Best-effort date -> integer day count, for holding-period math. Never raises;…, The one place FIFO matching happens. Returns both an aggregated per-asset view…, Simplified FIFO realized gain/loss per asset — the aggregated view. See…, Per-disposal detail: each row is one sell matched against one consumed buy lot,…, _trade_date_to_epoch_days() (+2 more)
-
-### Community 16 - "_sample_metrics"
 Cohesion: 0.10
-Nodes (21): get_cpu_temp_c(), get_uptime_str(), pending_os_updates(), Best-effort CPU temperature read. Returns None if unavailable — which, on…, Count of pending OS updates. Real implementation on both platforms: Windows…, Best-effort, like log_activity -- runs unattended on a background timer with…, Samples system/storage/container metrics every METRICS_SAMPLE_SECONDS so…, Runs distill_activity_trends() once now, then every 24h, in a daemon thread so… (+13 more)
+Nodes (20): add_trade(), _fifo_engine(), get_trade_summary(), get_trade_tax_lots(), get_trades(), Returns (normalized_dict, None) or (None, error_message)., Best-effort date -> integer day count, for holding-period math. Never raises;…, The one place FIFO matching happens. Returns both an aggregated per-asset view… (+12 more)
+
+### Community 16 - "docker_ps"
+Cohesion: 0.17
+Nodes (13): docker_ps(), get_cpu_temp_c(), get_uptime_str(), pending_os_updates(), Best-effort CPU temperature read. Returns None if unavailable — which, on…, Return container info via the Docker CLI, avoiding a hard dependency on the…, Count of pending OS updates. Real implementation on both platforms: Windows…, Everything currently wrong, as {key: (status, summary)}. A pure read -- no scan… (+5 more)
 
 ### Community 18 - "fake_pkgs/ (drop-in fake SDKs)"
 Cohesion: 0.22
@@ -407,235 +422,267 @@ Nodes (9): fake_pkgs/aiohttp (aiohttp client fake), fake_pkgs/anthropic (scripta
 
 ### Community 19 - "three.core.js"
 Cohesion: 0.01
-Nodes (233): RFC-3987, _addedEvent, _alignedPosition, _axis, _baseVector, _batchIntersects, _boneMatrix, _box (+225 more)
+Nodes (219): RFC-3987, _addedEvent, _alignedPosition, _axis, _baseVector, _batchIntersects, _boneMatrix, _box (+211 more)
 
 ### Community 20 - "3d-force-graph.min.js"
 Cohesion: 0.02
-Nodes (126): Ad(), af(), ah(), ak(), al(), Ap(), Bd(), bk() (+118 more)
+Nodes (111): Ad(), af(), ah(), ak(), Ap(), Bd(), bk(), bp() (+103 more)
 
 ### Community 21 - "test_mcp_server.py"
 Cohesion: 0.47
 Nodes (5): jsonrpc_error(), jsonrpc_result(), mcp_endpoint(), route, A real MCP server for testing app.py's MCP client against genuine JSON-RPC…
 
+### Community 22 - "ConfirmActionView"
+Cohesion: 0.24
+Nodes (3): ConfirmActionView, Confirm/Cancel for a previewed action. Only the user who ran the original…, UltronBot
+
 ### Community 62 - ".get"
-Cohesion: 0.04
-Nodes (47): ao(), a(), o(), Dd, a(), s(), fu(), g() (+39 more)
+Cohesion: 0.03
+Nodes (50): ao(), a(), o(), b(), Dd, a(), s(), fu() (+42 more)
 
 ### Community 63 - "three.module.js"
 Cohesion: 0.02
-Nodes (113): _cache, ColorManagement, Compatibility, DefaultLoadingManager, EdgesGeometry, getConsoleFunction(), InterpolationSamplingMode, InterpolationSamplingType (+105 more)
+Nodes (121): AmbientLight, _cache, CanvasTexture, ColorManagement, Compatibility, DefaultLoadingManager, getConsoleFunction(), HTMLTexture (+113 more)
 
-### Community 64 - "BufferGeometry"
+### Community 64 - ".push"
 Cohesion: 0.03
-Nodes (36): arrayNeedsUint32(), ArrowHelper, AxesHelper, Box3Helper, buildPlane(), BoxHelper, BufferGeometry, CameraHelper (+28 more)
+Nodes (43): arrayNeedsUint32(), AxesHelper, Box3Helper, buildPlane(), BoxHelper, BufferGeometry, CameraHelper, addLine() (+35 more)
 
 ### Community 65 - "n"
 Cohesion: 0.06
-Nodes (70): b(), i(), c(), n(), cp(), d(), Do(), ed() (+62 more)
+Nodes (65): i(), c(), n(), cp(), d(), Do(), ed(), a() (+57 more)
 
 ### Community 66 - "BatchedMesh"
-Cohesion: 0.05
-Nodes (8): ascIdSort(), BatchedMesh, checkIntersection(), copyArrayContents(), copyAttributeData(), SkinnedMesh, Sphere, testPoint()
+Cohesion: 0.06
+Nodes (7): ArrowHelper, ascIdSort(), BatchedMesh, copyArrayContents(), flattenJSON(), InstancedBufferAttribute, InstancedMesh
 
-### Community 68 - ".add"
+### Community 67 - "tw"
 Cohesion: 0.04
-Nodes (11): handleTriangle(), handleVertex(), CatmullRomCurve3, checkGeometryIntersection(), v(), isUniqueEdge(), Line3, Ray (+3 more)
+Nodes (9): aw, bw(), dw, Nw, tw, vw, xw(), yw() (+1 more)
 
-### Community 69 - "xr"
-Cohesion: 0.11
-Nodes (3): Ve(), Wt(), xr
+### Community 68 - ".copy"
+Cohesion: 0.03
+Nodes (16): handleTriangle(), handleVertex(), CatmullRomCurve3, checkGeometryIntersection(), scalePt2(), v(), isUniqueEdge(), Line3 (+8 more)
 
 ### Community 70 - ".normalize"
 Cohesion: 0.04
-Nodes (13): BufferAttribute, DataUtils, denormalize(), Float16BufferAttribute, Int16BufferAttribute, Int32BufferAttribute, Int8BufferAttribute, InterleavedBufferAttribute (+5 more)
+Nodes (16): BufferAttribute, convertBufferAttribute(), copyAttributeData(), DataUtils, denormalize(), Float16BufferAttribute, Int16BufferAttribute, Int32BufferAttribute (+8 more)
 
 ### Community 72 - "Object3D"
 Cohesion: 0.03
-Nodes (10): AudioListener, Camera, CubeCamera, DirectionalLightHelper, DirectionalLightShadow, HemisphereLightHelper, LOD, Matrix2 (+2 more)
+Nodes (10): Camera, CubeCamera, DirectionalLightHelper, DirectionalLightShadow, HemisphereLightHelper, LightShadow, LOD, Object3D (+2 more)
 
-### Community 76 - ".getDataFromNode"
-Cohesion: 0.06
-Nodes (4): Vt(), wm, Wv, zv
+### Community 75 - "Fn"
+Cohesion: 0.03
+Nodes (5): $a, ey, Fn, mn, pc()
+
+### Community 76 - ".getNodeProperties"
+Cohesion: 0.07
+Nodes (3): my, Vt(), zv
 
 ### Community 77 - "Euler"
 Cohesion: 0.11
 Nodes (3): Euler, onQuaternionChange(), onRotationChange()
 
-### Community 78 - "rn"
-Cohesion: 0.02
-Nodes (22): _allocateTargets(), _applyGGXFilter(), bo(), Bu(), _cleanup(), _compileMaterial(), Fa, gF (+14 more)
-
 ### Community 79 - ".parseObject"
-Cohesion: 0.05
-Nodes (16): Bone, CubicPoly(), init(), DataTexture, Fog, FogExp2, InstancedBufferAttribute, InstancedMesh (+8 more)
+Cohesion: 0.22
+Nodes (5): ObjectLoader, getGeometry(), getMaterial(), getTexture(), parseConstant()
 
 ### Community 80 - "Box3"
-Cohesion: 0.06
-Nodes (4): ascSort(), Box2, Box3, Raycaster
+Cohesion: 0.04
+Nodes (10): ascSort(), Box2, Box3, checkIntersection(), checkIntersection$1(), Raycaster, getInteriorPoint(), pointInPolygon() (+2 more)
+
+### Community 81 - "Matrix4"
+Cohesion: 0.04
+Nodes (5): Bone, CubicPoly(), init(), Matrix4, Skeleton
 
 ### Community 82 - "get"
-Cohesion: 0.13
-Nodes (40): setValueT1(), shadowCastingAndTexturingLightsFirst(), WebGLCapabilities(), getMaxAnisotropy(), textureFormatReadable(), textureTypeReadable(), setup(), WebGLProperties() (+32 more)
+Cohesion: 0.09
+Nodes (74): enhanceLogMessage(), error(), warn(), fetchAttributeLocations(), WebGLCapabilities(), getMaxAnisotropy(), textureFormatReadable(), textureTypeReadable() (+66 more)
 
 ### Community 83 - "rc"
 Cohesion: 0.04
-Nodes (8): hl(), b(), PR, rc, UR, wl(), Xt(), Xv
+Nodes (7): hl(), b(), rc, _s, UR, wl(), Xt()
 
 ### Community 84 - "Ii"
-Cohesion: 0.04
+Cohesion: 0.05
 Nodes (3): cr, Ii, raycast()
 
-### Community 85 - ".getTypeLength"
-Cohesion: 0.07
-Nodes (5): _h(), nm, rm, xw(), yw()
+### Community 85 - ".getNodeType"
+Cohesion: 0.08
+Nodes (3): generate(), nm, rm
+
+### Community 87 - "Vector4"
+Cohesion: 0.04
+Nodes (3): Spherical, toHalfFloat(), Vector4
 
 ### Community 88 - "Vector3"
 Cohesion: 0.04
-Nodes (16): applyRadius(), azimuth(), correctSeam(), correctUV(), correctUVs(), generateUVs(), getVertexByIndex(), inclination() (+8 more)
+Nodes (13): applyRadius(), azimuth(), correctSeam(), correctUV(), correctUVs(), generateUVs(), getVertexByIndex(), inclination() (+5 more)
 
 ### Community 90 - "test_beta_spend_cap.py"
 Cohesion: 0.12
 Nodes (15): demo(), _queue_reply(), Self-check for the beta-tester $1 spend cap (ULTRON_BETA_MAX_SPEND_USD) and the…, [private], Real Safeguards, Not Just Docs, Bug: bot.chat_histories Raced On Double-Fired /ask, Bug: No Per-History-Message Size Cap, Bug: _PRESENCE Dict Race (Dictionary Changed Size During Iteration) (+7 more)
 
 ### Community 91 - "gu"
-Cohesion: 0.09
-Nodes (4): gu(), qU(), xu(), ZU()
+Cohesion: 0.08
+Nodes (5): gu(), qU(), xu(), yu(), ZU()
 
-### Community 92 - "RT"
-Cohesion: 0.05
-Nodes (7): get(), Gy, Jf, jy, ox, RT, wy
+### Community 92 - ".setup"
+Cohesion: 0.04
+Nodes (9): Ff(), get(), Gy, Jf, jy, om, ox, um (+1 more)
 
 ### Community 93 - "Curve"
+Cohesion: 0.07
+Nodes (4): Curve, CurvePath, LineCurve, LineCurve3
+
+### Community 95 - "Material"
+Cohesion: 0.04
+Nodes (14): LineDashedMaterial, Material, MeshDepthMaterial, MeshDistanceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial (+6 more)
+
+### Community 96 - "Matrix3"
 Cohesion: 0.08
-Nodes (3): Curve, LineCurve, LineCurve3
-
-### Community 94 - ".copy"
-Cohesion: 0.03
-Nodes (12): convertBufferAttribute(), checkIntersection$1(), Cylindrical, LightShadow, sortedArray(), Spherical, SphericalHarmonics3, Sprite (+4 more)
-
-### Community 95 - "Vector2"
-Cohesion: 0.02
-Nodes (15): LineDashedMaterial, Material, MeshDepthMaterial, MeshDistanceMaterial, MeshLambertMaterial, MeshMatcapMaterial, MeshNormalMaterial, MeshPhongMaterial (+7 more)
+Nodes (5): Matrix3, Source, warnOnce(), WebGLExtensions(), getExtension()
 
 ### Community 97 - "WebGLRenderer"
-Cohesion: 0.06
-Nodes (19): WebGLRenderTarget, _createRenderTarget(), WebGLCubeRenderTarget, WebGLRenderer, renderObject(), renderObjects(), renderScene(), renderTransmissionPass() (+11 more)
+Cohesion: 0.05
+Nodes (16): WebGLRenderTarget, _createRenderTarget(), WebGLCubeRenderTarget, WebGLRenderer, renderTransmissionPass(), VSMPass(), viewport(), WebXRManager (+8 more)
 
 ### Community 99 - "update"
-Cohesion: 0.06
-Nodes (49): WebGLAttributes(), createBuffer(), get(), remove(), update(), updateBuffer(), WebGLBufferRenderer(), render() (+41 more)
+Cohesion: 0.08
+Nodes (36): WebGLAttributes(), createBuffer(), get(), remove(), update(), updateBuffer(), WebGLBufferRenderer(), render() (+28 more)
 
 ### Community 100 - "getMaterialExtension"
-Cohesion: 0.06
+Cohesion: 0.05
 Nodes (14): getMaterialExtension(), GLTFLoader, GLTFMaterialsAnisotropyExtension, GLTFMaterialsBumpExtension, GLTFMaterialsClearcoatExtension, GLTFMaterialsDispersionExtension, GLTFMaterialsEmissiveStrengthExtension, GLTFMaterialsIorExtension (+6 more)
 
 ### Community 101 - ".constructor"
-Cohesion: 0.10
-Nodes (26): log(), dispose(), WebGLEnvironments(), dispose(), get(), getCube(), getPMREM(), isCubeTextureComplete() (+18 more)
+Cohesion: 0.09
+Nodes (33): WebGLAnimation(), onAnimationFrame(), WebGLIndexedBufferRenderer(), render(), renderInstances(), renderMultiDraw(), setIndex(), setMode() (+25 more)
 
 ### Community 102 - "yn"
 Cohesion: 0.04
-Nodes (5): Ze(), qC(), qN, Un, yn()
+Nodes (4): Ze(), qN, Un, yn()
 
-### Community 103 - ".render"
-Cohesion: 0.08
-Nodes (22): BoxGeometry, getUnlitUniformColorSpace(), Mesh, RawShaderMaterial, ShaderMaterial, _createPlanes(), _getBlurShader(), _getCommonVertexShader() (+14 more)
+### Community 103 - ".dispose"
+Cohesion: 0.07
+Nodes (31): BoxGeometry, getUnlitUniformColorSpace(), ShaderMaterial, _getBlurShader(), _getCommonVertexShader(), _getCubemapMaterial(), _getEquirectMaterial(), _getGGXShader() (+23 more)
 
 ### Community 105 - "KeyframeTrack"
-Cohesion: 0.04
-Nodes (19): AnimationClip, AnimationUtils, BezierInterpolant, BooleanKeyframeTrack, ColorKeyframeTrack, CubicInterpolant, DiscreteInterpolant, getTrackTypeForValueTypeName() (+11 more)
+Cohesion: 0.07
+Nodes (13): AnimationClip, AnimationUtils, BooleanKeyframeTrack, ColorKeyframeTrack, getTrackTypeForValueTypeName(), KeyframeTrack, NumberKeyframeTrack, parseKeyframeTrack() (+5 more)
 
-### Community 106 - ".dispose"
-Cohesion: 0.14
-Nodes (3): ar, computeLineDistances(), Ps()
+### Community 106 - ".add"
+Cohesion: 0.03
+Nodes (26): al(), _allocateTargets(), ar, cl(), _compileMaterial(), computeLineDistances(), EE(), Fa (+18 more)
+
+### Community 107 - ".setValues"
+Cohesion: 0.08
+Nodes (5): as, Mr, na, sw, zs
 
 ### Community 108 - "Qf"
 Cohesion: 0.04
-Nodes (7): Ky, Ly, NT, Qf, Sy, Ub, yy
+Nodes (8): Ky, Ly, NT, Qf, Sy, Ub, Xv, yy
 
 ### Community 109 - ".serialize"
+Cohesion: 0.05
+Nodes (6): Aa, bb, _h(), Ia, Jg, yb
+
+### Community 112 - ".multiplyScalar"
+Cohesion: 0.05
+Nodes (3): cU, Ix, qE
+
+### Community 113 - ".push"
 Cohesion: 0.04
-Nodes (7): Aa, bb, Ff(), Ia, Jg, om, yb
+Nodes (15): BI, e(), r(), s(), mu(), i(), Su(), toJSON() (+7 more)
 
-### Community 113 - "qt"
+### Community 114 - ".render"
 Cohesion: 0.06
-Nodes (15): BI, Co(), He(), gh(), p(), ku(), c(), g() (+7 more)
-
-### Community 114 - "push"
-Cohesion: 0.11
-Nodes (25): ExternalTexture, ShadowUniformsCache(), UniformsCache(), WebGLLights(), setupView(), WebGLPrograms(), acquireProgram(), dispose() (+17 more)
+Nodes (30): ExternalTexture, RawShaderMaterial, shadowCastingAndTexturingLightsFirst(), WebGLClipping(), projectPlanes(), resetGlobalState(), WebGLLights(), setup() (+22 more)
 
 ### Community 115 - "ra"
 Cohesion: 0.06
 Nodes (6): load(), oa, ra(), sa, ua, vI
 
 ### Community 116 - "PropertyBinding"
-Cohesion: 0.06
+Cohesion: 0.07
 Nodes (3): AnimationObjectGroup, Composite, PropertyBinding
 
 ### Community 118 - "ME"
-Cohesion: 0.09
-Nodes (13): AE(), _applyPMREM(), _blur(), CE(), fromCubemap(), fromEquirectangular(), fromScene(), _fromTexture() (+5 more)
+Cohesion: 0.12
+Nodes (13): AE(), CE(), compileCubemapShader(), compileEquirectangularShader(), fromCubemap(), fromEquirectangular(), fromScene(), _fromTexture() (+5 more)
 
 ### Community 119 - ".equals"
 Cohesion: 0.07
 Nodes (34): addContour(), compareXYSlope(), createNode(), cureLocalIntersections(), earcut(), earcutLinked(), eliminateHole(), eliminateHoles() (+26 more)
 
+### Community 120 - "Color"
+Cohesion: 0.05
+Nodes (9): Color, handleAlpha(), createColorManagement(), damp(), hue2rgb(), LinearToSRGB(), Matrix2, SplineCurve (+1 more)
+
+### Community 121 - ".dispatchEvent"
+Cohesion: 0.11
+Nodes (3): Group, Scene, WebXRController
+
+### Community 122 - ".clone"
+Cohesion: 0.09
+Nodes (3): by, copy(), Fy
+
 ### Community 123 - "GLTFParser"
-Cohesion: 0.15
-Nodes (8): addMorphTargets(), addPrimitiveAttributes(), assignAttributeAccessor(), addUnknownExtensionsToUserData(), assignExtrasToUserData(), createDefaultMaterial(), GLTFParser, updateMorphTargets()
+Cohesion: 0.17
+Nodes (3): addUnknownExtensionsToUserData(), assignExtrasToUserData(), GLTFParser
 
 ### Community 127 - "tm"
-Cohesion: 0.10
-Nodes (6): am, Bx, gm(), sm, tm, YE
+Cohesion: 0.08
+Nodes (7): am, Bx, gm(), _l(), sm, tm, YE
 
 ### Community 129 - "ca"
-Cohesion: 0.11
-Nodes (4): ca, ea, La, Pa
+Cohesion: 0.08
+Nodes (5): ca, ea, ha, La, Pa
 
 ### Community 130 - "GLTFLoader.js"
 Cohesion: 0.07
-Nodes (22): ALPHA_MODES, ATTRIBUTES, BINARY_EXTENSION_CHUNK_TYPES, computeBounds(), createAttributesKey(), createPrimitiveKey(), EXTENSIONS, getNormalizedComponentScale() (+14 more)
+Nodes (27): addMorphTargets(), addPrimitiveAttributes(), assignAttributeAccessor(), ALPHA_MODES, ATTRIBUTES, BINARY_EXTENSION_CHUNK_TYPES, computeBounds(), createAttributesKey() (+19 more)
 
-### Community 132 - "ms"
-Cohesion: 0.16
-Nodes (4): getPoint(), getTangent(), getTangentAt(), ms
-
-### Community 133 - "WebXRManager"
-Cohesion: 0.10
-Nodes (8): WebGLAnimation(), onAnimationFrame(), onAnimationFrame(), WebXRDepthSensing, WebXRManager, setProjectionFromUnion(), updateCamera(), updateUserCamera()
+### Community 133 - "LoadingManager"
+Cohesion: 0.12
+Nodes (11): handleError(), readData(), HttpError, onImageError(), onImageLoad(), removeEventListeners(), intersect(), LoadingManager (+3 more)
 
 ### Community 134 - "Loader"
-Cohesion: 0.05
-Nodes (24): AnimationLoader, AudioLoader, handleError(), BufferGeometryLoader, CompressedTextureLoader, loadTexture(), CubeTextureLoader, loadTexture() (+16 more)
+Cohesion: 0.08
+Nodes (9): AnimationLoader, AudioLoader, BufferGeometryLoader, CompressedTextureLoader, CubeTextureLoader, ImageBitmapLoader, ImageLoader, Loader (+1 more)
 
-### Community 135 - "error"
-Cohesion: 0.13
-Nodes (46): error(), getByteLength(), getTextureTypeByteLength(), setValueT2DArray1(), setValueT3D1(), setValueT6(), WebGLState(), activeTexture() (+38 more)
+### Community 135 - "WebGLState"
+Cohesion: 0.23
+Nodes (17): WebGLState(), ColorBuffer(), DepthBuffer(), disable(), enable(), reset(), scissor(), setBlending() (+9 more)
+
+### Community 137 - "i"
+Cohesion: 0.06
+Nodes (4): an(), i(), n(), Tn()
+
+### Community 138 - ".build"
+Cohesion: 0.07
+Nodes (4): gN, PR, sn(), Wv
 
 ### Community 139 - "nr"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (3): nr, rr, e()
 
+### Community 140 - ".render"
+Cohesion: 0.17
+Nodes (9): _applyGGXFilter(), _applyPMREM(), _blur(), bo(), _cleanup(), _halfBlur(), _sceneToCubeUV(), _textureToCubeUV() (+1 more)
+
 ### Community 141 - "WebGLBindingStates"
-Cohesion: 0.16
+Cohesion: 0.15
 Nodes (22): WebGLBindingStates(), bindVertexArrayObject(), createBindingState(), createVertexArrayObject(), deleteVertexArrayObject(), disableUnusedAttributes(), dispose(), enableAttribute() (+14 more)
 
 ### Community 142 - "log_activity"
-Cohesion: 0.13
-Nodes (16): docker_ps(), evolution_idea_status(), log_activity(), _parse_scout_sarif(), Return container info via the Docker CLI, avoiding a hard dependency on the…, Defensive SARIF parser: Docker Scout's exact SARIF property layout isn't…, Runs `docker scout cves` for one image. Returns a result dict — never raises.…, Everything currently wrong, as {key: (status, summary)}. A pure read -- no scan… (+8 more)
+Cohesion: 0.15
+Nodes (13): evolution_idea_status(), log_activity(), _parse_scout_sarif(), Defensive SARIF parser: Docker Scout's exact SARIF property layout isn't…, Runs `docker scout cves` for one image. Returns a result dict — never raises.…, One watchdog pass. Logs each new finding once (at its own status) and each…, Best-effort logging — never raises. A logging failure (disk full, permissions,…, _scan_image_cves() (+5 more)
 
-### Community 143 - "sr"
-Cohesion: 0.12
-Nodes (3): sr, i(), Zi()
-
-### Community 144 - "cc"
-Cohesion: 0.05
-Nodes (5): cc(), dw, Mr, Nw, vw
-
-### Community 145 - ".generateConst"
+### Community 145 - "vs"
 Cohesion: 0.09
-Nodes (5): cy, hy(), ir, um, uy()
+Nodes (4): cy, hy(), ir, vs
 
 ### Community 148 - "gen_pixel_assets.py"
 Cohesion: 0.16
@@ -645,69 +692,73 @@ Nodes (24): draw_app_icon(), draw_console_panel(), draw_desk_monitor(), draw_roo
 Cohesion: 0.15
 Nodes (19): est_tokens(), main(), Step 32: measure context size before/after retrieval, for real queries against…, format_for_context(), main(), Module 8's read path: given a task/topic, pull a bounded, relevant slice of the…, Compact, LLM-readable text -- NOT a JSON dump. This is what actually gets fed…, demo_real_graph_recall() (+11 more)
 
-### Community 150 - "warnOnce"
-Cohesion: 0.18
-Nodes (4): Source, warnOnce(), WebGLExtensions(), getExtension()
+### Community 150 - "yc"
+Cohesion: 0.09
+Nodes (3): Es, gs, yc()
 
 ### Community 154 - "Texture"
-Cohesion: 0.04
-Nodes (12): CanvasTexture, CubeTexture, Data3DTexture, DataArrayTexture, EventDispatcher, FramebufferTexture, HTMLTexture, RenderTarget (+4 more)
+Cohesion: 0.08
+Nodes (4): CubeTexture, EventDispatcher, FramebufferTexture, Texture
 
-### Community 155 - "getParameters"
-Cohesion: 0.17
-Nodes (6): isPackedRGFormat(), getMaxPrecision(), getChannel(), getParameters(), WebGLShaderCache, WebGLShaderStage
+### Community 155 - "WebGLPrograms"
+Cohesion: 0.13
+Nodes (13): isPackedRGFormat(), getMaxPrecision(), WebGLPrograms(), acquireProgram(), dispose(), getChannel(), getParameters(), getProgramCacheKey() (+5 more)
 
 ### Community 156 - "pu"
-Cohesion: 0.14
-Nodes (14): Ge(), J(), ke(), du, hu, pu(), ce(), he() (+6 more)
+Cohesion: 0.09
+Nodes (20): Bu(), i(), Ge(), J(), ke(), du, Hs(), hu (+12 more)
 
 ### Community 158 - "wf"
-Cohesion: 0.24
+Cohesion: 0.17
 Nodes (3): MF(), wf, n()
 
-### Community 159 - ".fromArray"
-Cohesion: 0.06
-Nodes (6): $a, Ds(), e(), fromJSON(), Is, Us
+### Community 159 - "Is"
+Cohesion: 0.11
+Nodes (4): Ds(), fromJSON(), Is, Us
 
-### Community 162 - "Audio"
-Cohesion: 0.05
-Nodes (4): Audio, AudioAnalyser, Controls, PositionalAudio
+### Community 160 - "yr"
+Cohesion: 0.06
+Nodes (3): uy(), vc(), yr
 
 ### Community 163 - "InterleavedBuffer"
-Cohesion: 0.06
-Nodes (10): getArrayBuffer(), getInterleavedBuffer(), CubeDepthTexture, DepthTexture, generateUUID(), getTypedArray(), InstancedBufferGeometry, InstancedInterleavedBuffer (+2 more)
+Cohesion: 0.11
+Nodes (5): getArrayBuffer(), getInterleavedBuffer(), generateUUID(), getTypedArray(), InterleavedBuffer
 
 ### Community 164 - "gen_design_assets.py"
 Cohesion: 0.16
 Nodes (15): chrome_gradient(), draw_body_design(), draw_relic_casing(), draw_vein_texture(), branch(), glow(), main(), outline() (+7 more)
 
-### Community 168 - "Light"
-Cohesion: 0.06
-Nodes (9): AmbientLight, DirectionalLight, HemisphereLight, Light, LightProbe, PointLight, PointLightShadow, RectAreaLight (+1 more)
-
-### Community 169 - "Timer"
-Cohesion: 0.12
-Nodes (4): AudioContext, ImageUtils, serializeImage(), Timer
+### Community 168 - ".toJSON"
+Cohesion: 0.04
+Nodes (15): DirectionalLight, HemisphereLight, InstancedBufferGeometry, InstancedInterleavedBuffer, Light, LightProbe, extractFromCache(), extractFromCache() (+7 more)
 
 ### Community 170 - "FR"
 Cohesion: 0.11
 Nodes (8): BR, FR, GR, HR, jR, kR, OR, zR
 
-### Community 174 - "Km"
-Cohesion: 0.16
-Nodes (5): bw(), Km(), kw(), OT, Ym
+### Community 171 - "ja"
+Cohesion: 0.11
+Nodes (3): bc(), HE, ja()
 
-### Community 175 - "Interaction"
-Cohesion: 0.17
-Nodes (13): button, Interaction, Fake interaction for testing command and button handlers directly., backend_post(), backup_command(), ConfirmActionView, deploy_command(), format_backup_preview_embed() (+5 more)
+### Community 174 - "Km"
+Cohesion: 0.29
+Nodes (3): Km(), kw(), Ym
+
+### Community 175 - "bot.py"
+Cohesion: 0.13
+Nodes (20): describe, event, ask_command(), backend_chat(), backend_get_csv(), backend_post(), BackendError, backup_command() (+12 more)
 
 ### Community 176 - ".parse"
-Cohesion: 0.12
-Nodes (6): GLTFBinaryExtension, GLTFDracoMeshCompressionExtension, GLTFMaterialsUnlitExtension, GLTFMeshQuantizationExtension, createDracoPrimitive(), toTrianglesDrawMode()
+Cohesion: 0.18
+Nodes (3): GLTFBinaryExtension, GLTFMaterialsUnlitExtension, GLTFMeshQuantizationExtension
 
-### Community 177 - "IT"
-Cohesion: 0.12
-Nodes (3): IT, UT, za
+### Community 177 - "fs"
+Cohesion: 0.10
+Nodes (3): fs(), IT, UT
+
+### Community 178 - "Interpolant"
+Cohesion: 0.10
+Nodes (8): BezierInterpolant, cubicBezierSlope(), CubicInterpolant, DiscreteInterpolant, Interpolant, LinearInterpolant, QuaternionLinearInterpolant, solveBezierParameter()
 
 ### Community 180 - "summarize_session.py"
 Cohesion: 0.23
@@ -715,7 +766,7 @@ Nodes (14): collect_commits(), compress(), find_related_nodes(), _is_noise(), ma
 
 ### Community 182 - "Ki"
 Cohesion: 0.05
-Nodes (5): Be(), jN, Ki(), outputColorSpace(), tw
+Nodes (5): Be(), FI, jN, Ki(), outputColorSpace()
 
 ### Community 184 - "PolyhedronGeometry"
 Cohesion: 0.13
@@ -726,7 +777,7 @@ Cohesion: 0.16
 Nodes (7): computeMikkTSpaceTangents(), computeMorphedAttributes(), deepCloneAttribute(), deinterleaveAttribute(), deinterleaveGeometry(), mergeAttributes(), mergeGeometries()
 
 ### Community 187 - "addShape"
-Cohesion: 0.31
+Cohesion: 0.18
 Nodes (10): addShape(), addUV(), addVertex(), buildLidFaces(), buildSideFaces(), f3(), f4(), getBevelVec() (+2 more)
 
 ### Community 189 - "test_backup_restore.py"
@@ -737,28 +788,32 @@ Nodes (11): backup(), Module 9: automated periodic backup of the graph data that
 Cohesion: 0.20
 Nodes (10): add_plate(), add_skull(), build(), make_emissive(), make_metal(), mirror_x(), Module 13: builds the dashboard hero's robotic AI head, procedurally, via…, Left/right symmetry via a Mirror modifier rather than hand-duplicating every… (+2 more)
 
-### Community 192 - "setProgram"
-Cohesion: 0.12
-Nodes (28): WebGLMaterials(), refreshFogUniforms(), refreshMaterialUniforms(), refreshTransformUniform(), refreshUniformsCommon(), refreshUniformsDash(), refreshUniformsDistance(), refreshUniformsLine() (+20 more)
+### Community 192 - "WebGLMaterials"
+Cohesion: 0.33
+Nodes (14): WebGLMaterials(), refreshMaterialUniforms(), refreshTransformUniform(), refreshUniformsCommon(), refreshUniformsDash(), refreshUniformsDistance(), refreshUniformsLine(), refreshUniformsMatcap() (+6 more)
 
-### Community 193 - "sc"
-Cohesion: 0.12
-Nodes (4): ac(), gi(), sc(), uc()
+### Community 194 - ".load"
+Cohesion: 0.33
+Nodes (3): loadTexture(), loadTexture(), FileLoader
+
+### Community 195 - "CubicBezierCurve"
+Cohesion: 0.11
+Nodes (7): CubicBezier(), CubicBezierCurve, CubicBezierCurve3, CubicBezierP0(), CubicBezierP1(), CubicBezierP2(), CubicBezierP3()
 
 ### Community 196 - "pF"
 Cohesion: 0.18
 Nodes (4): pF, vF, xF, yF
 
-### Community 197 - "_s"
-Cohesion: 0.07
-Nodes (4): cm, jw, _s, xg
+### Community 197 - ".getMemberType"
+Cohesion: 0.13
+Nodes (3): cm, jw, xg
 
-### Community 201 - "export_command"
-Cohesion: 0.18
-Nodes (9): choices, Choice, backend_chat(), backend_get_csv(), BackendError, export_command(), Exception, Raised for any backend call that didn't succeed, with a message that's already… (+1 more)
+### Community 201 - "QuadraticBezierCurve"
+Cohesion: 0.12
+Nodes (6): QuadraticBezier(), QuadraticBezierCurve, QuadraticBezierCurve3, QuadraticBezierP0(), QuadraticBezierP1(), QuadraticBezierP2()
 
 ### Community 202 - ".loadTextureImage"
-Cohesion: 0.18
+Cohesion: 0.20
 Nodes (3): GLTFTextureAVIFExtension, GLTFTextureBasisUExtension, GLTFTextureWebPExtension
 
 ### Community 203 - "Remote access — Tailscale setup"
@@ -768,10 +823,6 @@ Nodes (12): 1. Install on the Cyberpower PC (the backend host), 2. Windows Firew
 ### Community 205 - "test_web_search.py"
 Cohesion: 0.28
 Nodes (4): demo(), fake_urlopen(), _FakeResponse, Self-check for Scout, the web_search chat tool backed by self-hosted SearXNG.…
-
-### Community 206 - "qr"
-Cohesion: 0.06
-Nodes (4): ma, ns, qr, ss
 
 ### Community 207 - "ow"
 Cohesion: 0.20
@@ -788,6 +839,10 @@ Nodes (21): [private], file:// Origin fetch() Bug (mobile Chrome Connect button)
 ### Community 210 - "Dashboard hero visual redesign (Module 13) — v1"
 Cohesion: 0.20
 Nodes (9): Dashboard hero visual redesign (Module 13) — v1, Known limitations — not solved this round, New: a static-asset route, because the dashboard wasn't just one file anymore, Pipeline: reusing Module 5, not rebuilding it, Real bugs found live — not assumed to work, Runtime: what the Three.js side actually does, Testing (step 56), The geometry: three failed renders before one that reads as a head (+1 more)
+
+### Community 211 - "RenderTarget"
+Cohesion: 0.18
+Nodes (4): Data3DTexture, RenderTarget, RenderTarget3D, WebGL3DRenderTarget
 
 ### Community 212 - "Home dashboard visual redesign (Module 14) — v1"
 Cohesion: 0.22
@@ -834,12 +889,16 @@ Cohesion: 0.25
 Nodes (7): Compressing redundancy, never substance (step 28), Known limitations — not solved tonight, session-write (Module 7), The two-step workflow, Verified, What gets drafted, Why "capture what changed and why" doesn't need an LLM re-summarizing
 
 ### Community 225 - ".copy"
-Cohesion: 0.04
-Nodes (10): ck(), Dr, Es, gs, Os, Ts, vs, ya (+2 more)
+Cohesion: 0.03
+Nodes (8): ck(), Da, Dr, ns, Os, qr, Ts, ya
 
-### Community 226 - "createColorManagement"
-Cohesion: 0.29
-Nodes (3): createColorManagement(), LinearToSRGB(), SRGBToLinear()
+### Community 226 - "Line"
+Cohesion: 0.18
+Nodes (3): Line, PlaneHelper, _points
+
+### Community 228 - "qt"
+Cohesion: 0.12
+Nodes (5): Co(), He(), g(), OI, qt()
 
 ### Community 229 - "Site-wide visual polish: black + metal + blue + gold + red"
 Cohesion: 0.25
@@ -853,33 +912,29 @@ Nodes (6): Automated (real, not just documented), backup (Module 9), "Confirm re
 Cohesion: 0.38
 Nodes (4): demo_classification(), demo_edge_creation_and_one_hop_recall(), _note_row(), Module 10 self-check: runtime knowledge graph on top of memory_notes. Proves…
 
-### Community 233 - "warn"
-Cohesion: 0.19
-Nodes (9): createCanvasElement(), createElementNS(), enhanceLogMessage(), setQuaternionFromProperEuler(), warn(), fetchAttributeLocations(), onFirstUse(), createCanvas() (+1 more)
+### Community 233 - "createElementNS"
+Cohesion: 0.32
+Nodes (5): createCanvasElement(), createElementNS(), ImageUtils, serializeImage(), createCanvas()
 
 ### Community 234 - "Open-sourcing Ultron (Module 12) — v1"
 Cohesion: 0.29
 Nodes (6): 36. Confirm Module 3 and Module 4 are solid, 37. Pick a license, 38. Public-facing documentation, without exposing home lab layout, network details, or financial specifics, 39. Secret scanner one final time, then manual review, before flipping visibility, Open-sourcing Ultron (Module 12) — v1, What's NOT done here — deliberately left to the user
 
-### Community 238 - ".update"
-Cohesion: 0.04
-Nodes (15): aw, Bf(), L(), P(), gc(), HI, iw, jc() (+7 more)
+### Community 237 - "TextureSource"
+Cohesion: 0.17
+Nodes (3): CubeDepthTexture, DepthTexture, TextureSource
 
-### Community 242 - ".toJSON"
-Cohesion: 0.12
-Nodes (4): ha, r(), s(), yi
+### Community 238 - ".constructor"
+Cohesion: 0.06
+Nodes (12): Bf(), dispose(), L(), P(), HI, jc(), oc(), qC() (+4 more)
 
-### Community 247 - ".push"
-Cohesion: 0.03
-Nodes (23): CatmullRom(), CubicBezierCurve, CubicBezierCurve3, CurvePath, ExtrudeGeometry, flattenJSON(), extractFromCache(), MultiDrawRenderList (+15 more)
-
-### Community 248 - "WebGLClipping"
-Cohesion: 0.33
-Nodes (3): WebGLClipping(), projectPlanes(), resetGlobalState()
+### Community 247 - "Path"
+Cohesion: 0.10
+Nodes (4): ArcCurve, EllipseCurve, Path, ShapePath
 
 ### Community 250 - "_get_db_connection"
 Cohesion: 0.10
-Nodes (24): add_trade(), distill_activity_trends(), evolution_ideas(), _get_db_connection(), get_ideas(), get_trades(), _init_db(), _notes_as_graph() (+16 more)
+Nodes (24): distill_activity_trends(), evolution_ideas(), _get_db_connection(), get_ideas(), _init_db(), _notes_as_graph(), propose_idea(), Best-effort, like log_activity -- runs unattended on a background timer with… (+16 more)
 
 ### Community 251 - "Financial action boundary (Module 11) — permanent, no sunset condition"
 Cohesion: 0.40
@@ -893,9 +948,9 @@ Nodes (4): Before any future open-source visibility change (Module 12 gate), Git
 Cohesion: 0.40
 Nodes (4): Deliberately not done here, Prerequisites this confirmed are in place, three-pipeline (Module 5), What's here
 
-### Community 255 - ".add"
-Cohesion: 0.08
-Nodes (6): Fy, f(), qE, rx, yh(), zm()
+### Community 254 - "Bot"
+Cohesion: 0.22
+Nodes (3): Bot, Mirrors discord.ext.commands.when_mentioned's shape; bot.py only passes it as…, when_mentioned()
 
 ### Community 256 - "Master Index (Obsidian Vault Root)"
 Cohesion: 0.12
@@ -909,6 +964,18 @@ Nodes (3): demo(), _login(), Self-check for the dashboard sign-in gate's real ch
 Cohesion: 0.60
 Nodes (4): demo(), Self-check for Economy mode ("lite": true on /api/chat). Proves the mechanism…, _text_reply(), _tool_call()
 
+### Community 260 - "View"
+Cohesion: 0.22
+Nodes (3): Button, ui, View
+
+### Community 261 - ".setGroup"
+Cohesion: 0.09
+Nodes (4): BA(), hx, iy, lx
+
+### Community 263 - "DataTexture"
+Cohesion: 0.25
+Nodes (3): DataTexture, DataTextureLoader, getDFGLUT()
+
 ### Community 264 - "TLS cert for the backend"
 Cohesion: 0.50
 Nodes (3): Regenerating, TLS cert for the backend, What happens without a cert here
@@ -921,25 +988,29 @@ Nodes (3): demo(), _queue_reply(), Self-check for the chat transcript log (chat_
 Cohesion: 0.67
 Nodes (3): demo(), Self-check for Sentinel, the zero-token security watchdog. Drives…, _sentinel_events()
 
+### Community 293 - "cloneUniforms"
+Cohesion: 0.40
+Nodes (4): cloneUniforms(), cloneUniformsGroups(), isThreeObject(), mergeUniforms()
+
 ## Knowledge Gaps
 - **406 isolated node(s):** `ButtonStyle`, `SHELL`, `ASSET_PREFIXES`, `EXTENSIONS`, `BINARY_EXTENSION_CHUNK_TYPES` (+401 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2441 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **134 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2445 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **135 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `gl()` connect `WebGLRenderer` to `setProgram`, `warn`, `3d-force-graph.min.js`?**
-  _High betweenness centrality (0.267) - this node is a cross-community bridge._
-- **Why does `onFirstUse()` connect `warn` to `setProgram`, `WebGLRenderer`, `error`, `WebGLBindingStates`, `three.module.js`?**
-  _High betweenness centrality (0.113) - this node is a cross-community bridge._
-- **Why does `handleTriangle()` connect `.add` to `BufferGeometry`, `.normalize`, `.copy`, `Vector4`?**
-  _High betweenness centrality (0.102) - this node is a cross-community bridge._
+- **Why does `gl()` connect `WebGLRenderer` to `n`, `.dispose`, `.push`, `get`, `3d-force-graph.min.js`?**
+  _High betweenness centrality (0.286) - this node is a cross-community bridge._
+- **Why does `onFirstUse()` connect `get` to `WebGLRenderer`, `.constructor`, `WebGLBindingStates`, `three.module.js`?**
+  _High betweenness centrality (0.116) - this node is a cross-community bridge._
+- **Why does `update()` connect `.dispose` to `WebGLRenderer`, `.constructor`, `DataArrayTexture`, `Vector2`, `get`?**
+  _High betweenness centrality (0.090) - this node is a cross-community bridge._
 - **What connects `ButtonStyle`, `SHELL`, `ASSET_PREFIXES` to the rest of the system?**
   _406 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `bot.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.1422475106685633 - nodes in this community are weakly interconnected._
+- **Should `Interaction` be split into smaller, more focused modules?**
+  _Cohesion score 0.12612612612612611 - nodes in this community are weakly interconnected._
 - **Should `constructor` be split into smaller, more focused modules?**
-  _Cohesion score 0.08258258258258258 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.044444444444444446 - nodes in this community are weakly interconnected._
 - **Should `Tonight: chat feature work + roadmap Modules 1-6 (2026-09-14)` be split into smaller, more focused modules?**
   _Cohesion score 0.09 - nodes in this community are weakly interconnected._

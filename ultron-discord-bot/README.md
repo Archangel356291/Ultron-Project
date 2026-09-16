@@ -20,6 +20,7 @@ implementation of "what the system status is," not two that can drift apart.
 | `/usage` | Today's real Claude API token usage, cache activity, and budget status | free |
 | `/connections` | Who's connected right now — people, role, device count, last seen | free |
 | `/mcp` | External tool servers, reachability, and which tools are approved | free |
+| `/threats` | Sentinel's live security view — active findings (lockouts, stopped containers, critical CVEs) and last check | free |
 | `/export` | Download trades as a CSV file — transactions or tax-lots | free |
 | `/backup` | **Mutates the host.** Preview a backup, confirm with a button | free |
 | `/deploy` | **Mutates the host.** Preview a container deploy, confirm with a button | free |

@@ -939,11 +939,6 @@
   .sev.crit{ color:var(--red-bright); }
 
   /* ---------- crypto ---------- */
-  .ticker-row{ display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-  .ticker-card{ flex:1; min-width:140px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px 16px; }
-  .ticker-card .sym{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
-  .ticker-card .price{ font-family:var(--font-display); font-size:22px; font-weight:600; margin-top:2px; }
-  .ticker-card .chg{ font-family:var(--font-mono); font-size:11.5px; margin-top:3px; }
   .chg.up{ color:var(--signal); }
   .chg.down{ color:var(--red-bright); }
   .disclaimer{ font-size:12px; color:var(--text-faint); border-left:2px solid var(--line); padding:8px 12px; margin-top:16px; line-height:1.5; }
@@ -1680,22 +1675,8 @@
       <!-- CRYPTO & MARKETS -->
       <section class="section" id="sec-crypto">
         <h2 class="section-title">Crypto &amp; markets</h2>
-        <p class="section-desc">Prices, trend context, and alerts.</p>
-        <div class="ticker-row">
-          <div class="ticker-card"><div class="sym">BTC</div><div class="price">$64,180</div><div class="chg up">▲ 1.8% 24h</div></div>
-          <div class="ticker-card"><div class="sym">ETH</div><div class="price">$3,410</div><div class="chg down">▼ 0.6% 24h</div></div>
-          <div class="ticker-card"><div class="sym">SOL</div><div class="price">$142.90</div><div class="chg up">▲ 3.2% 24h</div></div>
-          <div class="ticker-card"><div class="sym">SPY</div><div class="price">$561.20</div><div class="chg up">▲ 0.4% 24h</div></div>
-        </div>
-        <div class="card">
-          <div class="panel-label">Alerts</div>
-          <div class="status-list">
-            <div class="status-row"><span class="label">BTC crosses $65,000</span><span class="val">armed</span></div>
-            <div class="status-row"><span class="label">ETH drops below $3,200</span><span class="val">armed</span></div>
-            <div class="status-row"><span class="label">SOL 24h volume spike &gt;40%</span><span class="val">armed</span></div>
-          </div>
-        </div>
-        <div class="disclaimer">This panel is a data and alerting surface — live prices, thresholds, and history. It's not a source of trading signals or investment advice; treat any automated "analysis" here as a starting point for your own research, not a recommendation.</div>
+        <p class="section-desc">Your own trade ledger and its FIFO gain/loss — record-keeping, not advice. There is no live price feed here: this backend has no exchange or market-data connection, so nothing on this page pretends to be one.</p>
+        <div class="disclaimer">Factual record-keeping only. The realized gain/loss figures are a FIFO calculation over the trades you entered, not tax advice and not a trading signal; the backend embeds the same disclaimer in every API response and CSV export.</div>
 
         <div class="panel-label" style="margin-top:20px" data-role="admin">My trades — manual record-keeping</div>
         <div class="card" style="margin-bottom:16px" data-role="admin">

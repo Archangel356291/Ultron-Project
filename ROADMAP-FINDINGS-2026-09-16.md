@@ -147,6 +147,22 @@ source, that the cache version tracks the dashboard's content, and that
 every manifest icon serves as a real PNG. Also in the findings for item
 3: Economy mode was built and verified the same day.
 
+## Also fixed on the way
+
+- **Crypto & Markets no longer shows fake data.** The hardcoded
+  BTC/ETH/SOL/SPY ticker and the three "armed" alerts (flagged in both
+  `HOME-DASHBOARD-REDESIGN.md` and `ULTRON-COLOR-SYSTEM.md`, never
+  removed) are gone; the page now says plainly that this backend has no
+  market-data connection and shows only the real ledger and FIFO figures.
+- **`/threats` in the Discord bot** — Sentinel parity, per the project's
+  every-feature-gets-a-command rule; `dev-tools/test_bot_threats.py`.
+  Writing it exposed that `bot.py` could not even be imported under the
+  fake `discord` package (`commands.when_mentioned` was missing), which
+  is why no bot test had existed — the fake was extended, per
+  `dev-tools/README.md`'s own rule.
+- **Local time in every container** (`TZ` on backend, bot and SearXNG);
+  activity, chat-log and Sentinel timestamps were UTC.
+
 ## 5. Tools, plugins and skills survey
 
 Checked with `claude plugin list` / `claude plugin marketplace list` on
