@@ -88,7 +88,9 @@
     opts = opts || {};
     var ilvl = opts.ilvl || 1, dur = opts.dur || 0;
     var rnd = rngFrom(opts.seed);
-    var p = deriveStats(gear); p.ehpCur = p.ehp;
+    var p = deriveStats(gear);
+    if (opts.powerMult && opts.powerMult !== 1) { p.dps *= opts.powerMult; p.ehp *= opts.powerMult; p.power = Math.round(p.power * opts.powerMult); }  // skill-tree combat bonus
+    p.ehpCur = p.ehp;
     var waveCount = [3, 5, 8][dur] || 3;
     var waves = [], i;
     for (i = 0; i < waveCount - 1; i++) waves.push(scaleEnemy(TRASH[Math.floor(rnd() * TRASH.length)], ilvl));

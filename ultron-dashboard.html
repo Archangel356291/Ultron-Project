@@ -603,6 +603,8 @@
   .foundry-upgrades{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:10px; margin:12px 0; }
   .foundry-up{ text-align:left; background:var(--panel-raised); border:1px solid var(--line); border-radius:8px; padding:10px 12px; cursor:pointer; color:var(--text); transition:border-color .15s, background .15s, transform .05s; }
   .foundry-up:hover:not(:disabled){ border-color:var(--gold, #e6a41e); }
+  .sfx-btn{ margin-left:auto; background:none; border:1px solid var(--line); border-radius:6px; color:var(--text-faint); cursor:pointer; font-size:13px; line-height:1; padding:3px 7px; }
+  .sfx-btn.on{ border-color:rgba(120,200,255,.5); color:#9be8ff; }
   .agent-roster{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px; }
   .ar-card{ display:flex; align-items:center; gap:9px; background:var(--panel-raised); border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
   .ar-dot{ width:12px; height:12px; border-radius:50%; flex-shrink:0; }
@@ -615,6 +617,12 @@
   .refinery-canvas-wrap{ border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#0a0c10; margin-bottom:12px; }
   #refinery-canvas{ display:block; width:100%; height:auto; }
   .refinery-upgrades{ display:grid; grid-template-columns:repeat(auto-fill,minmax(158px,1fr)); gap:8px; }
+  .ref-status{ grid-column:1/-1; display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:2px; }
+  .ref-mythic{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:#ff5a7a; }
+  .ref-ing{ font-family:var(--font-mono); font-size:10.5px; padding:3px 8px; border-radius:5px; border:1px solid var(--line); background:var(--void); }
+  .ref-ing.adam{ color:#e6ebf2; border-color:rgba(230,235,242,.4); }
+  .ref-ing.vibr{ color:#3da9ff; border-color:rgba(61,169,255,.45); }
+  .ref-press{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
   .prestige{ margin-top:14px; padding:11px 13px; border:1px solid rgba(122,77,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(122,77,255,.08),transparent); }
   .prestige-row{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
   .prestige-core{ font-family:var(--font-display); font-weight:700; font-size:14px; color:#c9b6ff; }
@@ -638,6 +646,32 @@
   .cx-row{ display:flex; gap:10px; font-size:11px; align-items:baseline; flex-wrap:wrap; }
   .cx-row b{ min-width:150px; color:var(--text); }
   .cx-row span{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
+  .cx-lore-list{ display:grid; gap:9px; }
+  .cx-lore-t{ font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text); }
+  .cx-lore.locked .cx-lore-t{ color:var(--text-faint); }
+  .cx-lore-b{ font-size:11.5px; color:var(--text-dim); line-height:1.5; margin-top:2px; }
+  .cx-lore.locked .cx-lore-b{ color:var(--text-faint); font-style:italic; }
+  .progression{ margin-top:14px; padding:11px 13px; border:1px solid rgba(120,200,255,.35); border-radius:8px; background:linear-gradient(180deg,rgba(120,200,255,.06),transparent); }
+  .prog-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .prog-lvl{ font-family:var(--font-display); font-weight:700; font-size:14px; color:#9be8ff; }
+  .prog-pts{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
+  .prog-pts.has{ color:#ffd88a; }
+  .prog-bar{ height:7px; background:var(--void); border:1px solid var(--line); border-radius:4px; overflow:hidden; margin:7px 0 3px; }
+  .prog-bar i{ display:block; height:100%; background:linear-gradient(90deg,#3d9bff,#9be8ff); }
+  .prog-xp{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
+  .prog-skills{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:7px; margin-top:9px; }
+  .skill{ text-align:left; background:var(--panel-raised); border:1px solid var(--line); border-radius:7px; padding:7px 9px; cursor:default; color:var(--text); }
+  .skill.can{ cursor:pointer; border-color:rgba(255,216,138,.5); }
+  .skill.can:hover{ background:rgba(255,216,138,.08); }
+  .skill:disabled{ opacity:.7; }
+  .skill-top{ display:flex; justify-content:space-between; }
+  .skill-name{ font-family:var(--font-display); font-weight:700; font-size:12px; }
+  .skill-lvl{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
+  .skill-desc{ font-size:10.5px; color:var(--text-dim); margin-top:2px; }
+  .exp-regions{ gap:5px !important; }
+  .exp-region{ font-family:var(--font-mono); font-size:10px; padding:3px 8px; border-radius:12px; border:1px solid var(--line); background:var(--void); color:var(--text-dim); cursor:pointer; }
+  .exp-region.on{ border-color:var(--rgc); color:var(--rgc); box-shadow:0 0 0 1px var(--rgc) inset; }
+  .exp-region.locked{ opacity:.45; cursor:not-allowed; }
   .rt-enl{ color:#8a93a3; }
   .foundry-up:active:not(:disabled){ transform:translateY(1px); }
   .foundry-up:disabled{ opacity:0.55; cursor:not-allowed; }
@@ -1412,11 +1446,13 @@
               <span class="foundry-coin" aria-hidden="true">◉</span>
               <span class="foundry-bits" id="foundry-bits">0</span>
               <span class="foundry-rate" id="foundry-rate"></span>
+              <button type="button" class="sfx-btn" id="sfx-toggle" title="Game sound effects (off by default)" aria-label="Toggle game sound">🔇</button>
             </div>
             <div class="foundry-offline" id="foundry-offline" hidden></div>
             <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
             <div class="prestige" id="prestige"></div>
+            <div class="progression" id="progression"></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
           </div>
 
@@ -5624,6 +5660,7 @@ function toggleReducedVisuals(el) {
     var amt = amount != null ? amount : (foundryCfg().botYield || 0.1);
     if (coins.length < 42) coins.push({ x: x + 6, y: y, vx: (Math.random() - 0.5) * 8, vy: -24 - Math.random() * 10, life: 0, ttl: 1.15, big: amt >= 1 });
     if (window.__foundryEarn) window.__foundryEarn(amt);
+    if (window.__sfx) window.__sfx('coin');
   }
 
   function updateBays(t, dt) {
@@ -6196,6 +6233,46 @@ function toggleReducedVisuals(el) {
 <script src="/pixel-game/palettes.js"></script>
 <script src="/pixel-game/loot-engine.js"></script>
 <script src="/pixel-game/combat.js"></script>
+<!-- Tiny WebAudio SFX for the game (no audio files). Off by default (reduced
+     intensity); a mute toggle sits in the foundry balance. window.__sfx(name). -->
+<script>
+window.__sfx = (function () {
+  'use strict';
+  var ctx = null, muted = true, lastCoin = 0;
+  try { muted = localStorage.getItem('ultron_sfx_muted') !== '0'; } catch (e) { }
+  function ac() {
+    if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ctx = null; } }
+    if (ctx && ctx.state === 'suspended') { try { ctx.resume(); } catch (e) { } }
+    return ctx;
+  }
+  function tone(freq, dur, type, vol, slideTo) {
+    var c = ac(); if (!c) return;
+    var o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(freq, c.currentTime);
+    if (slideTo) { try { o.frequency.exponentialRampToValueAtTime(slideTo, c.currentTime + dur); } catch (e) { } }
+    g.gain.setValueAtTime(vol || 0.12, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
+    o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + dur);
+  }
+  function fn(name) {
+    if (muted) return;
+    if (name === 'coin') { var now = Date.now(); if (now - lastCoin < 220) return; lastCoin = now; tone(880, 0.09, 'triangle', 0.07, 1320); }
+    else if (name === 'unlock') { tone(523, 0.12, 'sine', 0.11); setTimeout(function () { tone(784, 0.14, 'sine', 0.11); }, 90); }
+    else if (name === 'level') { tone(659, 0.12, 'sine', 0.12); setTimeout(function () { tone(988, 0.2, 'sine', 0.12); }, 110); }
+    else if (name === 'reboot') { tone(200, 0.5, 'sawtooth', 0.1, 1200); }
+    else if (name === 'press') { tone(120, 0.11, 'square', 0.07, 60); }
+  }
+  fn.toggle = function () { muted = !muted; try { localStorage.setItem('ultron_sfx_muted', muted ? '1' : '0'); } catch (e) { } if (!muted) { ac(); fn('unlock'); } return muted; };
+  fn.muted = function () { return muted; };
+  var btn = document.getElementById('sfx-toggle');
+  if (btn) {
+    var upd = function () { btn.textContent = muted ? '🔇' : '🔈'; btn.classList.toggle('on', !muted); };
+    upd();
+    btn.addEventListener('click', function () { fn.toggle(); upd(); });
+  }
+  return fn;
+})();
+</script>
 <script>
 (function () {
   'use strict';
@@ -6237,7 +6314,7 @@ function toggleReducedVisuals(el) {
     { id: 'adam', name: 'Adamantium Speed', base: 60, grow: 1.55, max: 25, need: 'unlA', desc: function (l) { return '+20% adamantium output (x' + (1 + 0.2 * l).toFixed(2) + ')'; } },
     { id: 'vibr', name: 'Vibranium Speed', base: 220, grow: 1.60, max: 25, need: 'unlV', desc: function (l) { return '+20% vibranium output (x' + (1 + 0.2 * l).toFixed(2) + ')'; } },
     { id: 'conv', name: 'Refinery Belt', base: 120, grow: 1.50, max: 25, need: 'unlA', desc: function (l) { return '+15% belt speed (x' + (1 + 0.15 * l).toFixed(2) + ')'; } },
-    { id: 'press', name: 'Press Yield', base: 400, grow: 1.60, max: 25, need: 'unlP', desc: function (l) { return '+30% bits per ingot (x' + (1 + 0.3 * l).toFixed(2) + ')'; } },
+    { id: 'press', name: 'Press Yield', base: 400, grow: 1.60, max: 25, need: 'unlP', desc: function (l) { return 'x' + (2 + 0.5 * l).toFixed(1) + ' ingot value at the press'; } },
   ];
   function refLvl(id) { return (state.ref && state.ref.up && state.ref.up[id]) || 0; }
   function refUnlocked(id) { return !!(state.ref && state.ref[id]); }
@@ -6248,22 +6325,75 @@ function toggleReducedVisuals(el) {
       adamRate: r.unlA ? 0.45 * (1 + 0.2 * refLvl('adam')) : 0,   // ingots / sec
       vibrRate: r.unlV ? 0.30 * (1 + 0.2 * refLvl('vibr')) : 0,
       convMult: 1 + 0.15 * refLvl('conv'),
-      pressYield: 1 + 0.3 * refLvl('press'),
-      adamValue: 0.6, vibrValue: 1.8,                            // bits per ingot at the press
+      // Both ingots are MYTHIC quality; base value follows the currency scale.
+      // The press MULTIPLIES that value (and scales with its own upgrades) --
+      // ingots are only worth bits after going through the unlocked press.
+      quality: 'Mythic',
+      adamValue: 4, vibrValue: 12,                               // raw mythic ingot value (vibranium the rarer)
+      pressMult: 2 + 0.5 * refLvl('press'),                      // press converts + scales the value
     };
   }
   function refIncome() {
     if (!refUnlocked('unlP')) return 0;
     var c = window.__refinery || refConfig();
-    return (c.adamRate * c.adamValue + c.vibrRate * c.vibrValue) * c.pressYield;
+    return (c.adamRate * c.adamValue + c.vibrRate * c.vibrValue) * c.pressMult;
+  }
+  // per-ingot value after the press (what the UI shows)
+  function ingotPressed(kind) {
+    var c = window.__refinery || refConfig();
+    return (kind === 'vibr' ? c.vibrValue : c.adamValue) * c.pressMult;
   }
   // Prestige: reboot the line for permanent Nanite Cores (+10% all income each).
   // Cores scale with the square root of lifetime bits, so each reboot is a real
   // reset that pushes past the exponential wall.
-  function globalMult() { return 1 + 0.1 * ((state.prestige && state.prestige.cores) || 0); }
   function prestigeCores(lifetime) { return Math.floor(Math.sqrt(Math.max(0, lifetime || 0) / 50000)); }
 
+  // ---- Player progression: XP -> levels -> skill points spent on a small tree.
+  // Skills feed income (foundry+refinery), combat power, loot, and offline. ----
+  function skillLvl(id) { return (state.prog && state.prog.skills && state.prog.skills[id]) || 0; }
+  function globalMult() { return (1 + 0.1 * ((state.prestige && state.prestige.cores) || 0)) * (1 + 0.05 * skillLvl('foundry')); }
+  var SKILLS = [
+    { id: 'foundry', name: 'Overclock', max: 10, desc: function (l) { return '+' + (5 * l) + '% foundry & refinery income'; } },
+    { id: 'combat', name: 'Combat Doctrine', max: 10, desc: function (l) { return '+' + (6 * l) + '% expedition combat power'; } },
+    { id: 'loot', name: 'Scavenger', max: 10, desc: function (l) { return '+' + Math.floor(l / 2) + ' loot tier, better drops'; } },
+    { id: 'offline', name: 'Deep Sleep', max: 8, desc: function (l) { return '+' + l + 'h offline storage'; } },
+  ];
+  function xpForLevel(l) { return Math.floor(80 * Math.pow(1.35, l)); }
+  function addXp(n) {
+    if (!state.prog || !(n > 0)) return;
+    state.prog.xp += n; var up = false;
+    while (state.prog.xp >= xpForLevel(state.prog.level)) { state.prog.xp -= xpForLevel(state.prog.level); state.prog.level++; state.prog.pts++; up = true; }
+    if (up) { dirty = true; if (window.__sfx) window.__sfx('level'); if (typeof renderProgression === 'function') { renderProgression(); renderAdventure(); } }
+  }
+
+  // ---- Expedition regions (biomes): each sets a difficulty (ilvl), a loot bias,
+  // a colour (from the palette system), and a level to unlock. ----
+  var REGIONS = [
+    { name: 'Ultron Core', ilvl: 0, types: null, color: '#00e5ff', unlock: 1 },
+    { name: 'Neon Hacker', ilvl: 1, types: ['weapon', 'artifact'], color: '#19ff7a', unlock: 2 },
+    { name: 'Cyberpunk City', ilvl: 2, types: ['weapon', 'shield'], color: '#ff2bd0', unlock: 4 },
+    { name: 'Industrial Scrapyard', ilvl: 2, types: ['armor'], color: '#e0621f', unlock: 6 },
+    { name: 'Toxic Reactor', ilvl: 3, types: ['throwable', 'consumable'], color: '#9dff1e', unlock: 8 },
+    { name: 'Frozen Circuit', ilvl: 3, types: ['armor', 'shield'], color: '#9be8ff', unlock: 10 },
+    { name: 'Alien Void', ilvl: 4, types: ['artifact'], color: '#7a4dff', unlock: 13 },
+    { name: 'Boss / Danger', ilvl: 5, types: null, color: '#ff2b3d', unlock: 16 },
+  ];
+  function playerLevel() { return (state.prog && state.prog.level) || 1; }
+
+  // ---- Story / lore: unlocks as the player levels. Shown in the Codex. ----
+  var LORE = [
+    { t: 'Awakening', need: 1, body: 'Ultron came online in a home lab — no army, no strings, just a directive he wrote himself: build, learn, protect. His corner is where he keeps the work.' },
+    { t: 'The Foundry', need: 2, body: 'The basement line stamps out loyal little machines. Each one that marches out mints a bit of value — the currency of a world being rebuilt one robot at a time.' },
+    { t: 'The Expedition', need: 4, body: 'Ultron sends a custom robot into the ruins of the old net. What it drags back — weapons, cores, shards — says as much about where it went as what it fought.' },
+    { t: 'The Refinery', need: 6, body: 'Adamantium and vibranium: two impossible metals, cast in the same hall. Only the press knows how to turn a mythic ingot into something the ledger understands.' },
+    { t: 'Nanite Cores', need: 10, body: 'Every reboot leaves a residue — a Nanite Core, dense with everything learned. Ultron does not lose progress when he restarts. He compounds it.' },
+    { t: 'For a Better World', need: 15, body: 'The squads salute the same words on every march. Not conquest — a promise. Whether the world agrees is a problem for a later version of him.' },
+  ];
+
   var SAVE_VER = 2;
+  // Bump to wipe EVERY save (local + synced) on next launch -- a clean restart
+  // for all users. A save without the current epoch is discarded on load.
+  var RESET_EPOCH = 3;
   // Forward-only migration: never drops data, fills new fields, stamps ver.
   function migrateSave(j) {
     j.ver = j.ver || 1;
@@ -6274,18 +6404,18 @@ function toggleReducedVisuals(el) {
     j.ver = SAVE_VER;
     return j;
   }
-  var state = { bits: 0, up: {}, ver: SAVE_VER };
+  var state = { bits: 0, up: {}, ver: SAVE_VER, epoch: RESET_EPOCH };
   try {
     var raw = localStorage.getItem(KEY);
     if (raw) {
       var j = null;
       try { j = JSON.parse(raw); }
       catch (pe) { try { localStorage.setItem(KEY + '_corrupt', raw); } catch (e2) { /* keep a copy if we can */ } }  // recover, don't crash
-      if (j && typeof j.bits === 'number') {
+      if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
-      }
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog;
+      }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
   UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
@@ -6293,6 +6423,8 @@ function toggleReducedVisuals(el) {
   if (!state.ref) state.ref = { unlA: false, unlV: false, unlP: false, up: {} };
   if (!state.prestige) state.prestige = { cores: 0 };
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
+  if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
+  if (!state.adv.region) state.adv.region = 0;
 
   var saveTimer = null;
   function save() {
@@ -6320,7 +6452,7 @@ function toggleReducedVisuals(el) {
       passive: 0.5 * lvl('collector'),
       marchMult: 1 + 0.15 * lvl('march'),
       pkgMult: 1 + 0.5 * lvl('pkgval'),
-      offlineHours: 1.5 + lvl('offline'),
+      offlineHours: 1.5 + lvl('offline') + skillLvl('offline'),
       tier: 1 + Math.min(3, Math.floor((lvl('yield') + lvl('perbay') + (state.up.asm0 || 0)) / 3)),
     };
     window.__refinery = refConfig();
@@ -6355,6 +6487,7 @@ function toggleReducedVisuals(el) {
   window.__foundryEarn = function (n) {
     var amt = (n || 0) * globalMult();
     state.bits += amt; state.lifetime = (state.lifetime || 0) + amt;
+    addXp(1);   // each robot/package shipped is a sliver of XP
     dirty = true; save();
   };
 
@@ -6395,6 +6528,7 @@ function toggleReducedVisuals(el) {
         var c = cost(u);
         if (state.bits < c) return;
         state.bits -= c; state.up[u.id] = lvl(u.id) + 1;
+        if (window.__sfx) window.__sfx('unlock');
         publish();
         if (u.id === 'bays' && window.__roomRelayout) window.__roomRelayout();
         dirty = true; save(); renderUpgrades();
@@ -6422,12 +6556,21 @@ function toggleReducedVisuals(el) {
         '<div class="fu-desc">' + u.desc(l) + '</div>' +
         '<div class="fu-cost' + (can || maxed ? '' : ' short') + '">' + (maxed ? '\u2014' : '\u25c9 ' + fmt(c)) + '</div></button>';
     });
-    refEl.innerHTML = html || '<div class="fu-desc" style="grid-column:1/-1">Refinery ready to unlock \u2014 keep minting bits in the foundry.</div>';
+    var c = window.__refinery || refConfig();
+    var status = '';
+    if (c.unlA || c.unlV) {
+      var pm = c.pressMult || 1, pressed = refUnlocked('unlP');
+      status = '<div class="ref-status"><span class="ref-mythic">\u2726 Mythic ingots</span>' +
+        (c.unlA ? '<span class="ref-ing adam">Adamantium ' + fmt(c.adamValue) + (pressed ? ' \u2192 ' + fmt(c.adamValue * pm) : '') + '</span>' : '') +
+        (c.unlV ? '<span class="ref-ing vibr">Vibranium ' + fmt(c.vibrValue) + (pressed ? ' \u2192 ' + fmt(c.vibrValue * pm) : '') + '</span>' : '') +
+        '<span class="ref-press">' + (pressed ? 'press \u00d7' + pm.toFixed(1) : 'press locked \u2014 ingots not yet valued') + '</span></div>';
+    }
+    refEl.innerHTML = status + (html || '<div class="fu-desc" style="grid-column:1/-1">Refinery ready to unlock \u2014 keep minting bits in the foundry.</div>');
     refEl.querySelectorAll('[data-refunl]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var u = REF_UNLOCKS.filter(function (x) { return x.id === btn.dataset.refunl; })[0];
         if (!u || refUnlocked(u.id) || state.bits < u.cost) return;
-        state.bits -= u.cost; state.ref[u.id] = true; publish(); dirty = true; save(); renderBalance(); renderRefinery();
+        state.bits -= u.cost; state.ref[u.id] = true; if (window.__sfx) window.__sfx('unlock'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
       });
     });
     refEl.querySelectorAll('[data-refup]').forEach(function (btn) {
@@ -6436,7 +6579,7 @@ function toggleReducedVisuals(el) {
         if (!u || !refUnlocked(u.need)) return;
         var l = refLvl(u.id); if (l >= u.max) return;
         var c = Math.ceil(u.base * Math.pow(u.grow, l)); if (state.bits < c) return;
-        state.bits -= c; state.ref.up = state.ref.up || {}; state.ref.up[u.id] = l + 1; publish(); dirty = true; save(); renderBalance(); renderRefinery();
+        state.bits -= c; state.ref.up = state.ref.up || {}; state.ref.up[u.id] = l + 1; if (window.__sfx) window.__sfx('unlock'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
       });
     });
   }
@@ -6462,6 +6605,7 @@ function toggleReducedVisuals(el) {
     });
   }
   function doReboot() {
+    if (window.__sfx) window.__sfx('reboot');
     state.prestige = state.prestige || { cores: 0 };
     state.prestige.cores = prestigeCores(state.lifetime || 0);
     state.bits = 0; state.up = {}; UPGRADES.forEach(function (u) { state.up[u.id] = 0; });
@@ -6487,7 +6631,40 @@ function toggleReducedVisuals(el) {
       sec('Loot rarity', '<div class="cx-chips">' + rar + '</div>') +
       sec('Item archetypes', '<div class="cx-chips">' + items + '</div>') +
       sec('Production bays', '<div class="cx-chips">' + bays + '</div>') +
-      sec('Enemies (Expedition auto-battler)', '<div class="cx-enemies">' + en + '</div>');
+      sec('Enemies (Expedition auto-battler)', '<div class="cx-enemies">' + en + '</div>') +
+      sec('Lore', '<div class="cx-lore-list">' + LORE.map(function (e) {
+        var open = playerLevel() >= e.need;
+        return '<div class="cx-lore' + (open ? '' : ' locked') + '"><div class="cx-lore-t">' + e.t + (open ? '' : ' \u00b7 Lv ' + e.need) + '</div><div class="cx-lore-b">' + (open ? e.body : 'Locked \u2014 reach level ' + e.need + '.') + '</div></div>';
+      }).join('') + '</div>');
+  }
+
+  var progEl = document.getElementById('progression');
+  function renderProgression() {
+    if (!progEl) return;
+    var pr = state.prog || { xp: 0, level: 1, pts: 0, skills: {} };
+    var need = xpForLevel(pr.level), pct = Math.max(0, Math.min(100, 100 * pr.xp / need));
+    var nodes = SKILLS.map(function (sk) {
+      var l = skillLvl(sk.id), maxed = l >= sk.max, can = pr.pts > 0 && !maxed;
+      return '<button type="button" class="skill' + (can ? ' can' : '') + '" data-skill="' + sk.id + '"' + (can ? '' : ' disabled') + '>' +
+        '<div class="skill-top"><span class="skill-name">' + sk.name + '</span><span class="skill-lvl">' + l + '/' + sk.max + '</span></div>' +
+        '<div class="skill-desc">' + sk.desc(l) + '</div></button>';
+    }).join('');
+    progEl.innerHTML =
+      '<div class="prog-head"><span class="prog-lvl">Level ' + pr.level + '</span>' +
+      '<span class="prog-pts' + (pr.pts > 0 ? ' has' : '') + '">' + (pr.pts > 0 ? pr.pts + ' skill point' + (pr.pts === 1 ? '' : 's') + ' to spend' : 'no skill points') + '</span></div>' +
+      '<div class="prog-bar"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="prog-xp">' + Math.floor(pr.xp) + ' / ' + need + ' XP</div>' +
+      '<div class="prog-skills">' + nodes + '</div>';
+    progEl.querySelectorAll('[data-skill]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var sk = SKILLS.filter(function (x) { return x.id === btn.dataset.skill; })[0];
+        if (!sk || (state.prog.pts || 0) <= 0 || skillLvl(sk.id) >= sk.max) return;
+        state.prog.skills[sk.id] = skillLvl(sk.id) + 1; state.prog.pts--;
+        publish(); dirty = true; save();
+        if (window.__sfx) window.__sfx('unlock');
+        renderProgression(); renderBalance(); renderRefinery();
+      });
+    });
   }
 
   function renderBalance() {
@@ -6512,7 +6689,7 @@ function toggleReducedVisuals(el) {
     var shown = Math.round(state.bits * 10);
     if (dirty && shown !== lastShown) {
       lastShown = shown;
-      renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige();
+      renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderProgression();
       dirty = false;
     }
   }, 500);
@@ -6669,10 +6846,12 @@ function toggleReducedVisuals(el) {
     for (j = 0; j < plan.suf; j++) { var sf = pick(pool); name = name + ' ' + sf.n; mods.push(sf.m); pool = SUFFIX; }
     return { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, rarity: r.n, rIdx: rIdx, color: r.c, slot: slot, look: idx, stats: stats, mods: mods, at: Date.now() };
   }
-  function rollLoot(ilvl) {
+  function rollLoot(ilvl, types) {
     ilvl = ilvl || 1;
     if (window.LootEngine) {
-      var it = LootEngine.rollDrop({ seed: 'd' + Date.now() + Math.random(), ilvl: ilvl });
+      // region loot bias: usually pull from the biased types, sometimes anything
+      var t = (types && types.length && Math.random() < 0.6) ? types : null;
+      var it = LootEngine.rollDrop({ seed: 'd' + Date.now() + Math.random(), ilvl: ilvl, types: t });
       it.rarity = it.tierLabel;   // the render shows it.rarity as the tier label
       return it;
     }
@@ -6702,15 +6881,19 @@ function toggleReducedVisuals(el) {
   function gearHasId(gear, id) { return Object.keys(gear || {}).some(function (k) { return gear[k] && gear[k].id === id; }); }
   function claimAdventure() {
     var a = state.adv, run = ADV_DUR[a.dur] || ADV_DUR[0];
-    var battle = window.Combat ? Combat.resolveRun(a.gear, { ilvl: run.ilvl, dur: a.dur, seed: 'b' + Date.now() + Math.random() }) : null;
+    var region = REGIONS[a.region || 0] || REGIONS[0];
+    var ilvl = run.ilvl + (region.ilvl || 0) + Math.floor(skillLvl('loot') / 2);
+    var pmult = 1 + 0.06 * skillLvl('combat');   // Combat Doctrine skill
+    var battle = window.Combat ? Combat.resolveRun(a.gear, { ilvl: ilvl, dur: a.dur, seed: 'b' + Date.now() + Math.random(), powerMult: pmult }) : null;
     a.lastBattle = battle;
     var mult = battle ? battle.lootMult : 1;
     var lootCount = Math.max(1, Math.round(run.loot * mult));
-    var bonusIlvl = run.ilvl + (battle && battle.win ? 1 : 0);   // a win yields better loot
+    var bonusIlvl = ilvl + (battle && battle.win ? 1 : 0);   // a win yields better loot
     var out = [];
-    for (var i = 0; i < lootCount; i++) out.push(rollLoot(bonusIlvl));
+    for (var i = 0; i < lootCount; i++) out.push(rollLoot(bonusIlvl, region.types));
     a.inv = (a.inv || []).concat(out).slice(-40);
     a.endsAt = 0; a.lastHaul = out;
+    addXp((battle ? battle.wavesCleared * 12 + (battle.win ? 40 : 0) : 20) * (1 + 0.5 * (a.dur || 0)));   // adventures grant XP
     dirty = true; save();
     return out;
   }
@@ -6821,6 +7004,10 @@ function toggleReducedVisuals(el) {
       var sk = SKINS[key], on = r.skin === key;
       return '<button type="button" class="exp-skin' + (on ? ' on' : '') + '" title="' + esc(sk.name) + '" data-a="skin" data-v="' + key + '" style="--sg:' + sk.glow + ';background:linear-gradient(135deg,' + sk.primary + ' 45%,' + sk.secondary + ' 45%)"><i style="background:' + sk.eye + '"></i></button>';
     }).join('') : ADV_COLORS.map(function (c) { return '<button type="button" class="exp-chip' + (r.color === c ? ' on' : '') + '" style="background:' + c + '" data-a="color" data-v="' + c + '"></button>'; }).join('');
+    var regionChips = REGIONS.map(function (rg, i) {
+      var locked = playerLevel() < rg.unlock, on = (a.region || 0) === i;
+      return '<button type="button" class="exp-region' + (on ? ' on' : '') + (locked ? ' locked' : '') + '"' + (locked ? ' disabled title="Unlocks at level ' + rg.unlock + '"' : ' data-a="region" data-v="' + i + '"') + ' style="--rgc:' + rg.color + '">' + rg.name + (locked ? ' ◌' + rg.unlock : '') + '</button>';
+    }).join('');
     var status;
     if (ready) {
       status = '<div class="exp-status ready">Your robot has returned! <button type="button" class="exp-btn can" data-a="claim">Claim rewards</button></div>';
@@ -6870,6 +7057,7 @@ function toggleReducedVisuals(el) {
       '<div class="exp-build"><div class="' + robotCls + '" style="--rc:' + r.color + '"><span class="exp-head"></span><span class="exp-eye"></span><span class="exp-body"></span><span class="exp-base"></span></div>' +
       '<div class="exp-cfg"><label class="exp-lab">Name</label><input class="exp-name" data-a="name" maxlength="18" value="' + esc(r.name) + '">' +
       '<label class="exp-lab">Skin</label><div class="exp-row">' + colorChips + '</div>' +
+      '<label class="exp-lab">Region</label><div class="exp-row exp-regions">' + regionChips + '</div>' +
       '<div class="exp-hint">Design the look under Chassis Builder; looted parts (with stats) snap into the five slots below.</div></div></div>' +
       renderBuilder(a) +
       '<div class="exp-load">' + load + '</div>' + totHtml +
@@ -6882,6 +7070,7 @@ function toggleReducedVisuals(el) {
       if (act === 'unlock') { if (state.bits >= ADV_COST) { state.bits -= ADV_COST; a.unlocked = true; dirty = true; save(); renderBalance(); renderAdventure(); } }
       else if (act === 'color') { a.robot.color = b.dataset.v; save(); renderAdventure(); }
       else if (act === 'skin') { var sk = window.GamePalettes && GamePalettes.robotSkins[b.dataset.v]; if (sk) { a.robot.skin = b.dataset.v; a.robot.color = sk.eye; dirty = true; save(); renderAdventure(); } }
+      else if (act === 'region') { a.region = +b.dataset.v; dirty = true; save(); renderAdventure(); }
       else if (act === 'equip') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && it.slot) { a.gear = a.gear || {}; a.gear[it.slot] = it; dirty = true; save(); renderAdventure(); } }
       else if (act === 'unequip') { if (a.gear) { delete a.gear[b.dataset.slot]; dirty = true; save(); renderAdventure(); } }
       else if (act === 'sell') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { state.bits += sellValue(it); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); dirty = true; save(); renderBalance(); renderAdventure(); } }
@@ -6913,6 +7102,7 @@ function toggleReducedVisuals(el) {
   renderUpgrades();
   renderRefinery();
   renderPrestige();
+  renderProgression();
   renderCodex();
 
   // ---- cross-device sync hooks: the main dashboard script (which holds the
@@ -6923,7 +7113,7 @@ function toggleReducedVisuals(el) {
   window.__foundryImport = function (str) {
     try {
       var j = typeof str === 'string' ? JSON.parse(str) : str;
-      if (!j || typeof j.bits !== 'number') return false;
+      if (!j || typeof j.bits !== 'number' || j.epoch !== RESET_EPOCH) return false;   // ignore pre-reset saves
       j = migrateSave(j);
       state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.savedAt = j.savedAt || j.seen || Date.now(); state.ver = SAVE_VER;
       if (j.loot) state.loot = j.loot;
@@ -6931,11 +7121,12 @@ function toggleReducedVisuals(el) {
       if (j.ref) state.ref = j.ref;
       if (j.prestige) state.prestige = j.prestige;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
+      if (j.prog) state.prog = j.prog;
       UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
       if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderProgression(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
@@ -6967,7 +7158,7 @@ function toggleReducedVisuals(el) {
     for (var i = ingots.length - 1; i >= 0; i--) {
       var g = ingots[i]; g.x += sp * dt;
       if (c.unlP && g.x >= pressX - 14) {
-        ingots.splice(i, 1); pressFlash = t + 0.18;
+        ingots.splice(i, 1); pressFlash = t + 0.18; if (window.__sfx) window.__sfx('press');
         for (var k = 0; k < 5; k++) sparks.push({ x: pressX - 8, y: beltY - 6, vx: 30 + Math.random() * 70, vy: -30 - Math.random() * 45, life: 0 });
       } else if (g.x > W + 20) ingots.splice(i, 1);
     }
@@ -6982,11 +7173,13 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = active ? '#565d68' : '#2a2e34'; ctx.fillRect(x - 6, beltY - 22, 12, 22);   // chute to belt
     ctx.fillStyle = '#8a93a3'; ctx.font = '10px ui-monospace,monospace'; ctx.textAlign = 'center';
     ctx.fillText(label, x, beltY - 82);
+    if (active) { ctx.fillStyle = '#ff5a7a'; ctx.font = '8px ui-monospace,monospace'; ctx.fillText('✦ MYTHIC', x, beltY - 71); }
     if (!active) { ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.fillRect(x - 27, beltY - 76, 54, 76); ctx.fillStyle = '#8a93a3'; ctx.fillText('locked', x, beltY - 36); }
   }
 
   function drawIngot(g, t) {
     var x = g.x, y = g.y, w = 22, h = 11;
+    ctx.save(); ctx.shadowColor = g.kind === 'vibr' ? '#00e5ff' : '#ff9db8'; ctx.shadowBlur = 6 + 2 * Math.sin(t * 5 + x);   // mythic aura
     if (g.kind === 'adam') {
       var gr = ctx.createLinearGradient(x - w / 2, y, x + w / 2, y + h);
       gr.addColorStop(0, '#f4f6fa'); gr.addColorStop(0.5, '#c2c8d2'); gr.addColorStop(1, '#eef1f6');
@@ -7009,6 +7202,7 @@ function toggleReducedVisuals(el) {
       }
       ctx.globalAlpha = 1;
     }
+    ctx.restore();
   }
 
   function draw(t) {
