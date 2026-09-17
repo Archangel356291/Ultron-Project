@@ -6516,14 +6516,25 @@ function toggleReducedVisuals(el) {
       '<div class="ar-note">Hover or tap an agent in the room for its role and enlistment. \u201cEthical Hacking Lab\u201d agents observe the lab only after a portal login, and act only under a <code>/lab-enlist</code> grant \u2014 otherwise observe-only.</div>';
   }
 
-  window.__roomRelayout = function () { laidOut = layout(); requestStatic(); };
+  // A relayout (bays bought, save imported, reboot, resize) resizes the canvas,
+  // which CLEARS it. In normal-motion mode requestStatic() is a no-op and the
+  // redraw only comes from frame() -- which skips while the room is scrolled
+  // off-screen -- so newly unlocked floors could stay blank until an unrelated
+  // redraw. forceDraw() paints immediately in BOTH motion modes so new bays
+  // always appear the moment they unlock.
+  function forceDraw() { if (laidOut || (laidOut = layout())) { ensureBays(); drawScene(now()); } }
+  window.__roomRelayout = function () { laidOut = layout(); forceDraw(); };
   if (window.ResizeObserver) {
-    new ResizeObserver(function () { laidOut = layout(); requestStatic(); }).observe(wrap);
+    new ResizeObserver(function () { laidOut = layout(); forceDraw(); }).observe(wrap);
   } else {
-    window.addEventListener('resize', function () { laidOut = layout(); requestStatic(); });
+    window.addEventListener('resize', function () { laidOut = layout(); forceDraw(); });
   }
   if (window.IntersectionObserver) {
-    new IntersectionObserver(function (entries) { onScreen = entries[entries.length - 1].isIntersecting; }).observe(wrap);
+    new IntersectionObserver(function (entries) {
+      var vis = entries[entries.length - 1].isIntersecting;
+      if (vis && !onScreen) { onScreen = true; forceDraw(); }   // just came back into view -> repaint (a relayout may have left it cleared)
+      else onScreen = vis;
+    }).observe(wrap);
   }
 
   if (prefersReducedMotion) {
