@@ -2918,6 +2918,84 @@ def pixel_game_asset(filename):
     return send_from_directory(PIXEL_GAME_DIR, filename)
 
 
+# --- Cross-device pixel-game save sync (per user). The dashboard keeps its
+# game state in localStorage per browser; these endpoints let a logged-in user
+# carry that progress across every device, keyed by identity. Last-write-wins by
+# the client's saved_at timestamp. Any authenticated user (admin or beta) may
+# store and fetch only their OWN save. ---
+def _game_user_key():
+    return "admin" if getattr(g, "role", None) == "admin" else ("beta:" + (getattr(g, "beta_name", None) or "?"))
+
+
+# The main ultron.db is read-only inside the hardened non-root container (its
+# file predates the non-root switch), but the /data dir is writable, so game
+# saves live in their OWN sqlite file the container creates and owns. Persistent
+# (on the same volume) and cross-device.
+GAME_DB_PATH = os.path.join(DATA_DIR, "game_saves.db")
+
+
+def _game_db():
+    conn = sqlite3.connect(GAME_DB_PATH, timeout=10)
+    conn.row_factory = sqlite3.Row
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS game_saves (user_key TEXT PRIMARY KEY, data TEXT NOT NULL, "
+        "saved_at INTEGER NOT NULL, updated_at TEXT NOT NULL)"
+    )
+    return conn
+
+
+@app.route("/api/game/save", methods=["GET"])
+@require_role
+def game_save_get():
+    try:
+        conn = _game_db()
+    except sqlite3.OperationalError:
+        return jsonify({"data": None, "savedAt": 0, "unavailable": True})  # store unavailable: local-only
+    try:
+        row = conn.execute(
+            "SELECT data, saved_at FROM game_saves WHERE user_key = ?", (_game_user_key(),)
+        ).fetchone()
+    finally:
+        conn.close()
+    if not row:
+        return jsonify({"data": None, "savedAt": 0})
+    return jsonify({"data": row["data"], "savedAt": row["saved_at"]})
+
+
+@app.route("/api/game/save", methods=["PUT", "POST"])
+@require_role
+def game_save_put():
+    body = request.get_json(silent=True) or {}
+    data = body.get("data")
+    if not isinstance(data, str) or len(data) > 200000:
+        return jsonify({"error": "invalid data"}), 400
+    try:
+        saved_at = int(body.get("savedAt"))
+    except (TypeError, ValueError):
+        saved_at = int(time.time() * 1000)
+    key = _game_user_key()
+    try:
+        conn = _game_db()
+    except sqlite3.OperationalError:
+        return jsonify({"ok": False, "stored": False, "reason": "server_unavailable"})  # store unavailable: local-only
+    try:
+        row = conn.execute("SELECT saved_at FROM game_saves WHERE user_key = ?", (key,)).fetchone()
+        if row and row["saved_at"] and int(row["saved_at"]) > saved_at:
+            # a newer save already exists (another device) -- don't clobber it
+            return jsonify({"ok": True, "stored": False, "reason": "server_newer", "savedAt": row["saved_at"]})
+        conn.execute(
+            "INSERT INTO game_saves (user_key, data, saved_at, updated_at) VALUES (?,?,?,?) "
+            "ON CONFLICT(user_key) DO UPDATE SET data=excluded.data, saved_at=excluded.saved_at, updated_at=excluded.updated_at",
+            (key, data, saved_at, time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())),
+        )
+        conn.commit()
+    except sqlite3.OperationalError:
+        return jsonify({"ok": False, "stored": False, "reason": "server_unavailable"})  # read-only DB: local-only
+    finally:
+        conn.close()
+    return jsonify({"ok": True, "stored": True, "savedAt": saved_at})
+
+
 # Self-hosted copies of the dashboard's four typefaces (all SIL Open Font
 # License), formerly pulled from fonts.googleapis.com on every load. Same
 # serving pattern as above. This was the dashboard's only third-party
@@ -3951,6 +4029,13 @@ AGENT_REGISTRY = {
         "tools": "Read, Write, Edit, Grep, Glob, Bash (node dev-tools/test_loot_engine.js / test_combat.js)",
         "forbidden": "rewriting gameplay logic by feel, weakening tests, unseeded randomness, claiming balanced without the sim output",
         "scope": "pixel-game/loot-engine.js, pixel-game/combat.js, foundry cost curves in ultron-dashboard.html, the game tests",
+    },
+    "game_master": {
+        "role": "Game Master (gold crown) — watches Ultron's Corner: monitors game state, keeps the save synced across devices, and runs loot/currency generation. Client-side, ZERO tokens",
+        "kind": "component", "models": None,
+        "tools": "the dashboard's own game engine (foundry/refinery/expedition loops, /api/game/save sync) — no LLM, no server tokens",
+        "forbidden": "spending tokens, server mutations beyond the per-user game save, touching anything outside Ultron's Corner game",
+        "scope": "the pixel-game in ultron-dashboard.html + the per-user game save; runs in the viewer's browser",
     },
 }
 TASK_STATUSES = ("created", "assigned", "acknowledged", "in_progress", "blocked", "awaiting_review",

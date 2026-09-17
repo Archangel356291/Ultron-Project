@@ -603,6 +603,19 @@
   .foundry-upgrades{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:10px; margin:12px 0; }
   .foundry-up{ text-align:left; background:var(--panel-raised); border:1px solid var(--line); border-radius:8px; padding:10px 12px; cursor:pointer; color:var(--text); transition:border-color .15s, background .15s, transform .05s; }
   .foundry-up:hover:not(:disabled){ border-color:var(--gold, #e6a41e); }
+  .agent-roster{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px; }
+  .ar-card{ display:flex; align-items:center; gap:9px; background:var(--panel-raised); border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
+  .ar-dot{ width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+  .ar-main{ flex:1; min-width:0; }
+  .ar-name{ font-family:var(--font-display); font-weight:700; font-size:12.5px; }
+  .ar-role{ font-size:10.5px; color:var(--text-dim); }
+  .ar-badge{ font-family:var(--font-mono); font-size:9px; padding:2px 6px; border-radius:5px; border:1px solid var(--line); color:var(--text-faint); white-space:nowrap; }
+  .ar-badge.lab{ border-color:rgba(215,38,74,.5); color:#ff8098; }
+  .ar-note{ grid-column:1/-1; font-size:11px; color:var(--text-faint); margin-top:4px; }
+  .refinery-canvas-wrap{ border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#0a0c10; margin-bottom:12px; }
+  #refinery-canvas{ display:block; width:100%; height:auto; }
+  .refinery-upgrades{ display:grid; grid-template-columns:repeat(auto-fill,minmax(158px,1fr)); gap:8px; }
+  .rt-enl{ color:#8a93a3; }
   .foundry-up:active:not(:disabled){ transform:translateY(1px); }
   .foundry-up:disabled{ opacity:0.55; cursor:not-allowed; }
   .foundry-up.affordable{ border-color:rgba(230,164,30,0.5); }
@@ -1367,6 +1380,9 @@
             <div class="pixel-bubble" id="pixel-bubble" hidden></div>
           </div>
 
+          <div class="panel-label" style="margin-top:24px;">Agent roster &amp; enlistments</div>
+          <div class="agent-roster" id="agent-roster"></div>
+
           <div class="panel-label" style="margin-top:28px;">Ultron's foundry</div>
           <div class="foundry" id="foundry">
             <div class="foundry-bal">
@@ -1378,6 +1394,15 @@
             <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
+          </div>
+
+          <div class="panel-label" style="margin-top:28px;">Ultron's refinery</div>
+          <div class="refinery" id="refinery">
+            <div class="refinery-canvas-wrap">
+              <canvas id="refinery-canvas" aria-label="Ultron's refinery: an adamantium forge and a vibranium forge cast ingots onto one conveyor that feeds a currency press."></canvas>
+            </div>
+            <div class="refinery-upgrades" id="refinery-upgrades"></div>
+            <div class="foundry-note">Two forges cast adamantium (bright silver) and vibranium (black, blue-crackled) ingots onto one belt into the press, which mints extra bits. Unlock and upgrade each machine and the belt individually — same Bits → Nanits scale as the foundry.</div>
           </div>
 
           <div class="panel-label" style="margin-top:28px;">Ultron's expedition</div>
@@ -2511,6 +2536,7 @@
     const hostLabel = document.getElementById('hlo-host-label');
     if (hostLabel) hostLabel.textContent = (state.baseUrl || location.host).replace(/^https?:\/\//, '');
     showApp();
+    syncGameFromCloud();   // pull/push this user's game save across devices
 
     refreshAll().then(function () {
       startPolling();
@@ -2627,6 +2653,40 @@
     if (res.status === 401) throw new Error('unauthorized — check the API token');
     if (!res.ok) throw new Error((data && data.error) ? data.error : (path + ' failed: ' + res.status));
     return data;
+  }
+
+  // ---- Cross-device game save sync. The foundry (a separate script) keeps the
+  // game in localStorage and exposes __foundryExport/__foundryImport/__foundrySavedAt.
+  // Here, holding the auth token, we pull the user's cloud save on sign-in and
+  // push it (debounced) whenever the game saves, so progress follows the user
+  // to every device they log in on. Last-write-wins by savedAt. ----
+  window.__foundryCloudPush = (function () {
+    let timer = null;
+    return function () {
+      if (!state.token || !window.__foundryExport) return;
+      if (timer) return;
+      timer = setTimeout(async function () {
+        timer = null;
+        try {
+          const data = window.__foundryExport();
+          if (data == null) return;
+          await apiPost('/api/game/save', { data: data, savedAt: (window.__foundrySavedAt && window.__foundrySavedAt()) || Date.now() });
+        } catch (e) { /* offline or not authed — localStorage still holds it */ }
+      }, 2500);
+    };
+  })();
+  async function syncGameFromCloud() {
+    if (!state.token || !window.__foundryImport) return;
+    try {
+      const res = await apiGet('/api/game/save');
+      const serverAt = (res && res.savedAt) || 0;
+      const localAt = (window.__foundrySavedAt && window.__foundrySavedAt()) || 0;
+      if (res && res.data && serverAt > localAt) {
+        window.__foundryImport(res.data);        // cloud is newer -> adopt it
+      } else if (window.__foundryExport && window.__foundryExport()) {
+        window.__foundryCloudPush();             // local is newer/only -> push it up
+      }
+    } catch (e) { /* ignore — localStorage still works offline */ }
   }
 
   async function refreshAll() {
@@ -5100,18 +5160,24 @@ function toggleReducedVisuals(el) {
   var BAY_H = 220, BAY_WALL = 164;               // each production bay's strip height + floor line
   var MAX_BAYS = 10, MAX_PER_BAY = 10;           // unlockable floors, and robots per floor -- both capped
   // Per-bay robot styling: body / plate (head) / eye+core / weapon. One per floor.
+  // Each bay is a named unit of a distinct robot archetype: its own colour,
+  // weapon, silhouette (bw = torso half-width, sizeMul = overall scale, plus
+  // build/heavy/emblem/minTier accents) and a per-bot value that climbs by bay.
   var BAY_STYLES = [
-    { body: '#30353f', plate: '#9c9a90', eye: '#ff3b3b', weapon: 'blaster' },
-    { body: '#1e3542', plate: '#7fd0ff', eye: '#3dd6ff', weapon: 'rifle' },
-    { body: '#1f3a2b', plate: '#8fe6ad', eye: '#33d17a', weapon: 'cannon' },
-    { body: '#3a3016', plate: '#ffcf6a', eye: '#ffc24b', weapon: 'twin' },
-    { body: '#2e2440', plate: '#c9a6ff', eye: '#b084f0', weapon: 'spear' },
-    { body: '#3a1c26', plate: '#ff9db0', eye: '#ff5a7a', weapon: 'scythe' },
-    { body: '#14312f', plate: '#8fe0d8', eye: '#00beb4', weapon: 'saw' },
-    { body: '#3a2712', plate: '#ffbf8a', eye: '#ff8a1e', weapon: 'laser' },
-    { body: '#20233a', plate: '#a3a8ff', eye: '#6e6eff', weapon: 'hammer' },
-    { body: '#331f38', plate: '#f0a0e0', eye: '#e650c8', weapon: 'bow' },
+    { name: 'Vanguard Bay',  archetype: 'Assault',       body: '#30353f', plate: '#9c9a90', eye: '#ff3b3b', weapon: 'blaster', bw: 4,   sizeMul: 1.00 },
+    { name: 'Recon Bay',     archetype: 'Scout',         body: '#1e3542', plate: '#7fd0ff', eye: '#3dd6ff', weapon: 'rifle',   bw: 3,   sizeMul: 0.82, build: 'slim' },
+    { name: 'Bombard Bay',   archetype: 'Bomber',        body: '#1f3a2b', plate: '#8fe6ad', eye: '#33d17a', weapon: 'cannon',  bw: 4.6, sizeMul: 1.05, build: 'round' },
+    { name: 'Bulwark Bay',   archetype: 'Tank',          body: '#3a3016', plate: '#ffcf6a', eye: '#ffc24b', weapon: 'twin',    bw: 5,   sizeMul: 1.14, heavy: true },
+    { name: 'Cipher Bay',    archetype: 'Hacker',        body: '#2e2440', plate: '#c9a6ff', eye: '#b084f0', weapon: 'spear',   bw: 3.4, sizeMul: 0.9,  build: 'hacker' },
+    { name: 'Aegis Bay',     archetype: 'Medic',         body: '#14312f', plate: '#8fe0d8', eye: '#00beb4', weapon: 'scythe',  bw: 4,   sizeMul: 1.00, emblem: 'cross' },
+    { name: 'Titan Bay',     archetype: 'Muscle Head',   body: '#3a1c26', plate: '#ff9db0', eye: '#ff5a7a', weapon: 'saw',     bw: 5.6, sizeMul: 1.10, heavy: true },
+    { name: 'Havoc Bay',     archetype: 'Heavy Weapons', body: '#3a2712', plate: '#ffbf8a', eye: '#ff8a1e', weapon: 'laser',   bw: 4.6, sizeMul: 1.08 },
+    { name: 'Colossus Bay',  archetype: 'Juggernaut',    body: '#20233a', plate: '#a3a8ff', eye: '#6e6eff', weapon: 'hammer',  bw: 5.2, sizeMul: 1.18, heavy: true },
+    { name: 'Omega Bay',     archetype: 'World Ender',   body: '#331f38', plate: '#f0a0e0', eye: '#e650c8', weapon: 'bow',     bw: 4.4, sizeMul: 1.20, minTier: 4 },
   ];
+  // Per-bot value climbs 1.5x per bay (bay 1 = base, bay 10 ~= 38x) -- the same
+  // exponential family the unlock/upgrade costs use.
+  function bayValueMul(b) { return Math.pow(1.5, b); }
 
   var ASSET_BASE = '/pixel-assets/';
   var ASSET_VER = '?v=2';   // bump when sprite geometry changes, so an installed app never pairs new layout maths with cached old art
@@ -5162,6 +5228,7 @@ function toggleReducedVisuals(el) {
     { color: 'graphite', hex: '#5a6270', label: 'Steward', agent: 'homelab_monitor', busyPlate: 'monitoring' },
     { color: 'candy', hex: '#ff6ad5', label: 'Pixel', agent: 'pixel_artist', busyPlate: 'drawing' },
     { color: 'spearmint', hex: '#3fe0a0', label: 'Arbiter', agent: 'game_balancer', busyPlate: 'balancing' },
+    { color: 'royalgold', hex: '#ffcf3a', label: 'Game Master', agent: 'game_master', busyPlate: 'watching' },
   ];
   SUBAGENTS.forEach(function (a) {
     IMG['agent_' + a.color] = loadImg('agent_' + a.color + '.png');
@@ -5179,6 +5246,27 @@ function toggleReducedVisuals(el) {
   SUBAGENTS.forEach(function (a) { AGENT_COLOR[a.agent] = a.color; BY_COLOR[a.color] = a; });
   window.__agentColor = function (agent) { return AGENT_COLOR[agent]; };
   var GOLD = '#ffb238', RED = '#ff3b3b', STEEL = '#8b93a0';
+  // Which agents are enlisted in the Ethical Hacking Lab (mirrors the lab
+  // governance roster), and a one-line role for the hover/click tooltip + roster.
+  var LAB_AGENTS = { engineering: 1, developer: 1, sentinel: 1, test_automation: 1, security_auditor: 1, log_coordinator: 1, context_manager: 1, ethical_hacking: 1, sentinel_defense: 1, forge_coder: 1, red_team_sandbox: 1, overwatch_logger: 1, stats_tracker: 1, architecture_lead: 1, code_reviewer: 1 };
+  var AGENT_ROLE = {
+    engineering: 'Builds, tests & maintains Ultron', learner: 'Extracts durable memory after your turns',
+    sentinel: 'Security watchdog + monitoring', scout: 'Private web search (SearXNG)',
+    developer: 'Implements approved features end to end', research: 'Deep research with sources',
+    docker_orchestrator: 'Docker / compose, ports, healthchecks', pihole_guard: 'Local DNS / Pi-hole guard',
+    tailscale_topology: 'Tailnet connectivity & HTTPS', test_automation: 'Runs & writes the tests',
+    security_auditor: 'Secrets, auth, headers, dependency risk', frontend_designer: 'Dashboard visual / UX & accessibility',
+    log_coordinator: 'Reads logs, returns the root cause', context_manager: 'Curates durable memory & the vault',
+    knowledge_synthesizer: 'Answers where / how / why from the vaults', slack_communicator: 'Drafts Slack updates (approval-gated)',
+    discord_gateway: 'The Discord bot gateway', market_analyst: 'Read-only crypto market prices',
+    stats_tracker: 'Daily efficiency roll-ups', ethical_hacking: 'Ethical-hacking lab analyst (Redcell)',
+    sentinel_defense: 'Read-only vuln audit & threat modeling', overwatch_logger: 'Telemetry + append-only audit log',
+    forge_coder: 'Writes / patches code & tests (no run)', red_team_sandbox: 'Contained PoC / exec sandbox (lab)',
+    architecture_lead: 'Maps deps, plans blueprints', code_reviewer: 'Code-quality gate (approve / block)',
+    homelab_monitor: 'Host & container health monitor', pixel_artist: 'Game sprites & colour palettes',
+    game_balancer: 'Tunes loot / combat balance', game_master: 'Watches the game; keeps saves synced & loot flowing',
+  };
+  function agentEnlist(key) { return LAB_AGENTS[key] ? 'Enlisted \u2192 Ethical Hacking Lab' : 'Ultron core \u00b7 not lab-enlisted'; }
 
   var startTime = (window.performance && performance.now) ? performance.now() : Date.now();
   function now() { return (((window.performance && performance.now) ? performance.now() : Date.now()) - startTime) / 1000; }
@@ -5312,7 +5400,7 @@ function toggleReducedVisuals(el) {
     // least-privilege + full-ecosystem specialists (2026-09-17): each ships a
     // parcel whose glyph matches what it does, tinted its own colour.
     cobalt: 'shield', slate: 'lines', ember: 'hammer', vermilion: 'bug',
-    ivory: 'blueprint', mulberry: 'check', graphite: 'gauge', candy: 'palette', spearmint: 'dice',
+    ivory: 'blueprint', mulberry: 'check', graphite: 'gauge', candy: 'palette', spearmint: 'dice', royalgold: 'crown',
   };
   function spawnParcel(a) {
     if (parcels.length > 40) return;
@@ -5336,7 +5424,7 @@ function toggleReducedVisuals(el) {
         if (p.y >= beltY(basementFloorY)) { p.y = beltY(basementFloorY); p.phase = 'basement'; }
       } else {
         p.x -= dt * 78 * bm;                               // ride left along the basement to OUT
-        if (p.x <= exitX) { parcels.splice(i2, 1); hatchFlashUntil = t + 0.4; mintBotCoin(exitX + 8, beltY(basementFloorY) - 12); }
+        if (p.x <= exitX) { parcels.splice(i2, 1); hatchFlashUntil = t + 0.4; mintBotCoin(exitX + 8, beltY(basementFloorY) - 12, (foundryCfg().botYield || 0.1) * (foundryCfg().pkgMult || 1)); }
       }
     }
   }
@@ -5399,19 +5487,20 @@ function toggleReducedVisuals(el) {
       case 'gauge': ctx.beginPath(); ctx.arc(cx, cy + .25 * r, .78 * r, Math.PI, 0); ctx.stroke(); L([[0, .25], [.5, -.35]]); C(0, .25, .13, true); break;
       case 'palette': C(0, 0, .82); C(-.38, -.28, .15, true); C(.16, -.42, .15, true); C(.46, .08, .15, true); C(-.06, .42, .15, true); break;
       case 'dice': box(-.72, -.72, 1.44, 1.44); C(-.36, -.36, .13, true); C(.36, .36, .13, true); C(0, 0, .13, true); C(.36, -.36, .13, true); C(-.36, .36, .13, true); break;
+      case 'crown': ctx.beginPath(); ctx.moveTo(cx - .8 * r, cy + .55 * r); ctx.lineTo(cx - .8 * r, cy - .3 * r); ctx.lineTo(cx - .4 * r, cy + .15 * r); ctx.lineTo(cx, cy - .6 * r); ctx.lineTo(cx + .4 * r, cy + .15 * r); ctx.lineTo(cx + .8 * r, cy - .3 * r); ctx.lineTo(cx + .8 * r, cy + .55 * r); ctx.closePath(); ctx.fill(); break;
       default: L([[-.7, 0], [.7, 0]]); L([[0, -.7], [0, .7]]);
     }
     ctx.restore();
   }
   function drawParcel(p) {
-    if (p.kind === 'bitcoin') { drawBitcoin(p.x, p.y - 9, 9); return; }
-    var w = 21, h = 17, x = p.x - w / 2, y = p.y - h;
+    if (p.kind === 'bitcoin') { drawBitcoin(p.x, p.y - 18, 18); return; }
+    var w = 42, h = 34, x = p.x - w / 2, y = p.y - h;   // doubled parcel
     ctx.fillStyle = '#2c313a'; ctx.fillRect(x, y, w, h);                    // dark metal crate
     ctx.fillStyle = '#3a414b'; ctx.fillRect(x, y, w, 2.5);
     ctx.globalAlpha = 0.22; ctx.fillStyle = p.hex; ctx.fillRect(x, y + 2.5, w, h - 5.5); ctx.globalAlpha = 1;  // agent tint
     ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(x, y + h - 3, w, 3);
     ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.2; ctx.strokeRect(x, y, w, h);
-    drawPkgGlyph(p.kind || 'box', p.x, p.y - 8.5, 5, p.hex);               // what it carries
+    drawPkgGlyph(p.kind || 'box', p.x, p.y - 17, 10, p.hex);               // what it carries (doubled)
   }
 
   // ---- idle-game coins: minted when a package ships out or a squad marches
@@ -5504,9 +5593,10 @@ function toggleReducedVisuals(el) {
   function bayOutX() { return hatchX + hatchW; }
   function bayMusterX() { return bayStairBaseX() + 40; }
 
-  function mintBotCoin(x, y) {
-    if (coins.length < 42) coins.push({ x: x + 6, y: y, vx: (Math.random() - 0.5) * 8, vy: -24 - Math.random() * 10, life: 0, ttl: 1.15, big: false });
-    if (window.__foundryEarn) window.__foundryEarn(foundryCfg().botYield || 0.1);
+  function mintBotCoin(x, y, amount) {
+    var amt = amount != null ? amount : (foundryCfg().botYield || 0.1);
+    if (coins.length < 42) coins.push({ x: x + 6, y: y, vx: (Math.random() - 0.5) * 8, vy: -24 - Math.random() * 10, life: 0, ttl: 1.15, big: amt >= 1 });
+    if (window.__foundryEarn) window.__foundryEarn(amt);
   }
 
   function updateBays(t, dt) {
@@ -5515,7 +5605,7 @@ function toggleReducedVisuals(el) {
     var stx = bayStairBaseX(), spX = bayMusterX(), outX = bayOutX();
     for (var b = 0; b < n; b++) {
       var bay = baysState[b], fY = bayFloorY(b), oY = bayOutY(b), rise = fY - oY, ms = bay.marchers;
-      var buildTime = Math.max(0.9, 1.9 / (foundryCfg().prodMult || 1));   // floored: never instant
+      var buildTime = Math.max(0.9, 1.9 / (((foundryCfg().bayProd || [])[b]) || foundryCfg().prodMult || 1));   // per-bay, floored
       if (bay.squadState === 'forming' && ms.length < cap) {
         bay.build = (bay.build || 0) + dt / buildTime;
         if (bay.build >= 1) {
@@ -5527,16 +5617,12 @@ function toggleReducedVisuals(el) {
         var m = ms[i]; m.wp += dt * 6;
         var mm = foundryCfg().marchMult || 1;
         if (m.phase === 'walk') {
-          var slotX = spX + m.slot * 46;
+          var slotX = spX + m.slot * 62;                   // wider formation for the doubled robots
           m.x = Math.max(slotX, m.x - dt * 26 * mm);            // walk slowly left into formation
           if (m.x <= slotX + 0.5) { m.x = slotX; m.phase = 'form'; m.saluteT = t + 1.1; }
         } else if (m.phase === 'march') {
-          if (m.x > stx) { m.x -= dt * 40 * mm; if (m.x < stx) m.x = stx; }
-          else {
-            m.x -= dt * 30 * mm;
-            m.y = fY - Math.min(rise, (stx - m.x) * (rise / Math.max(1, stx - outX)));
-            if (m.x <= outX) { ms.splice(i, 1); mintBotCoin(outX, oY - 4); }
-          }
+          m.x -= dt * 40 * mm; m.y = fY;                       // march straight out along the floor (no stairs)
+          if (m.x <= outX) { ms.splice(i, 1); mintBotCoin(outX, fY - 16, (foundryCfg().botYield || 0.1) * bayValueMul(b)); }
         }
       }
       if (bay.squadState === 'forming' && ms.length >= cap && ms.every(function (m) { return m.phase === 'form'; })) {
@@ -5570,6 +5656,7 @@ function toggleReducedVisuals(el) {
 
   function drawMarcher(m, t, style, s, tier) {
     tier = tier || 1;
+    var bw = style.bw || 4, eff = Math.max(tier, style.minTier || 1);
     var x = m.x, footY = m.y;
     var body = style.body, plate = style.plate, eye = style.eye;
     var saluting = t < m.saluteT;
@@ -5577,7 +5664,7 @@ function toggleReducedVisuals(el) {
     var step = moving ? Math.sin(m.wp) : 0;
     ctx.fillStyle = 'rgba(0,0,0,0.32)';
     ctx.beginPath(); ctx.ellipse(x, footY + 1, 7 * s, 2.2 * s, 0, 0, Math.PI * 2); ctx.fill();
-    if (tier >= 3) {                                            // evolved aura
+    if (eff >= 3) {                                            // evolved aura
       var ag = ctx.createRadialGradient(x, footY - 11 * s, 2, x, footY - 11 * s, 17 * s);
       ag.addColorStop(0, eye); ag.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.globalAlpha = 0.16 + 0.06 * Math.sin(t * 3 + x); ctx.fillStyle = ag;
@@ -5588,10 +5675,10 @@ function toggleReducedVisuals(el) {
     ctx.fillRect(x + 0.8 * s - step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
     ctx.fillRect(x - 3.4 * s + step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);
     ctx.fillRect(x + 0.4 * s - step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);
-    ctx.fillStyle = body; ctx.fillRect(x - 4 * s, footY - 13 * s, 8 * s, 8 * s);           // torso
-    ctx.fillStyle = plate; ctx.globalAlpha = 0.5; ctx.fillRect(x - 4 * s, footY - 13 * s, 2.4 * s, 8 * s); ctx.globalAlpha = 1;
-    ctx.fillStyle = M_LINE; ctx.fillRect(x - 4 * s, footY - 9.4 * s, 8 * s, 0.7 * s);
-    if (tier >= 2) { ctx.fillStyle = plate; ctx.fillRect(x - 5.4 * s, footY - 13.4 * s, 2 * s, 3.4 * s); ctx.fillRect(x + 3.4 * s, footY - 13.4 * s, 2 * s, 3.4 * s); }  // pauldrons
+    ctx.fillStyle = body; ctx.fillRect(x - bw * s, footY - 13 * s, 2 * bw * s, 8 * s);      // torso (archetype width)
+    ctx.fillStyle = plate; ctx.globalAlpha = 0.5; ctx.fillRect(x - bw * s, footY - 13 * s, 0.6 * bw * s, 8 * s); ctx.globalAlpha = 1;
+    ctx.fillStyle = M_LINE; ctx.fillRect(x - bw * s, footY - 9.4 * s, 2 * bw * s, 0.7 * s);
+    if (eff >= 2 || style.heavy) { var pw = style.heavy ? 2.6 : 2; ctx.fillStyle = plate; ctx.fillRect(x - (bw + 1.4) * s, footY - 13.6 * s, pw * s, 3.8 * s); ctx.fillRect(x + (bw - 0.6) * s, footY - 13.6 * s, pw * s, 3.8 * s); }  // pauldrons
     ctx.fillStyle = M_DARK; ctx.fillRect(x - 2.1 * s, footY - 11.6 * s, 4.2 * s, 3.4 * s);
     ctx.fillStyle = eye; ctx.fillRect(x - 1.2 * s, footY - 11 * s, 2.4 * s, 2.4 * s);      // core (bay colour)
     ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fillRect(x - 0.5 * s, footY - 10.4 * s, 1 * s, 1.1 * s);
@@ -5603,12 +5690,15 @@ function toggleReducedVisuals(el) {
     // crest tuft varies by bay
     ctx.fillStyle = plate; ctx.fillRect(x - 0.3 * s, footY - 22 * s, 0.8 * s, 3 * s);
     ctx.fillStyle = eye; ctx.fillRect(x - 0.5 * s, footY - 22.6 * s, 1.2 * s, 1 * s);
-    if (tier >= 3) {                                            // paladin crest
+    if (style.emblem === 'cross') { ctx.fillStyle = '#ff5a6a'; ctx.fillRect(x - 0.6 * s, footY - 12.4 * s, 1.2 * s, 3.6 * s); ctx.fillRect(x - 1.9 * s, footY - 11.2 * s, 3.8 * s, 1.2 * s); }
+    if (style.build === 'round') { ctx.fillStyle = body; ctx.beginPath(); ctx.arc(x, footY - 6.5 * s, bw * s * 0.95, Math.PI, 0, true); ctx.fill(); ctx.fillStyle = plate; ctx.globalAlpha = 0.3; ctx.beginPath(); ctx.arc(x - bw * 0.3 * s, footY - 7.4 * s, bw * s * 0.28, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+    if (style.build === 'hacker') { ctx.strokeStyle = eye; ctx.lineWidth = 0.8 * s; ctx.beginPath(); ctx.moveTo(x + 2.2 * s, footY - 19 * s); ctx.lineTo(x + 4.2 * s, footY - 24.5 * s); ctx.stroke(); ctx.fillStyle = Math.sin(t * 8 + x) > 0 ? eye : M_DARK; ctx.fillRect(x + 3.7 * s, footY - 25.6 * s, 1.5 * s, 1.5 * s); }
+    if (eff >= 3) {                                            // paladin crest
       ctx.fillStyle = plate; ctx.fillRect(x - 3.4 * s, footY - 20 * s, 6.8 * s, 1.2 * s);
       ctx.beginPath(); ctx.moveTo(x - 2.4 * s, footY - 20 * s); ctx.lineTo(x, footY - 23.5 * s); ctx.lineTo(x + 2.4 * s, footY - 20 * s); ctx.closePath(); ctx.fill();
       ctx.fillStyle = eye; ctx.fillRect(x - 0.6 * s, footY - 23 * s, 1.2 * s, 1.2 * s);
     }
-    if (tier >= 4) {                                            // orbiting particle effects
+    if (eff >= 4) {                                            // orbiting particle effects
       for (var pk = 0; pk < 3; pk++) {
         var pa = t * 2.2 + pk * 2.094, ppx = x + Math.cos(pa) * 11 * s, ppy = footY - 12 * s + Math.sin(pa) * 7.5 * s;
         ctx.globalAlpha = 0.85; ctx.fillStyle = pk % 2 ? '#ffffff' : eye;
@@ -5629,7 +5719,7 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = '#0c0e11'; ctx.fillRect(bx, by, bw, 6);
     ctx.fillStyle = style.eye; ctx.fillRect(bx + 1, by + 1, (bw - 2) * Math.max(0, Math.min(1, prog)), 4);
     ctx.strokeStyle = M_LINE; ctx.lineWidth = 1; ctx.strokeRect(bx, by, bw, 6);
-    var cx = mx + mw * 0.5, fy = floor - 22, s = 2.4;                            // robot on the build platform
+    var cx = mx + mw * 0.5, fy = floor - 22, s = 4.6 * (style.sizeMul || 1);     // robot on the build platform (doubled + archetype)
     ctx.fillStyle = '#0a0c0f'; ctx.fillRect(cx - 5 * s, fy + 1, 10 * s, 2.4);
     ctx.fillStyle = M_LINE; ctx.fillRect(cx - 5 * s, fy + 1, 10 * s, 1);
     if (prog > 0.15) { ctx.fillStyle = M_DARK; ctx.fillRect(cx - 3 * s, fy - 6 * s, 2.2 * s, 6 * s); ctx.fillRect(cx + 0.8 * s, fy - 6 * s, 2.2 * s, 6 * s); }
@@ -5656,7 +5746,7 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = '#15181c'; ctx.fillRect(0, floor, W, bottom - floor);                  // floor
     ctx.fillStyle = '#2b313a'; ctx.fillRect(0, floor, W, 2.4); ctx.fillStyle = M_LINE; ctx.fillRect(0, floor + 2.4, W, 1);
     for (var gx = 0; gx < W; gx += 20) { ctx.fillStyle = '#20252c'; ctx.fillRect(gx + 3, floor + 7, 11, 1.4); ctx.fillStyle = '#0f1216'; ctx.fillRect(gx + 14, floor + 6, 3, 3); }
-    caption('bay ' + (b + 1), W * 0.52, top + 34);
+    caption(style.name + ' \u00b7 ' + style.archetype, W * 0.52, top + 34);
 
     var mx = bayMachineX(), mw = 154, mtop = floor - 150;                                  // assembler (bay-tinted)
     ctx.fillStyle = M_GUN; ctx.fillRect(mx, mtop, mw, floor - mtop);
@@ -5674,23 +5764,18 @@ function toggleReducedVisuals(el) {
     caption('assembler ' + (b + 1), mx + mw / 2, mtop - 10);
     drawBuild(mx, mw, mtop, floor, bay.build || 0, style, t);
 
-    var stx = bayStairBaseX(), outX = bayOutX(), steps = 6;                                // stairs -> OUT
-    for (var i = 0; i < steps; i++) {
-      var sx = stx - (stx - outX) * (i / steps), sy = floor - (floor - oY) * (i / steps);
-      var swStep = (stx - outX) / steps + 2, shStep = (floor - oY) / steps + 2;
-      ctx.fillStyle = i % 2 ? '#272d35' : '#2f3640'; ctx.fillRect(sx - swStep, sy - shStep, swStep + 2, shStep + 2);
-      ctx.fillStyle = M_STEEL; ctx.fillRect(sx - swStep, sy - shStep, swStep + 2, 1.6);
-    }
-    ctx.fillStyle = '#050506'; ctx.fillRect(0, oY - 26, outX + 6, (floor - oY) + 26);
-    ctx.strokeStyle = '#565c66'; ctx.lineWidth = 1.5; ctx.strokeRect(0, oY - 26, outX + 6, (floor - oY) + 26);
-    ctx.fillStyle = (b === 0 && t < hatchFlashUntil) ? RED : style.eye; ctx.beginPath(); ctx.arc(outX - 8, oY - 15, 5, 0, Math.PI * 2); ctx.fill();
-    caption('out', outX - 2, oY - 36);
+    var outX = bayOutX(), doorH = 118;                                                     // floor-level OUT doorway (no stairs)
+    ctx.fillStyle = '#050506'; ctx.fillRect(0, floor - doorH, outX + 6, doorH);
+    ctx.strokeStyle = '#565c66'; ctx.lineWidth = 1.5; ctx.strokeRect(0, floor - doorH, outX + 6, doorH);
+    ctx.fillStyle = '#0b0d10'; ctx.fillRect(0, floor - 6, outX + 6, 6);                     // threshold
+    ctx.fillStyle = (b === 0 && t < hatchFlashUntil) ? RED : style.eye; ctx.beginPath(); ctx.arc(outX - 8, floor - doorH + 13, 5, 0, Math.PI * 2); ctx.fill();
+    caption('out', outX - 2, floor - doorH - 10);
 
     var tier = foundryCfg().tier || 1;
-    bay.marchers.forEach(function (m) { drawMarcher(m, t, style, 3.2, tier); });
+    bay.marchers.forEach(function (m) { drawMarcher(m, t, style, 6.4 * (style.sizeMul || 1), tier); });   // doubled + per-archetype size
 
     if (t < bay.sayUntil && bay.marchers.length) {
-      var bx = bayMusterX() + (perBayCap() - 1) * 23, by = floor - 22 * 3.2 - 16;
+      var bx = bayMusterX() + (perBayCap() - 1) * 31, by = floor - 22 * 6.4 - 16;
       setFont(fontPx * 0.9, true); var txt = 'for a Better World';
       var tw = ctx.measureText(txt).width + 16;
       ctx.fillStyle = 'rgba(16,18,22,0.92)'; ctx.strokeStyle = style.eye; ctx.lineWidth = 1.4;
@@ -5719,7 +5804,7 @@ function toggleReducedVisuals(el) {
   // Hoverables registered each frame (room units): {name, x, y, r}. The
   // pointer handler below maps the cursor into room units and shows a tooltip.
   var hoverables = [];
-  function hover(name, x, y, r) { hoverables.push({ name: name, x: x, y: y, r: r }); }
+  function hover(name, x, y, r, tip) { hoverables.push({ name: name, x: x, y: y, r: r, tip: tip }); }
   function drawStones(cx, cy, t) {
     var n = STONES.length, gap = 15, x0 = cx - (n - 1) * gap / 2;
     ctx.fillStyle = M_GUN; roundRectPath(x0 - 11, cy - 1, (n - 1) * gap + 22, 9, 3); ctx.fill();   // mount bar
@@ -5882,6 +5967,9 @@ function toggleReducedVisuals(el) {
         var status = alarmed ? 'alert' : (busy && a.busyPlate) ? a.busyPlate : '';
         plate(a.label, status, a.x + DESK_DX + 9, a.floorY - DESK_H + 15, DESK_W - 18, DESK_H - 24, alarmed ? '#ff6b6b' : a.plateHex, alarmed ? '#ff6b6b' : '#e8e6e0');
       }
+      hover(a.label, a.x + DESK_DX + DESK_W / 2, a.floorY - DESK_H * 0.5, DESK_W * 0.62,
+        '<b style="color:' + a.hex + '">' + a.label + '</b> \u2014 ' + (AGENT_ROLE[a.agent] || '') +
+        '<br><span class="rt-enl">' + agentEnlist(a.agent) + '</span>');
     });
 
     // Ultron's office at the top: recharge pod, desk, and the man himself.
@@ -6002,7 +6090,7 @@ function toggleReducedVisuals(el) {
   var roomTip = document.createElement('div');
   roomTip.style.cssText = 'position:absolute; z-index:6; pointer-events:none; display:none; background:var(--panel-raised,#16191c); ' +
     'border:1px solid var(--line,#2c2f33); color:var(--text,#e9edf7); font:11px/1.3 ' + fontFamily + '; padding:4px 8px; ' +
-    'border-radius:5px; white-space:nowrap; box-shadow:0 6px 18px -6px rgba(0,0,0,0.7); transform:translate(-50%,-125%);';
+    'border-radius:5px; white-space:normal; max-width:240px; text-align:left; box-shadow:0 6px 18px -6px rgba(0,0,0,0.7); transform:translate(-50%,-125%);';
   wrap.appendChild(roomTip);
   canvas.addEventListener('pointermove', function (e) {
     if (e.pointerType === 'touch') return;
@@ -6015,7 +6103,7 @@ function toggleReducedVisuals(el) {
       if (d < hb.r * hb.r && d < best) { best = d; hit = hb; }
     }
     if (hit) {
-      roomTip.textContent = hit.name;
+      if (hit.tip) roomTip.innerHTML = hit.tip; else roomTip.textContent = hit.name;
       roomTip.style.left = (e.clientX - rect.left) + 'px';
       roomTip.style.top = (e.clientY - rect.top) + 'px';
       roomTip.style.display = 'block';
@@ -6025,6 +6113,30 @@ function toggleReducedVisuals(el) {
     }
   });
   canvas.addEventListener('pointerleave', function () { roomTip.style.display = 'none'; canvas.style.cursor = 'default'; });
+  canvas.addEventListener('click', function (e) {
+    var rect = canvas.getBoundingClientRect(); if (!rect.width) return;
+    var sc = rect.width / W, rx = (e.clientX - rect.left) / sc, ry = (e.clientY - rect.top) / sc;
+    var hit = null, best = 1e18;
+    for (var i = 0; i < hoverables.length; i++) { var hb = hoverables[i], dx = hb.x - rx, dy = hb.y - ry, d = dx * dx + dy * dy; if (d < hb.r * hb.r && d < best) { best = d; hit = hb; } }
+    if (hit) {
+      if (hit.tip) roomTip.innerHTML = hit.tip; else roomTip.textContent = hit.name;
+      roomTip.style.left = (e.clientX - rect.left) + 'px'; roomTip.style.top = (e.clientY - rect.top) + 'px'; roomTip.style.display = 'block';
+      clearTimeout(roomTip._t); roomTip._t = setTimeout(function () { roomTip.style.display = 'none'; }, 3800);
+    }
+  });
+
+  var rosterEl = document.getElementById('agent-roster');
+  if (rosterEl) {
+    var card = function (label, hex, role, lab) {
+      return '<div class="ar-card"><span class="ar-dot" style="background:' + hex + ';box-shadow:0 0 6px -1px ' + hex + '"></span>' +
+        '<div class="ar-main"><div class="ar-name">' + label + '</div><div class="ar-role">' + role + '</div></div>' +
+        '<span class="ar-badge' + (lab ? ' lab' : '') + '">' + (lab ? 'Ethical Hacking Lab' : 'Ultron core') + '</span></div>';
+    };
+    rosterEl.innerHTML =
+      card('Ultron', RED, 'Conversational core & orchestration', true) +
+      SUBAGENTS.map(function (a) { return card(a.label, a.hex, AGENT_ROLE[a.agent] || '', !!LAB_AGENTS[a.agent]); }).join('') +
+      '<div class="ar-note">Hover or tap an agent in the room for its role and enlistment. \u201cEthical Hacking Lab\u201d agents observe the lab only after a portal login, and act only under a <code>/lab-enlist</code> grant \u2014 otherwise observe-only.</div>';
+  }
 
   window.__roomRelayout = function () { laidOut = layout(); requestStatic(); };
   if (window.ResizeObserver) {
@@ -6068,12 +6180,56 @@ function toggleReducedVisuals(el) {
     { id: 'yield', name: 'Bit Yield', base: 2, grow: 1.85, max: 30, desc: function (l) { return (l === 0 ? '0.1' : l.toFixed(1)) + ' bits per robot' + (l < 30 ? ' → ' + (l === 0 ? '1.0' : (l + 1).toFixed(1)) : ''); } },
     { id: 'perbay', name: 'Robots / Bay', base: 5, grow: 1.8, max: 8, desc: function (l) { return (2 + l) + ' robots per bay (cap 10)'; } },
     { id: 'bays', name: 'Open Bay', base: 25, grow: 2.35, max: 9, desc: function (l) { return (1 + l) + ' production bays open (cap 10)'; } },
-    { id: 'assembler', name: 'Assembler', base: 8, grow: 1.6, max: 20, desc: function (l) { return '+25% production speed (x' + (1 + 0.25 * l).toFixed(2) + ')'; } },
     { id: 'belt', name: 'Conveyor', base: 10, grow: 1.6, max: 20, desc: function (l) { return '+20% belt speed (x' + (1 + 0.2 * l).toFixed(1) + ')'; } },
     { id: 'collector', name: 'Auto-Collector', base: 14, grow: 1.7, max: 20, desc: function (l) { return '+0.5 bits / sec while idle (' + (0.5 * l).toFixed(1) + '/s)'; } },
     { id: 'march', name: 'March Drums', base: 12, grow: 1.6, max: 8, desc: function (l) { return '+15% march & walk speed (x' + (1 + 0.15 * l).toFixed(2) + ')'; } },
+    { id: 'pkgval', name: 'Package Value', base: 6, grow: 1.7, max: 25, desc: function (l) { return (1 + 0.5 * l).toFixed(1) + 'x bits per package shipped'; } },
     { id: 'offline', name: 'Offline Storage', base: 250, grow: 1.8, max: 10, desc: function (l) { return (1.5 + l) + 'h of offline accrual (+1h)'; } },
   ];
+
+  var ASM = { grow: 1.6, max: 20 };
+  function asmBase(i) { return Math.ceil(8 * Math.pow(2.4, i)); }
+  function bayAsmList() {
+    var n = (window.__foundry && window.__foundry.bays) || 1, out = [];
+    for (var i = 0; i < n; i++) out.push({
+      id: 'asm' + i, name: 'Assembler ' + (i + 1), base: asmBase(i), grow: ASM.grow, max: ASM.max,
+      desc: function (l) { return '+25% this bay speed (x' + (1 + 0.25 * l).toFixed(2) + ')'; }
+    });
+    return out;
+  }
+
+  // ---- Refinery: an adamantium forge and a vibranium forge cast ingots onto
+  // one belt that feeds a currency press. Each machine and the belt upgrade
+  // individually, on the same Bits->Nanits exponential scale as the foundry. ----
+  var REF_UNLOCKS = [
+    { id: 'unlA', name: 'Adamantium Forge', cost: 500, desc: 'Cast bright-silver adamantium ingots' },
+    { id: 'unlV', name: 'Vibranium Forge', cost: 6000, desc: 'Cast black, blue-crackled vibranium ingots' },
+    { id: 'unlP', name: 'Currency Press', cost: 25000, desc: 'Press ingots on the belt into bits' },
+  ];
+  var REF_UPGRADES = [
+    { id: 'adam', name: 'Adamantium Speed', base: 60, grow: 1.55, max: 25, need: 'unlA', desc: function (l) { return '+20% adamantium output (x' + (1 + 0.2 * l).toFixed(2) + ')'; } },
+    { id: 'vibr', name: 'Vibranium Speed', base: 220, grow: 1.60, max: 25, need: 'unlV', desc: function (l) { return '+20% vibranium output (x' + (1 + 0.2 * l).toFixed(2) + ')'; } },
+    { id: 'conv', name: 'Refinery Belt', base: 120, grow: 1.50, max: 25, need: 'unlA', desc: function (l) { return '+15% belt speed (x' + (1 + 0.15 * l).toFixed(2) + ')'; } },
+    { id: 'press', name: 'Press Yield', base: 400, grow: 1.60, max: 25, need: 'unlP', desc: function (l) { return '+30% bits per ingot (x' + (1 + 0.3 * l).toFixed(2) + ')'; } },
+  ];
+  function refLvl(id) { return (state.ref && state.ref.up && state.ref.up[id]) || 0; }
+  function refUnlocked(id) { return !!(state.ref && state.ref[id]); }
+  function refConfig() {
+    var r = state.ref || {};
+    return {
+      unlA: !!r.unlA, unlV: !!r.unlV, unlP: !!r.unlP,
+      adamRate: r.unlA ? 0.45 * (1 + 0.2 * refLvl('adam')) : 0,   // ingots / sec
+      vibrRate: r.unlV ? 0.30 * (1 + 0.2 * refLvl('vibr')) : 0,
+      convMult: 1 + 0.15 * refLvl('conv'),
+      pressYield: 1 + 0.3 * refLvl('press'),
+      adamValue: 0.6, vibrValue: 1.8,                            // bits per ingot at the press
+    };
+  }
+  function refIncome() {
+    if (!refUnlocked('unlP')) return 0;
+    var c = window.__refinery || refConfig();
+    return (c.adamRate * c.adamValue + c.vibrRate * c.vibrValue) * c.pressYield;
+  }
 
   var SAVE_VER = 2;
   // Forward-only migration: never drops data, fills new fields, stamps ver.
@@ -6096,45 +6252,53 @@ function toggleReducedVisuals(el) {
       if (j && typeof j.bits === 'number') {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref;
       }
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
   UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
   if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
+  if (!state.ref) state.ref = { unlA: false, unlV: false, unlP: false, up: {} };
 
   var saveTimer = null;
   function save() {
     if (saveTimer) return;
     saveTimer = setTimeout(function () {
       saveTimer = null;
-      state.seen = Date.now();
+      state.seen = state.savedAt = Date.now();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+      if (window.__foundryCloudPush) window.__foundryCloudPush();   // sync to the user's cloud save (if logged in)
     }, 600);
   }
 
   function lvl(id) { return state.up[id] || 0; }
   function cost(u) { return Math.ceil(u.base * Math.pow(u.grow, lvl(u.id))); }
   function publish() {
+    var bays = 1 + lvl('bays'), bayProd = [];
+    for (var i = 0; i < bays; i++) bayProd.push(1 + 0.25 * (state.up['asm' + i] || 0));
     window.__foundry = {
-      prodMult: 1 + 0.25 * lvl('assembler'),
+      bayProd: bayProd,                 // per-bay build-speed multiplier
+      prodMult: bayProd[0],             // back-compat (bay 1)
       beltMult: 1 + 0.2 * lvl('belt'),
       perBay: 2 + lvl('perbay'),
-      bays: 1 + lvl('bays'),
+      bays: bays,
       botYield: lvl('yield') === 0 ? 0.1 : lvl('yield'),
       passive: 0.5 * lvl('collector'),
       marchMult: 1 + 0.15 * lvl('march'),
+      pkgMult: 1 + 0.5 * lvl('pkgval'),
       offlineHours: 1.5 + lvl('offline'),
-      tier: 1 + Math.min(3, Math.floor((lvl('yield') + lvl('perbay') + lvl('assembler')) / 3)),
+      tier: 1 + Math.min(3, Math.floor((lvl('yield') + lvl('perbay') + (state.up.asm0 || 0)) / 3)),
     };
+    window.__refinery = refConfig();
   }
   publish();
 
   // Offline accrual: while the tab is closed, the line keeps earning at its
   // estimated production rate, up to the offline-storage cap (1.5h + upgrades).
   function prodRate() {
-    var f = window.__foundry, buildTime = Math.max(0.9, 1.9 / (f.prodMult || 1));
-    return (f.bays || 1) * (1 / buildTime) * (f.botYield || 0.1) * 0.6 + (f.passive || 0);
+    var f = window.__foundry, bp = f.bayProd || [f.prodMult || 1], sum = 0;
+    for (var i = 0; i < bp.length; i++) { var bt = Math.max(0.9, 1.9 / (bp[i] || 1)); sum += 1 / bt; }
+    return sum * (f.botYield || 0.1) * 0.6 + (f.passive || 0) + refIncome();
   }
   function humanDur(sec) {
     var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
@@ -6180,7 +6344,8 @@ function toggleReducedVisuals(el) {
 
   function renderUpgrades() {
     if (!upsEl) return;
-    upsEl.innerHTML = UPGRADES.map(function (u) {
+    var list = UPGRADES.concat(bayAsmList());
+    upsEl.innerHTML = list.map(function (u) {
       var l = lvl(u.id), maxed = l >= u.max, c = cost(u), can = state.bits >= c && !maxed;
       return '<button type="button" class="foundry-up' + (can ? ' affordable' : '') + '" data-up="' + u.id + '"' + (maxed ? ' disabled' : '') + '>' +
         '<div class="fu-top"><span class="fu-name">' + u.name + '</span><span class="fu-lvl">Lv ' + l + (maxed ? ' (max)' : '') + '</span></div>' +
@@ -6190,7 +6355,7 @@ function toggleReducedVisuals(el) {
     }).join('');
     upsEl.querySelectorAll('[data-up]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var u = UPGRADES.find(function (x) { return x.id === btn.dataset.up; });
+        var u = list.find(function (x) { return x.id === btn.dataset.up; });
         if (!u || lvl(u.id) >= u.max) return;
         var c = cost(u);
         if (state.bits < c) return;
@@ -6198,6 +6363,45 @@ function toggleReducedVisuals(el) {
         publish();
         if (u.id === 'bays' && window.__roomRelayout) window.__roomRelayout();
         dirty = true; save(); renderUpgrades();
+      });
+    });
+  }
+
+  var refEl = document.getElementById('refinery-upgrades');
+  function renderRefinery() {
+    if (!refEl) return;
+    var html = '';
+    REF_UNLOCKS.forEach(function (u) {
+      if (refUnlocked(u.id)) return;
+      var can = state.bits >= u.cost;
+      html += '<button type="button" class="foundry-up' + (can ? ' affordable' : '') + '" data-refunl="' + u.id + '">' +
+        '<div class="fu-top"><span class="fu-name">' + u.name + '</span><span class="fu-lvl">locked</span></div>' +
+        '<div class="fu-desc">' + u.desc + '</div>' +
+        '<div class="fu-cost' + (can ? '' : ' short') + '">\u25c9 ' + fmt(u.cost) + '</div></button>';
+    });
+    REF_UPGRADES.forEach(function (u) {
+      if (!refUnlocked(u.need)) return;
+      var l = refLvl(u.id), maxed = l >= u.max, c = Math.ceil(u.base * Math.pow(u.grow, l)), can = state.bits >= c && !maxed;
+      html += '<button type="button" class="foundry-up' + (can ? ' affordable' : '') + '" data-refup="' + u.id + '"' + (maxed ? ' disabled' : '') + '>' +
+        '<div class="fu-top"><span class="fu-name">' + u.name + '</span><span class="fu-lvl">Lv ' + l + (maxed ? ' (max)' : '') + '</span></div>' +
+        '<div class="fu-desc">' + u.desc(l) + '</div>' +
+        '<div class="fu-cost' + (can || maxed ? '' : ' short') + '">' + (maxed ? '\u2014' : '\u25c9 ' + fmt(c)) + '</div></button>';
+    });
+    refEl.innerHTML = html || '<div class="fu-desc" style="grid-column:1/-1">Refinery ready to unlock \u2014 keep minting bits in the foundry.</div>';
+    refEl.querySelectorAll('[data-refunl]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var u = REF_UNLOCKS.filter(function (x) { return x.id === btn.dataset.refunl; })[0];
+        if (!u || refUnlocked(u.id) || state.bits < u.cost) return;
+        state.bits -= u.cost; state.ref[u.id] = true; publish(); dirty = true; save(); renderBalance(); renderRefinery();
+      });
+    });
+    refEl.querySelectorAll('[data-refup]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var u = REF_UPGRADES.filter(function (x) { return x.id === btn.dataset.refup; })[0];
+        if (!u || !refUnlocked(u.need)) return;
+        var l = refLvl(u.id); if (l >= u.max) return;
+        var c = Math.ceil(u.base * Math.pow(u.grow, l)); if (state.bits < c) return;
+        state.bits -= c; state.ref.up = state.ref.up || {}; state.ref.up[u.id] = l + 1; publish(); dirty = true; save(); renderBalance(); renderRefinery();
       });
     });
   }
@@ -6218,7 +6422,7 @@ function toggleReducedVisuals(el) {
   var last = Date.now();
   setInterval(function () {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
-    var p = window.__foundry.passive || 0;
+    var p = (window.__foundry.passive || 0) + refIncome();
     if (p > 0) { state.bits += p * dt; dirty = true; save(); }
     advTick();
     var shown = Math.round(state.bits * 10);
@@ -6623,6 +6827,133 @@ function toggleReducedVisuals(el) {
   renderAdventure();
   renderBalance();
   renderUpgrades();
+  renderRefinery();
+
+  // ---- cross-device sync hooks: the main dashboard script (which holds the
+  // auth token) calls these to pull/push this user's save to the backend, so
+  // game progress follows the user across every device they log in on. ----
+  window.__foundryExport = function () { try { return JSON.stringify(state); } catch (e) { return null; } };
+  window.__foundrySavedAt = function () { return state.savedAt || state.seen || 0; };
+  window.__foundryImport = function (str) {
+    try {
+      var j = typeof str === 'string' ? JSON.parse(str) : str;
+      if (!j || typeof j.bits !== 'number') return false;
+      j = migrateSave(j);
+      state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.savedAt = j.savedAt || j.seen || Date.now(); state.ver = SAVE_VER;
+      if (j.loot) state.loot = j.loot;
+      if (j.adv) state.adv = j.adv;
+      if (j.ref) state.ref = j.ref;
+      UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
+      if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
+      publish();
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery();
+      if (window.__roomRelayout) window.__roomRelayout();
+      return true;
+    } catch (e) { return false; }
+  };
+})();
+</script>
+
+<!-- Ultron's refinery: a small animated line -- an adamantium forge (silver)
+     and a vibranium forge (black w/ blue crackle) drop ingots onto one belt
+     that feeds a currency press. Reads window.__refinery (published by the
+     foundry); the press income itself is handled in the foundry's passive tick. -->
+<script>
+(function () {
+  'use strict';
+  var canvas = document.getElementById('refinery-canvas');
+  if (!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d');
+  var W = 900, H = 150; canvas.width = W; canvas.height = H;
+  var onScreen = true, ingots = [], lastA = 0, lastV = 0, pressFlash = 0, sparks = [];
+  var beltY = 116, forgeAX = 150, forgeVX = 300, pressX = 770;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function cfg() { return window.__refinery || {}; }
+  function spawn(kind, x) { if (ingots.length < 60) ingots.push({ x: x, y: beltY - 8, kind: kind }); }
+
+  function update(t, dt) {
+    var c = cfg(), sp = 60 * (c.convMult || 1);
+    if (c.unlA && c.adamRate > 0 && t - lastA > 1 / c.adamRate) { lastA = t; spawn('adam', forgeAX + 16); }
+    if (c.unlV && c.vibrRate > 0 && t - lastV > 1 / c.vibrRate) { lastV = t; spawn('vibr', forgeVX + 16); }
+    for (var i = ingots.length - 1; i >= 0; i--) {
+      var g = ingots[i]; g.x += sp * dt;
+      if (c.unlP && g.x >= pressX - 14) {
+        ingots.splice(i, 1); pressFlash = t + 0.18;
+        for (var k = 0; k < 5; k++) sparks.push({ x: pressX - 8, y: beltY - 6, vx: 30 + Math.random() * 70, vy: -30 - Math.random() * 45, life: 0 });
+      } else if (g.x > W + 20) ingots.splice(i, 1);
+    }
+    for (var j = sparks.length - 1; j >= 0; j--) { var s2 = sparks[j]; s2.life += dt; s2.x += s2.vx * dt; s2.y += s2.vy * dt; s2.vy += 130 * dt; if (s2.life > 0.5) sparks.splice(j, 1); }
+  }
+
+  function machine(x, label, active, tint) {
+    ctx.fillStyle = active ? '#2b3038' : '#181b20'; ctx.fillRect(x - 27, beltY - 76, 54, 76);
+    ctx.globalAlpha = active ? 0.5 : 0.22; ctx.fillStyle = tint; ctx.fillRect(x - 27, beltY - 76, 54, 10); ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.5; ctx.strokeRect(x - 27, beltY - 76, 54, 76);
+    ctx.fillStyle = active ? '#33d17a' : '#5a2323'; ctx.fillRect(x - 21, beltY - 70, 8, 5);
+    ctx.fillStyle = active ? '#565d68' : '#2a2e34'; ctx.fillRect(x - 6, beltY - 22, 12, 22);   // chute to belt
+    ctx.fillStyle = '#8a93a3'; ctx.font = '10px ui-monospace,monospace'; ctx.textAlign = 'center';
+    ctx.fillText(label, x, beltY - 82);
+    if (!active) { ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.fillRect(x - 27, beltY - 76, 54, 76); ctx.fillStyle = '#8a93a3'; ctx.fillText('locked', x, beltY - 36); }
+  }
+
+  function drawIngot(g, t) {
+    var x = g.x, y = g.y, w = 22, h = 11;
+    if (g.kind === 'adam') {
+      var gr = ctx.createLinearGradient(x - w / 2, y, x + w / 2, y + h);
+      gr.addColorStop(0, '#f4f6fa'); gr.addColorStop(0.5, '#c2c8d2'); gr.addColorStop(1, '#eef1f6');
+      ctx.fillStyle = gr; ctx.fillRect(x - w / 2, y, w, h);
+      ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.fillRect(x - w / 2, y, w, 2);
+      ctx.strokeStyle = '#8b93a0'; ctx.lineWidth = 1; ctx.strokeRect(x - w / 2, y, w, h);
+    } else {
+      ctx.fillStyle = '#07080b'; ctx.fillRect(x - w / 2, y, w, h);
+      ctx.strokeStyle = '#191c22'; ctx.lineWidth = 1; ctx.strokeRect(x - w / 2, y, w, h);
+      ctx.strokeStyle = '#3da9ff'; ctx.lineWidth = 1;
+      for (var c2 = 0; c2 < 2; c2++) {
+        var ph = t * 4 + g.x * 0.25 + c2 * 2.1;
+        ctx.globalAlpha = 0.45 + 0.55 * Math.abs(Math.sin(ph));
+        ctx.beginPath();
+        ctx.moveTo(x - w / 2 + 2, y + 2.5 + c2 * 4);
+        ctx.lineTo(x - 3 + Math.sin(ph) * 2, y + 6);
+        ctx.lineTo(x + 3, y + 2 + c2 * 5);
+        ctx.lineTo(x + w / 2 - 2, y + 5 + c2 * 3);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0a0c10'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#15181d'; ctx.fillRect(0, beltY, W, 16);
+    ctx.fillStyle = '#2b313a'; ctx.fillRect(0, beltY, W, 2);
+    var off = (t * 60 * (cfg().convMult || 1)) % 22;
+    for (var bx = -22 + off; bx < W; bx += 22) { ctx.fillStyle = '#20252c'; ctx.fillRect(bx, beltY + 6, 12, 3); }
+    var c = cfg();
+    machine(forgeAX, 'ADAMANTIUM', !!c.unlA, '#e6ebf2');
+    machine(forgeVX, 'VIBRANIUM', !!c.unlV, '#3da9ff');
+    ctx.fillStyle = c.unlP ? '#2b3038' : '#181b20'; ctx.fillRect(pressX - 32, beltY - 88, 76, 88);
+    ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.5; ctx.strokeRect(pressX - 32, beltY - 88, 76, 88);
+    ctx.fillStyle = (t < pressFlash) ? '#ffe08a' : (c.unlP ? '#565d68' : '#333'); ctx.fillRect(pressX - 24, beltY - 34 - (t < pressFlash ? 6 : 0), 60, 15);
+    ctx.fillStyle = '#8a93a3'; ctx.font = '10px ui-monospace,monospace'; ctx.textAlign = 'center';
+    ctx.fillText(c.unlP ? 'CURRENCY PRESS' : 'PRESS (locked)', pressX + 6, beltY - 94);
+    if (t < pressFlash) { ctx.fillStyle = '#ffe08a'; ctx.font = 'bold 12px ui-monospace,monospace'; ctx.fillText('\u25c9', pressX + 6, beltY - 44); }
+    if (!c.unlP) { ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(pressX - 32, beltY - 88, 76, 88); }
+    ingots.forEach(function (g) { drawIngot(g, t); });
+    sparks.forEach(function (s2) { ctx.globalAlpha = Math.max(0, 1 - s2.life / 0.5); ctx.fillStyle = '#ffe08a'; ctx.fillRect(s2.x, s2.y, 2, 2); ctx.globalAlpha = 1; });
+    if (!c.unlA && !c.unlV) { ctx.fillStyle = '#5a6270'; ctx.font = '11px ui-monospace,monospace'; ctx.fillText('unlock a forge below to begin', W / 2, 26); }
+  }
+
+  var lastT = performance.now() / 1000;
+  function frame() {
+    requestAnimationFrame(frame);
+    if (!onScreen) return;
+    var t = performance.now() / 1000, dt = Math.min(0.1, t - lastT); lastT = t;
+    update(t, dt); draw(t);
+  }
+  if (window.IntersectionObserver) new IntersectionObserver(function (e) { onScreen = e[e.length - 1].isIntersecting; }).observe(canvas);
+  if (reduced) draw(performance.now() / 1000); else frame();
 })();
 </script>
 

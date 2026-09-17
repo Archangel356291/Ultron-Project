@@ -98,6 +98,7 @@ AGENT_COLORS = {
     "graphite": (90, 98, 112, 255),   # Steward (homelab-monitor)
     "candy": (255, 106, 213, 255),    # Pixel (pixel-artist)
     "spearmint": (63, 224, 160, 255), # Arbiter (game-balancer)
+    "royalgold": (255, 207, 58, 255), # Game Master (gold crown)
 }
 OUTLINE_COLOR = (5, 6, 8, 255)
 
@@ -775,6 +776,7 @@ AGENT_LOOKS = {
     "graphite": ("plates", "chart"),      # Steward (homelab-monitor)
     "candy": ("antenna", "brush"),        # Pixel (pixel-artist)
     "spearmint": ("dome", "block"),       # Arbiter (game-balancer)
+    "royalgold": ("crown", "core"),       # Game Master -- gold crown
 }
 
 
