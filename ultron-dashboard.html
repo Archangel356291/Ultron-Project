@@ -722,12 +722,12 @@
   .pu-hint{ color:var(--text-faint); }
   .pu-cat{ margin-top:8px; }
   .pu-cat-h{ font-family:var(--font-display); font-weight:700; font-size:11px; color:#8b93a0; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
-  .pu-row{ display:flex; align-items:center; gap:8px; width:100%; text-align:left; padding:5px 9px; margin-bottom:4px; border:1px solid var(--line); border-radius:6px; background:var(--void); color:var(--text-dim); cursor:default; }
+  .pu-row{ display:flex; align-items:center; gap:8px; width:100%; flex-wrap:wrap; text-align:left; padding:5px 9px; margin-bottom:4px; border:1px solid var(--line); border-radius:6px; background:var(--void); color:var(--text-dim); cursor:default; }
   .pu-row.can{ cursor:pointer; border-color:rgba(168,139,255,.55); color:var(--text); }
   .pu-row.can:hover{ background:rgba(168,139,255,.08); }
   .pu-row:disabled{ opacity:.5; }
-  .pu-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; min-width:118px; }
-  .pu-dsc{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-right:auto; }
+  .pu-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; min-width:88px; }
+  .pu-dsc{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-right:auto; min-width:0; flex:1; }
   .pu-lv{ font-family:var(--font-mono); font-size:10px; color:#a88bff; }
   .pu-c{ font-family:var(--font-mono); font-size:10.5px; color:#c9b6ff; min-width:44px; text-align:right; }
   /* Genesis Cannon endgame */
@@ -738,10 +738,10 @@
   .gn-prog b{ color:#ff8098; }
   .gn-stocks{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
   .gn-stock{ font-family:var(--font-mono); font-size:10px; color:#9db4ff; background:rgba(90,120,255,.1); border:1px solid rgba(90,120,255,.3); border-radius:5px; padding:2px 7px; }
-  .gn-row{ display:flex; align-items:center; gap:8px; padding:5px 9px; margin-bottom:4px; border:1px solid var(--line); border-radius:6px; background:var(--void); }
+  .gn-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:5px 9px; margin-bottom:4px; border:1px solid var(--line); border-radius:6px; background:var(--void); }
   .gn-row.built{ border-color:rgba(51,209,122,.4); background:rgba(51,209,122,.06); }
-  .gn-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; min-width:150px; color:var(--text); }
-  .gn-needs{ display:flex; flex-wrap:wrap; gap:5px; margin-right:auto; }
+  .gn-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; min-width:120px; color:var(--text); }
+  .gn-needs{ display:flex; flex-wrap:wrap; gap:5px; margin-right:auto; min-width:0; }
   .gn-need{ font-family:var(--font-mono); font-size:9.5px; color:#ff8098; }
   .gn-need.ok{ color:#5fe39a; }
   .gn-build{ font-family:var(--font-display); font-weight:700; font-size:10.5px; padding:4px 10px; border-radius:5px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; }
@@ -761,9 +761,9 @@
   .cx-h{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; }
   .cx-chips{ display:flex; flex-wrap:wrap; gap:6px; }
   /* unlock guide */
-  .cx-unlocks{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:4px 12px; }
-  .cx-urow{ display:flex; justify-content:space-between; gap:8px; font-family:var(--font-mono); font-size:10.5px; padding:2px 0; border-bottom:1px solid rgba(255,255,255,.04); }
-  .cx-un{ color:var(--text-dim); }
+  .cx-unlocks{ display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:4px 12px; }
+  .cx-urow{ display:flex; justify-content:space-between; gap:8px; font-family:var(--font-mono); font-size:10.5px; padding:2px 0; border-bottom:1px solid rgba(255,255,255,.04); min-width:0; }
+  .cx-un{ color:var(--text-dim); min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .cx-ur{ color:var(--text-faint); white-space:nowrap; }
   .cx-urow.met .cx-un{ color:var(--text); }
   .cx-urow.met .cx-ur{ color:#5fe39a; }
@@ -772,6 +772,32 @@
   .cx-row{ display:flex; gap:10px; font-size:11px; align-items:baseline; flex-wrap:wrap; }
   .cx-row b{ min-width:150px; color:var(--text); }
   .cx-row span{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
+  /* Codex visual cards: item archetypes, affixes/perks, enemy stat cards */
+  .cx-cards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:8px; }
+  .cx-card{ display:flex; gap:9px; align-items:flex-start; background:var(--void); border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
+  .cx-card-ic{ font-size:22px; line-height:1; flex-shrink:0; }
+  .cx-card-t{ font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text); text-transform:capitalize; }
+  .cx-card-n{ font-family:var(--font-mono); font-weight:400; font-size:9.5px; color:var(--text-faint); text-transform:none; }
+  .cx-card-stats{ margin-top:4px; display:flex; flex-wrap:wrap; gap:3px; }
+  .cx-st-lbl{ font-family:var(--font-mono); font-size:9px; color:var(--text-faint); }
+  .cx-st{ font-family:var(--font-mono); font-size:9px; color:var(--text-dim); background:var(--panel-raised); border-radius:4px; padding:1px 5px; }
+  .cx-affixes{ display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:6px; }
+  .cx-affix{ background:var(--void); border:1px solid var(--line); border-left-width:3px; border-radius:6px; padding:5px 9px; }
+  .cx-affix.pre{ border-left-color:#5fe39a; } .cx-affix.suf{ border-left-color:#c9a6ff; }
+  .cx-affix b{ display:block; font-family:var(--font-display); font-weight:700; font-size:11px; color:var(--text); }
+  .cx-affix span{ font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); }
+  .cx-ecards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:8px; }
+  .cx-ecard{ display:flex; gap:9px; align-items:flex-start; background:var(--void); border:1px solid var(--line); border-left-width:3px; border-radius:8px; padding:8px 10px; }
+  .cx-ecard-ic{ font-size:24px; line-height:1; flex-shrink:0; filter:drop-shadow(0 0 6px currentColor); }
+  .cx-ecard-b{ flex:1; min-width:0; }
+  .cx-ecard-t{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  .cx-ecard-t b{ font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text); }
+  .cx-ecard-tier{ font-family:var(--font-mono); font-size:8.5px; text-transform:uppercase; letter-spacing:.05em; border:1px solid; border-radius:4px; padding:1px 5px; }
+  .cx-ecard-g{ margin-top:5px; display:grid; grid-template-columns:repeat(auto-fill,minmax(52px,1fr)); gap:4px; }
+  .cx-est{ display:flex; flex-direction:column; align-items:center; background:var(--panel-raised); border-radius:4px; padding:2px 3px; }
+  .cx-est i{ font-family:var(--font-mono); font-style:normal; font-size:8px; color:var(--text-faint); letter-spacing:.03em; }
+  .cx-est b{ font-family:var(--font-mono); font-size:11px; color:var(--text); }
+  .cx-ecard-d{ margin-top:5px; font-family:var(--font-mono); font-size:9px; color:#9db4ff; }
   .cx-lore-list{ display:grid; gap:9px; }
   .cx-lore-t{ font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text); }
   .cx-lore.locked .cx-lore-t{ color:var(--text-faint); }
@@ -8150,10 +8176,28 @@ window.__sfx = (function () {
     var cur = ['Bits', 'Bytes', 'Chits', 'Scrip', 'Nanits'].map(function (t, i) { return '<span class="cx-chip" style="color:' + UNIT_COL[i] + ';border-color:' + UNIT_COL[i] + '">' + UNIT_SYM[i] + ' ' + t + (i ? ' \u00d7' + Math.pow(1000, i).toLocaleString() : '') + '</span>'; }).join('');
     var rar = LE.TIERS.map(function (t) { return '<span class="cx-chip" style="color:' + t.color + ';border-color:' + t.color + '">' + t.shape + ' ' + t.label + '</span>'; }).join('');
     var byType = {}; LE.BASES.forEach(function (b) { byType[b.t] = (byType[b.t] || 0) + 1; });
-    var items = Object.keys(byType).map(function (k) { return '<span class="cx-chip">' + k + ' \u00d7' + byType[k] + '</span>'; }).join('') + '<span class="cx-chip">' + LE.BASES.length + ' bases \u00b7 21 stats \u00b7 16 affixes</span>';
+    var ROLL_POOL = { weapon: ['dmg', 'fireRate', 'critChance', 'critDmg', 'reload', 'capacity', 'accuracy', 'heatCap', 'cooldown', 'armorPen', 'statusChance'], armor: ['armor', 'maxHp', 'maxShield', 'elemResist', 'moveSpeed', 'dashRegen', 'shieldRegen', 'accuracy', 'repairPower'], shield: ['maxShield', 'shieldRegen', 'elemResist', 'cooldown', 'armor', 'statusChance'], throwable: ['dmg', 'statusChance', 'cooldown', 'armorPen'], artifact: ['critDmg', 'energyRegen', 'lootFind', 'cooldown', 'elemResist'], consumable: ['repairPower', 'cooldown'], ammo: ['capacity', 'armorPen', 'statusChance'] };
+    var TYPE_IC = { weapon: '\u2694\ufe0f', armor: '\ud83d\udee1\ufe0f', shield: '\u26e8\ufe0f', throwable: '\ud83d\udca3', artifact: '\u2728', consumable: '\u2697\ufe0f', ammo: '\ud83d\udd3b' };
+    var items = Object.keys(byType).map(function (t) {
+      var stats = (ROLL_POOL[t] || []).map(function (k) { return '<span class="cx-st">' + (LE.STATS[k] ? LE.STATS[k].l : k) + '</span>'; }).join('');
+      return '<div class="cx-card"><div class="cx-card-ic">' + (TYPE_IC[t] || '\u25c9') + '</div><div class="cx-card-b">' +
+        '<div class="cx-card-t">' + t + ' <span class="cx-card-n">\u00d7' + byType[t] + ' bases</span></div>' +
+        '<div class="cx-card-stats"><span class="cx-st-lbl">rolls:</span> ' + stats + '</div></div></div>';
+    }).join('');
+    // possible perks: every affix a drop can roll (10 prefixes = stat boosts, 6 suffixes = effects)
+    var affixes = LE.AFFIXES.prefix.map(function (a) { return '<div class="cx-affix pre"><b>' + a.n + '</b><span>+' + Math.round(a.mult * 100) + '% ' + (LE.STATS[a.stat] ? LE.STATS[a.stat].l : a.stat) + '</span></div>'; }).join('') +
+      LE.AFFIXES.suffix.map(function (a) { return '<div class="cx-affix suf"><b>' + a.n + '</b><span>' + a.effect + '</span></div>'; }).join('');
     var bays = ['Vanguard \u00b7 Assault', 'Recon \u00b7 Scout', 'Bombard \u00b7 Bomber', 'Bulwark \u00b7 Tank', 'Cipher \u00b7 Hacker', 'Aegis \u00b7 Medic', 'Titan \u00b7 Muscle Head', 'Havoc \u00b7 Heavy', 'Colossus \u00b7 Juggernaut', 'Omega \u00b7 World Ender'].map(function (b) { return '<span class="cx-chip">' + b + '</span>'; }).join('');
     var TIER_COL = { trash: '#8a93a3', elite: '#5fe39a', miniboss: '#ffb347', boss: '#ff5a7a' };
-    var en = CB ? CB.ENEMIES.map(function (e) { return '<div class="cx-row"><b>' + e.name + '</b><span style="color:' + (TIER_COL[e.tier] || '#8a93a3') + '">' + (e.tier || e.kind) + '</span><span>hp ' + e.hp + '</span><span>atk ' + e.dmg + '</span><span>def ' + e.armor + '</span><span>spd ' + (e.spd || 1) + '</span><span>eva ' + (e.evade || 0) + '%</span>' + (e.regen ? '<span>regen</span>' : '') + '</div>'; }).join('') : '<div class="cx-h">combat module not loaded</div>';
+    var KIND_IC = { melee: '⚔️', ranged: '🏹', fast: '⚡', tank: '🧱', shielded: '⛨️', stealth: '👁️', swarm: '🕸️', slow: '🐌', hacker: '⌨️', elite: '★', miniboss: '☠️', boss: '💀' };
+    var en = CB ? CB.ENEMIES.map(function (e) {
+      var col = TIER_COL[e.tier] || '#8a93a3';
+      var g = function (l, v) { return '<span class="cx-est"><i>' + l + '</i><b>' + v + '</b></span>'; };
+      return '<div class="cx-ecard" style="border-color:' + col + '"><div class="cx-ecard-ic" style="color:' + col + '">' + (KIND_IC[e.kind] || '◉') + '</div>' +
+        '<div class="cx-ecard-b"><div class="cx-ecard-t"><b>' + e.name + '</b><span class="cx-ecard-tier" style="color:' + col + ';border-color:' + col + '">' + (e.tier || e.kind) + '</span></div>' +
+        '<div class="cx-ecard-g">' + g('HP', e.hp) + g('ATK', e.dmg) + g('DEF', e.armor) + g('SPD', e.spd || 1) + g('EVA', (e.evade || 0) + '%') + (e.regen ? g('REGEN', Math.round(e.regen * 100) + '%') : '') + '</div>' +
+        (e.drop ? '<div class="cx-ecard-d">drops ▸ ' + e.drop + '</div>' : '') + '</div></div>';
+    }).join('') : '<div class="cx-h">combat module not loaded</div>';
     // Unlock guide: every major gate, its requirement, and whether it's met.
     var ug = [], pl = playerLevel(), dUnl = (state.adv && state.adv.dungeons) || 0;
     function ugRow(name, req, met) { return '<div class="cx-urow' + (met ? ' met' : '') + '"><span class="cx-un">' + esc(name) + '</span><span class="cx-ur">' + esc(req) + (met ? ' \u2713' : '') + '</span></div>'; }
@@ -8168,9 +8212,10 @@ window.__sfx = (function () {
       sec('Unlock requirements \u2014 what unlocks what', '<div class="cx-unlocks">' + ug.join('') + '</div>') +
       sec('Currency (\u00d71000 each tier)', '<div class="cx-chips">' + cur + '</div>') +
       sec('Loot rarity', '<div class="cx-chips">' + rar + '</div>') +
-      sec('Item archetypes', '<div class="cx-chips">' + items + '</div>') +
+      sec('Item archetypes &amp; the stats they roll', '<div class="cx-cards">' + items + '</div>') +
+      sec('Affixes &mdash; possible perks on a drop', '<div class="cx-affixes">' + affixes + '</div>') +
       sec('Production bays', '<div class="cx-chips">' + bays + '</div>') +
-      sec('Enemies (Expedition auto-battler)', '<div class="cx-enemies">' + en + '</div>') +
+      sec('Enemies &mdash; full stat cards (Expedition auto-battler)', '<div class="cx-ecards">' + en + '</div>') +
       sec('Lore', '<div class="cx-lore-list">' + LORE.map(function (e) {
         var open = playerLevel() >= e.need;
         return '<div class="cx-lore' + (open ? '' : ' locked') + '"><div class="cx-lore-t">' + e.t + (open ? '' : ' \u00b7 Lv ' + e.need) + '</div><div class="cx-lore-b">' + (open ? e.body : 'Locked \u2014 reach level ' + e.need + '.') + '</div></div>';
