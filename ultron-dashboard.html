@@ -915,6 +915,12 @@
   .exp-reinf.can:hover{ background:rgba(120,200,255,.08); }
   .exp-hint{ font-size:11px; color:var(--text-faint); margin-top:10px; }
   .exp-stat.pow{ border-color:rgba(230,164,30,.55); color:#ffd88a; }
+  /* live combat viewer */
+  .exp-viewer-wrap{ margin-top:14px; border:1px solid var(--line); border-radius:8px; background:var(--void); overflow:hidden; }
+  .exp-viewer-h{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); padding:6px 10px; border-bottom:1px solid var(--line); }
+  .exp-viewer-h b{ color:#7fd0ff; }
+  #exp-viewer-canvas{ display:block; width:100%; height:132px; }
+  .exp-equipbtn{ border-color:rgba(95,227,154,.55) !important; color:#5fe39a !important; }
   /* full robot stats sheet */
   .rstats{ margin-top:10px; border:1px solid var(--line); border-radius:8px; background:var(--panel-raised); padding:9px 11px; }
   .rstats-h{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); margin-bottom:8px; }
@@ -1638,6 +1644,10 @@
 
           <div class="panel-label" style="margin-top:28px;">Ultron's expedition</div>
           <div class="expedition" id="expedition"></div>
+          <div class="exp-viewer-wrap" id="exp-viewer-wrap" hidden>
+            <div class="exp-viewer-h" id="exp-viewer-h">&#9654; Live feed &mdash; your robot in the field</div>
+            <canvas id="exp-viewer-canvas" aria-label="Live view of your custom robot fighting through its expedition"></canvas>
+          </div>
 
           <div class="panel-label" style="margin-top:28px;">Codex</div>
           <details class="codex-wrap"><summary>Enemies, loot, rarities &amp; bays &mdash; the game's database</summary><div id="codex"></div></details>
@@ -7349,6 +7359,7 @@ window.__sfx = (function () {
       btn.addEventListener('click', function () {
         var g = GENERATORS[+btn.dataset.genunl]; if (!g || genUnlocked(g.id) || state.bits < g.unlock) return;
         state.bits -= g.unlock; state.gen.unlocked = state.gen.unlocked || {}; state.gen.unlocked[g.id] = true;
+        addXp(Math.round(15 + Math.log10((g.unlock || 10) + 10) * 22), 'Discovery: ' + g.name);   // building new tech grants XP
         if (window.__sfx) window.__sfx('unlock'); gamePop('✦ ' + g.name + ' online', '#5fe39a');
         publish(); dirty = true; save(); renderGenerators(); renderBalance();
       });
@@ -7443,7 +7454,7 @@ window.__sfx = (function () {
       btn.addEventListener('click', function () {
         var u = REF_UNLOCKS.filter(function (x) { return x.id === btn.dataset.refunl; })[0];
         if (!u || refUnlocked(u.id) || state.bits < u.cost) return;
-        state.bits -= u.cost; state.ref[u.id] = true; if (window.__sfx) window.__sfx('unlock'); gamePop('\u2726 ' + u.name, '#9be8ff'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
+        state.bits -= u.cost; state.ref[u.id] = true; if (window.__sfx) window.__sfx('unlock'); gamePop('\u2726 ' + u.name, '#9be8ff'); addXp(Math.round(15 + Math.log10((u.cost || 10) + 10) * 22), 'Discovery: ' + u.name); publish(); dirty = true; save(); renderBalance(); renderRefinery();
       });
     });
     refEl.querySelectorAll('[data-refup]').forEach(function (btn) {
@@ -7599,7 +7610,7 @@ window.__sfx = (function () {
   }
 
   // passive income + refresh loop
-  var last = Date.now();
+  var last = Date.now(), idleXpAcc = 0;
   setInterval(function () {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
     syncPresence();                    // catch in-app section switches while the tab is visible
@@ -7607,6 +7618,7 @@ window.__sfx = (function () {
       state.seen = now;                // heartbeat: while active, keep the away marker current so offline starts from "now" when you leave
       var p = ((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus();
       if (p > 0) { state.bits += p * dt; state.lifetime = (state.lifetime || 0) + p * dt; dirty = true; save(); }
+      idleXpAcc += dt * 0.6; if (idleXpAcc >= 1) { var whole = Math.floor(idleXpAcc); idleXpAcc -= whole; addXp(whole, 'Idle ops'); }   // "do to learn": a small XP trickle while running the line
     }
     advTick();                         // expeditions run on wall-clock time -> progress in the background regardless
     var shown = Math.round(state.bits * 10);
@@ -8074,7 +8086,7 @@ window.__sfx = (function () {
         '<span class="exp-i-rar">' + it.rarity + (on ? ' · equipped' : '') + '</span>' +
         (it.stats ? '<span class="exp-i-stats">' + statLine(it.stats) + '</span>' : '') +
         (it.mods && it.mods.length ? '<span class="exp-i-ab">' + esc(it.mods.join(' · ')) + '</span>' : '') +
-        (on ? '' : '<button type="button" class="exp-sell" data-a="sell" data-id="' + it.id + '">sell \u25C9' + sellValue(it) + '</button><button type="button" class="exp-sell exp-salv" data-a="salvage" data-id="' + it.id + '">salvage</button>') + '</div>';
+        (on ? '' : (can ? '<button type="button" class="exp-sell exp-equipbtn" data-a="equip" data-id="' + it.id + '">\u21EA equip</button>' : '') + '<button type="button" class="exp-sell" data-a="sell" data-id="' + it.id + '">sell \u25C9' + sellValue(it) + '</button><button type="button" class="exp-sell exp-salv" data-a="salvage" data-id="' + it.id + '">salvage</button>') + '</div>';
     }).join('');
     expEl.innerHTML =
       '<div class="exp-build"><div class="' + robotCls + '" style="--rc:' + r.color + '"><span class="exp-head"></span><span class="exp-eye"></span><span class="exp-body"></span><span class="exp-base"></span></div>' +
@@ -8086,7 +8098,11 @@ window.__sfx = (function () {
       matBar + '<div class="exp-load">' + load + '</div>' + totHtml +
       statsSheetHtml(gear) +
       status + battleHtml + haul +
-      (inv ? '<div class="exp-inv-h">Inventory (' + (a.inv || []).length + ') \u2014 tap a part to equip<button type="button" class="exp-selljunk" data-a="sell-junk">Sell all Common</button><button type="button" class="exp-selljunk" data-a="salvage-junk">Salvage all Common</button></div><div class="exp-inv">' + inv + '</div>' : '');
+      (inv ? '<div class="exp-inv-h">Inventory (' + (a.inv || []).length + ') \u2014 press Equip on a part<button type="button" class="exp-selljunk" data-a="sell-junk">Sell all Common</button><button type="button" class="exp-selljunk" data-a="salvage-junk">Salvage all Common</button><button type="button" class="exp-selljunk" data-a="sell-all">Sell all</button><button type="button" class="exp-selljunk" data-a="salvage-all">Salvage all</button></div><div class="exp-inv">' + inv + '</div>' : '');
+    var reg = REGIONS[a.region || 0] || REGIONS[0];   // live combat viewer: on while a run is out
+    window.__advView = { active: away, color: (r && r.color) || '#ff3b3b', ground: reg.color || '#00e5ff', label: runLabel };
+    var vwrap = document.getElementById('exp-viewer-wrap'); if (vwrap) vwrap.hidden = !away;
+    var vh = document.getElementById('exp-viewer-h'); if (vh && away) vh.innerHTML = '\u25b6 Live feed \u2014 <b>' + esc(r.name || 'robot') + '</b> on ' + esc(runLabel);
   }
   if (expEl) {
     expEl.addEventListener('click', function (e) {
@@ -8101,7 +8117,9 @@ window.__sfx = (function () {
       else if (act === 'sell-junk') { var kept = [], gained = 0; (a.inv || []).forEach(function (x) { if (x.rarity === 'Common' && !gearHasId(a.gear, x.id)) gained += sellValue(x); else kept.push(x); }); if (gained > 0) { state.bits += gained; a.inv = kept; dirty = true; save(); renderBalance(); renderAdventure(); } }
       else if (act === 'salvage') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { addMats(matYield(itemTier(it))); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); if (window.__sfx) window.__sfx('press'); dirty = true; save(); renderAdventure(); } }
       else if (act === 'salvage-junk') { var kept2 = [], got = false; (a.inv || []).forEach(function (x) { if (x.rarity === 'Common' && !gearHasId(a.gear, x.id)) { addMats(matYield(itemTier(x))); got = true; } else kept2.push(x); }); if (got) { a.inv = kept2; if (window.__sfx) window.__sfx('press'); dirty = true; save(); renderAdventure(); } }
-      else if (act === 'reinforce') { var g = a.gear && a.gear[b.dataset.slot]; if (g) { var pls = g.plus || 0, rc = reinforceCost(pls); if (canAfford(rc)) { payMats(rc); for (var sk in g.stats) g.stats[sk] = Math.max(1, Math.round(g.stats[sk] * 1.08)); g.plus = pls + 1; if (window.__sfx) window.__sfx('build'); dirty = true; save(); renderAdventure(); } } }
+      else if (act === 'sell-all') { var keptA = [], gainedA = 0; (a.inv || []).forEach(function (x) { if (x.slot && x.stats && !gearHasId(a.gear, x.id)) gainedA += sellValue(x); else keptA.push(x); }); if (gainedA > 0) { state.bits += gainedA; a.inv = keptA; if (window.__sfx) window.__sfx('coin'); dirty = true; save(); renderBalance(); renderAdventure(); } }
+      else if (act === 'salvage-all') { var keptS = [], gotS = false; (a.inv || []).forEach(function (x) { if (x.slot && x.stats && !gearHasId(a.gear, x.id)) { addMats(matYield(itemTier(x))); gotS = true; } else keptS.push(x); }); if (gotS) { a.inv = keptS; if (window.__sfx) window.__sfx('build'); dirty = true; save(); renderAdventure(); } }
+      else if (act === 'reinforce') { var g = a.gear && a.gear[b.dataset.slot]; if (g) { var pls = g.plus || 0, rc = reinforceCost(pls); if (canAfford(rc)) { payMats(rc); for (var sk in g.stats) g.stats[sk] = Math.max(1, Math.round(g.stats[sk] * 1.08)); g.plus = pls + 1; if (window.__sfx) window.__sfx('build'); addXp(12, 'Reinforce'); dirty = true; save(); renderAdventure(); } } }
       else if (act === 'preset') { var pr = PRESETS[b.dataset.v]; if (pr) { a.build = a.build || {}; for (var k in pr) { if (k === '_color') a.robot.color = pr[k]; else a.build[k] = pr[k]; } dirty = true; save(); renderAdventure(); } }
       else if (act === 'save-load') { var inp = expEl.querySelector('.exp-ldname'); var nm = (inp && inp.value.trim()) || ('Build ' + (Object.keys(a.loadouts || {}).length + 1)); a.loadouts = a.loadouts || {}; a.loadouts[nm] = { build: Object.assign({}, a.build), color: a.robot.color }; dirty = true; save(); renderAdventure(); }
       else if (act === 'load-ld') { var ld = (a.loadouts || {})[b.dataset.v]; if (ld) { a.build = Object.assign({}, ld.build); if (ld.color) a.robot.color = ld.color; dirty = true; save(); renderAdventure(); } }
@@ -8342,6 +8360,96 @@ window.__sfx = (function () {
   }
   if (window.IntersectionObserver) new IntersectionObserver(function (e) { onScreen = e[e.length - 1].isIntersecting; }).observe(canvas);
   if (reduced) draw(performance.now() / 1000); else frame();
+})();
+</script>
+
+<!-- Expedition live viewer: an ambient, idle "watch it fight" scene. Reads
+     window.__advView (set by renderAdventure) for whether a run is out and the
+     robot/region colours. Purely cosmetic -- the real result is the
+     auto-battler resolved on claim -- but it lets the player watch. -->
+<script>
+(function () {
+  var canvas = document.getElementById('exp-viewer-canvas'); if (!canvas || !canvas.getContext) return;
+  var wrap = document.getElementById('exp-viewer-wrap'), ctx = canvas.getContext('2d');
+  var W = 600, H = 132, dpr = Math.min(window.devicePixelRatio || 1, 2), onScreen = true;
+  function size() { var cw = (wrap && wrap.clientWidth) || canvas.clientWidth || 600; W = Math.max(320, Math.round(cw)); canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  size(); window.addEventListener('resize', size);
+  if (window.ResizeObserver && wrap) new ResizeObserver(size).observe(wrap);
+  if (window.IntersectionObserver) new IntersectionObserver(function (e) { onScreen = e[e.length - 1].isIntersecting; }).observe(canvas);
+  function view() { return window.__advView || { active: false, color: '#ff3b3b', ground: '#00e5ff' }; }
+  var creatures = [], bolts = [], pops = [], loots = [], stars = [];
+  var lastFire = 0, lastSpawn = 0, botBob = 0, muzzle = 0, botX = 62;
+  for (var i = 0; i < 26; i++) stars.push({ x: Math.random() * 600, y: 8 + Math.random() * 84, s: Math.random() * 22 + 6 });
+  function hexToRgb(h) { h = (h || '#888').replace('#', ''); if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2]; return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+  function update(t, dt) {
+    var v = view(); if (!v.active) return;
+    botBob += dt * 4;
+    if (t - lastSpawn > 0.85 + Math.random() * 0.6 && creatures.length < 5) { lastSpawn = t; creatures.push({ x: W + 18, y: H - 34 - Math.random() * 22, wob: Math.random() * 6, r: 6 + Math.random() * 3 }); }
+    creatures.forEach(function (cr) { cr.x -= (24 + Math.random() * 6) * dt; cr.wob += dt * 6; });
+    if (t - lastFire > 0.5 && creatures.length) { lastFire = t; muzzle = t + 0.06; bolts.push({ x: botX + 20, y: H - 30, vx: 300 }); }
+    for (var bi = bolts.length - 1; bi >= 0; bi--) {
+      var b = bolts[bi]; b.x += b.vx * dt; var hit = false;
+      for (var ci = 0; ci < creatures.length; ci++) { var cr = creatures[ci]; if (cr.x > botX && Math.abs(b.x - cr.x) < 11 && Math.abs(b.y - cr.y) < 18) { killCreature(cr, ci, v); hit = true; break; } }
+      if (hit || b.x > W + 20) bolts.splice(bi, 1);
+    }
+    for (var k = creatures.length - 1; k >= 0; k--) if (creatures[k].x < botX + 4) { pops.push({ x: creatures[k].x, y: creatures[k].y, life: 0, col: '#ff6b6b' }); creatures.splice(k, 1); }
+    for (var pi = pops.length - 1; pi >= 0; pi--) { pops[pi].life += dt; if (pops[pi].life > 0.5) pops.splice(pi, 1); }
+    for (var li = loots.length - 1; li >= 0; li--) { var l = loots[li]; l.life += dt; l.y -= 22 * dt; if (l.life > 1) loots.splice(li, 1); }
+  }
+  function killCreature(cr, ci, v) {
+    for (var q = 0; q < 6; q++) pops.push({ x: cr.x, y: cr.y, life: 0, col: '#ffd24b', vx: (Math.random() - 0.5) * 60, vy: (Math.random() - 0.5) * 60 });
+    if (Math.random() < 0.4) loots.push({ x: cr.x, y: cr.y, life: 0, col: v.color });
+    creatures.splice(ci, 1);
+  }
+  function drawBot(t, v) {
+    var rgb = hexToRgb(v.color), col = v.color, x = botX, feet = H - 12, bob = Math.sin(botBob) * 1.5;
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(x, feet + 2, 15, 3.5, 0, 0, 6.28); ctx.fill();
+    ctx.save(); ctx.translate(0, bob);
+    ctx.fillStyle = '#2a2e34'; ctx.fillRect(x - 7, feet - 12, 5, 12); ctx.fillRect(x + 2, feet - 12, 5, 12);            // legs
+    ctx.fillStyle = col; ctx.fillRect(x - 8, feet - 12, 2, 12);
+    var g = ctx.createLinearGradient(x - 11, 0, x + 11, 0); g.addColorStop(0, 'rgba(' + rgb + ',0.9)'); g.addColorStop(1, '#3a3f47');
+    ctx.fillStyle = g; ctx.fillRect(x - 11, feet - 30, 22, 19);                                                        // torso
+    ctx.fillStyle = '#14161b'; ctx.fillRect(x - 5, feet - 25, 10, 9);
+    ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, feet - 20.5, 3.4, 0, 6.28); ctx.fill();                          // core
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x, feet - 20.5, 1.4, 0, 6.28); ctx.fill();
+    ctx.fillStyle = '#3a3f47'; ctx.fillRect(x - 15, feet - 28, 5, 8);                                                 // back arm
+    ctx.fillStyle = '#4a5058'; ctx.fillRect(x + 9, feet - 26, 14, 5);                                                 // gun arm
+    ctx.fillStyle = '#2a2e34'; ctx.fillRect(x + 21, feet - 26.5, 6, 6);
+    if (t < muzzle) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x + 28, feet - 23.5, 4, 0, 6.28); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x + 28, feet - 23.5, 1.8, 0, 6.28); ctx.fill(); }
+    ctx.fillStyle = '#9298a3'; ctx.fillRect(x - 6, feet - 42, 12, 12);                                                // head
+    ctx.fillStyle = col; ctx.fillRect(x - 6, feet - 42, 12, 2);
+    ctx.fillStyle = '#14161b'; ctx.fillRect(x - 4.5, feet - 38, 9, 4);
+    ctx.fillStyle = col; ctx.fillRect(x - 3.5, feet - 37.5, 3, 2.6); ctx.fillRect(x + 0.6, feet - 37.5, 3, 2.6);      // eyes
+    ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x - 2, feet - 42); ctx.lineTo(x, feet - 47); ctx.lineTo(x + 2, feet - 42); ctx.closePath(); ctx.fill();   // crest
+    ctx.restore();
+  }
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    var v = view(), grgb = hexToRgb(v.ground);
+    var bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0a0c11'); bg.addColorStop(1, 'rgba(' + grgb + ',0.10)');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    var scroll = v.active ? (t * 40) : 0;
+    ctx.fillStyle = 'rgba(' + grgb + ',0.5)';
+    for (var i = 0; i < stars.length; i++) { var s = stars[i], sx = ((s.x - scroll * (s.s / 20)) % (W + 30) + W + 30) % (W + 30) - 15; ctx.globalAlpha = 0.15 + (s.s % 10) / 40; ctx.fillRect(sx, s.y, 2, 2); }
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = 'rgba(' + grgb + ',0.35)'; ctx.fillRect(0, H - 10, W, 2);                                        // ground line
+    ctx.fillStyle = '#0d0f14'; ctx.fillRect(0, H - 8, W, 8);
+    if (!v.active) { ctx.fillStyle = '#5a6270'; ctx.font = '12px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('Send your robot on a run to watch it fight.', W / 2, H / 2); return; }
+    creatures.forEach(function (cr) {                                                                                // creatures
+      var y = cr.y + Math.sin(cr.wob) * 2;
+      ctx.fillStyle = '#3a2030'; ctx.beginPath(); ctx.ellipse(cr.x, y, cr.r, cr.r * 0.8, 0, 0, 6.28); ctx.fill();
+      ctx.fillStyle = '#7a3050'; ctx.beginPath(); ctx.ellipse(cr.x - 1, y - 1, cr.r * 0.6, cr.r * 0.5, 0, 0, 6.28); ctx.fill();
+      ctx.fillStyle = '#ff4d6a'; ctx.fillRect(cr.x - 3, y - 1.5, 2, 2); ctx.fillRect(cr.x + 1, y - 1.5, 2, 2);        // eyes
+      ctx.strokeStyle = '#2a1020'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cr.x - cr.r, y + cr.r * 0.7); ctx.lineTo(cr.x - cr.r - 2, y + cr.r); ctx.moveTo(cr.x + cr.r, y + cr.r * 0.7); ctx.lineTo(cr.x + cr.r + 2, y + cr.r); ctx.stroke();
+    });
+    bolts.forEach(function (b) { ctx.strokeStyle = v.color; ctx.lineWidth = 2.4; ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.moveTo(b.x - 9, b.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.globalAlpha = 1; });
+    drawBot(t, v);
+    pops.forEach(function (p) { ctx.globalAlpha = Math.max(0, 1 - p.life / 0.5); ctx.fillStyle = p.col; var px = p.x + (p.vx || 0) * p.life, py = p.y + (p.vy || 0) * p.life; ctx.fillRect(px - 1.5, py - 1.5, 3, 3); ctx.globalAlpha = 1; });
+    loots.forEach(function (l) { ctx.globalAlpha = Math.max(0, 1 - l.life); ctx.fillStyle = l.col; ctx.font = '11px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.fillText('◉', l.x, l.y); ctx.globalAlpha = 1; });
+  }
+  var lastT = performance.now() / 1000;
+  function frame() { requestAnimationFrame(frame); if (!onScreen || (wrap && wrap.hidden)) return; var t = performance.now() / 1000, dt = Math.min(0.1, t - lastT); lastT = t; update(t, dt); draw(t); }
+  frame();
 })();
 </script>
 
