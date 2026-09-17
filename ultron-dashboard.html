@@ -751,6 +751,24 @@
   .gn-blt{ font-family:var(--font-mono); font-size:10px; color:#5fe39a; }
   .gn-fire{ display:block; width:100%; margin-top:8px; font-family:var(--font-display); font-weight:800; font-size:13px; letter-spacing:.05em; padding:10px; border-radius:7px; border:1px solid #ff2b3d; background:linear-gradient(180deg,rgba(255,43,61,.25),rgba(122,77,255,.15)); color:#ffd6d6; cursor:pointer; animation:gnpulse 1.4s ease-in-out infinite; }
   @keyframes gnpulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,43,61,.5); } 50%{ box-shadow:0 0 18px 2px rgba(255,43,61,.55); } }
+  /* Infinity Stone Laboratory */
+  .stonelab{ margin-top:10px; padding:11px 13px; border:1px solid rgba(192,123,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(192,123,255,.07),transparent); }
+  .sl-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#c9a6ff; }
+  .sl-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); }
+  .sl-unlock, .sl-forge{ display:block; width:100%; margin-top:8px; font-family:var(--font-display); font-weight:700; font-size:12px; padding:9px; border-radius:7px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; }
+  .sl-unlock.can, .sl-forge.can{ cursor:pointer; border-color:#c07bff; color:#c9a6ff; box-shadow:0 0 14px -4px rgba(192,123,255,.6); }
+  .sl-unlock.can:hover, .sl-forge.can:hover{ background:rgba(192,123,255,.14); }
+  .sl-unlock:disabled, .sl-forge:disabled{ opacity:.6; }
+  .sl-aspects{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:7px; margin-top:9px; }
+  .sl-aspect{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; padding:7px 9px; border:1px solid var(--line); border-left:3px solid var(--sc); border-radius:7px; background:var(--void); color:var(--text); cursor:pointer; text-align:left; }
+  .sl-aspect:hover{ background:rgba(255,255,255,.04); }
+  .sl-aspect b{ font-family:var(--font-display); font-size:12px; }
+  .sl-gem{ width:14px; height:14px; border-radius:50%; box-shadow:0 0 8px var(--sc); flex-shrink:0; }
+  .sl-eff{ font-family:var(--font-mono); font-size:9px; color:var(--text-faint); width:100%; }
+  .sl-forgebay{ display:flex; justify-content:center; padding:12px 0 6px; }
+  .sl-gembig{ width:44px; height:44px; border-radius:8px; transform:rotate(45deg); animation:slspin 6s linear infinite; }
+  @keyframes slspin{ from{ transform:rotate(45deg); } to{ transform:rotate(405deg); } }
+  .sl-boost{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); text-align:center; margin-bottom:4px; }
   .codex-wrap{ border:1px solid var(--line); border-radius:8px; background:var(--panel-raised); }
   .codex-wrap>summary{ cursor:pointer; padding:9px 12px; font-family:var(--font-display); font-weight:700; font-size:12.5px; color:var(--text-dim); list-style:none; }
   .codex-wrap>summary::-webkit-details-marker{ display:none; }
@@ -1752,6 +1770,7 @@
             <div class="foundry-bays" id="foundry-bays"></div>
             <div class="prestige" id="prestige"></div>
             <div class="prestige-up" id="prestige-up"></div>
+            <div class="stonelab" id="stonelab"></div>
             <div class="genesis" id="genesis"></div>
             <div class="progression" id="progression"></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
@@ -2632,6 +2651,7 @@
     // Home isn't the visible section -- a no-op if that script hasn't
     // loaded (or failed) yet.
     if (window.__kgSetActive) window.__kgSetActive(id === 'home');
+    if (window.__labRelock) window.__labRelock();   // re-seal the lab vault on any tab change
   }
 
   items.forEach(item => {
@@ -3092,6 +3112,24 @@
       });
       keys.appendChild(b);
     });
+    // Keyboard entry: type digits, Backspace to delete, Enter to submit -- only
+    // while the vault is visible (Home tab), unopened, and not typing in a field.
+    document.addEventListener('keydown', function (e) {
+      if (vault.classList.contains('unlocked')) return;
+      if (!box.offsetParent) return;                                   // vault not visible (another tab)
+      var tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable)) return;
+      if (e.key >= '0' && e.key <= '9') { if (pin.length < MAXLEN) { pin += e.key; msg.textContent = ''; renderPin(); } e.preventDefault(); }
+      else if (e.key === 'Backspace') { pin = pin.slice(0, -1); msg.textContent = ''; renderPin(); e.preventDefault(); }
+      else if (e.key === 'Enter') { submit(); e.preventDefault(); }
+    });
+    // Re-lock the vault (chains + blast door close) whenever the admin leaves the
+    // tab, so lab data is never left exposed on an unattended screen.
+    window.__labRelock = function () {
+      if (!vault.classList.contains('unlocked')) return;
+      vault.classList.remove('unlocked'); pin = ''; renderPin(); msg.textContent = '';
+      if (dataEl) dataEl.innerHTML = '<div class="lv-empty">Sealed. Enter the admin PIN to reveal ethical-hacking lab activity.</div>';
+    };
     renderPin();
   })();
 
@@ -3100,21 +3138,24 @@
   // Here, holding the auth token, we pull the user's cloud save on sign-in and
   // push it (debounced) whenever the game saves, so progress follows the user
   // to every device they log in on. Last-write-wins by savedAt. ----
-  window.__foundryCloudPush = (function () {
-    let timer = null;
-    return function () {
-      if (!state.token || !window.__foundryExport) return;
-      if (timer) return;
-      timer = setTimeout(async function () {
-        timer = null;
-        try {
-          const data = window.__foundryExport();
-          if (data == null) return;
-          await apiPost('/api/game/save', { data: data, savedAt: (window.__foundrySavedAt && window.__foundrySavedAt()) || Date.now() });
-        } catch (e) { /* offline or not authed — localStorage still holds it */ }
-      }, 2500);
-    };
-  })();
+  var __cloudPushTimer = null;
+  async function __cloudPushImmediate() {
+    if (!state.token || !window.__foundryExport) return;
+    try {
+      const data = window.__foundryExport();
+      if (data == null) return;
+      await apiPost('/api/game/save', { data: data, savedAt: (window.__foundrySavedAt && window.__foundrySavedAt()) || Date.now() });
+    } catch (e) { /* offline or not authed — localStorage still holds it */ }
+  }
+  window.__foundryCloudPush = function () {           // debounced push on every autosave
+    if (!state.token || !window.__foundryExport) return;
+    if (__cloudPushTimer) return;
+    __cloudPushTimer = setTimeout(function () { __cloudPushTimer = null; __cloudPushImmediate(); }, 2500);
+  };
+  window.__foundryCloudPushNow = function () {        // manual save -> push RIGHT NOW, no debounce
+    if (__cloudPushTimer) { clearTimeout(__cloudPushTimer); __cloudPushTimer = null; }
+    return __cloudPushImmediate();
+  };
   // Subagents completing tasks earn the player game XP. Each poll, count the
   // completed agent tasks; the first poll sets a baseline, later increases grant
   // XP (admin only -- the tasks endpoint is admin-scoped).
@@ -3146,6 +3187,12 @@
       }
     } catch (e) { /* ignore — localStorage still works offline */ }
   }
+  // Keep every session converged: pull the cloud save periodically and whenever
+  // the tab/window regains focus, so a save on one device reaches the others
+  // "at all times" (last-write-wins by savedAt).
+  setInterval(function () { if (state.token) syncGameFromCloud(); }, 25000);
+  window.addEventListener('focus', function () { if (state.token) syncGameFromCloud(); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && state.token) syncGameFromCloud(); });
 
   async function refreshAll() {
     try {
@@ -7618,7 +7665,7 @@ window.__sfx = (function () {
     }).join('');
     return '<div class="set-wrap"><div class="set-head">✦ Signature Gear Sets <span class="set-hint">— collect God-rarity pieces to raise your attributes (2/4/6/8/10)</span></div>' + rows + '</div>';
   }
-  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult(); }
+  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult(); }
   function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
 
   // ---- Refinery: an adamantium forge and a vibranium forge cast ingots onto
@@ -7770,7 +7817,7 @@ window.__sfx = (function () {
   // Each time the Genesis Cannon fires and remakes the universe, EVERYTHING is
   // permanently multiplied -- the ultimate reward for the ultimate grind.
   function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult(); }
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult(); }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -7788,8 +7835,8 @@ window.__sfx = (function () {
   // exponential scale). Combined they let a stat be pushed hard late-game.
   function pct(l, per) { return 1 + (per / 100) * skillLvl(l); }       // additive %-boost skill
   function xmul(l, step) { return Math.pow(1 + step, skillLvl(l)); }   // compounding × skill
-  function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03) * attrXpMult(); }   // + Intelligence
-  function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03) * prestigeProdMult(); }
+  function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03) * attrXpMult() * stoneXpMult(); }   // + Intelligence + Mind stone
+  function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03) * prestigeProdMult() * stoneProdMult(); }
   function prodQualMult() { return pct('prodqual', 5) * xmul('prodqualm', 0.025); }
   function incomeMult() { return pct('incboost', 4) * xmul('incmult', 0.03); }
   var SKILLS = [
@@ -7932,7 +7979,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -7946,6 +7993,7 @@ window.__sfx = (function () {
   if (!state.comp) state.comp = { chip: 0, cpu: 0, gpu: 0, ram: 0 };   // universe-weapon components from loot salvage
   if (!state.genesis) state.genesis = { built: {}, fired: 0 };          // Genesis Cannon build progress
   if (!state.xpcore) state.xpcore = { unlocked: false };               // XP Crystal chamber floor
+  if (!state.stoneforge) state.stoneforge = { unlocked: false, aspect: null, tier: 0 };   // Infinity Stone lab
   if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
@@ -7981,7 +8029,7 @@ window.__sfx = (function () {
       passive: 0.5 * lvl('collector') * prestigePassMult(),   // Reactor Bank prestige upgrade
       marchMult: 1 + 0.15 * lvl('march'),
       pkgMult: 1 + 0.5 * lvl('pkgval'),
-      offlineHours: 1.5 + lvl('offline') + skillLvl('offline') + 2 * pUp('poff'),   // Deep Storage prestige upgrade
+      offlineHours: 1.5 + lvl('offline') + skillLvl('offline') + 2 * pUp('poff') + stoneOffline(),   // Deep Storage prestige + Space stone
       mult: globalMult(),   // so the room can label floating coins with the real credited amount
       tier: 1 + Math.min(3, Math.floor((lvl('yield') + lvl('perbay') + (state.up.asm0 || 0)) / 3)),
       cores: (state.prestige && state.prestige.cores) || 0,   // banked defeats -> permanent buffs
@@ -7989,6 +8037,7 @@ window.__sfx = (function () {
       xpcore: !!(state.xpcore && state.xpcore.unlocked),       // XP Crystal chamber floor is built
       xppct: (function () { var p = state.prog; if (!p) return 0; return p.level >= LEVEL_CAP ? 1 : Math.max(0, Math.min(1, p.xp / xpForLevel(p.level))); })(),   // live XP gauge fill
       xplevel: (state.prog && state.prog.level) || 1,
+      stonelab: (state.stoneforge && state.stoneforge.unlocked) ? { aspect: state.stoneforge.aspect, tier: state.stoneforge.tier } : null,   // Infinity Stone lab floor
     };
     window.__refinery = refConfig();
   }
@@ -8089,8 +8138,9 @@ window.__sfx = (function () {
   function saveNow() {
     state.seen = state.savedAt = Date.now();
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-    if (window.__foundryCloudPush) window.__foundryCloudPush();
-    gamePop('✔ Game saved', '#5fe39a'); if (window.__sfx) window.__sfx('unlock');
+    if (window.__foundryCloudPushNow) window.__foundryCloudPushNow();   // manual save -> push to the cloud immediately so every device is in sync
+    else if (window.__foundryCloudPush) window.__foundryCloudPush();
+    gamePop('✔ Game saved to all devices', '#5fe39a'); if (window.__sfx) window.__sfx('unlock');
   }
   (function () { var b = document.getElementById('game-save-btn'); if (b) b.addEventListener('click', saveNow); })();
   // Subagents completing tasks earn the player game XP (called by the dashboard
@@ -8384,8 +8434,43 @@ window.__sfx = (function () {
     state.roundStart = state.lifetime || 0;
     gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderAdventure(); renderProgression();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderAdventure(); renderProgression();
     if (window.__roomRelayout) window.__roomRelayout();
+  }
+  var stonelabEl = document.getElementById('stonelab');
+  function stoneBoostText(id) {
+    switch (id) {
+      case 'power': return '+' + (5 * stoneTier()) + '% adventurer power';
+      case 'mind': return '×' + Math.pow(1.04, stoneTier()).toFixed(2) + ' XP gain';
+      case 'time': return '×' + Math.pow(1.04, stoneTier()).toFixed(2) + ' production';
+      case 'soul': return '×' + Math.pow(1.04, stoneTier()).toFixed(2) + ' income';
+      case 'space': return '+' + stoneTier() + 'h offline capacity';
+      case 'reality': return '+' + Math.floor(stoneTier() / 2) + ' loot item level';
+    } return '';
+  }
+  function renderStonelab() {
+    if (!stonelabEl) return;
+    var sf = state.stoneforge || { unlocked: false, aspect: null, tier: 0 };
+    if (!sf.unlocked) {
+      var can = state.bits >= STONELAB_COST;
+      stonelabEl.innerHTML = '<div class="sl-head">💎 Infinity Stone Laboratory <span class="sl-sub">— forge and evolve your own Infinity Stone</span></div>' +
+        '<button type="button" class="sl-unlock' + (can ? ' can' : '') + '" data-sl="unlock"' + (can ? '' : ' disabled') + '>Build the Laboratory — <span style="color:' + fmtColor(STONELAB_COST) + '">◉' + fmt(STONELAB_COST) + '</span></button>';
+    } else if (!sf.aspect) {
+      var chips = STONE_ASPECTS.map(function (a) { return '<button type="button" class="sl-aspect" data-slasp="' + a.id + '" style="--sc:' + a.col + '"><span class="sl-gem" style="background:radial-gradient(circle at 35% 30%,#fff,' + a.col + ')"></span><b>' + a.name + '</b><span class="sl-eff">+' + a.eff + '</span></button>'; }).join('');
+      stonelabEl.innerHTML = '<div class="sl-head">💎 Infinity Stone Laboratory <span class="sl-sub">— choose an aspect to forge (permanent)</span></div><div class="sl-aspects">' + chips + '</div>';
+    } else {
+      var a = STONE_ASPECTS.filter(function (x) { return x.id === sf.aspect; })[0] || STONE_ASPECTS[0];
+      var c = stoneForgeCost(), mc = { scrap: c.scrap, alloy: c.alloy, core: c.core }, canForge = state.bits >= c.bits && canAfford(mc);
+      stonelabEl.innerHTML = '<div class="sl-head" style="color:' + a.col + '">💎 ' + a.name + ' Stone — Tier ' + sf.tier + '</div>' +
+        '<div class="sl-forgebay"><span class="sl-gembig" style="background:radial-gradient(circle at 35% 30%,#fff,' + a.col + ');box-shadow:0 0 ' + (10 + sf.tier * 3) + 'px ' + a.col + '"></span></div>' +
+        '<div class="sl-boost">Boost: <b style="color:' + a.col + '">' + stoneBoostText(a.id) + '</b> · evolves each tier</div>' +
+        '<button type="button" class="sl-forge' + (canForge ? ' can' : '') + '" data-sl="forge"' + (canForge ? '' : ' disabled') + '>⚒ Forge → Tier ' + (sf.tier + 1) + ' — <span style="color:' + fmtColor(c.bits) + '">◉' + fmt(c.bits) + '</span> · ' + costStr(mc) + '</button>';
+    }
+    var u = stonelabEl.querySelector('[data-sl="unlock"]');
+    if (u) u.addEventListener('click', function () { if (state.bits < STONELAB_COST) return; state.bits -= STONELAB_COST; state.stoneforge = { unlocked: true, aspect: null, tier: 0 }; if (window.__sfx) window.__sfx('unlock'); gamePop('💎 Infinity Stone Lab online', '#c07bff'); addXp(300, 'Discovery: Stone Lab'); publish(); dirty = true; save(); renderStonelab(); renderBalance(); if (window.__roomRelayout) window.__roomRelayout(); });
+    stonelabEl.querySelectorAll('[data-slasp]').forEach(function (b) { b.addEventListener('click', function () { state.stoneforge.aspect = b.dataset.slasp; if (window.__sfx) window.__sfx('unlock'); gamePop('💎 Stone aspect set', '#c07bff'); publish(); dirty = true; save(); renderStonelab(); renderBalance(); renderBays(); renderAdventure(); }); });
+    var f = stonelabEl.querySelector('[data-sl="forge"]');
+    if (f) f.addEventListener('click', function () { var c = stoneForgeCost(), mc = { scrap: c.scrap, alloy: c.alloy, core: c.core }; if (state.bits < c.bits || !canAfford(mc)) return; state.bits -= c.bits; payMats(mc); state.stoneforge.tier++; if (window.__sfx) window.__sfx('boss'); gamePop('⚒ Stone forged → Tier ' + state.stoneforge.tier, '#c07bff'); addXp(60 * state.stoneforge.tier, 'Stone forge'); publish(); dirty = true; save(); renderStonelab(); renderBalance(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout(); });
   }
   // Points minted by a reboot: from the currency earned THIS round (the method
   // = how much you grew before falling) plus a bonus per new core banked.
@@ -8413,7 +8498,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderAdventure();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderAdventure();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -8592,6 +8677,27 @@ window.__sfx = (function () {
   var XPCORE_COST = 2.5e8;   // the XP Crystal chamber is a deep-game unlock
   function xpcoreUnlocked() { return !!(state.xpcore && state.xpcore.unlocked); }
   function xpcoreRate() { return (5 + playerLevel() * 1.5) * (1 + 0.5 * ((state.prestige && state.prestige.cores) || 0)); }   // XP/sec, grows with level + cores
+  // ---- Infinity Stone Laboratory: forge ONE custom stone of a chosen aspect,
+  // then evolve its tier for a growing, aspect-specific power boost. ----
+  var STONE_ASPECTS = [
+    { id: 'power', name: 'Power', col: '#c07bff', eff: 'adventurer power' },
+    { id: 'space', name: 'Space', col: '#4f9fff', eff: 'offline capacity' },
+    { id: 'reality', name: 'Reality', col: '#ff5a5a', eff: 'loot item level' },
+    { id: 'mind', name: 'Mind', col: '#ffd24b', eff: 'XP gain' },
+    { id: 'time', name: 'Time', col: '#5fe39a', eff: 'production speed' },
+    { id: 'soul', name: 'Soul', col: '#ff9d3c', eff: 'all income' },
+  ];
+  var STONELAB_COST = 1e8;   // unlock the lab
+  function stoneUnlocked() { return !!(state.stoneforge && state.stoneforge.unlocked); }
+  function stoneAspect() { return state.stoneforge && state.stoneforge.aspect; }
+  function stoneTier() { return (state.stoneforge && state.stoneforge.tier) || 0; }
+  function stoneForgeCost() { var t = stoneTier(); return { bits: Math.ceil(2e7 * Math.pow(1.9, t)), scrap: 200 * (t + 1), alloy: 80 * (t + 1), core: 20 * (t + 1) }; }
+  function stonePowerMult() { return stoneAspect() === 'power' ? 1 + 0.05 * stoneTier() : 1; }
+  function stoneXpMult() { return stoneAspect() === 'mind' ? Math.pow(1.04, stoneTier()) : 1; }
+  function stoneProdMult() { return stoneAspect() === 'time' ? Math.pow(1.04, stoneTier()) : 1; }
+  function stoneIncMult() { return stoneAspect() === 'soul' ? Math.pow(1.04, stoneTier()) : 1; }
+  function stoneOffline() { return stoneAspect() === 'space' ? stoneTier() : 0; }
+  function stoneLoot() { return stoneAspect() === 'reality' ? Math.floor(stoneTier() / 2) : 0; }
   setInterval(function () {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
     syncPresence();                    // catch in-app section switches while the tab is visible
@@ -8611,7 +8717,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderProgression(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderProgression(); }
       dirty = false;
     }
   }, 500);
@@ -8836,7 +8942,7 @@ window.__sfx = (function () {
     var di = isDungeon ? (a.dungeonRun - 1) : 0, dungeon = isDungeon ? DUNGEONS[di] : null;
     var ri = isBoss ? (a.bossRegion || 0) : (a.region || 0);
     var region = REGIONS[ri] || REGIONS[0];
-    var lootSkill = Math.floor(skillLvl('loot') / 2) + pUp('ploot');   // + Loot Magnet prestige upgrade
+    var lootSkill = Math.floor(skillLvl('loot') / 2) + pUp('ploot') + stoneLoot();   // + Loot Magnet prestige + Reality stone
     var levelBonus = Math.floor(playerLevel() / 10);   // higher player level -> higher loot rarity chance
     var ilvl = (isDungeon ? (dungeonIlvl(di) + lootSkill) : (run.ilvl + (region.ilvl || 0) + lootSkill + (isBoss ? 2 : 0))) + levelBonus;
     var pmult = combatPowerMult();   // skills + the army's total bay power (shared with the HUD)
@@ -9174,6 +9280,7 @@ window.__sfx = (function () {
   renderPrestige();
   renderPrestigeUpgrades();
   renderGenesis();
+  renderStonelab();
   renderProgression();
   renderCodex();
   // size the room canvas to the loaded bay count -- without this a refresh
@@ -9199,7 +9306,7 @@ window.__sfx = (function () {
       if (j.gen) state.gen = j.gen;
       if (j.comp) state.comp = j.comp;
       if (j.genesis) state.genesis = j.genesis;
-      if (j.xpcore) state.xpcore = j.xpcore;
+      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge;
       if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
@@ -9212,10 +9319,11 @@ window.__sfx = (function () {
       if (!state.comp) state.comp = { chip: 0, cpu: 0, gpu: 0, ram: 0 };
       if (!state.genesis) state.genesis = { built: {}, fired: 0 };
       if (!state.xpcore) state.xpcore = { unlocked: false };
+      if (!state.stoneforge) state.stoneforge = { unlocked: false, aspect: null, tier: 0 };
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderProgression(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderProgression(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
