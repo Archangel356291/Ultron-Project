@@ -758,7 +758,10 @@
   .gn-row.built{ border-color:rgba(51,209,122,.4); background:rgba(51,209,122,.06); }
   .gn-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; min-width:120px; color:var(--text); }
   .gn-needs{ display:flex; flex-wrap:wrap; gap:5px; margin-right:auto; min-width:0; }
-  .gn-need{ font-family:var(--font-mono); font-size:9.5px; color:#ff8098; }
+  .gn-legend{ font-family:var(--font-mono); font-size:9px; line-height:1.5; color:var(--text-faint); margin-bottom:7px; }
+  .gn-legend b{ font-weight:700; }
+  .gn-need{ font-family:var(--font-mono); font-size:9.5px; color:#ff8098; border:1px solid var(--line); border-radius:5px; padding:2px 6px; }
+  .gn-need.gn-cur{ color:#ffcf5a; border-color:rgba(255,207,90,.5); }
   .gn-need.ok{ color:#5fe39a; }
   .gn-build{ font-family:var(--font-display); font-weight:700; font-size:10.5px; padding:4px 10px; border-radius:5px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; }
   .gn-build.can{ cursor:pointer; border-color:rgba(255,90,110,.6); color:#ff8098; }
@@ -7744,7 +7747,8 @@ window.__sfx = (function () {
   // (Flux Capacitor). One helper for the whole passive/second stream so the live
   // tick, the HUD, renderBalance and offline accrual all agree.
   function psMult() { return pct('psboost', 6) * xmul('psmult', 0.04); }
-  function passivePerSec() { return ((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus() * psMult(); }
+  var PS_BOOST = 1.5;   // owner buff: all passive per-second earners pay 1.5x what they otherwise would
+  function passivePerSec() { return ((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus() * psMult() * PS_BOOST; }
   function genUpCost(g) { return Math.ceil(g.upBase * Math.pow(1.6, genLvl(g.id))); }
 
   // ---- Auto-Vendor: unlocks automatically the moment you build your first
@@ -7877,12 +7881,15 @@ window.__sfx = (function () {
   ];
   function tierIdx() { var lv = playerLevel(), i = 0; for (var k = 0; k < TIERS.length; k++) if (lv >= TIERS[k].min) i = k; return i; }
   function idleBonus() { return 1 + 0.04 * skillLvl('multitask') + 0.05 * skillLvl('energy'); }   // idle/offline-only
-  var LEVEL_CAP = 150;
+  var LEVEL_CAP = 250;
   // Modified polynomial-exponential XP curve (owner's economy spec): a smooth
   // steady ramp early (the l^1.8 term) that walls off at high levels (the
   // 1.15^l term) to push prestige/gear -- 150 is the hard cap. XP gains from
   // higher zones scale exponentially to match (see claimAdventure). Firmware discounts.
-  function xpForLevel(l) { return Math.floor((100 * Math.pow(l, 1.8) + 100 * Math.pow(1.15, l)) * Math.max(0.6, 1 - 0.02 * skillLvl('firmware'))); }
+  // Curve retuned for the 250 cap: gentler exponential base (1.085) so the back
+  // half stays reachable on the game's income scale; low levels are ~unchanged
+  // (the polynomial dominates there), the endgame is the long grind.
+  function xpForLevel(l) { return Math.floor((100 * Math.pow(l, 1.8) + 100 * Math.pow(1.085, l)) * Math.max(0.6, 1 - 0.02 * skillLvl('firmware'))); }
   function addXp(n, source) {
     if (!state.prog || !(n > 0)) return;
     n *= xpGainMult();   // Neural Learning + Deep Learning Core skills
@@ -8390,7 +8397,11 @@ window.__sfx = (function () {
     { id: 'trigger', name: 'Omega Trigger', need: { bits: 2.5e10, ram: 90, core: 2400 } },
   ];
   var COMP_SYM = { bits: '◉', scrap: '⬢', alloy: '◈', core: '✦', chip: '▦', cpu: '◫', gpu: '⬣', ram: '⬚' };
-  var COMP_NAME = { chip: 'chips', cpu: 'CPU', gpu: 'GPU', ram: 'RAM' };
+  var COMP_NAME = { bits: 'currency', scrap: 'Scrap', alloy: 'Alloy', core: 'Core', chip: 'Chips', cpu: 'CPU', gpu: 'GPU', ram: 'RAM' };
+  // Loot components drop by salvaging gear of a given rarity (COMP_BY_TIER below);
+  // scrap/alloy/core come from salvaging any gear. Shown as a legend in the panel.
+  var COMP_RARITY = { chip: { r: 'Rare', c: '#4aa3ff' }, cpu: { r: 'Epic', c: '#b562ff' }, gpu: { r: 'Legendary', c: '#ff9d3c' }, ram: { r: 'Mythic', c: '#ff5470' } };
+  function fmtN(n) { return Math.round(n).toLocaleString(); }   // plain count (parts are NOT currency)
   function genHave(k) { return k === 'bits' ? state.bits : (k === 'scrap' || k === 'alloy' || k === 'core') ? ((state.mats && state.mats[k]) || 0) : ((state.comp && state.comp[k]) || 0); }
   function genPay(need) { for (var k in need) { if (k === 'bits') state.bits -= need[k]; else if (k === 'scrap' || k === 'alloy' || k === 'core') state.mats[k] -= need[k]; else state.comp[k] -= need[k]; } }
   function genCanBuild(part) { for (var k in part.need) if (genHave(k) < part.need[k]) return false; return true; }
@@ -8399,17 +8410,27 @@ window.__sfx = (function () {
   var genesisEl = document.getElementById('genesis');
   function renderGenesis() {
     if (!genesisEl) return;
-    var done = GENESIS_PARTS.filter(function (p) { return genBuilt(p.id); }).length, all = genAllBuilt(), comp = state.comp || {};
-    var stock = ['chip', 'cpu', 'gpu', 'ram'].map(function (k) { return '<span class="gn-stock">' + COMP_SYM[k] + ' ' + fmt(comp[k] || 0) + ' ' + COMP_NAME[k] + '</span>'; }).join('');
+    var done = GENESIS_PARTS.filter(function (p) { return genBuilt(p.id); }).length, all = genAllBuilt(), comp = state.comp || {}, mats = state.mats || {};
+    // What you have on hand: foundry materials + rare loot components (plain counts).
+    var stockKeys = ['scrap', 'alloy', 'core', 'chip', 'cpu', 'gpu', 'ram'];
+    var stock = stockKeys.map(function (k) { var have = (k === 'scrap' || k === 'alloy' || k === 'core') ? (mats[k] || 0) : (comp[k] || 0); var col = COMP_RARITY[k] ? COMP_RARITY[k].c : '#9fb0c8'; return '<span class="gn-stock" style="color:' + col + '">' + COMP_SYM[k] + ' ' + fmtN(have) + ' ' + COMP_NAME[k] + '</span>'; }).join('');
+    // How to obtain each rare component (salvage gear of the matching rarity in Expeditions).
+    var legend = 'Salvage gear in Expeditions for components: ' + ['chip', 'cpu', 'gpu', 'ram'].map(function (k) { return '<b style="color:' + COMP_RARITY[k].c + '">' + COMP_SYM[k] + ' ' + COMP_NAME[k] + '</b> = ' + COMP_RARITY[k].r; }).join(' · ') + '. <b>⬢◈✦ Scrap/Alloy/Core</b> = salvage any gear. <b>◉ Currency</b> from the whole economy.';
     var rows = GENESIS_PARTS.map(function (p) {
       var built = genBuilt(p.id), can = !built && genCanBuild(p.id);
-      var needStr = Object.keys(p.need).map(function (k) { var ok = genHave(k) >= p.need[k]; return '<span class="gn-need' + (ok ? ' ok' : '') + '">' + COMP_SYM[k] + ' ' + fmt(p.need[k]) + '</span>'; }).join('');
+      var needStr = Object.keys(p.need).map(function (k) {
+        var ok = genHave(k) >= p.need[k];
+        if (k === 'bits') return '<span class="gn-need gn-cur' + (ok ? ' ok' : '') + '">◉ ' + fmt(p.need[k]) + '</span>';   // currency -> currency formatting
+        var col = COMP_RARITY[k] ? COMP_RARITY[k].c : '';
+        return '<span class="gn-need' + (ok ? ' ok' : '') + '"' + (col ? ' style="border-color:' + col + '"' : '') + '>' + COMP_SYM[k] + ' ' + fmtN(p.need[k]) + ' ' + COMP_NAME[k] + '</span>';   // parts -> plain count + name
+      }).join('');
       return '<div class="gn-row' + (built ? ' built' : '') + '"><span class="gn-nm">' + (built ? '✔ ' : '') + p.name + '</span><span class="gn-needs">' + needStr + '</span>' +
         (built ? '<span class="gn-blt">BUILT</span>' : '<button type="button" class="gn-build' + (can ? ' can' : '') + '" data-gn="' + p.id + '"' + (can ? '' : ' disabled') + '>Build</button>') + '</div>';
     }).join('');
     genesisEl.innerHTML =
       '<div class="gn-head">☠ THE GENESIS CANNON <span class="gn-sub">— end this universe, remake it in Ultron’s image</span></div>' +
       '<div class="gn-prog">Stages <b>' + done + '/' + GENESIS_PARTS.length + '</b> · universes forged <b>' + ((state.genesis && state.genesis.fired) || 0) + '</b> · <b>×' + genesisMult() + '</b> global</div>' +
+      '<div class="gn-legend">' + legend + '</div>' +
       '<div class="gn-stocks">' + stock + '</div>' + rows +
       (all ? '<button type="button" class="gn-fire" data-gn-fire="1">☠ FIRE THE GENESIS CANNON</button>' : '');
     genesisEl.querySelectorAll('[data-gn]').forEach(function (btn) {
@@ -8689,7 +8710,7 @@ window.__sfx = (function () {
 
   // passive income + refresh loop
   var last = Date.now(), idleXpAcc = 0, heavyTick = 0, crystalXpAcc = 0;
-  var XPCORE_COST = 2.5e8;   // the XP Crystal chamber is a deep-game unlock
+  var XPCORE_COST = 4e7;   // XP Crystal chamber: cheaper/earlier unlock (owner request)
   function xpcoreUnlocked() { return !!(state.xpcore && state.xpcore.unlocked); }
   function xpcoreRate() { return (5 + playerLevel() * 1.5) * (1 + 0.5 * ((state.prestige && state.prestige.cores) || 0)); }   // XP/sec, grows with level + cores
   // ---- Infinity Stone Laboratory: forge ONE custom stone of a chosen aspect,
