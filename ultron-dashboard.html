@@ -558,7 +558,9 @@
     background:linear-gradient(180deg,#1d2129,#12151b); box-shadow:0 0 14px -4px rgba(120,170,255,.55), inset 0 1px 0 rgba(255,255,255,.08); }
   /* the big section containers lose their own box borders and blend into the floor */
   .game-floor > .foundry, .game-floor > .refinery, .game-floor > .expedition, .game-floor > .codex-wrap,
-  .game-floor > .progression, .game-floor > .armory, .game-floor > .brainlab{ border:none !important; background:transparent !important; }
+  .game-floor > .progression, .game-floor > .armory, .game-floor > .brainlab, .game-floor > .relics,
+  .game-floor > .stonelab, .game-floor > .cosmic, .game-floor > .genesis, .game-floor > .crypto,
+  .game-floor > .holiday, .game-floor > .xpcrystal{ border:none !important; background:transparent !important; margin-top:0 !important; }
   /* readability: bump the smallest game-area text up so it's easy to read */
   .game-building{ font-size:13px; }
   .game-building .fbl-sub, .game-building .sl-sub, .game-building .sl-eff, .game-building .cz-sub, .game-building .cz-uniq,
@@ -2197,6 +2199,22 @@
           </div>
 
           <div class="game-building">
+
+          <!-- Progression tracker (HP / XP bars / skills) -->
+          <div class="game-floor"><div class="floor-sign">📊 Progression &amp; Stats</div>
+          <div class="progression" id="progression"></div>
+          </div>
+
+          <!-- Adventure bot -->
+          <div class="game-floor"><div class="floor-sign">🤖 Adventure — Custom Bot</div>
+          <div class="expedition" id="expedition"></div>
+          <div class="exp-viewer-wrap" id="exp-viewer-wrap" hidden>
+            <div class="exp-viewer-h" id="exp-viewer-h">&#9654; Live feed &mdash; your robot in the field</div>
+            <canvas id="exp-viewer-canvas" aria-label="Live view of your custom robot fighting through its expedition"></canvas>
+          </div>
+          </div>
+
+          <!-- Ultron's Foundry (economy core + production bays) -->
           <div class="game-floor"><div class="floor-sign">🏭 Ultron's Foundry</div>
           <div class="foundry" id="foundry">
             <div class="foundry-bal">
@@ -2211,40 +2229,20 @@
             <div class="foundry-offline" id="foundry-offline" hidden></div>
             <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
-            <div class="foundry-bays-label">🔋 Passive reactors <span class="fbl-sub">— a bank above the line that mints currency every second</span></div>
-            <div class="foundry-generators" id="foundry-generators"></div>
             <div class="foundry-bays-label">🤖 Production bays <span class="fbl-sub">— each floor's own crew, weapons &amp; armor</span></div>
             <div class="foundry-bays" id="foundry-bays"></div>
             <div class="dev-panel" id="dev-panel" hidden></div>
-            <div class="relics" id="relics"></div>
-            <div class="stonelab" id="stonelab"></div>
-            <div class="holiday" id="holiday"></div>
-            <div class="cosmic" id="cosmic"></div>
-            <div class="genesis" id="genesis"></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
           </div>
           </div>
 
-          <div class="game-floor"><div class="floor-sign">📊 Progression &amp; Stats</div>
-          <div class="progression" id="progression"></div>
+          <!-- Passive reactors -->
+          <div class="game-floor"><div class="floor-sign">🔋 Passive Reactors</div>
+          <div class="foundry-bays-label">🔋 Passive reactors <span class="fbl-sub">— a bank above the line that mints currency every second</span></div>
+          <div class="foundry-generators" id="foundry-generators"></div>
           </div>
 
-          <div class="game-floor"><div class="floor-sign">🤖 Ultron's Expedition</div>
-          <div class="expedition" id="expedition"></div>
-          <div class="exp-viewer-wrap" id="exp-viewer-wrap" hidden>
-            <div class="exp-viewer-h" id="exp-viewer-h">&#9654; Live feed &mdash; your robot in the field</div>
-            <canvas id="exp-viewer-canvas" aria-label="Live view of your custom robot fighting through its expedition"></canvas>
-          </div>
-          </div>
-
-          <div class="game-floor"><div class="floor-sign">🧠 Ultron's Brain Lab</div>
-          <div class="brainlab" id="brainlab"></div>
-          </div>
-
-          <div class="game-floor"><div class="floor-sign">🔫 Ultron's Armory</div>
-          <div class="armory" id="armory"></div>
-          </div>
-
+          <!-- Ultron's Refinery -->
           <div class="game-floor"><div class="floor-sign">⚒️ Ultron's Refinery</div>
           <div class="refinery" id="refinery">
             <div class="refinery-canvas-wrap">
@@ -2255,10 +2253,51 @@
           </div>
           </div>
 
+          <!-- Relics &amp; Artifacts -->
+          <div class="game-floor"><div class="floor-sign">🏆 Relics &amp; Artifacts</div>
+          <div class="relics" id="relics"></div>
+          </div>
+
+          <!-- Brain Lab -->
+          <div class="game-floor"><div class="floor-sign">🧠 Ultron's Brain Lab</div>
+          <div class="brainlab" id="brainlab"></div>
+          </div>
+
+          <!-- XP Crystal room -->
+          <div class="game-floor"><div class="floor-sign">💎 XP Crystal Chamber</div>
+          <div class="xpcrystal" id="xpcrystal"></div>
+          </div>
+
+          <!-- Weapons rooms: Armory first ... ending with the mega weapon (Genesis) -->
+          <div class="game-floor"><div class="floor-sign">🔫 Ultron's Armory</div>
+          <div class="armory" id="armory"></div>
+          </div>
+
+          <div class="game-floor"><div class="floor-sign">☠️ Genesis Cannon — Mega Weapon</div>
+          <div class="genesis" id="genesis"></div>
+          </div>
+
+          <!-- Infinity Stone room -->
+          <div class="game-floor"><div class="floor-sign">💠 Infinity Stone Lab</div>
+          <div class="stonelab" id="stonelab"></div>
+          </div>
+
+          <!-- Cosmic Being room -->
+          <div class="game-floor"><div class="floor-sign">🌌 Cosmic Being Lab</div>
+          <div class="cosmic" id="cosmic"></div>
+          </div>
+
+          <!-- Crypto Mining Rig -->
           <div class="game-floor"><div class="floor-sign">⛏️ Crypto Mining Rig</div>
           <div class="crypto" id="crypto"></div>
           </div>
 
+          <!-- Holiday events (seasonal) -->
+          <div class="game-floor"><div class="floor-sign">📆 Holiday Events</div>
+          <div class="holiday" id="holiday"></div>
+          </div>
+
+          <!-- Codex -->
           <div class="game-floor"><div class="floor-sign">📖 Codex</div>
           <details class="codex-wrap"><summary>Enemies, loot, rarities &amp; bays &mdash; the game's database</summary><div id="codex"></div></details>
           </div>
@@ -9110,7 +9149,7 @@ window.__sfx = (function () {
     state.roundStart = state.lifetime || 0;
     gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderProgression();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderProgression();
     if (window.__roomRelayout) window.__roomRelayout();
   }
   var stonelabEl = document.getElementById('stonelab');
@@ -9537,7 +9576,7 @@ window.__sfx = (function () {
     brainEl.querySelectorAll('[data-blbuy]').forEach(function (bt) { bt.addEventListener('click', function () { var m = BRAIN_MATS.filter(function (x) { return x.id === bt.dataset.blbuy; })[0]; if (!m) return; var cost = m.buy * 10; if (state.bits < cost) return; state.bits -= cost; brainInit().mats[m.id] += 10; if (window.__sfx) window.__sfx('press'); publish(); dirty = true; save(); renderBrain(); renderBalance(); }); });
     brainEl.querySelectorAll('[data-blc]').forEach(function (bt) { bt.addEventListener('click', function () { var comp = BRAIN_COMPONENTS.filter(function (x) { return x.id === bt.dataset.blc; })[0]; if (!comp || !brainCanBuild(comp)) return; var c = brainCompCost(comp); state.bits -= c.bits; var m = brainInit().mats; m.syn -= c.mats.syn; m.log -= c.mats.log; m.dat -= c.mats.dat; state.brain.comp[comp.id] = Math.min(BRAIN_RAR.length, brainTier(comp.id) + 1); var rn = BRAIN_RAR[state.brain.comp[comp.id] - 1].n; if (window.__sfx) window.__sfx('build'); gamePop('🧠 ' + comp.name + ' → ' + rn, '#7fd0ff'); addXp(60 * state.brain.comp[comp.id], 'Brain: ' + comp.name); publish(); dirty = true; save(); renderBrain(); renderBalance(); renderProgression(); }); });
     brainEl.querySelectorAll('[data-blinsp]').forEach(function (bt) { bt.addEventListener('click', function () { inspectBrainPart(bt.dataset.blinsp); }); });
-    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); renderCrypto(); });
+    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); });
   }
   // ---- Crypto Mining Rig: mine 6 real-world-flavoured coins, each with its own
   // strength + risk, then convert them to currency. Everything feeds the game
@@ -9631,7 +9670,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -9774,36 +9813,10 @@ window.__sfx = (function () {
           '<div class="py-line">📦 Package <b style="color:' + fmtColor(pkg) + '">◉' + fmt(pkg) + '</b> each · 🤖 per bot (×globalMult):</div>' +
           '<div class="py-grid">' + chips + '</div></details>';
       })() +
-      (function () {   // XP Crystal Chamber: a deep-game floor that mines XP
-        if (xpcoreUnlocked()) {
-          var ups = XPCORE_UPS.map(function (u) { var c = xpUpCost(u), can = state.bits >= c; return '<button type="button" class="xpu-btn' + (can ? ' can' : '') + '" data-xpu="' + u.id + '"' + (can ? '' : ' disabled') + '><span class="xpu-nm">' + u.name + ' <b>Lv ' + xpUp(u.id) + '</b></span><span class="xpu-d">' + u.desc + '</span><span class="xpu-c" style="color:' + fmtColor(c) + '">◉' + fmt(c) + '</span></button>'; }).join('');
-          return '<div class="xpcore-on">🟢 XP Crystal Chamber online — <b>+' + fmt(xpcoreRate()) + ' XP/s</b> mined by the drones below Ultron’s agents</div><div class="xpu-grid">' + ups + '</div>';
-        }
-        var can = state.bits >= XPCORE_COST;
-        return '<button type="button" class="xpcore-btn' + (can ? ' can' : '') + '" data-xpcore="1"' + (can ? '' : ' disabled') + '>💎 Unlock the XP Crystal Chamber — <span style="color:' + fmtColor(XPCORE_COST) + '">◉' + fmt(XPCORE_COST) + '</span></button>';
-      })() +
       '<div class="xplog"><div class="xplog-h">XP log <span class="xplog-live">live</span></div><div class="xplog-feed" id="xplog-feed"></div></div>' +
       '<details class="prog-sys" data-dk="skills"' + (progOpen.skills ? ' open' : '') + '><summary>🌟 Skills — spend points to upgrade</summary>' + cats + '</details>';
     renderXpLog();
     progEl.querySelectorAll('details[data-dk]').forEach(function (d) { d.addEventListener('toggle', function () { progOpen[d.dataset.dk] = d.open; }); });
-    var xcb = progEl.querySelector('[data-xpcore]');
-    if (xcb) xcb.addEventListener('click', function () {
-      if (state.bits < XPCORE_COST || xpcoreUnlocked()) return;
-      state.bits -= XPCORE_COST; state.xpcore = { unlocked: true };
-      if (window.__sfx) window.__sfx('unlock'); gamePop('💎 XP Crystal Chamber online', '#8fe64b');
-      addXp(500, 'Discovery: XP Crystal Chamber');
-      publish(); dirty = true; save(); renderProgression(); renderBalance();
-      if (window.__roomRelayout) window.__roomRelayout();   // grow the room for the new floor
-    });
-    progEl.querySelectorAll('[data-xpu]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var u = XPCORE_UPS.filter(function (x) { return x.id === btn.dataset.xpu; })[0]; if (!u || !xpcoreUnlocked()) return;
-        var c = xpUpCost(u); if (state.bits < c) return;
-        state.bits -= c; state.xpcore.up = state.xpcore.up || {}; state.xpcore.up[u.id] = xpUp(u.id) + 1;
-        if (window.__sfx) window.__sfx('upgrade'); gamePop('💎 ' + u.name + ' → Lv ' + state.xpcore.up[u.id], '#8fe64b');
-        publish(); dirty = true; save(); renderProgression(); renderBalance();
-      });
-    });
     progEl.querySelectorAll('[data-skill]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var sk = SKILLS.filter(function (x) { return x.id === btn.dataset.skill; })[0];
@@ -9812,6 +9825,39 @@ window.__sfx = (function () {
         publish(); dirty = true; save();
         if (window.__sfx) window.__sfx('upgrade');
         renderProgression(); renderBalance(); renderRefinery();
+      });
+    });
+  }
+
+  // ---- XP Crystal Chamber: its own room (a deep-game floor that mines XP). ----
+  var xpCrystalEl = document.getElementById('xpcrystal');
+  function renderXpCrystal() {
+    if (!xpCrystalEl) return;
+    var html;
+    if (xpcoreUnlocked()) {
+      var ups = XPCORE_UPS.map(function (u) { var c = xpUpCost(u), can = state.bits >= c; return '<button type="button" class="xpu-btn' + (can ? ' can' : '') + '" data-xpu="' + u.id + '"' + (can ? '' : ' disabled') + '><span class="xpu-nm">' + u.name + ' <b>Lv ' + xpUp(u.id) + '</b></span><span class="xpu-d">' + u.desc + '</span><span class="xpu-c" style="color:' + fmtColor(c) + '">◉' + fmt(c) + '</span></button>'; }).join('');
+      html = '<div class="xpcore-on">🟢 XP Crystal Chamber online — <b>+' + fmt(xpcoreRate()) + ' XP/s</b> mined by the drones below Ultron’s agents</div><div class="xpu-grid">' + ups + '</div>';
+    } else {
+      var can = state.bits >= XPCORE_COST;
+      html = '<button type="button" class="xpcore-btn' + (can ? ' can' : '') + '" data-xpcore="1"' + (can ? '' : ' disabled') + '>💎 Unlock the XP Crystal Chamber — <span style="color:' + fmtColor(XPCORE_COST) + '">◉' + fmt(XPCORE_COST) + '</span></button>';
+    }
+    xpCrystalEl.innerHTML = html;
+    var xcb = xpCrystalEl.querySelector('[data-xpcore]');
+    if (xcb) xcb.addEventListener('click', function () {
+      if (state.bits < XPCORE_COST || xpcoreUnlocked()) return;
+      state.bits -= XPCORE_COST; state.xpcore = { unlocked: true };
+      if (window.__sfx) window.__sfx('unlock'); gamePop('💎 XP Crystal Chamber online', '#8fe64b');
+      addXp(500, 'Discovery: XP Crystal Chamber');
+      publish(); dirty = true; save(); renderXpCrystal(); renderProgression(); renderBalance();
+      if (window.__roomRelayout) window.__roomRelayout();
+    });
+    xpCrystalEl.querySelectorAll('[data-xpu]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var u = XPCORE_UPS.filter(function (x) { return x.id === btn.dataset.xpu; })[0]; if (!u || !xpcoreUnlocked()) return;
+        var c = xpUpCost(u); if (state.bits < c) return;
+        state.bits -= c; state.xpcore.up = state.xpcore.up || {}; state.xpcore.up[u.id] = xpUp(u.id) + 1;
+        if (window.__sfx) window.__sfx('upgrade'); gamePop('💎 ' + u.name + ' → Lv ' + state.xpcore.up[u.id], '#8fe64b');
+        publish(); dirty = true; save(); renderXpCrystal(); renderBalance();
       });
     });
   }
@@ -10021,7 +10067,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); }
       dirty = false;
     }
   }, 500);
@@ -10667,7 +10713,7 @@ window.__sfx = (function () {
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
