@@ -5929,8 +5929,19 @@ function toggleReducedVisuals(el) {
   // ---- Recurring gag: a little Iron Man sneaks into Ultron's office; Ultron
   // beats him up and throws him out the window. Fires every 45s with a
   // notification toast so the user can scroll up and watch. ----
-  var ironMan = { phase: 'gone', pt: 0, x: 0, y: 0, vx: 0, vy: 0, punchT: 0, rot: 0, laserT: 0, repulseT: 0, recoil: 0 };
-  function imToast() {
+  // The intruder is a different Avenger each time -- they take turns getting
+  // beaten up and thrown out the window.
+  var HERO_KINDS = ['ironman', 'widow', 'cap', 'hulk', 'thor', 'vision'];
+  var HEROES = {
+    ironman: { name: 'Iron Man', body: '#c0392b', trim: '#f1c40f', beam: '#9be8ff' },
+    widow: { name: 'Black Widow', body: '#26262c', trim: '#c0392b', beam: '#5fb0ff', hair: '#7a1f1f' },
+    cap: { name: 'Captain America', body: '#2b5cb8', trim: '#ecf0f1', beam: '#eaf2ff', shield: true },
+    hulk: { name: 'the Hulk', body: '#3a9a3a', trim: '#6a4a9a', beam: '#8fe64b', big: true },
+    thor: { name: 'Thor', body: '#7f8792', trim: '#c0392b', beam: '#cfe8ff', cape: '#b03030', hammer: true },
+    vision: { name: 'Vision', body: '#c0392b', trim: '#33d17a', beam: '#ffd24b', cape: '#e0b83a', mind: true }
+  };
+  var ironMan = { phase: 'gone', kind: 'ironman', pt: 0, x: 0, y: 0, vx: 0, vy: 0, punchT: 0, rot: 0, laserT: 0, repulseT: 0, recoil: 0 };
+  function imToast(name) {
     var el = document.getElementById('im-toast');
     if (!el) {
       el = document.createElement('div'); el.id = 'im-toast';
@@ -5938,15 +5949,16 @@ function toggleReducedVisuals(el) {
       el.addEventListener('click', function () { var c = document.getElementById('pixel-room-canvas'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
       document.body.appendChild(el);
     }
-    el.innerHTML = '⚡ <b>Intruder in Ultron’s office!</b><br>He’s dealing with it — click to watch 👀';
+    el.innerHTML = '⚡ <b>' + (name || 'An Avenger') + ' is in Ultron’s office!</b><br>He’s dealing with it — click to watch 👀';
     el.style.opacity = '1'; el.style.display = 'block';
     clearTimeout(el._t); el._t = setTimeout(function () { el.style.opacity = '0'; setTimeout(function () { el.style.display = 'none'; }, 300); }, 6000);
   }
   function startIronMan() {
     if (ironMan.phase !== 'gone' || typeof officeFloorY !== 'number') return;
+    ironMan.kind = HERO_KINDS[Math.floor(Math.random() * HERO_KINDS.length)];
     ironMan.phase = 'enter'; ironMan.pt = 0; ironMan.rot = 0;
     ironMan.x = LEFT - 24; ironMan.y = officeFloorY - 4;
-    imToast();
+    imToast(HEROES[ironMan.kind].name);
     if (window.__sfx) window.__sfx('boss');
   }
   setTimeout(startIronMan, 10000);   // first cameo shortly after load
@@ -5969,27 +5981,40 @@ function toggleReducedVisuals(el) {
       if (im.pt > 1.8 || im.y > officeFloorY + 60) im.phase = 'gone';
     }
   }
+  function drawHeroHead(kind, h, BM) {
+    // head occupies y -22..-15, ~7 wide
+    if (kind === 'ironman') { ctx.fillStyle = h.trim; ctx.fillRect(-3.4, -22, 6.8, 6.6); ctx.fillStyle = '#c9a227'; ctx.fillRect(-3.4, -22, 6.8, 1); }
+    else if (kind === 'cap') { ctx.fillStyle = h.body; ctx.fillRect(-3.4, -22, 6.8, 6.6); ctx.fillStyle = h.trim; ctx.fillRect(-0.5, -23, 1, 1.4); ctx.fillRect(-3.6, -20, 1, 1.6); ctx.fillRect(2.6, -20, 1, 1.6); ctx.font = 'bold 3px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('A', 0, -20.4); }
+    else if (kind === 'hulk') { ctx.fillStyle = h.body; ctx.fillRect(-3.6, -21, 7.2, 6); ctx.fillStyle = '#1e3a1e'; ctx.fillRect(-3.6, -22.4, 7.2, 1.8); }   // green head + dark hair
+    else if (kind === 'thor') { ctx.fillStyle = '#e8b878'; ctx.fillRect(-3.2, -21, 6.4, 6); ctx.fillStyle = '#efe08a'; ctx.fillRect(-3.4, -22.4, 6.8, 2); ctx.fillStyle = '#b6bcc6'; ctx.fillRect(-3.6, -20.4, 1, 2.4); ctx.fillRect(2.6, -20.4, 1, 2.4); }   // face + blond + helmet wings
+    else if (kind === 'vision') { ctx.fillStyle = h.body; ctx.fillRect(-3.4, -22, 6.8, 6.6); ctx.fillStyle = h.trim; ctx.fillRect(-3.4, -16.4, 6.8, 1); ctx.fillStyle = '#ffd24b'; ctx.beginPath(); ctx.arc(0, -20.6, 1.5, 0, 6.28); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-0.4, -21, 0.5, 0, 6.28); ctx.fill(); }   // mind stone
+    else { ctx.fillStyle = '#e8b878'; ctx.fillRect(-3, -21, 6, 6); ctx.fillStyle = h.hair || '#7a1f1f'; ctx.fillRect(-3.6, -22, 1.4, 6); ctx.fillRect(2.2, -22, 1.4, 6); ctx.fillRect(-3.6, -22.4, 7.2, 1.6); }   // widow: face + red hair
+    if (kind !== 'vision') { ctx.fillStyle = BM; ctx.fillRect(-2.2, -19.6, 1.6, 1.1); ctx.fillRect(0.6, -19.6, 1.6, 1.1); }   // eyes
+  }
   function drawIronMan(t) {
     var im = ironMan; if (im.phase === 'gone') return;
-    var R = '#c0392b', G = '#f1c40f', GD = '#c9a227', S = 2.8, fighting = im.phase === 'fight';
-    var firingBack = fighting && t < im.repulseOn;
+    var h = HEROES[im.kind] || HEROES.ironman, B = h.body, T = h.trim, BM = h.beam;
+    var S = h.big ? 3.5 : 2.8, tw = h.big ? 6.3 : 5, fighting = im.phase === 'fight', firingBack = fighting && t < im.repulseOn;
     ctx.save(); ctx.translate(im.x, im.y); ctx.scale(S, S); if (im.phase === 'toss') ctx.rotate(im.rot);
-    if (im.phase !== 'toss') { ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0, 2, 8, 2.2, 0, 0, 6.28); ctx.fill(); }
-    ctx.fillStyle = R; ctx.fillRect(-4, -6, 3.4, 6); ctx.fillRect(0.6, -6, 3.4, 6);                 // legs
-    ctx.fillStyle = GD; ctx.fillRect(-4, -1.6, 3.4, 1.6); ctx.fillRect(0.6, -1.6, 3.4, 1.6);        // gold boots
-    ctx.fillStyle = R; ctx.fillRect(-5, -15, 10, 9);                                                // torso
-    ctx.fillStyle = G; ctx.fillRect(-5, -15, 2, 9); ctx.fillRect(3, -15, 2, 9);                     // gold panels
-    ctx.fillStyle = '#0af'; ctx.beginPath(); ctx.arc(0, -11, 2.1, 0, 6.28); ctx.fill();             // arc reactor
-    ctx.fillStyle = '#dffbff'; ctx.beginPath(); ctx.arc(0, -11, 1, 0, 6.28); ctx.fill();
-    ctx.fillStyle = R;
-    if (firingBack) { ctx.fillRect(4.6, -16, 8, 2.4); ctx.fillStyle = '#dffbff'; ctx.beginPath(); ctx.arc(13, -14.8, 2, 0, 6.28); ctx.fill(); ctx.fillStyle = R; }  // right arm raised to fire
-    else ctx.fillRect(4.6, -14, 2.4, 7);
-    ctx.fillRect(-7, -14, 2.4, 7);                                                                  // left arm
-    ctx.fillStyle = G; ctx.fillRect(-3.4, -22, 6.8, 6.6);                                           // gold faceplate
-    ctx.fillStyle = GD; ctx.fillRect(-3.4, -22, 6.8, 1);
-    ctx.fillStyle = fighting ? '#9be8ff' : '#9be8ff'; ctx.fillRect(-2.4, -19.6, 1.8, 1.2); ctx.fillRect(0.6, -19.6, 1.8, 1.2);   // eyes
+    if (im.phase !== 'toss' && !h.mind) { ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0, 2, tw + 3, 2.2, 0, 0, 6.28); ctx.fill(); }
+    if (h.cape) { ctx.fillStyle = h.cape; ctx.beginPath(); ctx.moveTo(-tw, -16); ctx.lineTo(tw, -16); ctx.lineTo(tw + 3.5, -0.5); ctx.lineTo(-tw - 3.5, -0.5); ctx.closePath(); ctx.fill(); }   // cape
+    var legCol = im.kind === 'hulk' ? T : (im.kind === 'thor' ? '#4a4a52' : B);
+    ctx.fillStyle = legCol; ctx.fillRect(-4, -6, 3.4, 6); ctx.fillRect(0.6, -6, 3.4, 6);                 // legs
+    ctx.fillStyle = im.kind === 'ironman' ? '#c9a227' : '#2a2e34'; ctx.fillRect(-4, -1.6, 3.4, 1.6); ctx.fillRect(0.6, -1.6, 3.4, 1.6);   // boots
+    ctx.fillStyle = B; ctx.fillRect(-tw, -15, tw * 2, 9);                                                // torso
+    ctx.fillStyle = T; ctx.fillRect(-tw, -15, 2, 9); ctx.fillRect(tw - 2, -15, 2, 9);                    // trim panels
+    if (im.kind === 'ironman') { ctx.fillStyle = '#0af'; ctx.beginPath(); ctx.arc(0, -11, 2.1, 0, 6.28); ctx.fill(); ctx.fillStyle = '#dffbff'; ctx.beginPath(); ctx.arc(0, -11, 1, 0, 6.28); ctx.fill(); }   // arc reactor
+    else if (im.kind === 'cap') { ctx.fillStyle = '#ecf0f1'; ctx.beginPath(); for (var s0 = 0; s0 < 10; s0++) { var aa = -Math.PI / 2 + s0 * Math.PI / 5, rr = s0 % 2 ? 1 : 2.4; ctx.lineTo(Math.cos(aa) * rr, -11 + Math.sin(aa) * rr); } ctx.closePath(); ctx.fill(); }   // chest star
+    else if (im.kind === 'vision') { ctx.fillStyle = '#ffd24b'; ctx.beginPath(); ctx.arc(0, -11, 1.8, 0, 6.28); ctx.fill(); }
+    ctx.fillStyle = B;
+    if (firingBack) { ctx.fillRect(tw - 0.4, -16, 8, 2.4); ctx.fillStyle = BM; ctx.beginPath(); ctx.arc(tw + 7, -14.8, 2, 0, 6.28); ctx.fill(); ctx.fillStyle = B; }   // right arm raised to fire
+    else ctx.fillRect(tw - 0.4, -14, 2.4, 7);
+    ctx.fillRect(-tw - 2, -14, 2.4, 7);                                                                  // left arm
+    if (h.shield) { ctx.fillStyle = '#c0392b'; ctx.beginPath(); ctx.arc(-tw - 1.5, -11, 3.4, 0, 6.28); ctx.fill(); ctx.fillStyle = '#ecf0f1'; ctx.beginPath(); ctx.arc(-tw - 1.5, -11, 2, 0, 6.28); ctx.fill(); ctx.fillStyle = '#2b5cb8'; ctx.beginPath(); ctx.arc(-tw - 1.5, -11, 0.9, 0, 6.28); ctx.fill(); }   // Cap's shield on the arm
+    if (h.hammer && !firingBack) { ctx.fillStyle = '#8b93a0'; ctx.fillRect(tw + 1, -16, 5, 3.4); ctx.fillStyle = '#6b4a2a'; ctx.fillRect(tw + 3, -12.6, 1.4, 4); }   // Mjolnir in Thor's hand
+    drawHeroHead(im.kind, h, BM);
     ctx.restore();
-    // Ultron's eye-lasers (red) streaking from his sprite to Iron Man
+    // Ultron's eye-lasers (red) streaking from his sprite to the hero
     var ub = lastCharBox, uex = ub ? ub.x + ub.w * 0.42 : walkX + 30, uey = ub ? ub.y + ub.h * 0.2 : officeFloorY - 120;
     var imChestX = im.x, imChestY = im.y - 30;
     if (fighting && t < im.laserOn) {
@@ -5999,12 +6024,12 @@ function toggleReducedVisuals(el) {
       ctx.shadowBlur = 0; ctx.fillStyle = '#fff'; for (var q = 0; q < 4; q++) ctx.fillRect(imChestX - 4 + Math.random() * 8, imChestY - 4 + Math.random() * 8, 2, 2);   // impact sparks
       ctx.restore();
     }
-    // Iron Man's repulsor firing back (cyan) toward Ultron
+    // the hero firing back (their signature colour) toward Ultron
     if (firingBack) {
-      var handX = im.x + 13 * S, handY = im.y - 14.8 * S;
-      ctx.save(); ctx.lineCap = 'round'; ctx.shadowColor = '#28e0ff'; ctx.shadowBlur = 7;
-      ctx.strokeStyle = '#9be8ff'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(handX, handY); ctx.lineTo(uex, uey + 4); ctx.stroke();
-      ctx.fillStyle = '#dffbff'; ctx.beginPath(); ctx.arc(handX, handY, 3, 0, 6.28); ctx.fill(); ctx.restore();
+      var handX = im.x + (tw + 7) * S, handY = im.y - 14.8 * S;
+      ctx.save(); ctx.lineCap = 'round'; ctx.shadowColor = BM; ctx.shadowBlur = 7;
+      ctx.strokeStyle = BM; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(handX, handY); ctx.lineTo(uex, uey + 4); ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(handX, handY, 3, 0, 6.28); ctx.fill(); ctx.restore();
     }
     if (fighting && t < im.punchT + 0.16) {   // "POW!" impact star
       var px = (im.x + walkX) / 2, py = officeFloorY - 44;
@@ -6469,6 +6494,30 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = '#5fe39a'; setFont(fontPx * 0.6, false); ctx.textAlign = 'right'; ctx.fillText('PHASE ▮▮▯', x + w - 5, y + h - 4);
     hover('Ultron’s plans for world domination', cx, y + h / 2, w / 2);
   }
+  // Wanda (Scarlet Witch) and her brother (Quicksilver) sit on a couch in the
+  // office, awaiting Ultron's next command.
+  function drawSeated(cx, cy, coat, hair, t) {
+    var bob = Math.sin(t * 1.4 + cx) * 0.5;
+    ctx.fillStyle = '#22252b'; ctx.fillRect(cx - 4.5, cy - 5, 3, 7); ctx.fillRect(cx + 1.5, cy - 5, 3, 7);   // shins
+    ctx.fillStyle = '#2a2e34'; ctx.fillRect(cx - 5, cy - 7, 10, 3);                                          // lap
+    ctx.fillStyle = coat; ctx.fillRect(cx - 4, cy - 17 + bob, 8, 11);                                        // torso
+    ctx.fillStyle = coat; ctx.fillRect(cx - 6, cy - 16 + bob, 2.4, 8); ctx.fillRect(cx + 3.6, cy - 16 + bob, 2.4, 8);   // arms
+    ctx.fillStyle = '#e8b878'; ctx.fillRect(cx - 3, cy - 24 + bob, 6, 6.4);                                  // head
+    ctx.fillStyle = hair; ctx.fillRect(cx - 3.4, cy - 25 + bob, 6.8, 2.6); ctx.fillRect(cx - 3.4, cy - 24 + bob, 1.4, 5); ctx.fillRect(cx + 2, cy - 24 + bob, 1.4, 5);
+    ctx.fillStyle = '#333'; ctx.fillRect(cx - 1.6, cy - 21 + bob, 1, 1.2); ctx.fillRect(cx + 0.6, cy - 21 + bob, 1, 1.2);
+  }
+  function drawCouch(t) {
+    if (walkMaxX - walkMinX < 150) return;
+    var cx = walkMinX + 54, fy = officeFloorY;
+    ctx.fillStyle = 'rgba(0,0,0,0.28)'; ctx.beginPath(); ctx.ellipse(cx, fy + 1, 36, 4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#3a2f4a'; ctx.fillRect(cx - 32, fy - 15, 64, 15);
+    ctx.fillStyle = '#4a3d5e'; ctx.fillRect(cx - 32, fy - 26, 64, 12); ctx.fillStyle = '#5a4d6e'; ctx.fillRect(cx - 32, fy - 26, 64, 2);
+    ctx.fillStyle = '#2e2540'; ctx.fillRect(cx - 34, fy - 26, 4, 26); ctx.fillRect(cx + 30, fy - 26, 4, 26);
+    ctx.fillStyle = '#544766'; ctx.fillRect(cx - 30, fy - 17, 29, 4); ctx.fillRect(cx + 1, fy - 17, 29, 4);
+    drawSeated(cx - 14, fy - 6, '#8e1b2e', '#5a2020', t);      // Scarlet Witch (crimson)
+    drawSeated(cx + 14, fy - 6, '#3a4a6a', '#c8ccd4', t);      // Quicksilver (silver hair, blue jacket)
+    hover('Wanda &amp; her brother — awaiting Ultron’s command', cx, fy - 16, 36);
+  }
 
   // A wall monitor over Ultron's desk: live BTC / memory / health (owner
   // request). Reads roomStats, fed by the main script's status/crypto fetches.
@@ -6680,6 +6729,7 @@ function toggleReducedVisuals(el) {
     drawRelics(t);   // Tesseract / Orb / Eye on pedestals + the Aether tube on the desk
     drawWorldPlan(t);   // world-domination plans on the wall
     drawTrophies(t);    // Cap's shield / Mjolnir / Hawkeye's bow / power sword mounted above
+    drawCouch(t);       // Wanda + her brother waiting on a couch
     drawPowerStation(t);   // vibranium body + Infinity Stones + arc reactor + charge meter
     if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, officeFloorY + 4);
     drawIronMan(t);   // recurring gag: the intruder Ultron is beating up / tossing out
