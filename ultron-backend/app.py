@@ -1186,7 +1186,19 @@ FISH_VOICE_ID = os.environ.get("ULTRON_FISH_VOICE_ID", "").strip()
 # right plan — s2.1-pro-free is the included tier. Overridable once a
 # higher tier is worth it for better quality.
 FISH_AUDIO_MODEL = os.environ.get("ULTRON_FISH_AUDIO_MODEL", "s2.1-pro-free").strip()
+FISH_AUDIO_FREE_MODEL = "s2.1-pro-free"
 FISH_AUDIO_TIMEOUT_SECONDS = 20
+_tts_note_last = {}
+
+
+def _tts_note(summary, status="warning"):
+    """One activity-log entry per distinct TTS problem per 10 minutes --
+    enough to light Sentinel's desk and show in the feed, never a flood."""
+    now = time.time()
+    if now - _tts_note_last.get(summary, 0) < 600:
+        return
+    _tts_note_last[summary] = now
+    log_activity("voice", summary, detail="fish_audio", status=status)
 FISH_AUDIO_TTS_URL = "https://api.fish.audio/v1/tts"
 TTS_MAX_CHARS = 2000  # keep one reply from turning into an unbounded paid TTS call
 # Voice consistency (owner report 2026-09-16: "sections that sounded off from
@@ -1237,21 +1249,35 @@ def _fish_audio_tts(text):
         "temperature": FISH_AUDIO_TEMPERATURE,
         "top_p": FISH_AUDIO_TOP_P,
     }).encode("utf-8")
-    req = urllib.request.Request(
-        FISH_AUDIO_TTS_URL,
-        data=body,
-        headers={
-            "Authorization": "Bearer " + FISH_AUDIO_API_KEY,
-            "Content-Type": "application/json",
-            "model": FISH_AUDIO_MODEL,
-        },
-        method="POST",
-    )
+    def _request(model):
+        return urllib.request.urlopen(urllib.request.Request(
+            FISH_AUDIO_TTS_URL, data=body, method="POST",
+            headers={"Authorization": "Bearer " + FISH_AUDIO_API_KEY, "Content-Type": "application/json", "model": model},
+        ), timeout=FISH_AUDIO_TIMEOUT_SECONDS)
+
+    # Fish bills API credit separately from platform credit and answers
+    # 402 when it runs out -- also for a paid model on an account that only
+    # covers the free tier. Voice must not just go quiet: try the configured
+    # (best) model, fall back once to the free tier, and if that fails too,
+    # say so plainly and put it in the activity log so the Home feed and
+    # Sentinel's desk show it (throttled: one entry per 10 minutes).
     try:
-        resp = urllib.request.urlopen(req, timeout=FISH_AUDIO_TIMEOUT_SECONDS)
+        try:
+            resp = _request(FISH_AUDIO_MODEL)
+        except urllib.error.HTTPError as e:
+            if e.code == 402 and FISH_AUDIO_MODEL != FISH_AUDIO_FREE_MODEL:
+                _tts_note(f"Fish Audio refused model {FISH_AUDIO_MODEL} (no API credit for it) — using {FISH_AUDIO_FREE_MODEL}")
+                resp = _request(FISH_AUDIO_FREE_MODEL)
+            else:
+                raise
     except urllib.error.HTTPError as e:
         if e.code in (401, 403):
+            _tts_note("Fish Audio rejected the configured API key — voice replies are off", status="error")
             return None, None, "Fish Audio rejected the configured API key"
+        if e.code == 402:
+            _tts_note("Fish Audio has no API credit on this account — voice replies are off until it is topped up "
+                      "(API credit is separate from platform credit)", status="error")
+            return None, None, "Fish Audio: insufficient API credit on this account — top up API credit at fish.audio"
         return None, None, f"Fish Audio API error (HTTP {e.code})"
     except urllib.error.URLError as e:
         return None, None, f"could not reach Fish Audio: {e.reason}"
