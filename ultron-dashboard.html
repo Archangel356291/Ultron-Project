@@ -8435,7 +8435,9 @@ window.__sfx = (function () {
   var SAVE_VER = 2;
   // Bump to wipe EVERY save (local + synced) on next launch -- a clean restart
   // for all users. A save without the current epoch is discarded on load.
-  var RESET_EPOCH = 3;
+  // 2026-09-17: bumped 3->4 for a fair launch -- all testers' progress is
+  // cleared so everyone starts at square one with no save to load.
+  var RESET_EPOCH = 4;
   // Forward-only migration: never drops data, fills new fields, stamps ver.
   function migrateSave(j) {
     j.ver = j.ver || 1;
@@ -11362,7 +11364,11 @@ window.__sfx = (function () {
    "ULTRON PROTOCOL IS NOW ACTIVE!!!" on entry. Accounts come from window.__GAME_ACCOUNTS
    (injected from .env by the backend / baked into the offline build). ---- */
 (function () {
-  window.__GAME_ACCOUNTS = window.__GAME_ACCOUNTS || [{ name: 'Archangel356291', pass: '', pin: '01272001', admin: true }];
+  // Fallback only (real accounts are injected server-side from .env). No secret
+  // is hardcoded here: name-only admin marker -> whoever sets up under this
+  // username via the profile form gets the dev panel; no PIN/password baked
+  // into this file (the repo is public and the offline APK ships this source).
+  window.__GAME_ACCOUNTS = window.__GAME_ACCOUNTS || [{ name: 'Archangel356291', pass: '', pin: '', admin: true }];
   var lock = document.getElementById('game-lock'); if (!lock) return;
   var display = document.getElementById('gl-display'), keysEl = document.getElementById('gl-keys'),
       msg = document.getElementById('gl-msg'), pinWrap = document.getElementById('gl-pinwrap'),
