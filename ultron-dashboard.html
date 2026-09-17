@@ -615,6 +615,29 @@
   .refinery-canvas-wrap{ border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#0a0c10; margin-bottom:12px; }
   #refinery-canvas{ display:block; width:100%; height:auto; }
   .refinery-upgrades{ display:grid; grid-template-columns:repeat(auto-fill,minmax(158px,1fr)); gap:8px; }
+  .prestige{ margin-top:14px; padding:11px 13px; border:1px solid rgba(122,77,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(122,77,255,.08),transparent); }
+  .prestige-row{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .prestige-core{ font-family:var(--font-display); font-weight:700; font-size:14px; color:#c9b6ff; }
+  .prestige-bonus{ font-family:var(--font-mono); font-size:11.5px; color:#9a8fd0; }
+  .prestige-sub{ font-size:11px; color:var(--text-faint); margin:5px 0 8px; }
+  .prestige-btn{ font-family:var(--font-display); font-weight:700; font-size:12.5px; padding:7px 13px; border-radius:7px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-dim); cursor:pointer; }
+  .prestige-btn.can{ border-color:rgba(122,77,255,.6); color:#c9b6ff; }
+  .prestige-btn.can:hover{ background:rgba(122,77,255,.14); }
+  .prestige-btn:disabled{ opacity:.55; cursor:not-allowed; }
+  .codex-wrap{ border:1px solid var(--line); border-radius:8px; background:var(--panel-raised); }
+  .codex-wrap>summary{ cursor:pointer; padding:9px 12px; font-family:var(--font-display); font-weight:700; font-size:12.5px; color:var(--text-dim); list-style:none; }
+  .codex-wrap>summary::-webkit-details-marker{ display:none; }
+  .codex-wrap>summary::before{ content:'\25B8 '; color:var(--text-faint); }
+  .codex-wrap[open]>summary{ color:var(--text); border-bottom:1px solid var(--line); }
+  .codex-wrap[open]>summary::before{ content:'\25BE '; }
+  #codex{ padding:11px; display:grid; gap:12px; }
+  .cx-h{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; }
+  .cx-chips{ display:flex; flex-wrap:wrap; gap:6px; }
+  .cx-chip{ font-family:var(--font-mono); font-size:10.5px; padding:3px 8px; border-radius:5px; background:var(--void); border:1px solid var(--line); color:var(--text-dim); }
+  .cx-enemies{ display:grid; gap:4px; }
+  .cx-row{ display:flex; gap:10px; font-size:11px; align-items:baseline; flex-wrap:wrap; }
+  .cx-row b{ min-width:150px; color:var(--text); }
+  .cx-row span{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
   .rt-enl{ color:#8a93a3; }
   .foundry-up:active:not(:disabled){ transform:translateY(1px); }
   .foundry-up:disabled{ opacity:0.55; cursor:not-allowed; }
@@ -1393,6 +1416,7 @@
             <div class="foundry-offline" id="foundry-offline" hidden></div>
             <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
+            <div class="prestige" id="prestige"></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
           </div>
 
@@ -1407,6 +1431,9 @@
 
           <div class="panel-label" style="margin-top:28px;">Ultron's expedition</div>
           <div class="expedition" id="expedition"></div>
+
+          <div class="panel-label" style="margin-top:28px;">Codex</div>
+          <details class="codex-wrap"><summary>Enemies, loot, rarities &amp; bays \u2014 the game's database</summary><div id="codex"></div></details>
 
           <div class="panel-label" style="margin-top:28px;">What Ultron knows</div>
           <div class="vault-head">
@@ -6230,6 +6257,11 @@ function toggleReducedVisuals(el) {
     var c = window.__refinery || refConfig();
     return (c.adamRate * c.adamValue + c.vibrRate * c.vibrValue) * c.pressYield;
   }
+  // Prestige: reboot the line for permanent Nanite Cores (+10% all income each).
+  // Cores scale with the square root of lifetime bits, so each reboot is a real
+  // reset that pushes past the exponential wall.
+  function globalMult() { return 1 + 0.1 * ((state.prestige && state.prestige.cores) || 0); }
+  function prestigeCores(lifetime) { return Math.floor(Math.sqrt(Math.max(0, lifetime || 0) / 50000)); }
 
   var SAVE_VER = 2;
   // Forward-only migration: never drops data, fills new fields, stamps ver.
@@ -6252,13 +6284,15 @@ function toggleReducedVisuals(el) {
       if (j && typeof j.bits === 'number') {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       }
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
   UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
   if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
   if (!state.ref) state.ref = { unlA: false, unlV: false, unlP: false, up: {} };
+  if (!state.prestige) state.prestige = { cores: 0 };
+  if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
 
   var saveTimer = null;
   function save() {
@@ -6310,8 +6344,8 @@ function toggleReducedVisuals(el) {
     var capSec = (window.__foundry.offlineHours || 1.5) * 3600;
     offlineCapped = away > capSec;
     var eff = Math.min(away, capSec);
-    offlineEarned = prodRate() * eff;
-    if (offlineEarned > 0.05) { state.bits += offlineEarned; dirty = true; }   // loot rolled below, once the pool is defined
+    offlineEarned = prodRate() * eff * globalMult();
+    if (offlineEarned > 0.05) { state.bits += offlineEarned; state.lifetime = (state.lifetime || 0) + offlineEarned; dirty = true; }
   }
   // flush last-seen when the tab is hidden/closed so offline time is accurate
   function flush() { state.seen = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } }
@@ -6319,7 +6353,8 @@ function toggleReducedVisuals(el) {
   document.addEventListener('visibilitychange', function () { if (document.hidden) flush(); });
 
   window.__foundryEarn = function (n) {
-    state.bits += (n || 0);
+    var amt = (n || 0) * globalMult();
+    state.bits += amt; state.lifetime = (state.lifetime || 0) + amt;
     dirty = true; save();
   };
 
@@ -6406,6 +6441,55 @@ function toggleReducedVisuals(el) {
     });
   }
 
+  var prestigeEl = document.getElementById('prestige');
+  var rebootArmed = false, rebootTimer = null;
+  function renderPrestige() {
+    if (!prestigeEl) return;
+    var cores = (state.prestige && state.prestige.cores) || 0;
+    var gain = Math.max(0, prestigeCores(state.lifetime || 0) - cores);
+    prestigeEl.innerHTML =
+      '<div class="prestige-row"><span class="prestige-core">\u25C8 ' + cores + ' Nanite Core' + (cores === 1 ? '' : 's') + '</span>' +
+      '<span class="prestige-bonus">+' + Math.round(cores * 10) + '% to all income</span></div>' +
+      '<div class="prestige-sub">Lifetime minted: ' + fmt(state.lifetime || 0) + ' \u00b7 a reboot resets the foundry &amp; refinery but keeps your expedition, loot and cores.</div>' +
+      '<button type="button" class="prestige-btn' + (gain > 0 ? ' can' : '') + '" data-reboot="1"' + (gain > 0 ? '' : ' disabled') + '>' +
+      (gain <= 0 ? 'Keep minting to earn a Nanite Core' : rebootArmed ? 'Confirm reboot \u2014 bank ' + gain + ' core' + (gain === 1 ? '' : 's') + '?' : 'Reboot for ' + gain + ' Nanite Core' + (gain === 1 ? '' : 's')) + '</button>';
+    var btn = prestigeEl.querySelector('[data-reboot]');
+    if (btn) btn.addEventListener('click', function () {
+      var g = Math.max(0, prestigeCores(state.lifetime || 0) - ((state.prestige && state.prestige.cores) || 0));
+      if (g <= 0) return;
+      if (!rebootArmed) { rebootArmed = true; renderPrestige(); clearTimeout(rebootTimer); rebootTimer = setTimeout(function () { rebootArmed = false; renderPrestige(); }, 4000); return; }
+      rebootArmed = false; clearTimeout(rebootTimer); doReboot();
+    });
+  }
+  function doReboot() {
+    state.prestige = state.prestige || { cores: 0 };
+    state.prestige.cores = prestigeCores(state.lifetime || 0);
+    state.bits = 0; state.up = {}; UPGRADES.forEach(function (u) { state.up[u.id] = 0; });
+    state.ref = { unlA: false, unlV: false, unlP: false, up: {} };
+    publish(); dirty = true; save();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige();
+    if (window.__roomRelayout) window.__roomRelayout();
+  }
+
+  var codexEl = document.getElementById('codex');
+  function renderCodex() {
+    if (!codexEl || !window.LootEngine) return;
+    var LE = window.LootEngine, CB = window.Combat;
+    var sec = function (title, body) { return '<div class="cx-sec"><div class="cx-h">' + title + '</div>' + body + '</div>'; };
+    var cur = ['Bits', 'Bytes', 'Chits', 'Scrip', 'Nanits'].map(function (t, i) { return '<span class="cx-chip">' + t + (i ? ' \u00d7' + Math.pow(1000, i).toLocaleString() : '') + '</span>'; }).join('');
+    var rar = LE.TIERS.map(function (t) { return '<span class="cx-chip" style="color:' + t.color + ';border-color:' + t.color + '">' + t.shape + ' ' + t.label + '</span>'; }).join('');
+    var byType = {}; LE.BASES.forEach(function (b) { byType[b.t] = (byType[b.t] || 0) + 1; });
+    var items = Object.keys(byType).map(function (k) { return '<span class="cx-chip">' + k + ' \u00d7' + byType[k] + '</span>'; }).join('') + '<span class="cx-chip">' + LE.BASES.length + ' bases \u00b7 21 stats \u00b7 16 affixes</span>';
+    var bays = ['Vanguard \u00b7 Assault', 'Recon \u00b7 Scout', 'Bombard \u00b7 Bomber', 'Bulwark \u00b7 Tank', 'Cipher \u00b7 Hacker', 'Aegis \u00b7 Medic', 'Titan \u00b7 Muscle Head', 'Havoc \u00b7 Heavy', 'Colossus \u00b7 Juggernaut', 'Omega \u00b7 World Ender'].map(function (b) { return '<span class="cx-chip">' + b + '</span>'; }).join('');
+    var en = CB ? CB.ENEMIES.map(function (e) { return '<div class="cx-row"><b>' + e.name + '</b><span>' + e.kind + '</span><span>hp ' + e.hp + '</span><span>dmg ' + e.dmg + '</span><span>armor ' + e.armor + '</span></div>'; }).join('') : '<div class="cx-h">combat module not loaded</div>';
+    codexEl.innerHTML =
+      sec('Currency (\u00d71000 each tier)', '<div class="cx-chips">' + cur + '</div>') +
+      sec('Loot rarity', '<div class="cx-chips">' + rar + '</div>') +
+      sec('Item archetypes', '<div class="cx-chips">' + items + '</div>') +
+      sec('Production bays', '<div class="cx-chips">' + bays + '</div>') +
+      sec('Enemies (Expedition auto-battler)', '<div class="cx-enemies">' + en + '</div>');
+  }
+
   function renderBalance() {
     if (bitsEl) {
       bitsEl.textContent = fmt(state.bits);
@@ -6422,13 +6506,13 @@ function toggleReducedVisuals(el) {
   var last = Date.now();
   setInterval(function () {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
-    var p = (window.__foundry.passive || 0) + refIncome();
-    if (p > 0) { state.bits += p * dt; dirty = true; save(); }
+    var p = ((window.__foundry.passive || 0) + refIncome()) * globalMult();
+    if (p > 0) { state.bits += p * dt; state.lifetime = (state.lifetime || 0) + p * dt; dirty = true; save(); }
     advTick();
     var shown = Math.round(state.bits * 10);
     if (dirty && shown !== lastShown) {
       lastShown = shown;
-      renderBalance(); renderUpgrades();
+      renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige();
       dirty = false;
     }
   }, 500);
@@ -6828,6 +6912,8 @@ function toggleReducedVisuals(el) {
   renderBalance();
   renderUpgrades();
   renderRefinery();
+  renderPrestige();
+  renderCodex();
 
   // ---- cross-device sync hooks: the main dashboard script (which holds the
   // auth token) calls these to pull/push this user's save to the backend, so
@@ -6843,11 +6929,13 @@ function toggleReducedVisuals(el) {
       if (j.loot) state.loot = j.loot;
       if (j.adv) state.adv = j.adv;
       if (j.ref) state.ref = j.ref;
+      if (j.prestige) state.prestige = j.prestige;
+      if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
       if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
