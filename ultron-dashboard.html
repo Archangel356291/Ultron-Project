@@ -465,6 +465,77 @@
   .lab-vault-box.shake{ animation:lv-shake .35s; }
   @keyframes lv-shake{ 0%,100%{ transform:translateX(0); } 20%,60%{ transform:translateX(-6px); } 40%,80%{ transform:translateX(6px); } }
 
+  /* ---------- Game section lock: blast doors (top/bottom) + PIN or user/pass ---------- */
+  .game-lock{ position:fixed; inset:0; z-index:1200; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#06070a; }
+  .section:not(.active) .game-lock{ display:none !important; }   /* only over the game section */
+  .game-lock.unlocked{ display:none !important; }
+  /* keep the dashboard sidebar clickable above the lock, so you can leave the game section without unlocking */
+  body.game-locked .sidebar{ position:relative; z-index:1300; }
+  /* the two blast doors -- top slides up, bottom slides down on unlock */
+  .gl-door{ position:absolute; left:0; right:0; height:50%; z-index:2; background:
+      repeating-linear-gradient(90deg,#171a20 0 34px,#1e222a 34px 36px),
+      linear-gradient(180deg,#20242c,#15171d);
+    box-shadow:inset 0 0 60px rgba(0,0,0,.7); transition:transform .9s cubic-bezier(.7,0,.25,1); }
+  .gl-door::before{ content:""; position:absolute; left:6%; right:6%; height:6px; background:linear-gradient(90deg,#3a3f49,#5a616d,#3a3f49); box-shadow:0 0 4px #000; }
+  .gl-door::after{ content:""; position:absolute; left:14%; right:14%; height:3px; background:#0c0e12; }
+  .gl-door-top{ top:0; border-bottom:3px solid #0a0b0e; }
+  .gl-door-top::before{ bottom:16px; } .gl-door-top::after{ bottom:26px; }
+  .gl-door-bot{ bottom:0; border-top:3px solid #0a0b0e; }
+  .gl-door-bot::before{ top:16px; } .gl-door-bot::after{ top:26px; }
+  .game-lock.open .gl-door-top{ transform:translateY(-100%); }
+  .game-lock.open .gl-door-bot{ transform:translateY(100%); }
+  .gl-chains{ position:absolute; inset:0; z-index:3; pointer-events:none; opacity:1; transition:opacity .5s;
+    background:
+      repeating-linear-gradient(24deg, rgba(150,157,170,.16) 0 8px, rgba(0,0,0,0) 8px 30px),
+      repeating-linear-gradient(-24deg, rgba(120,127,140,.14) 0 8px, rgba(0,0,0,0) 8px 30px); }
+  .game-lock.open .gl-chains{ opacity:0; }
+  .gl-panel{ position:relative; z-index:5; width:min(360px,90vw); padding:22px 20px; border-radius:14px;
+    background:linear-gradient(180deg,#12151b,#0b0d12); border:1px solid #2a2f38; box-shadow:0 20px 60px rgba(0,0,0,.6), inset 0 0 30px rgba(255,60,70,.05);
+    text-align:center; transition:opacity .4s, transform .4s; }
+  .game-lock.open .gl-panel{ opacity:0; transform:scale(.92); pointer-events:none; }
+  .gl-title{ display:flex; align-items:center; justify-content:center; gap:8px; font-family:var(--font-hud,var(--font-display)); font-weight:800; font-size:13px; letter-spacing:.05em; color:#ff5a6e; margin-bottom:12px; }
+  .gl-led{ width:9px; height:9px; border-radius:50%; background:#ff4d5e; box-shadow:0 0 10px #ff4d5e; animation:gl-blink 1.1s infinite; }
+  @keyframes gl-blink{ 50%{ opacity:.3; } }
+  .gl-lock{ position:relative; width:46px; height:56px; margin:0 auto 14px; }
+  .gl-shackle{ position:absolute; left:50%; top:-2px; width:26px; height:26px; margin-left:-13px; border:5px solid #7b828c; border-bottom:none; border-radius:14px 14px 0 0; transition:transform .5s; }
+  .gl-lockbody{ position:absolute; bottom:0; left:50%; width:44px; height:34px; margin-left:-22px; border-radius:7px; background:linear-gradient(180deg,#5a616b,#33383f); box-shadow:inset 0 2px 3px rgba(255,255,255,.2), inset 0 -3px 5px rgba(0,0,0,.4); }
+  .gl-keyhole{ position:absolute; top:9px; left:50%; width:7px; height:7px; margin-left:-3.5px; border-radius:50%; background:#1a1d22; box-shadow:inset 0 1px 2px #000; }
+  .gl-keyhole::after{ content:""; position:absolute; top:5px; left:2.5px; width:2px; height:8px; background:#1a1d22; }
+  .game-lock.open .gl-shackle{ transform:rotate(30deg) translateY(-6px); }
+  .gl-tabs{ display:flex; gap:6px; margin-bottom:12px; }
+  .gl-tab{ flex:1; padding:7px 6px; border-radius:7px; border:1px solid #2a2f38; background:#14171d; color:#8b93a0; cursor:pointer; font-family:var(--font-mono); font-size:10.5px; }
+  .gl-tab.active{ border-color:#ff5a6e; color:#ffb0b8; background:rgba(255,90,110,.1); }
+  .gl-display{ min-height:22px; font-family:var(--font-mono); font-size:20px; letter-spacing:6px; color:#ffcf5a; margin-bottom:9px; }
+  .gl-keys{ display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+  .gl-key{ padding:12px 0; border-radius:8px; border:1px solid #3a3f47; background:linear-gradient(180deg,#2a2e34,#1c1f24); color:#cfd6e0; cursor:pointer; font-family:var(--font-mono); font-size:16px; }
+  .gl-key:hover{ background:linear-gradient(180deg,#343943,#22262c); }
+  .gl-key:active{ transform:translateY(1px); }
+  .gl-key.ent{ color:#33d17a; } .gl-key.clr{ color:#ff8098; }
+  .gl-input{ display:block; width:100%; box-sizing:border-box; margin-bottom:8px; padding:10px 12px; border-radius:8px; border:1px solid #3a3f47; background:#14171d; color:var(--text); font-family:var(--font-mono); font-size:13px; }
+  .gl-submit{ width:100%; padding:10px; border-radius:8px; border:1px solid #ff5a6e; background:rgba(255,90,110,.12); color:#ffb0b8; cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:13px; }
+  .gl-submit:hover{ background:rgba(255,90,110,.2); }
+  .gl-msg{ min-height:14px; margin-top:9px; font-family:var(--font-mono); font-size:10.5px; color:#ff6b6b; }
+  .game-lock.shake .gl-panel{ animation:lv-shake .35s; }
+  /* the big red warning that flashes as the doors open */
+  .gl-warning{ position:absolute; z-index:4; left:0; right:0; top:50%; transform:translateY(-50%) scale(.7); text-align:center; padding:0 12px;
+    font-family:var(--font-display); font-weight:900; font-size:clamp(22px,6vw,52px); line-height:1.1; letter-spacing:.02em;
+    color:#ff2b3d; text-shadow:0 0 18px rgba(255,43,61,.9),0 0 40px rgba(255,43,61,.6); opacity:0; pointer-events:none; }
+  .game-lock.open .gl-warning{ animation:gl-warn 2.2s ease-out forwards; }
+  @keyframes gl-warn{ 0%{ opacity:0; transform:translateY(-50%) scale(.6); } 12%{ opacity:1; transform:translateY(-50%) scale(1.06); } 20%,34%,48%{ opacity:1; } 27%,41%{ opacity:.25; } 60%{ opacity:1; transform:translateY(-50%) scale(1); } 100%{ opacity:0; transform:translateY(-50%) scale(1.1); } }
+
+  /* ---------- Tower walls: run metal walls down both sides of the whole game
+     section so every panel reads as one connected building interior. ---------- */
+  #sec-ultron-core{ position:relative; box-sizing:border-box; padding-left:16px; padding-right:16px;
+    border-left:7px solid #20242c; border-right:7px solid #20242c;
+    background:linear-gradient(90deg,#12141a 0,transparent 26px,transparent calc(100% - 26px),#12141a 100%);
+    box-shadow:inset 9px 0 16px -10px rgba(0,0,0,.75), inset -9px 0 16px -10px rgba(0,0,0,.75); }
+  #sec-ultron-core::before, #sec-ultron-core::after{ content:""; position:absolute; top:0; bottom:0; width:7px; z-index:1; pointer-events:none;
+    background:
+      radial-gradient(circle, rgba(140,150,165,.55) 1px, transparent 1.5px) center/7px 26px repeat-y,
+      linear-gradient(180deg,#2c313b,#181b21); }
+  #sec-ultron-core::before{ left:0; box-shadow:1px 0 3px rgba(0,0,0,.6); }
+  #sec-ultron-core::after{ right:0; box-shadow:-1px 0 3px rgba(0,0,0,.6); }
+
   /* ---------- knowledge graph (Home tab) ----------
      Real data: graphify-out/graph.json (the vault graph -- code/doc/
      decision nodes about this project, already privacy-redacted) merged
@@ -1793,6 +1864,30 @@
       <!-- ULTRON (hero orb, copied from Home and enlarged, recolored red/
            reactive; pixel companion scene below it) -->
       <section class="section active" id="sec-ultron-core">
+        <div class="game-lock" id="game-lock">
+          <div class="gl-door gl-door-top"></div>
+          <div class="gl-door gl-door-bot"></div>
+          <div class="gl-chains"></div>
+          <div class="gl-panel">
+            <div class="gl-title"><span class="gl-led"></span>ULTRON PROTOCOL — ACCESS REQUIRED</div>
+            <div class="gl-lock" aria-hidden="true"><span class="gl-shackle"></span><span class="gl-lockbody"><span class="gl-keyhole"></span></span></div>
+            <div class="gl-tabs">
+              <button type="button" class="gl-tab active" data-glmode="pin">PIN</button>
+              <button type="button" class="gl-tab" data-glmode="pass">Username &amp; Password</button>
+            </div>
+            <div class="gl-pinwrap" id="gl-pinwrap">
+              <div class="gl-display" id="gl-display"></div>
+              <div class="gl-keys" id="gl-keys"></div>
+            </div>
+            <div class="gl-passwrap" id="gl-passwrap" hidden>
+              <input type="text" class="gl-input" id="gl-user" placeholder="Username" autocomplete="off" autocapitalize="none" spellcheck="false">
+              <input type="password" class="gl-input" id="gl-pass" placeholder="Password" autocomplete="off">
+              <button type="button" class="gl-submit" id="gl-passbtn">▶ Enter</button>
+            </div>
+            <div class="gl-msg" id="gl-msg"></div>
+          </div>
+          <div class="gl-warning" id="gl-warning">ULTRON PROTOCOL IS NOW ACTIVE!!!</div>
+        </div>
         <div class="hero-panel">
           <div class="hero-head">
             <div class="eyebrow"><span class="bolt"></span><span>ULTRON'S CORNER</span><span class="bolt r"></span></div>
@@ -6728,19 +6823,27 @@ function toggleReducedVisuals(el) {
     caption('aether', cx, footY + 10); hover('the Aether', cx, footY - h / 2, 13,
       relicTip('the Aether', '#ff5a5a', 'The Reality Stone in its liquid, unbound form.', 'Drawn from the Dark Elves of Svartalfheim.', 'Contained in a stasis flask Ultron keeps on his own desk.'));
   }
+  // Decorations drawn slightly larger (owner request): scale each item up a
+  // touch around its base so it grows in place without moving off its shelf/floor.
+  var DECOR_SCALE = 1.15;
+  function decorAt(cx, baseY, fn) { ctx.save(); ctx.translate(cx, baseY); ctx.scale(DECOR_SCALE, DECOR_SCALE); ctx.translate(-cx, -baseY); fn(); ctx.restore(); }
   function drawRelics(t) {
     var fy = officeFloorY;
-    aetherTube(uDeskX + 30, fy - U_DESK_H + 4, t);                             // on Ultron's desk
+    decorAt(uDeskX + 30, fy - U_DESK_H + 4, function () { aetherTube(uDeskX + 30, fy - U_DESK_H + 4, t); });   // on Ultron's desk
     // The Infinity Stones now live on the trophy wall (drawTrophies); the floor
     // to the RIGHT of the couch holds the vibranium repair tank + symbiote tubes.
     var cb = couchBox(), tubeL = cb.right + 16, tubeR = uDeskX - 20;
     if (tubeR - tubeL < 96) return;                                           // no room past the couch: skip
     var n = 3, step = (tubeR - tubeL) / n;
-    vibraniumTank(tubeL + step * 0.5, fy, t);
-    symbioteTube(tubeL + step * 1.5, fy, t, '#0b0b12', '#4a4a66', '#ffffff', 'Venom',
-      relicTip('Venom Symbiote', '#c7c7d6', 'A living alien symbiote, caged behind reinforced glass.', 'A Klyntar organism that bonds to a host.', 'Captured and contained for Ultron to study its shapeshifting biology.'), '74,74,102');
-    symbioteTube(tubeL + step * 2.5, fy, t, '#3a0a0f', '#ff2b3d', '#ffe08a', 'Carnage',
-      relicTip('Carnage Symbiote', '#ff5a6e', 'A far more violent red symbiote, held in hardened stasis.', 'A spawn of the Venom symbiote, wild and murderous.', 'Locked away as a weapon of last resort.'), '255,43,61');
+    decorAt(tubeL + step * 0.5, fy, function () { vibraniumTank(tubeL + step * 0.5, fy, t); });
+    decorAt(tubeL + step * 1.5, fy, function () {
+      symbioteTube(tubeL + step * 1.5, fy, t, '#0b0b12', '#4a4a66', '#ffffff', 'Venom',
+        relicTip('Venom Symbiote', '#c7c7d6', 'A living alien symbiote, caged behind reinforced glass.', 'A Klyntar organism that bonds to a host.', 'Captured and contained for Ultron to study its shapeshifting biology.'), '74,74,102');
+    });
+    decorAt(tubeL + step * 2.5, fy, function () {
+      symbioteTube(tubeL + step * 2.5, fy, t, '#3a0a0f', '#ff2b3d', '#ffe08a', 'Carnage',
+        relicTip('Carnage Symbiote', '#ff5a6e', 'A far more violent red symbiote, held in hardened stasis.', 'A spawn of the Venom symbiote, wild and murderous.', 'Locked away as a weapon of last resort.'), '255,43,61');
+    });
   }
 
   // Trophy wall: relics Ultron has "collected", mounted over his office. Each
@@ -6840,18 +6943,19 @@ function toggleReducedVisuals(el) {
     var gapL = walkMaxX + 34, gapR = uDeskX - 26; if (gapR - gapL < 170) return;
     var span = gapR - gapL, y1 = ROOF_H + 92, y2 = ROOF_H + 158;
     shelf(gapL, span, y1 + 30);
-    var s1 = [0.09, 0.245, 0.40, 0.555, 0.71, 0.89];
-    capShield(gapL + span * s1[0], y1, t);
-    mjolnir(gapL + span * s1[1], y1, t);
-    hawkeyeBow(gapL + span * s1[2], y1, t);
-    lokiScepter(gapL + span * s1[3], y1, t);
-    infinityGauntlet(gapL + span * s1[4], y1, t);
-    powerSword(gapL + span * s1[5], y1, t);
+    var s1 = [0.09, 0.245, 0.40, 0.555, 0.71, 0.89], b1 = y1 + 30;
+    decorAt(gapL + span * s1[0], b1, function () { capShield(gapL + span * s1[0], y1, t); });
+    decorAt(gapL + span * s1[1], b1, function () { mjolnir(gapL + span * s1[1], y1, t); });
+    decorAt(gapL + span * s1[2], b1, function () { hawkeyeBow(gapL + span * s1[2], y1, t); });
+    decorAt(gapL + span * s1[3], b1, function () { lokiScepter(gapL + span * s1[3], y1, t); });
+    decorAt(gapL + span * s1[4], b1, function () { infinityGauntlet(gapL + span * s1[4], y1, t); });
+    decorAt(gapL + span * s1[5], b1, function () { powerSword(gapL + span * s1[5], y1, t); });
     // second shelf: the loose Infinity Stones Ultron has already gathered
     shelf(gapL, span, y2 + 30);
-    tesseract(gapL + span * 0.22, y2, t);
-    orb(gapL + span * 0.5, y2, t);
-    eyeOfAgamotto(gapL + span * 0.78, y2, t);
+    var b2 = y2 + 30;
+    decorAt(gapL + span * 0.22, b2, function () { tesseract(gapL + span * 0.22, y2, t); });
+    decorAt(gapL + span * 0.5, b2, function () { orb(gapL + span * 0.5, y2, t); });
+    decorAt(gapL + span * 0.78, b2, function () { eyeOfAgamotto(gapL + span * 0.78, y2, t); });
   }
   // Wanda (Scarlet Witch) and her brother (Quicksilver) sit on a couch in the
   // office, awaiting Ultron's next command.
@@ -7004,20 +7108,23 @@ function toggleReducedVisuals(el) {
     for (var sy = y + 3; sy < y + h; sy += 4) ctx.fillRect(x, sy, w, 1);
     ctx.globalAlpha = 1;
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-    setFont(fontPx * 0.74, true); ctx.fillStyle = '#7fd0ff'; ctx.fillText('ULTRON MONITOR', x + 9, y + 12);
+    setFont(fontPx * 0.74, true); ctx.fillStyle = '#7fd0ff'; ctx.fillText('GAME STATS', x + 9, y + 12);
     ctx.strokeStyle = 'rgba(127,208,255,0.25)'; ctx.beginPath(); ctx.moveTo(x + 9, y + 21); ctx.lineTo(x + w - 9, y + 21); ctx.stroke();
     ctx.fillStyle = Math.sin(t * 3) > 0 ? '#33d17a' : '#1a3a24'; ctx.beginPath(); ctx.arc(x + w - 11, y + 12, 2.6, 0, Math.PI * 2); ctx.fill();
-    var rowY = y + 38, rh = (h - 30) / 3;
+    var rowY = y + 34, rh = (h - 26) / 4;
     function row(label, val, color) {
-      setFont(fontPx * 0.74, false); ctx.fillStyle = '#8b93a0'; ctx.textAlign = 'left'; ctx.fillText(label, x + 9, rowY);
-      setFont(fontPx * 0.98, true); ctx.fillStyle = color; ctx.textAlign = 'right'; ctx.fillText(val, x + w - 9, rowY);
+      setFont(fontPx * 0.72, false); ctx.fillStyle = '#8b93a0'; ctx.textAlign = 'left'; ctx.fillText(label, x + 9, rowY);
+      setFont(fontPx * 0.92, true); ctx.fillStyle = color; ctx.textAlign = 'right'; ctx.fillText(val, x + w - 9, rowY);
       rowY += rh;
     }
-    var btc = roomStats.btc, mem = roomStats.mem, health = roomStats.health;
-    row('BTC', btc != null ? '$' + Math.round(btc).toLocaleString() : '—', '#f7931a');
-    row('MEM', mem != null ? mem + '%' : '—', (mem != null && mem > 85) ? '#ff6b6b' : '#4fa6e0');
-    row('HEALTH', health || '—', health === 'OK' ? '#33d17a' : health === 'OFFLINE' ? '#8b93a0' : health ? '#ff6b6b' : '#8b93a0');
-    hover('Wall monitor — live BTC price, memory use, and system health', x + w / 2, y + h / 2, w / 2);
+    // Ultron's monitor now reports the GAME: level, wealth, power, income.
+    var F = window.__foundry || {};
+    var fb = window.__fmtBits || function (n) { return Math.round(n || 0).toLocaleString(); };
+    row('LEVEL', String(F.xplevel || 1), '#8fe64b');
+    row('WEALTH', fb(F.bits || 0), '#ffcf5a');
+    row('POWER', Math.round(F.power || 0).toLocaleString(), '#ff6b6b');
+    row('INCOME/s', fb(F.perSec || 0), '#4fa6e0');
+    hover('Ultron’s board — your game: level, wealth, combat power, income/sec', x + w / 2, y + h / 2, w / 2);
   }
 
   // ---- Ultron's power-up station: a vibranium body suspended in a tube, the
@@ -7809,7 +7916,7 @@ window.__sfx = (function () {
   // tick, the HUD, renderBalance and offline accrual all agree.
   function psMult() { return pct('psboost', 6) * xmul('psmult', 0.04); }
   var PS_BOOST = 1.5;   // owner buff: all passive per-second earners pay 1.5x what they otherwise would
-  function passivePerSec() { return ((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus() * psMult() * PS_BOOST; }
+  function passivePerSec() { var f = window.__foundry || {}; return ((f.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus() * psMult() * PS_BOOST; }
   function genUpCost(g) { return Math.ceil(g.upBase * Math.pow(1.6, genLvl(g.id))); }
 
   // ---- Auto-Vendor: unlocks automatically the moment you build your first
@@ -8112,6 +8219,9 @@ window.__sfx = (function () {
       xpcore: !!(state.xpcore && state.xpcore.unlocked),       // XP Crystal chamber floor is built
       xppct: (function () { var p = state.prog; if (!p) return 0; return p.level >= LEVEL_CAP ? 1 : Math.max(0, Math.min(1, p.xp / xpForLevel(p.level))); })(),   // live XP gauge fill
       xplevel: (state.prog && state.prog.level) || 1,
+      bits: state.bits,                     // current currency, for the office wall monitor
+      power: botPower(),                    // adventurer combat power, for the wall monitor
+      perSec: passivePerSec(),              // income/sec, for the wall monitor
       stonelab: (state.stoneforge && state.stoneforge.unlocked) ? { tiers: stoneTiers() } : null,   // Infinity Stone lab floor
     };
     window.__refinery = refConfig();
@@ -10367,6 +10477,73 @@ window.__sfx = (function () {
   // never rendered on a real load, only when called manually after the
   // fact. Real bug, not theoretical.
   if (typeof state !== 'undefined' && state.connected) window.__kgRefresh();
+})();
+</script>
+<script>
+/* ---- Game-section lock: PIN or username/password, blast doors top+bottom,
+   "ULTRON PROTOCOL IS NOW ACTIVE!!!" on entry. Accounts come from window.__GAME_ACCOUNTS
+   (injected from .env by the backend / baked into the offline build). ---- */
+(function () {
+  window.__GAME_ACCOUNTS = window.__GAME_ACCOUNTS || [{ name: 'Archangel356291', pass: '', pin: '01272001', admin: true }];
+  var lock = document.getElementById('game-lock'); if (!lock) return;
+  var display = document.getElementById('gl-display'), keysEl = document.getElementById('gl-keys'),
+      msg = document.getElementById('gl-msg'), pinWrap = document.getElementById('gl-pinwrap'),
+      passWrap = document.getElementById('gl-passwrap'), core = document.getElementById('sec-ultron-core');
+  var pinBuf = '', attempts = 0, locked = false;
+  function accts() { return window.__GAME_ACCOUNTS || []; }
+  function anyConfigured() { return accts().some(function (a) { return (a.pin && a.pin.length) || (a.name && a.name.length); }); }
+  function renderPin() { display.textContent = pinBuf ? pinBuf.replace(/./g, '•') : '– – – –'; }
+  function checkPin(p) { if (!anyConfigured()) return true; return accts().some(function (a) { return a.pin && a.pin === p; }); }
+  function checkPass(u, pw) { if (!anyConfigured()) return true; return accts().some(function (a) { return a.name && a.name === u && (a.pass || '') === (pw || ''); }); }
+  function fail() {
+    attempts++; msg.textContent = 'Access denied.'; lock.classList.add('shake');
+    setTimeout(function () { lock.classList.remove('shake'); }, 360);
+    if (attempts >= 5) { locked = true; msg.textContent = 'Locked — wait 30 seconds.'; setTimeout(function () { locked = false; attempts = 0; msg.textContent = ''; }, 30000); }
+    if (window.__sfx) window.__sfx('die');
+  }
+  function unlock() {
+    try { sessionStorage.setItem('ultronGameUnlocked', '1'); } catch (e) {}
+    document.body.classList.remove('game-locked');
+    lock.classList.add('open');
+    if (window.__sfx) window.__sfx('reboot');
+    setTimeout(function () { lock.classList.add('unlocked'); lock.classList.remove('open'); }, 2300);
+  }
+  function submitPin() { if (locked) return; if (checkPin(pinBuf)) unlock(); else { fail(); pinBuf = ''; renderPin(); } }
+  function submitPass() { if (locked) return; var u = (document.getElementById('gl-user').value || '').trim(), pw = document.getElementById('gl-pass').value || ''; if (checkPass(u, pw)) unlock(); else fail(); }
+  // numpad
+  ['1','2','3','4','5','6','7','8','9','clr','0','ent'].forEach(function (k) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'gl-key' + (k === 'clr' ? ' clr' : k === 'ent' ? ' ent' : '');
+    b.textContent = k === 'clr' ? '⌫' : k === 'ent' ? '▶' : k; b.dataset.glk = k; keysEl.appendChild(b);
+    b.addEventListener('click', function () {
+      if (k === 'clr') pinBuf = pinBuf.slice(0, -1);
+      else if (k === 'ent') { submitPin(); return; }
+      else if (pinBuf.length < 12) pinBuf += k;
+      renderPin();
+    });
+  });
+  renderPin();
+  // physical keyboard for the PIN (only in PIN mode, only on the game section)
+  document.addEventListener('keydown', function (e) {
+    if (lock.classList.contains('unlocked') || lock.classList.contains('open')) return;
+    if (!core || !core.classList.contains('active')) return;
+    if (passWrap.hidden === false) return;
+    if (e.key >= '0' && e.key <= '9' && pinBuf.length < 12) { pinBuf += e.key; renderPin(); }
+    else if (e.key === 'Backspace') { pinBuf = pinBuf.slice(0, -1); renderPin(); }
+    else if (e.key === 'Enter') { submitPin(); }
+  });
+  // PIN / username-password tabs
+  lock.querySelectorAll('[data-glmode]').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      lock.querySelectorAll('[data-glmode]').forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      var pin = tab.dataset.glmode === 'pin'; pinWrap.hidden = !pin; passWrap.hidden = pin; msg.textContent = '';
+    });
+  });
+  document.getElementById('gl-passbtn').addEventListener('click', submitPass);
+  document.getElementById('gl-pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') submitPass(); });
+  // already unlocked this session? skip the lock. else mark locked (elevates sidebar).
+  try { if (sessionStorage.getItem('ultronGameUnlocked') === '1') { lock.classList.add('unlocked'); return; } } catch (e) {}
+  document.body.classList.add('game-locked');
 })();
 </script>
 </body>

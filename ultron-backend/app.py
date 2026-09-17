@@ -2822,9 +2822,37 @@ def _json_result(data, error_status=502):
 DASHBOARD_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def _game_accounts():
+    # Game-section login accounts, from .env. Sign in with the PIN or the
+    # username+password. Admin first, then up to 5 extra "user:pass:pin" accounts.
+    accts = []
+    au = os.environ.get("ULTRON_GAME_ADMIN_USERNAME", "").strip()
+    ap = os.environ.get("ULTRON_GAME_ADMIN_PASSWORD", "")
+    apin = os.environ.get("ULTRON_GAME_ADMIN_PIN", "").strip()
+    if au or ap or apin:
+        accts.append({"name": au, "pass": ap, "pin": apin, "admin": True})
+    for i in range(1, 6):
+        raw = os.environ.get("ULTRON_GAME_ACCOUNT_%d" % i, "").strip()
+        if not raw:
+            continue
+        parts = raw.split(":")
+        accts.append({
+            "name": parts[0].strip() if len(parts) > 0 else "",
+            "pass": parts[1] if len(parts) > 1 else "",
+            "pin": parts[2].strip() if len(parts) > 2 else "",
+        })
+    return accts
+
+
 @app.route("/")
 def dashboard():
-    return send_from_directory(DASHBOARD_DIR, "ultron-dashboard.html")
+    # Inject the game-login accounts so the in-game lock can validate them
+    # client-side (the whole dashboard is already behind the main sign-in).
+    with open(os.path.join(DASHBOARD_DIR, "ultron-dashboard.html"), encoding="utf-8") as f:
+        html = f.read()
+    inject = "<script>window.__GAME_ACCOUNTS=%s;</script>" % json.dumps(_game_accounts())
+    html = html.replace("</head>", inject + "</head>", 1)
+    return Response(html, mimetype="text/html")
 
 
 # --- installable app (PWA) -------------------------------------------------
