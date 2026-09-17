@@ -34,17 +34,28 @@ OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "pixel-
 os.makedirs(OUT_DIR, exist_ok=True)
 
 # ---- palette (matches ultron-dashboard.html's own CSS custom properties) ----
-BODY_DARK = (27, 29, 32, 255)
-BODY_MID = (44, 47, 51, 255)
-BODY_LIGHT = (71, 76, 82, 255)
-STEEL = (139, 147, 160, 255)
+# Metallic pass (2026-09-16, owner: "make all metal items and characters
+# metallic"): the shared armour/structure tones are cooled and brightened into
+# brushed gunmetal/steel so every agent, desk, tube and the room backgrounds
+# read as metal. Ultron gets his own gunmetal/platinum/titanium override in
+# main(). Keep these in step with the dashboard's canvas metals.
+BODY_DARK = (34, 38, 44, 255)     # cool dark steel
+BODY_MID = (64, 70, 80, 255)      # gunmetal
+BODY_LIGHT = (112, 120, 133, 255) # brushed steel highlight
+STEEL = (170, 178, 190, 255)      # bright steel
+# Ultron's own metallic body (his specific request): gunmetal gray, dark
+# platinum, weathered titanium -- with red eyes/core (RED_BRIGHT below).
+U_GUNMETAL = (48, 53, 61, 255)
+U_PLATINUM = (98, 105, 116, 255)
+U_TITANIUM = (156, 154, 146, 255)   # weathered, faintly warm
+U_PLATE = (182, 184, 180, 255)      # polished titanium plating (faceplate/crest/seams)
 RED_BRIGHT = (255, 59, 59, 255)
 RED_CORE = (255, 130, 110, 255)
 RED_DIM = (150, 30, 30, 255)
 VOID = (8, 9, 10, 255)
-PANEL = (15, 17, 19, 255)
-PANEL_RAISED = (22, 25, 28, 255)
-LINE = (44, 47, 51, 255)
+PANEL = (17, 19, 22, 255)
+PANEL_RAISED = (28, 32, 37, 255)
+LINE = (56, 62, 71, 255)          # metallic seams/structure
 CYAN = (61, 214, 255, 255)
 GREEN = (51, 209, 122, 255)
 # The two subagents the owner named on 2026-09-16: Sentinel (security
@@ -194,9 +205,15 @@ HEAD_TOP = 3.5  # grid rows of headroom above the helmet for crests/antennae
 CRESTS = ("crown", "plates", "antenna", "visor", "dome", "fin", "horns")
 
 
-def draw_robot(u, accent, pose, crest="crown", heavy=False):
+def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DARK, bm=BODY_MID, bl=BODY_LIGHT):
     """pose: 'walk_a' | 'walk_b' (full body) or 'work' (seated at a desk, cut
-    off below the chest -- the desk sprite covers the rest)."""
+    off below the chest -- the desk sprite covers the rest).
+
+    `eye`/`bd`/`bm`/`bl` override the eye-glow and the three body tones for a
+    character with its own palette (Ultron: a metallic gunmetal/platinum/
+    titanium body with red eyes); default to the shared armour so every agent
+    is unchanged."""
+    eye = eye or accent
     rows = (26 if pose != "work" else 20) + HEAD_TOP
     s = Sheet(20 * u, rows * u)
     dark = (8, 6, 6, 255)
@@ -218,12 +235,12 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False):
 
     # helmet
     if heavy:
-        P([(6.0, 5.6), (6.2, 2.4), (7.4, 0.6), (10, 0.0), (12.6, 0.6), (13.8, 2.4), (14.0, 5.6)], BODY_MID)
-        P([(6.0, 5.6), (6.2, 2.4), (7.4, 0.6), (10, 0.0), (10, 5.6)], shade(BODY_MID, 1.25))
+        P([(6.0, 5.6), (6.2, 2.4), (7.4, 0.6), (10, 0.0), (12.6, 0.6), (13.8, 2.4), (14.0, 5.6)], bm)
+        P([(6.0, 5.6), (6.2, 2.4), (7.4, 0.6), (10, 0.0), (10, 5.6)], shade(bm, 1.25))
     else:
-        P([(5.5, 5.5), (5.8, 2.2), (7, -0.4), (10, -1.3), (13, -0.4), (14.2, 2.2), (14.5, 5.5)], BODY_MID)
-        P([(5.5, 5.5), (5.8, 2.2), (7, -0.4), (10, -1.3), (10, 5.5)], shade(BODY_MID, 1.25))
-    R(5.6, 3.9, 14.4, 8.6, BODY_LIGHT, r=0.5)
+        P([(5.5, 5.5), (5.8, 2.2), (7, -0.4), (10, -1.3), (13, -0.4), (14.2, 2.2), (14.5, 5.5)], bm)
+        P([(5.5, 5.5), (5.8, 2.2), (7, -0.4), (10, -1.3), (10, 5.5)], shade(bm, 1.25))
+    R(5.6, 3.9, 14.4, 8.6, bl, r=0.5)
     # lit faceplate with dark eye slits and a mouth grille -- the face is the
     # thing that has to read at a glance, so it is the biggest bright shape
     P([(6.1, 4.3), (13.9, 4.3), (13.4, 8.3), (6.6, 8.3)], accent)
@@ -233,7 +250,7 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False):
             R(ex - 1.25, 5.5, ex + 1.25, 6.35, dark, r=0.15)
         else:
             E(ex - 1.3, 5.1, ex + 1.3, 6.6, dark)
-            E(ex - 0.5, 5.5, ex + 0.5, 6.2, shade(accent, 1.4))
+            E(ex - 0.5, 5.5, ex + 0.5, 6.2, shade(eye, 1.4))
     for gx in (7.4, 8.6, 9.8, 11.0, 12.2):
         R(gx, 7.2, gx + 0.5, 8.1, dark)
 
@@ -266,31 +283,31 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False):
 
     # neck, shoulders, chest
     x0, x1 = (1.0, 19.0) if heavy else (3.0, 17.0)
-    R(7.6 if heavy else 8.0, 8.2, 12.4 if heavy else 12.0, 9.7, BODY_MID)
-    P([(x0, 11.6), (x1, 11.6), (x1 - 1.4, 9.4), (x0 + 1.4, 9.4)], BODY_LIGHT)
-    P([(x0, 11.6), (10, 11.6), (10, 9.4), (x0 + 1.4, 9.4)], shade(BODY_LIGHT, 1.2))
-    R(x0 + 0.6, 11.6, x1 - 0.6, 13.0, BODY_MID)
+    R(7.6 if heavy else 8.0, 8.2, 12.4 if heavy else 12.0, 9.7, bm)
+    P([(x0, 11.6), (x1, 11.6), (x1 - 1.4, 9.4), (x0 + 1.4, 9.4)], bl)
+    P([(x0, 11.6), (10, 11.6), (10, 9.4), (x0 + 1.4, 9.4)], shade(bl, 1.2))
+    R(x0 + 0.6, 11.6, x1 - 0.6, 13.0, bm)
     for sx in (x0 + 0.9, x1 - 2.1):
         E(sx, 10.0, sx + 1.2, 11.2, shade(accent, 0.9))
-    R(x0 + 1.0, 13.0, x1 - 1.0, 19.0, BODY_MID, r=0.4)
-    R(x0 + 1.0, 13.0, x0 + 2.6, 19.0, BODY_DARK)
-    R(x1 - 2.6, 13.0, x1 - 1.0, 19.0, BODY_DARK)
+    R(x0 + 1.0, 13.0, x1 - 1.0, 19.0, bm, r=0.4)
+    R(x0 + 1.0, 13.0, x0 + 2.6, 19.0, bd)
+    R(x1 - 2.6, 13.0, x1 - 1.0, 19.0, bd)
     for gy in (15.6, 17.4):
         R(6, gy, 14, gy + 0.55, accent)
     if heavy:   # shield on the chest
         P([(7.4, 11.0), (12.6, 11.0), (12.6, 13.8), (10, 15.4), (7.4, 13.8)], PANEL)
         P([(8.0, 11.6), (12.0, 11.6), (12.0, 13.5), (10, 14.7), (8.0, 13.5)], shade(accent, 0.6))
-        E(9.0, 12.0, 11.0, 13.8, accent)
+        E(9.0, 12.0, 11.0, 13.8, eye)
     else:       # glowing core
         R(7.5, 10.4, 12.5, 15.2, PANEL, r=0.5)
-        E(8.2, 11.0, 11.8, 14.6, accent)
+        E(8.2, 11.0, 11.8, 14.6, eye)
         E(9.1, 11.9, 10.9, 13.7, (255, 255, 255, 235))
 
     # arms
     aw = 3.2 if heavy else 2.2
     for ax in (x0 - 0.6, x1 + 0.6 - aw):
-        R(ax, 12.2, ax + aw, 19.4, BODY_LIGHT if heavy else BODY_MID, r=0.6)
-        R(ax, 12.2, ax + 0.7, 19.4, shade(BODY_LIGHT, 1.15))
+        R(ax, 12.2, ax + aw, 19.4, bl if heavy else bm, r=0.6)
+        R(ax, 12.2, ax + 0.7, 19.4, shade(bl, 1.15))
         R(ax - 0.1, 15.0, ax + aw + 0.1, 15.6, shade(accent, 0.8))
         if pose != "work":
             E(ax + aw / 2 - 1.1, 18.9, ax + aw / 2 + 1.1, 21.1, shade(accent, 0.6))
@@ -299,13 +316,13 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False):
         lead = pose == "walk_b"
         lx, rx = (5.5, 11.6) if lead else (6.6, 10.6)
         ly, ry = (24.6, 24.0) if lead else (24.0, 24.6)   # one foot lifts
-        R(lx, 19, lx + 2.6, ly, BODY_MID)
-        R(rx, 19, rx + 2.6, ry, BODY_LIGHT)
-        R(lx, 19, lx + 0.7, ly, shade(BODY_MID, 1.25))
+        R(lx, 19, lx + 2.6, ly, bm)
+        R(rx, 19, rx + 2.6, ry, bl)
+        R(lx, 19, lx + 0.7, ly, shade(bm, 1.25))
         R(lx, 21.2, lx + 2.6, 21.8, shade(accent, 0.7))
         R(rx, 21.2, rx + 2.6, 21.8, shade(accent, 0.7))
-        R(lx - 0.6, ly, lx + 3.2, ly + 1.4, BODY_DARK, r=0.4)
-        R(rx - 0.6, ry, rx + 3.2, ry + 1.4, BODY_DARK, r=0.4)
+        R(lx - 0.6, ly, lx + 3.2, ly + 1.4, bd, r=0.4)
+        R(rx - 0.6, ry, rx + 3.2, ry + 1.4, bd, r=0.4)
 
     return s.finish(rim=1.0, glow_color=accent, glow_blur=max(2.0, u * 0.45))
 
@@ -499,27 +516,90 @@ STOREY_W, STOREY_H, STOREY_WALL = 1280, 264, 224     # strip size, and the floor
 GROUND_H, GROUND_WALL = 424, 384
 
 
+# ---- texture helpers (metallic pass) --------------------------------------
+def _frange(a, b, step):
+    x = a
+    while x < b:
+        yield x
+        x += step
+
+
+def brushed(s, x0, y0, x1, y1, seed=0, density=3, light=14, dark=20):
+    """Faint horizontal brushed-metal streaks over a region, so a flat metal
+    fill reads as brushed steel."""
+    ov = s.overlay()
+    random.seed(seed)
+    yy = y0
+    while yy < y1:
+        if random.random() < 0.5:
+            ov.rect(x0, yy, x1 - random.uniform(0, (x1 - x0) * 0.3), yy + 0.5, fill=(210, 220, 235, random.randint(4, light)))
+        else:
+            ov.rect(x0 + random.uniform(0, (x1 - x0) * 0.3), yy, x1, yy + 0.5, fill=(0, 0, 0, random.randint(6, dark)))
+        yy += random.uniform(2, density + 2)
+    s.merge(ov)
+
+
+def rivets(s, x0, x1, y, step, color=None, r=0.8):
+    color = color or shade(STEEL, 0.75)
+    for rx in _frange(x0, x1, step):
+        s.ellipse(rx - r, y - r, rx + r, y + r, fill=color)
+        s.ellipse(rx - r * 0.4, y - r * 0.5, rx + r * 0.2, y, fill=shade(color, 1.4))   # tiny highlight
+
+
+def specks(s, x0, y0, x1, y1, seed=0, n=40, color=(0, 0, 0, 40)):
+    ov = s.overlay()
+    random.seed(seed)
+    for _ in range(n):
+        sx, sy = random.uniform(x0, x1), random.uniform(y0, y1)
+        ov.ellipse(sx, sy, sx + random.uniform(0.6, 1.6), sy + random.uniform(0.6, 1.6), fill=color)
+    s.merge(ov)
+
+
+def warn_plate(s, x, y, w, h, seed=0):
+    """A small stencilled warning/ID plate -- the kind of label a real machine
+    room is covered in."""
+    s.rect(x, y, x + w, y + h, fill=shade(PANEL_RAISED, 1.2), outline=shade(LINE, 1.4), width=0.7)
+    random.seed(seed)
+    hazard = random.random() < 0.4
+    for i, ly in enumerate(_frange(y + 2.5, y + h - 1.5, 3)):
+        c = (200, 170, 40, 200) if (hazard and i == 0) else (150, 160, 175, 150)
+        s.rect(x + 2, ly, x + 2 + random.uniform(0.4, 0.85) * (w - 4), ly + 1, fill=c)
+
+
 def _wall(w, h, wall_h):
     s = Sheet(w, h, pad=0)
     s.rect(0, 0, w, wall_h, fill=PANEL)
-    for px_ in range(0, w, 96):                       # panel seams
-        s.rect(px_, 0, px_ + 1, wall_h, fill=shade(PANEL, 1.5))
-        s.rect(px_ + 1, 0, px_ + 2, wall_h, fill=shade(PANEL, 0.6))
+    brushed(s, 0, 0, w, wall_h, seed=int(w + wall_h), density=4)   # brushed-metal wall
+    for px_ in range(0, w, 96):                       # panel seams + rivets down each seam
+        s.rect(px_, 0, px_ + 1, wall_h, fill=shade(PANEL, 1.6))
+        s.rect(px_ + 1, 0, px_ + 2, wall_h, fill=shade(PANEL, 0.5))
+        for ry in _frange(20, wall_h - 6, 30):
+            s.ellipse(px_ - 0.7, ry, px_ + 0.7, ry + 1.4, fill=shade(LINE, 1.3))
+    for py_ in range(48, wall_h, 60):                 # horizontal panel joints
+        s.rect(0, py_, w, py_ + 0.8, fill=shade(PANEL, 1.35))
+        s.rect(0, py_ + 0.8, w, py_ + 1.4, fill=shade(PANEL, 0.6))
     grid = s.overlay()
     for gx in range(0, w, 32):
-        grid.rect(gx, 0, gx + 0.5, wall_h, fill=(61, 214, 255, 9))
+        grid.rect(gx, 0, gx + 0.5, wall_h, fill=(61, 214, 255, 8))
     for gy in range(0, wall_h, 32):
-        grid.rect(0, gy, w, gy + 0.5, fill=(61, 214, 255, 9))
+        grid.rect(0, gy, w, gy + 0.5, fill=(61, 214, 255, 8))
     s.merge(grid)
     wash = s.overlay()                                # ceiling light falling down the wall
     wash.rect(0, 9, w, 14, fill=(200, 235, 255, 105))
     s.merge(wash, blur=9)
     s.rect(0, 0, w, 8, fill=shade(LINE, 0.7))         # underside of the slab above
-    s.rect(0, 8, w, 10, fill=(128, 164, 180, 255))    # light strip
-    s.rect(0, 30, w, 35, fill=shade(LINE, 1.15))      # conduit run
-    s.rect(0, 30, w, 31, fill=shade(LINE, 1.7))
+    s.rect(0, 8, w, 10, fill=(150, 178, 195, 255))    # light strip
+    rivets(s, 6, w, 4, 40, color=shade(STEEL, 0.6))   # bolts along the slab underside
+    # twin conduit run with brackets + bolts
+    s.rect(0, 30, w, 36, fill=shade(LINE, 1.15))
+    s.rect(0, 30, w, 31, fill=shade(LINE, 1.8))
+    s.rect(0, 35.2, w, 36, fill=shade(LINE, 0.5))
+    s.rect(0, 40, w, 43, fill=shade(LINE, 0.9))       # a thinner pipe below it
     for hx in range(40, w, 128):
-        s.rect(hx, 27, hx + 4, 38, fill=LINE)
+        s.rect(hx, 26, hx + 4, 44, fill=LINE)
+        s.ellipse(hx + 0.6, 32, hx + 3.4, 34.8, fill=shade(STEEL, 0.7))
+    for wx in range(70, w, 150):                      # scattered warning/ID plates
+        warn_plate(s, wx, 52, 20, 12, seed=wx)
     return s
 
 
@@ -527,14 +607,19 @@ def _slab(s, w, h, wall_h, base):
     """The floor the desks stand on. The conveyor is drawn over its front
     edge by the dashboard, so it stays plain."""
     s.rect(0, wall_h, w, h, fill=VOID if base else shade(LINE, 0.62))
-    s.rect(0, wall_h, w, wall_h + 2.5, fill=shade(STEEL, 0.5))
+    s.rect(0, wall_h, w, wall_h + 2.5, fill=shade(STEEL, 0.55))
+    s.rect(0, wall_h + 2.5, w, wall_h + 3.2, fill=shade(LINE, 0.4))   # lit front lip + shadow
+    rivets(s, 10, w, wall_h + 1.2, 48, color=shade(STEEL, 0.7), r=0.7)
     if base:
         for gx in range(0, w, 24):
             s.rect(gx, wall_h + 3, gx + 1, h, fill=(24, 26, 30, 255))
     else:
         s.rect(0, h - 5, w, h, fill=shade(LINE, 0.35))
+        for gx in range(0, w, 20):                    # tread plate: diamond grating ticks
+            s.rect(gx + 3, wall_h + 6, gx + 12, wall_h + 6.6, fill=shade(LINE, 0.85))
         for gx in range(16, w, 64):
             s.ellipse(gx, h - 16, gx + 3, h - 13, fill=shade(LINE, 1.4))
+        specks(s, 0, wall_h + 4, w, h, seed=int(w), n=30, color=(0, 0, 0, 34))  # scuffs
 
 
 def draw_storey():
@@ -675,9 +760,12 @@ AGENT_LOOKS = {
 
 def main():
     # Ultron: 10 room units per grid cell (200 wide), the agents 6 (120 wide)
-    # -- both about double the previous pass.
+    # -- both about double the previous pass. His body is gunmetal / dark
+    # platinum / weathered titanium with polished titanium plating and RED
+    # eyes + core (owner request 2026-09-16).
     for pose in ("walk_a", "walk_b", "work"):
-        save(draw_robot(10, RED_BRIGHT, pose, "crown"), f"ultron_{pose}.png")
+        save(draw_robot(10, U_PLATE, pose, "crown", eye=RED_BRIGHT, bd=U_GUNMETAL, bm=U_PLATINUM, bl=U_TITANIUM),
+             f"ultron_{pose}.png")
     for active in (False, True):
         save(draw_desk(280, 96, 124, 88, RED_BRIGHT, "core", active), f"desk_ultron_{'active' if active else 'idle'}.png")
     save(draw_tube(64, 280, RED_BRIGHT), "tube_red.png")

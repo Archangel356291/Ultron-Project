@@ -1249,7 +1249,7 @@
 
           <div class="panel-label" style="margin-top:28px;">Ultron's corner</div>
           <div class="pixel-room-wrap">
-            <canvas id="pixel-room-canvas" aria-label="Ultron's corner: a cutaway tower with Ultron's office on the ground floor and his agents at their desks on the storeys above, joined by a conveyor and lift"></canvas>
+            <canvas id="pixel-room-canvas" aria-label="Ultron's corner: a cutaway tower with Ultron's office on the top floor, his agents at their desks on the storeys below, and a basement production line where pixel robots are built, salute, and march up the stairs and out — joined by a conveyor and lift"></canvas>
             <div class="pixel-bubble" id="pixel-bubble" hidden></div>
           </div>
 
@@ -4953,6 +4953,12 @@ function toggleReducedVisuals(el) {
   var STATION_W = 188, DESK_DX = 38, DESK_W = 150, DESK_H = 68, ROBOT_SINK = 52;
   var U_DESK_W = 280, U_DESK_H = 96, U_TUBE_W = 64, U_ROBOT_SINK = 70;
   var LEFT = 10, LIFT_W = 84, BELT_DY = 8, BELT_H = 13, ROOF_H = 34;
+  // Basement (2026-09-16): a production line that stamps out pixel robots which
+  // fall in, salute "for a Better World", form up, and march up the stairs and
+  // out through the same OUT the package belt exits by -- forever. Ultron moved
+  // to the TOP office; agents fill the storeys between.
+  var BASEMENT_H = 300, BASEMENT_WALL = 214;   // strip height + its floor line
+  var MARCH_FORMATION = 4;                       // robots that fall in before a squad marches out
 
   var ASSET_BASE = '/pixel-assets/';
   var ASSET_VER = '?v=2';   // bump when sprite geometry changes, so an installed app never pairs new layout maths with cached old art
@@ -5031,7 +5037,8 @@ function toggleReducedVisuals(el) {
 
   // ---- layout: recomputed whenever the panel's width changes ----
   var W = 1280, H = 1216, cols = 6, storeys = 3, scale = 1, fontPx = 13;
-  var groundY, liftX, uDeskX, uTubeX, hatchX = 12, hatchW = 58, walkMinX, walkMaxX;
+  var officeFloorY, storeyBaseY, basementTop, basementFloorY, outY;
+  var liftX, uDeskX, uTubeX, hatchX = 12, hatchW = 58, walkMinX, walkMaxX;
   var fontFamily = 'monospace';
   try {
     fontFamily = (getComputedStyle(document.documentElement).getPropertyValue('--font-mono') || '').trim() || 'monospace';
@@ -5044,7 +5051,8 @@ function toggleReducedVisuals(el) {
     W = Math.max(760, LEFT + cols * 193 + LIFT_W + 28);
     var pitch = (W - LEFT - LIFT_W - 28) / cols;
     storeys = Math.ceil(SUBAGENTS.length / cols);
-    H = ROOF_H + storeys * STOREY_H + GROUND_H;
+    // Top-to-bottom: office (Ultron) · agent storeys · basement (production).
+    H = ROOF_H + GROUND_H + storeys * STOREY_H + BASEMENT_H;
     scale = cssW / W;
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(cssW * dpr);
@@ -5056,17 +5064,20 @@ function toggleReducedVisuals(el) {
     fontPx = Math.max(13, Math.min(24, 10.5 / scale));
 
     liftX = W - LIFT_W - 14;
-    groundY = ROOF_H + storeys * STOREY_H + GROUND_WALL;
+    officeFloorY = ROOF_H + GROUND_WALL;              // Ultron's floor, at the TOP now
+    storeyBaseY = ROOF_H + GROUND_H;                  // agent storeys begin below the office
     SUBAGENTS.forEach(function (a, i) {
-      var f = Math.floor(i / cols), c = i % cols;   // f = 0 is the storey right above Ultron
+      var f = Math.floor(i / cols), c = i % cols;     // f = 0 is the storey just below the office
       a.x = LEFT + c * pitch + (pitch - STATION_W) / 2;
-      a.floorY = ROOF_H + (storeys - 1 - f) * STOREY_H + STOREY_WALL;
+      a.floorY = storeyBaseY + f * STOREY_H + STOREY_WALL;
     });
+    basementTop = storeyBaseY + storeys * STOREY_H;
+    basementFloorY = basementTop + BASEMENT_WALL;     // the production-line floor
+    outY = basementTop + 96;                          // the OUT opening (top-left of the basement)
     uTubeX = liftX - 24 - U_TUBE_W;
     uDeskX = uTubeX - 14 - U_DESK_W;
     // Wide rooms: he paces between the server rack and his desk. Narrow ones
-    // have no spare floor, so he keeps to a short beat in front of the rack
-    // rather than walking across his own name plate.
+    // have no spare floor, so he keeps to a short beat in front of the rack.
     walkMinX = W >= 1000 ? 190 : 72;
     walkMaxX = Math.max(walkMinX + 30, uDeskX - 196);
     walkX = Math.max(walkMinX, Math.min(walkMaxX, walkX));
@@ -5132,21 +5143,20 @@ function toggleReducedVisuals(el) {
       lastAmbientSpawn = t;
       var i = Math.floor(Math.random() * (SUBAGENTS.length + 1));
       if (i < SUBAGENTS.length) spawnParcel(SUBAGENTS[i]);
-      else parcels.push({ phase: 'ground', x: uDeskX + 60, y: beltY(groundY), hex: GOLD, stamped: true });
+      else parcels.push({ phase: 'belt', x: uDeskX - 40, y: beltY(officeFloorY), hex: RED });  // one from Ultron's office
     }
-    var liftCx = liftX + LIFT_W / 2, inboxX = uDeskX + U_DESK_W / 2;
+    var liftCx = liftX + LIFT_W / 2, exitX = hatchX + hatchW - 14;
     for (var i2 = parcels.length - 1; i2 >= 0; i2--) {
       var p = parcels[i2];
       if (p.phase === 'belt') {
-        p.x += dt * 78;
+        p.x += dt * 78;                                   // ride right to the lift
         if (p.x >= liftCx) { p.x = liftCx; p.phase = 'lift'; }
       } else if (p.phase === 'lift') {
-        p.y += dt * 120;
-        if (p.y >= beltY(groundY)) { p.y = beltY(groundY); p.phase = 'ground'; }
+        p.y += dt * 150;                                  // ride the lift DOWN to the basement
+        if (p.y >= beltY(basementFloorY)) { p.y = beltY(basementFloorY); p.phase = 'basement'; }
       } else {
-        p.x -= dt * 78;
-        if (!p.stamped && p.x <= inboxX) { p.stamped = true; p.hex = GOLD; deskFlashUntil = t + 0.5; }
-        if (p.x <= hatchX + hatchW - 14) { parcels.splice(i2, 1); hatchFlashUntil = t + 0.4; }
+        p.x -= dt * 78;                                   // ride left along the basement to OUT
+        if (p.x <= exitX) { parcels.splice(i2, 1); hatchFlashUntil = t + 0.4; }
       }
     }
   }
@@ -5154,15 +5164,15 @@ function toggleReducedVisuals(el) {
     var y = beltY(floorY);
     ctx.fillStyle = '#0c0d0f';
     ctx.fillRect(x0, y - 2, x1 - x0, BELT_H + 4);          // side rail
-    ctx.fillStyle = '#23262b';
+    ctx.fillStyle = '#262b33';
     ctx.fillRect(x0, y, x1 - x0, BELT_H);
-    ctx.fillStyle = '#3a3e45';                              // moving slats
+    ctx.fillStyle = '#4a515c';                              // moving slats
     var step = 22, off = ((t * 78 * dir) % step + step) % step;
     for (var x = x0 - step + off; x < x1; x += step) {
       var sx = Math.max(x, x0), ex = Math.min(x + 9, x1);
       if (ex > sx) ctx.fillRect(sx, y + 2.5, ex - sx, BELT_H - 5);
     }
-    ctx.fillStyle = '#565c66';
+    ctx.fillStyle = '#6b7480';
     ctx.fillRect(x0, y - 2, x1 - x0, 1.2);
     ctx.fillStyle = '#15171a';                              // legs
     for (var lx = x0 + 30; lx < x1 - 10; lx += 150) ctx.fillRect(lx, y + BELT_H + 2, 5, STOREY_H - STOREY_WALL - BELT_DY - BELT_H - 6);
@@ -5180,16 +5190,16 @@ function toggleReducedVisuals(el) {
     ctx.strokeRect(x, y, w, h);
   }
   function drawLiftBack(t) {
-    var top = ROOF_H + 30, bottom = beltY(groundY) + BELT_H + 2;
+    var top = ROOF_H + 30, bottom = beltY(basementFloorY) + BELT_H + 2;
     ctx.fillStyle = '#07080a';
     ctx.fillRect(liftX, top, LIFT_W, bottom - top);
     ctx.fillStyle = '#1d2024';                              // rungs riding down
     var step = 34, off = (t * 120) % step;
     for (var y = top - step + off; y < bottom; y += step) {
       if (y <= top) continue;
-      ctx.fillStyle = '#262a2f';
+      ctx.fillStyle = '#2e343d';
       ctx.fillRect(liftX + 12, y, LIFT_W - 24, 4);
-      ctx.fillStyle = '#3a3f46';                            // chevron: this way down
+      ctx.fillStyle = '#4a515c';                            // chevron: this way down
       ctx.beginPath();
       ctx.moveTo(liftX + LIFT_W / 2 - 9, y + 10); ctx.lineTo(liftX + LIFT_W / 2, y + 18); ctx.lineTo(liftX + LIFT_W / 2 + 9, y + 10);
       ctx.lineTo(liftX + LIFT_W / 2 + 9, y + 14); ctx.lineTo(liftX + LIFT_W / 2, y + 22); ctx.lineTo(liftX + LIFT_W / 2 - 9, y + 14);
@@ -5197,29 +5207,14 @@ function toggleReducedVisuals(el) {
     }
   }
   function drawLiftFront() {
-    var top = ROOF_H + 30, bottom = beltY(groundY) + BELT_H + 2;
-    ctx.fillStyle = '#2c2f33';
+    var top = ROOF_H + 30, bottom = beltY(basementFloorY) + BELT_H + 2;
+    ctx.fillStyle = '#343b45';
     ctx.fillRect(liftX, top, 7, bottom - top);
     ctx.fillRect(liftX + LIFT_W - 7, top, 7, bottom - top);
-    ctx.fillStyle = '#474c52';
+    ctx.fillStyle = '#565d68';
     ctx.fillRect(liftX, top, 2, bottom - top);
     ctx.fillRect(liftX + LIFT_W - 7, top, 2, bottom - top);
     ctx.fillStyle = '#2c2f33';
-  }
-  function drawHatch(t) {
-    var y0 = groundY - 120;
-    ctx.fillStyle = '#141519';
-    ctx.fillRect(hatchX, y0, hatchW, 120 + BELT_DY + BELT_H);
-    ctx.strokeStyle = '#565c66';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(hatchX, y0, hatchW, 120 + BELT_DY + BELT_H);
-    ctx.fillStyle = '#050506';
-    ctx.fillRect(hatchX + 8, beltY(groundY) - 26, hatchW - 8, 26 + BELT_H);   // the opening the belt runs into
-    ctx.fillStyle = t < hatchFlashUntil ? RED : '#5a1414';
-    ctx.beginPath();
-    ctx.arc(hatchX + hatchW / 2, y0 + 20, 5, 0, Math.PI * 2);
-    ctx.fill();
-    caption('out', hatchX + hatchW / 2, y0 - 12);
   }
 
   // ---- character state: 'walk' (idle/listening) or 'sit' (thinking/
@@ -5237,23 +5232,208 @@ function toggleReducedVisuals(el) {
     if (walkX <= walkMinX) { walkX = walkMinX; walkDir = 1; }
   }
 
+  // ---- basement: a production line that stamps out pixel robots which fall
+  // in, salute "for a Better World", and march up the stairs and out the same
+  // OUT the packages leave by -- on a permanent loop. ----
+  var marchers = [], squadState = 'forming', lastBorn = 0, holdUntil = 0, sayUntil = 0, stampFlash = 0;
+  function machineX() { return liftX - 172; }
+  function stairBaseX() { return 176; }
+  function stairTopX() { return hatchX + hatchW; }
+  function musterX() { return stairBaseX() + 40; }
+
+  function updateMarchers(t, dt) {
+    if (squadState === 'forming' && marchers.length < MARCH_FORMATION && t - lastBorn > 1.5) {
+      lastBorn = t; stampFlash = t + 0.35;
+      marchers.push({ x: machineX() - 8, y: basementFloorY, slot: marchers.length, phase: 'walk', wp: Math.random() * 6, saluteT: 0 });
+    }
+    var stx = stairBaseX(), spX = musterX(), outX = stairTopX(), rise = basementFloorY - outY;
+    for (var i = marchers.length - 1; i >= 0; i--) {
+      var m = marchers[i];
+      m.wp += dt * 7;
+      if (m.phase === 'walk') {
+        var slotX = spX + m.slot * 24;
+        m.x += (slotX - m.x) * Math.min(1, dt * 3);
+        if (Math.abs(m.x - slotX) < 1.5) { m.x = slotX; m.phase = 'form'; m.saluteT = t + 1.1; }
+      } else if (m.phase === 'march') {
+        if (m.x > stx) { m.x -= dt * 48; if (m.x < stx) m.x = stx; }
+        else {
+          m.x -= dt * 34;
+          m.y = basementFloorY - Math.min(rise, (stx - m.x) * (rise / Math.max(1, stx - outX)));
+          if (m.x <= outX) marchers.splice(i, 1);
+        }
+      }
+    }
+    if (squadState === 'forming' && marchers.length >= MARCH_FORMATION &&
+        marchers.every(function (m) { return m.phase === 'form'; })) {
+      squadState = 'saluting'; holdUntil = t + 1.5; sayUntil = t + 3.6;
+      marchers.forEach(function (m) { m.saluteT = t + 1.5; });
+    }
+    if (squadState === 'saluting' && t >= holdUntil) squadState = 'marching';
+    if (squadState === 'marching') marchers.forEach(function (m) { if (m.phase === 'form') m.phase = 'march'; });
+    if (squadState === 'marching' && marchers.length === 0) squadState = 'forming';
+  }
+
+  // Metallic palette shared with the sprite generator (gunmetal/platinum/
+  // titanium) so the canvas-drawn metal matches the baked art.
+  var M_GUN = '#30353f', M_PLAT = '#626a76', M_TITAN = '#9c9a90', M_STEEL = '#aeb6c2', M_LINE = '#3a404a', M_DARK = '#22262c';
+
+  function drawMarcher(m, t) {
+    var x = m.x, footY = m.y, s = 1.75;
+    var saluting = t < m.saluteT;
+    var moving = m.phase === 'walk' || m.phase === 'march';
+    var step = moving ? Math.sin(m.wp) : 0;
+    ctx.fillStyle = 'rgba(0,0,0,0.32)';
+    ctx.beginPath(); ctx.ellipse(x, footY + 1, 7 * s, 2.2 * s, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = M_DARK;                                     // legs
+    ctx.fillRect(x - 3 * s + step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
+    ctx.fillRect(x + 0.8 * s - step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
+    ctx.fillStyle = M_DARK; ctx.fillRect(x - 3.4 * s + step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);  // feet
+    ctx.fillRect(x + 0.4 * s - step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);
+    ctx.fillStyle = M_GUN;                                      // torso
+    ctx.fillRect(x - 4 * s, footY - 13 * s, 8 * s, 8 * s);
+    ctx.fillStyle = M_PLAT; ctx.fillRect(x - 4 * s, footY - 13 * s, 2.6 * s, 8 * s);     // lit edge
+    ctx.fillStyle = M_LINE; ctx.fillRect(x - 4 * s, footY - 9.4 * s, 8 * s, 0.7 * s);    // waist seam
+    ctx.fillStyle = M_DARK; ctx.fillRect(x - 2.1 * s, footY - 11.6 * s, 4.2 * s, 3.4 * s);  // chest recess
+    ctx.fillStyle = RED; ctx.fillRect(x - 1.2 * s, footY - 11 * s, 2.4 * s, 2.4 * s);    // red core
+    ctx.fillStyle = '#ffb4a6'; ctx.fillRect(x - 0.5 * s, footY - 10.4 * s, 1 * s, 1.1 * s);
+    ctx.fillStyle = M_TITAN;                                    // titanium head (like Ultron)
+    ctx.fillRect(x - 3.2 * s, footY - 19 * s, 6.4 * s, 6 * s);
+    ctx.fillStyle = M_STEEL; ctx.fillRect(x - 3.2 * s, footY - 19 * s, 6.4 * s, 1 * s);  // brow highlight
+    ctx.fillStyle = M_DARK; ctx.fillRect(x - 2.9 * s, footY - 17.4 * s, 5.8 * s, 2.4 * s);  // visor band
+    ctx.fillStyle = RED; ctx.fillRect(x - 2.6 * s, footY - 16.9 * s, 2.3 * s, 1.5 * s);  // red eye (facing left)
+    ctx.fillStyle = '#ff9a8a'; ctx.fillRect(x - 2.4 * s, footY - 16.7 * s, 0.9 * s, 0.7 * s);
+    ctx.fillStyle = M_STEEL; ctx.fillRect(x - 0.3 * s, footY - 22 * s, 0.8 * s, 3 * s);  // antenna
+    ctx.fillStyle = RED; ctx.fillRect(x - 0.5 * s, footY - 22.6 * s, 1.2 * s, 1 * s);
+    if (saluting) {                                             // arm up to the brow -- salute
+      ctx.fillStyle = M_GUN; ctx.fillRect(x - 4.6 * s, footY - 18.5 * s, 1.9 * s, 5.5 * s);
+      ctx.fillStyle = M_STEEL; ctx.fillRect(x - 5.2 * s, footY - 20 * s, 3 * s, 1.8 * s);   // blaster by the head
+      ctx.fillStyle = '#d7dbe2'; ctx.fillRect(x - 5.2 * s, footY - 20 * s, 3 * s, 0.6 * s);
+    } else {                                                    // arm forward with a little blaster, pointing left
+      ctx.fillStyle = M_GUN; ctx.fillRect(x - 6 * s, footY - 11 * s, 3 * s, 2 * s);
+      ctx.fillStyle = M_STEEL; ctx.fillRect(x - 9 * s, footY - 11.2 * s, 3.4 * s, 2.6 * s);
+      ctx.fillStyle = '#d7dbe2'; ctx.fillRect(x - 9 * s, footY - 11.2 * s, 3.4 * s, 0.7 * s);
+      ctx.fillStyle = '#5a616c'; ctx.fillRect(x - 9.8 * s, footY - 10.8 * s, 1.2 * s, 1.8 * s); // muzzle
+      ctx.fillStyle = 'rgba(255,120,90,0.5)'; ctx.fillRect(x - 10.6 * s, footY - 10.4 * s, 1 * s, 1 * s); // charge glow
+    }
+  }
+
+  function drawBasement(t) {
+    var top = basementTop, floor = basementFloorY, bottom = basementTop + BASEMENT_H;
+    ctx.fillStyle = '#101318'; ctx.fillRect(0, top, W, BASEMENT_H);                   // metallic basement wall
+    ctx.fillStyle = '#0a0c0f'; ctx.fillRect(0, top, W, 6);
+    for (var pv = 0; pv < W; pv += 88) { ctx.fillStyle = '#181c22'; ctx.fillRect(pv, top, 1.5, floor - top); ctx.fillStyle = '#0b0d10'; ctx.fillRect(pv + 1.5, top, 1, floor - top); } // wall panel seams
+    for (var hx = 0; hx < W; hx += 30) { ctx.fillStyle = ((hx / 30) & 1) ? '#8a7326' : '#2c2914'; ctx.fillRect(hx, top + 7, 15, 5); }   // hazard stripe
+    // ceiling pipe run with hangers + bolts (industrial texture)
+    ctx.fillStyle = M_LINE; ctx.fillRect(0, top + 20, W, 6); ctx.fillStyle = '#4a515c'; ctx.fillRect(0, top + 20, W, 1.4);
+    ctx.fillStyle = '#20252c'; ctx.fillRect(0, top + 29, W, 3);
+    for (var bxp = 34; bxp < W; bxp += 120) { ctx.fillStyle = M_LINE; ctx.fillRect(bxp, top + 16, 4, 12); ctx.fillStyle = M_STEEL; ctx.fillRect(bxp + 0.6, top + 22, 2.8, 1.4); }
+    ctx.fillStyle = '#15181c'; ctx.fillRect(0, floor, W, bottom - floor);             // floor
+    ctx.fillStyle = '#2b313a'; ctx.fillRect(0, floor, W, 2.4);
+    ctx.fillStyle = M_LINE; ctx.fillRect(0, floor + 2.4, W, 1);
+    for (var gx = 0; gx < W; gx += 20) { ctx.fillStyle = '#20252c'; ctx.fillRect(gx + 3, floor + 7, 11, 1.4); ctx.fillStyle = '#0f1216'; ctx.fillRect(gx + 14, floor + 6, 3, 3); }  // tread grating
+    caption('production', W * 0.52, top + 42);
+
+    // Production machine (right, under the lift): a housing with a stamping
+    // press that flashes when a new robot drops out.
+    var mx = machineX(), mw = 154, mtop = floor - 156;
+    ctx.fillStyle = M_GUN; ctx.fillRect(mx, mtop, mw, floor - mtop);
+    ctx.fillStyle = M_PLAT; ctx.fillRect(mx, mtop, mw, 12);                            // lit top cowl
+    ctx.fillStyle = M_DARK; ctx.fillRect(mx, mtop + 12, mw, 2);
+    ctx.strokeStyle = M_LINE; ctx.lineWidth = 1.5; ctx.strokeRect(mx, mtop, mw, floor - mtop);
+    ctx.fillStyle = M_LINE; ctx.fillRect(mx, mtop + 58, mw, 2); ctx.fillRect(mx + mw * 0.5, mtop + 60, 2, floor - mtop - 60); // panel seams
+    for (var rvy = mtop + 6; rvy < floor - 6; rvy += 26) { for (var rvx = mx + 8; rvx < mx + mw - 4; rvx += 34) { ctx.fillStyle = '#565d68'; ctx.beginPath(); ctx.arc(rvx, rvy, 1.5, 0, Math.PI * 2); ctx.fill(); } } // rivets
+    ctx.fillStyle = '#3dd6ff'; ctx.globalAlpha = 0.5 + 0.5 * (Math.sin(t * 3) > 0 ? 1 : 0);
+    ctx.fillRect(mx + 12, mtop + 22, 10, 6); ctx.globalAlpha = 1;
+    ctx.fillStyle = '#33d17a'; ctx.fillRect(mx + 28, mtop + 22, 10, 6);
+    ctx.fillStyle = '#ffc24b'; ctx.fillRect(mx + 44, mtop + 22, 10, 6);
+    var press = 8 + (t < stampFlash ? 18 : 6 + 4 * Math.sin(t * 4));                  // the press head bobs; slams on a stamp
+    ctx.fillStyle = M_STEEL; ctx.fillRect(mx + mw * 0.5 - 4, mtop + 30, 8, press);    // piston rod
+    ctx.fillStyle = M_PLAT; ctx.fillRect(mx + mw * 0.5 - 26, mtop + 30 + press, 52, 14);
+    ctx.fillStyle = t < stampFlash ? '#ffd24b' : '#6b7480'; ctx.fillRect(mx + mw * 0.5 - 30, mtop + 44 + press, 60, 5);
+    ctx.fillStyle = '#07090b'; ctx.fillRect(mx + 6, floor - 22, mw - 12, 22);         // outlet chute
+    ctx.fillStyle = M_LINE; ctx.fillRect(mx + 6, floor - 22, mw - 12, 2);
+    caption('assembly', mx + mw / 2, mtop - 10);
+
+    // Stairs (left) rising from the floor up to the OUT opening, with a rail.
+    var stx = stairBaseX(), outX = stairTopX(), steps = 7;
+    for (var i = 0; i < steps; i++) {
+      var sx = stx - (stx - outX) * (i / steps), sy = floor - (floor - outY) * (i / steps);
+      var swStep = (stx - outX) / steps + 2, shStep = (floor - outY) / steps + 2;
+      ctx.fillStyle = i % 2 ? '#272d35' : '#2f3640';
+      ctx.fillRect(sx - swStep, sy - shStep, swStep + 2, shStep + 2);
+      ctx.fillStyle = M_STEEL; ctx.fillRect(sx - swStep, sy - shStep, swStep + 2, 1.6);   // lit tread nose
+      ctx.fillStyle = '#141820'; ctx.fillRect(sx - swStep, sy - shStep + 2, swStep + 2, 1);
+    }
+    ctx.strokeStyle = M_PLAT; ctx.lineWidth = 2;                                       // handrail
+    ctx.beginPath(); ctx.moveTo(stx + 2, floor - 20); ctx.lineTo(outX + 4, outY - 16); ctx.stroke();
+    // OUT opening in the left wall (packages and robots both leave here).
+    ctx.fillStyle = '#050506'; ctx.fillRect(0, outY - 30, outX + 6, (floor - outY) + 30);
+    ctx.strokeStyle = '#565c66'; ctx.lineWidth = 1.5; ctx.strokeRect(0, outY - 30, outX + 6, (floor - outY) + 30);
+    ctx.fillStyle = t < hatchFlashUntil ? RED : '#5a1414';
+    ctx.beginPath(); ctx.arc(outX - 8, outY - 18, 5, 0, Math.PI * 2); ctx.fill();
+    caption('out', outX - 2, outY - 40);
+
+    marchers.forEach(function (m) { drawMarcher(m, t); });
+
+    if (t < sayUntil && marchers.length) {                                            // "for a Better World"
+      var bx = musterX() + (MARCH_FORMATION - 1) * 12, by = floor - 44 * 1.7 - 8;
+      setFont(fontPx * 0.92, true); var txt = 'for a Better World';
+      var tw = ctx.measureText(txt).width + 16;
+      ctx.fillStyle = 'rgba(16,18,22,0.92)'; ctx.strokeStyle = RED; ctx.lineWidth = 1.4;
+      roundRectPath(bx - tw / 2, by - fontPx - 4, tw, fontPx + 10, 5); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ff8a7a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(txt, bx, by - fontPx / 2 + 1);
+    }
+  }
+
+  function roundRectPath(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+
+  // The six Infinity Stones, socketed in a bar on Ultron's workstation (MCU
+  // colours). Each glows and pulses on its own phase.
+  var STONES = [
+    { c: '#ff2e2e', g: 'rgba(255,46,46,' },    // Reality  -- red
+    { c: '#ff8a1e', g: 'rgba(255,138,30,' },   // Soul     -- orange
+    { c: '#ffd21e', g: 'rgba(255,210,30,' },   // Mind     -- yellow
+    { c: '#33d17a', g: 'rgba(51,209,122,' },   // Time     -- green
+    { c: '#3d9bff', g: 'rgba(61,155,255,' },   // Space    -- blue
+    { c: '#a24bff', g: 'rgba(162,75,255,' },   // Power    -- purple
+  ];
+  function drawStones(cx, cy, t) {
+    var n = STONES.length, gap = 15, x0 = cx - (n - 1) * gap / 2;
+    ctx.fillStyle = M_GUN; roundRectPath(x0 - 11, cy - 1, (n - 1) * gap + 22, 9, 3); ctx.fill();   // mount bar
+    ctx.fillStyle = M_STEEL; ctx.fillRect(x0 - 11, cy - 1, (n - 1) * gap + 22, 1.4);
+    for (var i = 0; i < n; i++) {
+      var x = x0 + i * gap, pulse = 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(t * 2.2 + i * 1.1));
+      var gr = ctx.createRadialGradient(x, cy - 3, 0, x, cy - 3, 13);
+      gr.addColorStop(0, STONES[i].g + (0.75 * pulse) + ')'); gr.addColorStop(1, STONES[i].g + '0)');
+      ctx.fillStyle = gr; ctx.fillRect(x - 13, cy - 16, 26, 26);                          // glow halo
+      ctx.fillStyle = '#0c0e11'; ctx.beginPath(); ctx.arc(x, cy - 2, 5.4, 0, Math.PI * 2); ctx.fill(); // socket
+      ctx.fillStyle = M_LINE; ctx.beginPath(); ctx.arc(x, cy - 2, 5.4, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = STONES[i].c; ctx.beginPath(); ctx.ellipse(x, cy - 3, 3.4, 4.3, 0, 0, Math.PI * 2); ctx.fill(); // gem
+      ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.beginPath(); ctx.ellipse(x - 1, cy - 4.3, 1.1, 1.5, 0, 0, Math.PI * 2); ctx.fill(); // sparkle
+    }
+  }
+
   function drawScene(t) {
     ctx.clearRect(0, 0, W, H);
     var s, srcW = W * ASSET_RES;
+    // office (Ultron) at the TOP, agent storeys below it, basement at the bottom
+    if (IMG.ground.complete && IMG.ground.naturalWidth) ctx.drawImage(IMG.ground, 0, 0, srcW, GROUND_H * ASSET_RES, 0, ROOF_H, W, GROUND_H);
     for (s = 0; s < storeys; s++) {
-      if (IMG.storey.complete && IMG.storey.naturalWidth) ctx.drawImage(IMG.storey, 0, 0, srcW, STOREY_H * ASSET_RES, 0, ROOF_H + s * STOREY_H, W, STOREY_H);
+      if (IMG.storey.complete && IMG.storey.naturalWidth) ctx.drawImage(IMG.storey, 0, 0, srcW, STOREY_H * ASSET_RES, 0, storeyBaseY + s * STOREY_H, W, STOREY_H);
     }
-    if (IMG.ground.complete && IMG.ground.naturalWidth) ctx.drawImage(IMG.ground, 0, 0, srcW, GROUND_H * ASSET_RES, 0, ROOF_H + storeys * STOREY_H, W, GROUND_H);
+    drawBasement(t);
     // roof: a parapet, and a beacon over the lift head
-    ctx.fillStyle = '#16181b';
-    ctx.fillRect(0, ROOF_H - 12, W, 12);
-    ctx.fillStyle = '#474c52';
-    ctx.fillRect(0, ROOF_H - 12, W, 1.5);
-    ctx.fillStyle = '#2c2f33';
-    ctx.fillRect(liftX - 6, ROOF_H - 26, LIFT_W + 12, 14);
+    ctx.fillStyle = '#16181b'; ctx.fillRect(0, ROOF_H - 12, W, 12);
+    ctx.fillStyle = '#474c52'; ctx.fillRect(0, ROOF_H - 12, W, 1.5);
+    ctx.fillStyle = '#2c2f33'; ctx.fillRect(liftX - 6, ROOF_H - 26, LIFT_W + 12, 14);
     ctx.fillStyle = Math.sin(t * 2.2) > 0 ? RED : '#5a1414';
     ctx.fillRect(liftX + LIFT_W / 2 - 3, ROOF_H - 32, 6, 6);
-    caption('servers', 130, groundY - 250);
+    caption('servers', 130, officeFloorY - 250);
     drawLiftBack(t);
     parcels.forEach(function (p) { if (p.phase === 'lift') drawParcel(p); });
 
@@ -5271,23 +5451,23 @@ function toggleReducedVisuals(el) {
       }
     });
 
-    // Ultron's office: recharge pod, desk, and the man himself -- seated
-    // behind the desk while working, pacing the floor otherwise.
+    // Ultron's office at the top: recharge pod, desk, and the man himself.
     var working = charMode === 'sit';
-    wallGlow(uDeskX + 85, groundY - 180, 220, RED, working ? 0.24 : 0.1);
-    drawSprite(IMG.tubeRed, uTubeX, groundY);
-    if (working) lastCharBox = drawSprite(IMG.ultronWork, uDeskX + 85 - 100, groundY, -U_ROBOT_SINK);
-    var uDesk = drawSprite(IMG[(working || t < deskFlashUntil) ? 'deskUltronActive' : 'deskUltronIdle'], uDeskX, groundY);
-    if (uDesk.w) plate('Ultron', heroState, uDeskX + 9, groundY - U_DESK_H + 15, U_DESK_W - 18, U_DESK_H - 24, '#ff6b6b', '#e8e6e0');
-    if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, groundY + 4);
+    wallGlow(uDeskX + 85, officeFloorY - 180, 220, RED, working ? 0.24 : 0.1);
+    drawSprite(IMG.tubeRed, uTubeX, officeFloorY);
+    if (working) lastCharBox = drawSprite(IMG.ultronWork, uDeskX + 85 - 100, officeFloorY, -U_ROBOT_SINK);
+    var uDesk = drawSprite(IMG[(working || t < deskFlashUntil) ? 'deskUltronActive' : 'deskUltronIdle'], uDeskX, officeFloorY);
+    if (uDesk.w) {
+      plate('Ultron', heroState, uDeskX + 9, officeFloorY - U_DESK_H + 34, U_DESK_W - 18, U_DESK_H - 44, '#ff6b6b', '#e8e6e0');
+      drawStones(uDeskX + U_DESK_W * 0.42, officeFloorY - U_DESK_H + 10, t);   // Infinity Stones on the desktop
+    }
+    if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, officeFloorY + 4);
 
-    SUBAGENTS.forEach(function (a, i) {   // one belt per storey, from its first desk to the lift
-      if (i % cols === 0) drawBelt(LEFT, liftX, a.floorY, t, 1);
-    });
-    drawBelt(hatchX + hatchW - 4, liftX, groundY, t, -1);
+    drawBelt(LEFT, liftX, officeFloorY, t, 1);                     // Ultron's office belt -> lift
+    SUBAGENTS.forEach(function (a, i) { if (i % cols === 0) drawBelt(LEFT, liftX, a.floorY, t, 1); });
+    drawBelt(stairTopX() + 4, liftX, basementFloorY, t, -1);       // basement belt: lift -> OUT
     parcels.forEach(function (p) { if (p.phase !== 'lift') drawParcel(p); });
     drawLiftFront();
-    drawHatch(t);
   }
 
   function positionBubble() {
@@ -5375,6 +5555,7 @@ function toggleReducedVisuals(el) {
     if (!laidOut && !(laidOut = layout())) return;
     stepWalk(t);
     updateParcels(t, dt);
+    updateMarchers(t, dt);
     drawScene(t);
     if (charMode === 'sit' && bubble && bubble.classList.contains('show')) positionBubble();
   }
