@@ -6685,7 +6685,7 @@ function toggleReducedVisuals(el) {
   // window entirely (owner removed the window + world-domination plan) so all
   // the decorations sit on one clean centred wall.
   function drawOfficeWall(t) {
-    var y0 = ROOF_H + 4, y1 = officeFloorY - 130;
+    var y0 = ROOF_H - 2, y1 = officeFloorY - 104;   // covers the baked window fully (top + bottom border), clear of the floor furniture
     var g = ctx.createLinearGradient(0, y0, 0, y1);
     g.addColorStop(0, '#0e1116'); g.addColorStop(1, '#0a0c10');
     ctx.fillStyle = g; ctx.fillRect(0, y0, W, y1 - y0);
@@ -7604,17 +7604,22 @@ window.__sfx = (function () {
   // then upgrades for +25% output/level -- all on the same exponential scale.
   // Their output feeds the same passive/offline income path as everything else. ----
   var GENERATORS = [
-    { id: 0, name: 'Bit Trickle',     unlock: 200,     base: 0.4,  upBase: 60,      rate: 0.25 },
-    { id: 1, name: 'Data Spring',     unlock: 4000,    base: 3,    upBase: 1200,    rate: 0.25 },
-    { id: 2, name: 'Byte Fountain',   unlock: 80000,   base: 22,   upBase: 24000,   rate: 0.25 },
-    { id: 3, name: 'Chit Geyser',     unlock: 1.5e6,   base: 160,  upBase: 450000,  rate: 0.25 },
-    { id: 4, name: 'Scrip Cascade',   unlock: 3e7,     base: 1200, upBase: 9e6,     rate: 0.25 },
-    { id: 5, name: 'Nanite Torrent',  unlock: 6e8,     base: 9000, upBase: 1.8e8,   rate: 0.25 },
+    { id: 0, name: 'Bit Trickle',     unlock: 200,     base: 0.9,   upBase: 60,      rate: 0.5 },
+    { id: 1, name: 'Data Spring',     unlock: 4000,    base: 7,     upBase: 1200,    rate: 0.5 },
+    { id: 2, name: 'Byte Fountain',   unlock: 80000,   base: 52,    upBase: 24000,   rate: 0.5 },
+    { id: 3, name: 'Chit Geyser',     unlock: 1.5e6,   base: 380,   upBase: 450000,  rate: 0.5 },
+    { id: 4, name: 'Scrip Cascade',   unlock: 3e7,     base: 2800,  upBase: 9e6,     rate: 0.5 },
+    { id: 5, name: 'Nanite Torrent',  unlock: 6e8,     base: 21000, upBase: 1.8e8,   rate: 0.5 },
   ];
   function genLvl(id) { return (state.gen && state.gen.up && state.gen.up[id]) || 0; }
   function genUnlocked(id) { return !!(state.gen && state.gen.unlocked && state.gen.unlocked[id]); }
   function genRate(g) { return genUnlocked(g.id) ? g.base * (1 + g.rate * genLvl(g.id)) : 0; }
   function genIncome() { var s = 0; for (var i = 0; i < GENERATORS.length; i++) s += genRate(GENERATORS[i]); return s; }   // pre-multiplier; callers apply globalMult+idleBonus
+  // Per-second income multiplier -- upgradeable by % (Reactor Overcharge) and ×
+  // (Flux Capacitor). One helper for the whole passive/second stream so the live
+  // tick, the HUD, renderBalance and offline accrual all agree.
+  function psMult() { return pct('psboost', 6) * xmul('psmult', 0.04); }
+  function passivePerSec() { return ((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus() * psMult(); }
   function genUpCost(g) { return Math.ceil(g.upBase * Math.pow(1.6, genLvl(g.id))); }
 
   // ---- Auto-Vendor: unlocks automatically the moment you build your first
@@ -7735,6 +7740,8 @@ window.__sfx = (function () {
     { id: 'incmult',   cat: 'growth',  name: 'Compound Interest',    max: 15, desc: function (l) { return '×' + Math.pow(1.03, l).toFixed(2) + ' income multiplier'; } },
     { id: 'attrp',     cat: 'growth',  name: 'Attribute Training',   max: 25, desc: function (l) { return '+' + (4 * l) + '% to ALL attributes'; } },
     { id: 'attrm',     cat: 'growth',  name: 'Genetic Perfection',   max: 15, desc: function (l) { return '×' + Math.pow(1.03, l).toFixed(2) + ' attribute multiplier'; } },
+    { id: 'psboost',   cat: 'growth',  name: 'Reactor Overcharge',   max: 30, desc: function (l) { return '+' + (6 * l) + '% passive income / second'; } },
+    { id: 'psmult',    cat: 'growth',  name: 'Flux Capacitor',       max: 20, desc: function (l) { return '×' + Math.pow(1.04, l).toFixed(2) + ' passive-income multiplier'; } },
   ];
   // Milestone tiers: reaching one grants an immediate permanent +10% income
   // "mechanical evolution" bonus and a new title.
@@ -7915,7 +7922,7 @@ window.__sfx = (function () {
   function prodRate() {
     var f = window.__foundry, bp = f.bayProd || [f.prodMult || 1], sum = 0;
     for (var i = 0; i < bp.length; i++) { var bt = Math.max(0.9, 1.9 / (bp[i] || 1)); sum += 1 / bt; }
-    return sum * (f.botYield || 0.1) * 0.6 + (f.passive || 0) + refIncome() + genIncome() + vendorIncome();
+    return sum * (f.botYield || 0.1) * 0.6 + ((f.passive || 0) + refIncome() + genIncome() + vendorIncome()) * psMult();   // passive/second sources take the Overcharge/Flux multiplier offline too
   }
   function humanDur(sec) {
     var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
@@ -8486,7 +8493,7 @@ window.__sfx = (function () {
       '</div>';
   }
   function renderBalance() {
-    var perSec = ((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus();
+    var perSec = passivePerSec();
     if (bitsEl) {
       bitsEl.textContent = fmt(state.bits);
       bitsEl.style.color = fmtColor(state.bits);   // balance takes its tier's colour
@@ -8511,13 +8518,13 @@ window.__sfx = (function () {
     syncPresence();                    // catch in-app section switches while the tab is visible
     if (gameOnline()) {
       state.seen = now;                // heartbeat: while active, keep the away marker current so offline starts from "now" when you leave
-      var p = ((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus();
+      var p = passivePerSec();
       if (p > 0) { state.bits += p * dt; state.lifetime = (state.lifetime || 0) + p * dt; dirty = true; save(); }
       idleXpAcc += dt * 0.6; if (idleXpAcc >= 1) { var whole = Math.floor(idleXpAcc); idleXpAcc -= whole; addXp(whole, 'Idle ops'); }   // "do to learn": a small XP trickle while running the line
       if (xpcoreUnlocked()) { crystalXpAcc += xpcoreRate() * dt; if (crystalXpAcc >= 1) { var cw = Math.floor(crystalXpAcc); crystalXpAcc -= cw; addXp(cw, 'XP Crystal'); } }   // the secret crystal mine feeds XP
     }
     advTick();                         // expeditions run on wall-clock time -> progress in the background regardless
-    currencyHud(((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus());   // keep the one fixed currency tracker live on EVERY tab
+    currencyHud(passivePerSec());   // keep the one fixed currency tracker live on EVERY tab
     var shown = Math.round(state.bits * 10);
     if (gameOnline() && dirty && shown !== lastShown) {
       lastShown = shown;
