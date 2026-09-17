@@ -939,6 +939,7 @@
   .exp-battle.loss{ border-left-color:#ff5a7a; } .exp-battle.loss b{ color:#ff8098; }
   .exp-blog{ margin-top:5px; font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
   .exp-blog .w{ color:#5fe39a; } .exp-blog .l{ color:#ff8098; }
+  .exp-bounty{ margin-top:6px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); }
   .exp-sell{ margin-left:auto; font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); background:none; border:1px solid var(--line); border-radius:5px; padding:2px 7px; cursor:pointer; }
   .exp-sell:hover{ color:#ffd88a; border-color:rgba(230,164,30,.55); }
   .exp-selljunk{ margin-left:10px; font-family:var(--font-mono); font-size:10px; color:var(--text-faint); background:none; border:1px solid var(--line); border-radius:5px; padding:2px 8px; cursor:pointer; text-transform:none; letter-spacing:0; }
@@ -7161,7 +7162,11 @@ window.__sfx = (function () {
   function totalUpgradeLevels() { var s = 0, u = state.up || {}; for (var k in u) s += u[k] || 0; return s; }
   function milestonesReached() { var n = totalUpgradeLevels(), c = 0; for (var i = 0; i < MILESTONES.length; i++) if (n >= MILESTONES[i]) c++; return c; }
   function milestoneMult() { return Math.pow(1.5, milestonesReached()); }
-  function globalMult() { return (1 + 0.1 * ((state.prestige && state.prestige.cores) || 0)) * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult(); }
+  // Prestige buff COMPOUNDS (x1.08 per banked core) so it keeps pace with the
+  // exponential cost/enemy curve -- a linear +10%/core would fall behind fast
+  // and make prestige pointless. Core COUNT stays sqrt(lifetime) (see below).
+  function coreMult() { return Math.pow(1.08, (state.prestige && state.prestige.cores) || 0); }
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult(); }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -7172,7 +7177,17 @@ window.__sfx = (function () {
     { id: 'harvest', name: 'Harvesting & Extraction', icon: '⛏' },
     { id: 'mfg', name: 'Manufacturing', icon: '🔧' },
     { id: 'combat', name: 'Combat Subsystems', icon: '⚔' },
+    { id: 'growth', name: 'Progression & Economy', icon: '📈' },
   ];
+  // Two knobs per stat, per the owner's spec: a linear "% boost" (additive,
+  // predictable) and a "× multiplier" (compounding ~3%/lvl, follows the
+  // exponential scale). Combined they let a stat be pushed hard late-game.
+  function pct(l, per) { return 1 + (per / 100) * skillLvl(l); }       // additive %-boost skill
+  function xmul(l, step) { return Math.pow(1 + step, skillLvl(l)); }   // compounding × skill
+  function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03); }
+  function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03); }
+  function prodQualMult() { return pct('prodqual', 5) * xmul('prodqualm', 0.025); }
+  function incomeMult() { return pct('incboost', 4) * xmul('incmult', 0.03); }
   var SKILLS = [
     { id: 'foundry',   cat: 'sys',     name: 'Overclocking',        max: 15, desc: function (l) { return '+' + (5 * l) + '% all foundry & refinery income'; } },
     { id: 'multitask', cat: 'sys',     name: 'Memory Allocation',   max: 10, desc: function (l) { return '+' + (4 * l) + '% idle / background generation'; } },
@@ -7187,6 +7202,15 @@ window.__sfx = (function () {
     { id: 'combat',    cat: 'combat',  name: 'Kinetic Warfare',     max: 15, desc: function (l) { return '+' + (6 * l) + '% melee / physical power'; } },
     { id: 'ballistics', cat: 'combat', name: 'Ballistics & Targeting', max: 12, desc: function (l) { return '+' + (5 * l) + '% ranged crit & attack power'; } },
     { id: 'quantum',   cat: 'combat',  name: 'Quantum Matrices',    max: 12, desc: function (l) { return '+' + (5 * l) + '% shields & tech power'; } },
+    // Progression & Economy -- the paired %-boost / ×-multiplier knobs.
+    { id: 'xpboost',   cat: 'growth',  name: 'Neural Learning',     max: 20, desc: function (l) { return '+' + (5 * l) + '% XP from every source'; } },
+    { id: 'xpmult',    cat: 'growth',  name: 'Deep Learning Core',  max: 15, desc: function (l) { return '×' + Math.pow(1.03, l).toFixed(2) + ' XP gain multiplier'; } },
+    { id: 'prodqty',   cat: 'growth',  name: 'Assembly Throughput', max: 15, desc: function (l) { return '+' + (4 * l) + '% production quantity (build speed)'; } },
+    { id: 'prodqtym',  cat: 'growth',  name: 'Mass Production',      max: 12, desc: function (l) { return '×' + Math.pow(1.03, l).toFixed(2) + ' production quantity multiplier'; } },
+    { id: 'prodqual',  cat: 'growth',  name: 'Precision Tooling',   max: 15, desc: function (l) { return '+' + (5 * l) + '% production quality (value per unit)'; } },
+    { id: 'prodqualm', cat: 'growth',  name: 'Master Craftsmanship', max: 12, desc: function (l) { return '×' + Math.pow(1.025, l).toFixed(2) + ' production quality multiplier'; } },
+    { id: 'incboost',  cat: 'growth',  name: 'Market Manipulation', max: 20, desc: function (l) { return '+' + (4 * l) + '% all income'; } },
+    { id: 'incmult',   cat: 'growth',  name: 'Compound Interest',    max: 15, desc: function (l) { return '×' + Math.pow(1.03, l).toFixed(2) + ' income multiplier'; } },
   ];
   // Milestone tiers: reaching one grants an immediate permanent +10% income
   // "mechanical evolution" bonus and a new title.
@@ -7205,6 +7229,7 @@ window.__sfx = (function () {
   function xpForLevel(l) { return Math.floor((100 * Math.pow(l, 1.8) + 100 * Math.pow(1.15, l)) * Math.max(0.6, 1 - 0.02 * skillLvl('firmware'))); }
   function addXp(n, source) {
     if (!state.prog || !(n > 0)) return;
+    n *= xpGainMult();   // Neural Learning + Deep Learning Core skills
     // Log EVERY gain (all sources). A burst of the same source within 2s
     // coalesces into one growing row so the per-shipment slivers don't spam.
     state.prog.log = state.prog.log || [];
@@ -7329,15 +7354,15 @@ window.__sfx = (function () {
   function lvl(id) { return state.up[id] || 0; }
   function cost(u) { return Math.ceil(u.base * Math.pow(u.grow, lvl(u.id))); }
   function publish() {
-    var bays = 1 + lvl('bays'), bayProd = [];
-    for (var i = 0; i < bays; i++) bayProd.push(1 + 0.25 * (state.up['asm' + i] || 0));
+    var bays = 1 + lvl('bays'), bayProd = [], qty = prodQtyMult();
+    for (var i = 0; i < bays; i++) bayProd.push((1 + 0.25 * (state.up['asm' + i] || 0)) * qty);   // Assembly Throughput / Mass Production skills
     window.__foundry = {
       bayProd: bayProd,                 // per-bay build-speed multiplier
       prodMult: bayProd[0],             // back-compat (bay 1)
       beltMult: 1 + 0.2 * lvl('belt'),
       perBay: 2 + lvl('perbay'),
       bays: bays,
-      botYield: lvl('yield') === 0 ? 0.1 : lvl('yield'),
+      botYield: (lvl('yield') === 0 ? 0.1 : lvl('yield')) * prodQualMult(),   // Precision Tooling / Master Craftsmanship skills
       passive: 0.5 * lvl('collector'),
       marchMult: 1 + 0.15 * lvl('march'),
       pkgMult: 1 + 0.5 * lvl('pkgval'),
@@ -7632,7 +7657,7 @@ window.__sfx = (function () {
     var gain = Math.max(0, prestigeCores(state.lifetime || 0) - cores);
     prestigeEl.innerHTML =
       '<div class="prestige-row"><span class="prestige-core">\u25C8 ' + cores + ' Nanite Core' + (cores === 1 ? '' : 's') + '</span>' +
-      '<span class="prestige-bonus">+' + Math.round(cores * 10) + '% to all income</span></div>' +
+      '<span class="prestige-bonus">×' + coreMult().toFixed(2) + ' to all income</span></div>' +
       '<div class="prestige-sub">Lifetime minted: ' + fmt(state.lifetime || 0) + ' \u00b7 Ultron\u2019s power-core is <b>' + Math.round(prestigeChargePct() * 100) + '%</b> charged. When his army falls he reboots &mdash; foundry &amp; refinery reset, but every defeat banks a Nanite Core (a permanent buff) and unlocks a harder endgame dungeon. Expedition, loot and cores are kept.</div>' +
       (function () { var r = milestonesReached(), tot = totalUpgradeLevels(), nxt = MILESTONES[r]; return '<div class="prestige-sub" style="color:#5fe39a">\u2726 Milestones: <b>' + r + '/' + MILESTONES.length + '</b> reached \u2014 <b>\u00d7' + milestoneMult().toFixed(2) + '</b> global income' + (nxt ? ' \u00b7 next at ' + nxt + ' upgrades (you have ' + tot + ')' : ' \u00b7 all reached') + '</div>'; })() +
       '<button type="button" class="prestige-btn' + (gain > 0 ? ' can' : '') + '" data-reboot="1"' + (gain > 0 ? '' : ' disabled') + '>' +
@@ -7673,7 +7698,8 @@ window.__sfx = (function () {
     var byType = {}; LE.BASES.forEach(function (b) { byType[b.t] = (byType[b.t] || 0) + 1; });
     var items = Object.keys(byType).map(function (k) { return '<span class="cx-chip">' + k + ' \u00d7' + byType[k] + '</span>'; }).join('') + '<span class="cx-chip">' + LE.BASES.length + ' bases \u00b7 21 stats \u00b7 16 affixes</span>';
     var bays = ['Vanguard \u00b7 Assault', 'Recon \u00b7 Scout', 'Bombard \u00b7 Bomber', 'Bulwark \u00b7 Tank', 'Cipher \u00b7 Hacker', 'Aegis \u00b7 Medic', 'Titan \u00b7 Muscle Head', 'Havoc \u00b7 Heavy', 'Colossus \u00b7 Juggernaut', 'Omega \u00b7 World Ender'].map(function (b) { return '<span class="cx-chip">' + b + '</span>'; }).join('');
-    var en = CB ? CB.ENEMIES.map(function (e) { return '<div class="cx-row"><b>' + e.name + '</b><span>' + e.kind + '</span><span>hp ' + e.hp + '</span><span>dmg ' + e.dmg + '</span><span>armor ' + e.armor + '</span></div>'; }).join('') : '<div class="cx-h">combat module not loaded</div>';
+    var TIER_COL = { trash: '#8a93a3', elite: '#5fe39a', miniboss: '#ffb347', boss: '#ff5a7a' };
+    var en = CB ? CB.ENEMIES.map(function (e) { return '<div class="cx-row"><b>' + e.name + '</b><span style="color:' + (TIER_COL[e.tier] || '#8a93a3') + '">' + (e.tier || e.kind) + '</span><span>hp ' + e.hp + '</span><span>atk ' + e.dmg + '</span><span>def ' + e.armor + '</span><span>spd ' + (e.spd || 1) + '</span><span>eva ' + (e.evade || 0) + '%</span>' + (e.regen ? '<span>regen</span>' : '') + '</div>'; }).join('') : '<div class="cx-h">combat module not loaded</div>';
     // Unlock guide: every major gate, its requirement, and whether it's met.
     var ug = [], pl = playerLevel(), dUnl = (state.adv && state.adv.dungeons) || 0;
     function ugRow(name, req, met) { return '<div class="cx-urow' + (met ? ' met' : '') + '"><span class="cx-un">' + esc(name) + '</span><span class="cx-ur">' + esc(req) + (met ? ' \u2713' : '') + '</span></div>'; }
@@ -8041,6 +8067,18 @@ window.__sfx = (function () {
       a.bosses = a.bosses || {}; a.bosses[ri] = true;
       state.bits += 5000 * globalMult(); addXp(200, 'Boss: ' + boss.name);
     }
+    // per-kill bounty: every enemy the bot drops pays currency + salvage
+    // materials (XP per kill is already granted by the addXp line below).
+    var kills = battle ? battle.wavesCleared : 0, killGold = 0, killMats = { scrap: 0, alloy: 0, core: 0 };
+    if (kills > 0) {
+      var zoneExp = Math.pow(1.18, isDungeon ? dungeonIlvl(di) : (region.ilvl || 0));
+      killGold = Math.round(kills * 12 * (1 + 0.5 * (a.dur || 0)) * (isBoss || isDungeon ? 2 : 1) * zoneExp * globalMult());
+      state.bits += killGold; state.lifetime = (state.lifetime || 0) + killGold;
+      var mtier = Math.min(6, 1 + Math.floor(ilvl / 4));
+      for (var mk = 0; mk < kills; mk++) { var my = matYield(mtier); killMats.scrap += my.scrap; killMats.alloy += my.alloy; killMats.core += my.core; }
+      addMats(killMats);
+    }
+    a.lastEarn = { gold: killGold, mats: killMats, kills: kills };
     a.bossRun = 0; a.dungeonRun = 0;
     a.inv = (a.inv || []).concat(out).slice(-40);
     a.endsAt = 0; a.lastHaul = out;
@@ -8252,7 +8290,13 @@ window.__sfx = (function () {
 
     var lb = a.lastBattle;
     var battleHtml = lb ? '<div class="exp-battle ' + (lb.win ? 'win' : 'loss') + '"><b>' + (lb.win ? 'Victory' : 'Defeated') + '</b> \u00b7 cleared ' + lb.wavesCleared + '/' + lb.totalWaves + ' waves \u00b7 power ' + lb.power +
-      '<div class="exp-blog">' + lb.log.map(function (w) { return '<span class="' + (w.win ? 'w' : 'l') + '">' + esc(w.enemy) + '</span>'; }).join(' \u2192 ') + '</div></div>' : '';
+      '<div class="exp-blog">' + lb.log.map(function (w) { return '<span class="' + (w.win ? 'w' : 'l') + '">' + esc(w.enemy) + '</span>'; }).join(' \u2192 ') + '</div>' +
+      (a.lastEarn && a.lastEarn.kills ? '<div class="exp-bounty">' + a.lastEarn.kills + ' kills \u2192 ' +
+        '<b style="color:' + UNIT_COL[0] + '">' + UNIT_SYM[0] + fmt(a.lastEarn.gold) + '</b>' +
+        (a.lastEarn.mats.scrap ? ' \u00b7 <b>' + a.lastEarn.mats.scrap + '</b> scrap' : '') +
+        (a.lastEarn.mats.alloy ? ' \u00b7 <b>' + a.lastEarn.mats.alloy + '</b> alloy' : '') +
+        (a.lastEarn.mats.core ? ' \u00b7 <b>' + a.lastEarn.mats.core + '</b> core' : '') + '</div>' : '') +
+      '</div>' : '';
     var haul = a.lastHaul && a.lastHaul.length ? '<div class="exp-haul">Last haul: ' + a.lastHaul.map(function (it) { return '<span style="color:' + it.color + '">' + esc(it.name) + '</span>'; }).join(', ') + '</div>' : '';
     var inv = (a.inv || []).slice().reverse().map(function (it) {
       var can = it.slot && it.stats, on = can && gear[it.slot] && gear[it.slot].id === it.id;
@@ -8327,6 +8371,10 @@ window.__sfx = (function () {
   renderPrestige();
   renderProgression();
   renderCodex();
+  // size the room canvas to the loaded bay count -- without this a refresh
+  // leaves the room laid out for 1 floor (published after the room's first
+  // layout), so every bought bay draws off-canvas and looks "gone".
+  if (window.__roomRelayout) window.__roomRelayout();
 
   // ---- cross-device sync hooks: the main dashboard script (which holds the
   // auth token) calls these to pull/push this user's save to the backend, so
@@ -8372,9 +8420,11 @@ window.__sfx = (function () {
   function cfg() { return window.__refinery || {}; }
   var N = (cfg().mats || []).length || 6;
   var seg = 170, startX = 90, pressX = startX + N * seg + 40;   // tighter spacing => the canvas (width:100%) renders the machines ~1.25x larger
-  var W = pressX + 100, H = 176; canvas.width = W; canvas.height = H;
+  var binX = pressX + 118;                                       // storage container at the belt's end
+  var W = binX + 74, H = 176; canvas.width = W; canvas.height = H;
   var beltY = 132;
   var onScreen = true, ingots = [], lastSpawn = [], smeltFlash = [], pressFlash = 0, sparks = [], drones = [];
+  var bin = [], binFlash = 0, binSellAcc = 0;                    // stray ingots that miss the press fall here until sold
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function xExt(i) { return startX + i * seg + 48; }
   function xSm(i) { return startX + i * seg + 140; }
@@ -8404,7 +8454,22 @@ window.__sfx = (function () {
       if (g.stage === 'ingot' && c.unlP && g.x >= pressX - 16) {
         ingots.splice(i, 1); pressFlash = t + 0.18;
         for (var k = 0; k < 5; k++) sparks.push({ x: pressX - 10, y: beltY - 6, vx: 30 + Math.random() * 70, vy: -30 - Math.random() * 45, life: 0 });
-      } else if (g.x > W + 20) ingots.splice(i, 1);
+      } else if (g.x >= binX - 12) {                              // missed the press -> caught by storage, not lost off the edge
+        ingots.splice(i, 1); bin[g.mi] = (bin[g.mi] || 0) + 1; binFlash = t + 0.25;
+      }
+    }
+    // storage auto-sells its backlog a few units at a time into the shared
+    // currency pool, so nothing accumulates forever and no ingot is wasted.
+    binSellAcc += dt;
+    if (binSellAcc >= 0.9) {
+      binSellAcc = 0;
+      var fullest = -1, best = 0;
+      for (var bi = 0; bi < bin.length; bi++) if ((bin[bi] || 0) > best) { best = bin[bi]; fullest = bi; }
+      if (fullest >= 0) {
+        var sold = Math.min(bin[fullest], 3); bin[fullest] -= sold;
+        if (window.__foundryEarn) window.__foundryEarn(sold * ((cfg().binVal || 0.7)));   // credits state.bits (globalMult applied inside)
+        binFlash = t + 0.2;
+      }
     }
     for (var j = sparks.length - 1; j >= 0; j--) { var s2 = sparks[j]; s2.life += dt; s2.x += s2.vx * dt; s2.y += s2.vy * dt; s2.vy += 130 * dt; if (s2.life > 0.5) sparks.splice(j, 1); }
   }
@@ -8477,6 +8542,31 @@ window.__sfx = (function () {
     ctx.restore();
   }
 
+  // Storage container at the belt's end: catches every ingot the press misses
+  // (press locked, or overflow) so none are lost off the edge; it auto-sells
+  // its backlog into the shared currency pool (see update()).
+  function drawBin(t) {
+    var total = 0, q; for (q = 0; q < bin.length; q++) total += bin[q] || 0;
+    var bx = binX, by = beltY - 4, bw = 60, bh = 56, top = by - bh, hot = t < binFlash;
+    ctx.fillStyle = hot ? '#2f3742' : '#20252d'; ctx.fillRect(bx - bw / 2, top, bw, bh);
+    ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.5; ctx.strokeRect(bx - bw / 2, top, bw, bh);
+    ctx.fillStyle = '#39424e'; ctx.fillRect(bx - bw / 2, top, bw, 3);                  // rim
+    ctx.fillStyle = hot ? '#ffd24b' : '#e0a020';                                       // hazard base stripes
+    for (var hs = -bw / 2 + 3; hs < bw / 2 - 4; hs += 10) ctx.fillRect(bx + hs, by - 4, 5, 4);
+    var mats2 = cfg().mats || [], cols = [];                                           // pile stacked ingots by material colour
+    for (var mi2 = 0; mi2 < bin.length; mi2++) for (var cc = 0; cc < Math.min(bin[mi2] || 0, 24); cc++) cols.push((mats2[mi2] || {}).color || '#c0c6cf');
+    var perRow = 4, iw = 11, ih = 5;
+    for (var ci = 0; ci < cols.length && ci < perRow * 8; ci++) {
+      var rr = Math.floor(ci / perRow), col2 = ci % perRow;
+      var ix = bx - bw / 2 + 6 + col2 * (iw + 1.5), iy = by - 9 - rr * (ih + 1.5);
+      ctx.fillStyle = cols[ci]; ctx.fillRect(ix, iy, iw, ih);
+      ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(ix, iy, iw, 1.2);
+    }
+    ctx.fillStyle = '#8a93a3'; ctx.font = '9px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.fillText('STORAGE', bx, top - 5);
+    ctx.fillStyle = total > 0 ? '#ffd24b' : '#5a6270'; ctx.font = 'bold 10px ui-monospace,monospace';
+    ctx.fillText(total > 0 ? (total > 999 ? '999+' : total) + ' held' : 'empty', bx, by + 16);
+  }
+
   // a thin progress/throughput bar under a machine (or over a drone)
   function progBar(cx, y, w, p, color) {
     var x0 = cx - w / 2;
@@ -8520,6 +8610,7 @@ window.__sfx = (function () {
     if (t < pressFlash) { ctx.fillStyle = '#ffe08a'; ctx.font = 'bold 12px ui-monospace,monospace'; ctx.fillText('\u25c9', pressX + 6, beltY - 44); }
     if (c.unlP) progBar(pressX + 6, beltY - 18, 58, (t * 0.5 * (c.convMult || 1)) % 1, '#ffe08a');                       // press: stamping cycle
     if (!c.unlP) { ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(pressX - 32, beltY - 88, 76, 88); }
+    drawBin(t);
     ingots.forEach(function (g) { if (g.stage === 'ore') drawOre(g, t); else drawIngot(g, t); });
     sparks.forEach(function (s2) { ctx.globalAlpha = Math.max(0, 1 - s2.life / 0.5); ctx.fillStyle = '#ffe08a'; ctx.fillRect(s2.x, s2.y, 2, 2); ctx.globalAlpha = 1; });
     for (var dmi = 0; dmi < mats.length; dmi++) if (mats[dmi].ext) { drawDrone(dmi, t); progBar(drones[dmi] ? drones[dmi].x : xExt(dmi), beltY - 112, 24, (t * 0.6 + dmi) % 1, mats[dmi].color); }   // drone: mining cycle
