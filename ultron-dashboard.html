@@ -772,6 +772,27 @@
   .foundry-up .fu-desc{ font-size:11.5px; color:var(--text-dim); margin:3px 0 6px; }
   .foundry-up .fu-cost{ font-family:var(--font-mono); font-size:12px; color:#e6a41e; }
   .foundry-up .fu-cost.short{ color:var(--text-faint); }
+  /* Production Bays panel: compact per-bay cards with 4 small upgrades each */
+  .foundry-bays-label{ font-family:var(--font-display); font-weight:700; font-size:12.5px; color:#ffd88a; margin:4px 0 8px; }
+  .fbl-sub{ font-family:var(--font-mono); font-weight:400; font-size:10px; color:var(--text-faint); }
+  .bays-tot{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-bottom:9px; }
+  .bays-tot b{ color:#ff8098; }
+  .bays-boost{ color:#5fe39a; }
+  .bays-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(168px,1fr)); gap:8px; }
+  .bay-card{ border:1px solid var(--line); border-left:3px solid var(--bec); border-radius:7px; background:var(--panel-raised); padding:7px 8px; }
+  .bay-card-h{ display:flex; justify-content:space-between; align-items:baseline; gap:6px; }
+  .bay-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:var(--text); }
+  .bay-arch{ font-family:var(--font-mono); font-size:8.5px; color:var(--text-faint); text-align:right; }
+  .bay-pw{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); margin:3px 0 6px; }
+  .bay-pw b{ color:var(--bec); font-size:12px; }
+  .bay-ups{ display:grid; grid-template-columns:repeat(4,1fr); gap:4px; }
+  .bay-up{ display:flex; flex-direction:column; align-items:center; gap:1px; padding:4px 2px; border:1px solid var(--line); border-radius:5px; background:var(--void); color:var(--text-dim); cursor:default; }
+  .bay-up.can{ cursor:pointer; border-color:rgba(255,216,138,.5); color:var(--text); }
+  .bay-up.can:hover{ background:rgba(255,216,138,.08); }
+  .bay-up:disabled{ opacity:.55; }
+  .bay-up-k{ font-family:var(--font-mono); font-size:8px; letter-spacing:.04em; color:var(--text-faint); }
+  .bay-up-l{ font-family:var(--font-display); font-weight:700; font-size:12px; }
+  .bay-up-c{ font-family:var(--font-mono); font-size:8px; color:#e6a41e; }
   .foundry-offline{ margin:8px 0 2px; padding:7px 11px; border:1px solid rgba(230,164,30,0.45); border-radius:6px; background:rgba(230,164,30,0.08); color:#ffd88a; font-size:12px; }
   .foundry-loot{ margin:8px 0 2px; padding:9px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel-raised); max-width:60ch; }
   .foundry-loot .loot-head{ display:flex; align-items:center; gap:8px; }
@@ -1552,6 +1573,8 @@
             <div class="foundry-offline" id="foundry-offline" hidden></div>
             <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
+            <div class="foundry-bays-label">Production bays <span class="fbl-sub">— each floor's own crew, weapons &amp; armor</span></div>
+            <div class="foundry-bays" id="foundry-bays"></div>
             <div class="prestige" id="prestige"></div>
             <div class="progression" id="progression"></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
@@ -5413,26 +5436,44 @@ function toggleReducedVisuals(el) {
   // out through the same OUT the package belt exits by -- forever. Ultron moved
   // to the TOP office; agents fill the storeys between.
   var BAY_H = 385, BAY_WALL = 287;               // each production bay's strip height + floor line (0.75x larger to fit the robots)
-  var MAX_BAYS = 10, MAX_PER_BAY = 10;           // unlockable floors, and robots per floor -- both capped
+  var MAX_BAYS = 20, MAX_PER_BAY = 20;           // unlockable floors, and robots per floor -- both capped
   // Per-bay robot styling: body / plate (head) / eye+core / weapon. One per floor.
   // Each bay is a named unit of a distinct robot archetype: its own colour,
   // weapon, silhouette (bw = torso half-width, sizeMul = overall scale, plus
   // build/heavy/emblem/minTier accents) and a per-bot value that climbs by bay.
+  // `move` = locomotion: legs / tracks (heavy) / jump (jump-pack thrusters) /
+  // hover (no legs, a propulsion glow). drawMarcher renders the chassis to match.
   var BAY_STYLES = [
-    { name: 'Vanguard Bay',  archetype: 'Assault',       body: '#30353f', plate: '#9c9a90', eye: '#ff3b3b', weapon: 'blaster', bw: 4,   sizeMul: 1.00 },
-    { name: 'Recon Bay',     archetype: 'Scout',         body: '#1e3542', plate: '#7fd0ff', eye: '#3dd6ff', weapon: 'rifle',   bw: 3,   sizeMul: 0.82, build: 'slim' },
-    { name: 'Bombard Bay',   archetype: 'Bomber',        body: '#1f3a2b', plate: '#8fe6ad', eye: '#33d17a', weapon: 'cannon',  bw: 4.6, sizeMul: 1.05, build: 'round' },
-    { name: 'Bulwark Bay',   archetype: 'Tank',          body: '#3a3016', plate: '#ffcf6a', eye: '#ffc24b', weapon: 'twin',    bw: 5,   sizeMul: 1.14, heavy: true },
-    { name: 'Cipher Bay',    archetype: 'Hacker',        body: '#2e2440', plate: '#c9a6ff', eye: '#b084f0', weapon: 'spear',   bw: 3.4, sizeMul: 0.9,  build: 'hacker' },
-    { name: 'Aegis Bay',     archetype: 'Medic',         body: '#14312f', plate: '#8fe0d8', eye: '#00beb4', weapon: 'scythe',  bw: 4,   sizeMul: 1.00, emblem: 'cross' },
-    { name: 'Titan Bay',     archetype: 'Muscle Head',   body: '#3a1c26', plate: '#ff9db0', eye: '#ff5a7a', weapon: 'saw',     bw: 5.6, sizeMul: 1.10, heavy: true },
-    { name: 'Havoc Bay',     archetype: 'Heavy Weapons', body: '#3a2712', plate: '#ffbf8a', eye: '#ff8a1e', weapon: 'laser',   bw: 4.6, sizeMul: 1.08 },
-    { name: 'Colossus Bay',  archetype: 'Juggernaut',    body: '#20233a', plate: '#a3a8ff', eye: '#6e6eff', weapon: 'hammer',  bw: 5.2, sizeMul: 1.18, heavy: true },
-    { name: 'Omega Bay',     archetype: 'World Ender',   body: '#331f38', plate: '#f0a0e0', eye: '#e650c8', weapon: 'bow',     bw: 4.4, sizeMul: 1.20, minTier: 4 },
+    { name: 'Vanguard Bay',  archetype: 'Assault',       body: '#30353f', plate: '#9c9a90', eye: '#ff3b3b', weapon: 'blaster', bw: 4,   sizeMul: 1.00, move: 'jump' },
+    { name: 'Recon Bay',     archetype: 'Scout',         body: '#1e3542', plate: '#7fd0ff', eye: '#3dd6ff', weapon: 'rifle',   bw: 3,   sizeMul: 0.82, build: 'slim', move: 'hover' },
+    { name: 'Bombard Bay',   archetype: 'Bomber',        body: '#1f3a2b', plate: '#8fe6ad', eye: '#33d17a', weapon: 'cannon',  bw: 4.6, sizeMul: 1.05, build: 'round', move: 'legs' },
+    { name: 'Bulwark Bay',   archetype: 'Tank',          body: '#3a3016', plate: '#ffcf6a', eye: '#ffc24b', weapon: 'twin',    bw: 5,   sizeMul: 1.14, heavy: true, move: 'tracks' },
+    { name: 'Cipher Bay',    archetype: 'Hacker',        body: '#2e2440', plate: '#c9a6ff', eye: '#b084f0', weapon: 'spear',   bw: 3.4, sizeMul: 0.9,  build: 'hacker', move: 'legs' },
+    { name: 'Aegis Bay',     archetype: 'Medic',         body: '#14312f', plate: '#8fe0d8', eye: '#00beb4', weapon: 'scythe',  bw: 4,   sizeMul: 1.00, emblem: 'cross', move: 'hover' },
+    { name: 'Titan Bay',     archetype: 'Muscle Head',   body: '#3a1c26', plate: '#ff9db0', eye: '#ff5a7a', weapon: 'saw',     bw: 5.6, sizeMul: 1.10, heavy: true, move: 'legs' },
+    { name: 'Havoc Bay',     archetype: 'Heavy Weapons', body: '#3a2712', plate: '#ffbf8a', eye: '#ff8a1e', weapon: 'laser',   bw: 4.6, sizeMul: 1.08, move: 'tracks' },
+    { name: 'Colossus Bay',  archetype: 'Juggernaut',    body: '#20233a', plate: '#a3a8ff', eye: '#6e6eff', weapon: 'hammer',  bw: 5.2, sizeMul: 1.18, heavy: true, move: 'tracks' },
+    { name: 'Omega Bay',     archetype: 'World Ender',   body: '#331f38', plate: '#f0a0e0', eye: '#e650c8', weapon: 'bow',     bw: 4.4, sizeMul: 1.20, minTier: 4, move: 'hover' },
+    { name: 'Skyhook Bay',   archetype: 'Drone',         body: '#12303a', plate: '#8fe0ff', eye: '#28e0ff', weapon: 'rifle',   bw: 2.8, sizeMul: 0.78, build: 'slim', move: 'hover' },
+    { name: 'Salvage Bay',   archetype: 'Scrapper',      body: '#2f2a1c', plate: '#c9b98a', eye: '#e0c552', weapon: 'saw',     bw: 4.2, sizeMul: 0.98, build: 'round', move: 'tracks' },
+    { name: 'Longshot Bay',  archetype: 'Sniper',        body: '#20303a', plate: '#a6c6d6', eye: '#7fe0ff', weapon: 'rifle',   bw: 3.2, sizeMul: 0.9,  build: 'slim', move: 'legs' },
+    { name: 'Inferno Bay',   archetype: 'Pyro',          body: '#3a2012', plate: '#ffb07a', eye: '#ff6a1e', weapon: 'laser',   bw: 4.4, sizeMul: 1.06, move: 'jump' },
+    { name: 'Rime Bay',      archetype: 'Cryo',          body: '#1a2e3a', plate: '#bfe8ff', eye: '#9be8ff', weapon: 'spear',   bw: 4,   sizeMul: 1.00, move: 'legs' },
+    { name: 'Voltaic Bay',   archetype: 'Shocker',       body: '#2a2440', plate: '#c9c0ff', eye: '#8a7bff', weapon: 'blaster', bw: 4,   sizeMul: 1.02, move: 'hover' },
+    { name: 'Warden Bay',    archetype: 'Warden',        body: '#22331f', plate: '#b6e08a', eye: '#8fe64b', weapon: 'hammer',  bw: 5,   sizeMul: 1.15, heavy: true, move: 'tracks' },
+    { name: 'Reaver Bay',    archetype: 'Reaver',        body: '#331828', plate: '#f0a0c0', eye: '#ff4d8a', weapon: 'scythe',  bw: 4.6, sizeMul: 1.08, move: 'jump' },
+    { name: 'Paragon Bay',   archetype: 'Paladin',       body: '#2a2a3a', plate: '#d6d0ff', eye: '#a0a0ff', weapon: 'twin',    bw: 4.8, sizeMul: 1.12, heavy: true, move: 'legs' },
+    { name: 'Apex Bay',      archetype: 'Apex Predator',  body: '#301838', plate: '#e0a0f0', eye: '#d24bff', weapon: 'bow',     bw: 4.8, sizeMul: 1.22, minTier: 4, move: 'hover' },
   ];
   // Per-bot value climbs 1.5x per bay (bay 1 = base, bay 10 ~= 38x) -- the same
   // exponential family the unlock/upgrade costs use.
   function bayValueMul(b) { return Math.pow(1.5, b); }
+  // Compact archetype table the foundry reads for its Production Bays panel and
+  // the bay-power math (the room owns BAY_STYLES; the foundry is a separate IIFE).
+  window.__bayArch = BAY_STYLES.map(function (s) {
+    return { name: s.name, archetype: s.archetype, move: s.move || 'legs', eye: s.eye,
+      base: Math.round(8 * (s.sizeMul || 1) * (s.heavy ? 1.25 : 1)) };
+  });
 
   var ASSET_BASE = '/pixel-assets/';
   var ASSET_VER = '?v=2';   // bump when sprite geometry changes, so an installed app never pairs new layout maths with cached old art
@@ -6612,8 +6653,8 @@ window.__sfx = (function () {
   // cap at 10.
   var UPGRADES = [
     { id: 'yield', name: 'Bit Yield', base: 2, grow: 1.85, max: 30, desc: function (l) { return (l === 0 ? '0.1' : l.toFixed(1)) + ' bits per robot' + (l < 30 ? ' → ' + (l === 0 ? '1.0' : (l + 1).toFixed(1)) : ''); } },
-    { id: 'perbay', name: 'Robots / Bay', base: 5, grow: 1.8, max: 8, desc: function (l) { return (2 + l) + ' robots per bay (cap 10)'; } },
-    { id: 'bays', name: 'Open Bay', base: 25, grow: 2.35, max: 9, desc: function (l) { return (1 + l) + ' production bays open (cap 10)'; } },
+    { id: 'perbay', name: 'Robots / Bay', base: 5, grow: 1.8, max: 18, desc: function (l) { return (2 + l) + ' robots per bay (cap 20)'; } },
+    { id: 'bays', name: 'Open Bay', base: 25, grow: 2.35, max: 19, desc: function (l) { return (1 + l) + ' production bays open (cap 20)'; } },
     { id: 'belt', name: 'Conveyor', base: 10, grow: 1.6, max: 20, desc: function (l) { return '+20% belt speed (x' + (1 + 0.2 * l).toFixed(1) + ')'; } },
     { id: 'collector', name: 'Auto-Collector', base: 14, grow: 1.7, max: 20, desc: function (l) { return '+0.5 bits / sec while idle (' + (0.5 * l).toFixed(1) + '/s)'; } },
     { id: 'march', name: 'March Drums', base: 12, grow: 1.6, max: 8, desc: function (l) { return '+15% march & walk speed (x' + (1 + 0.15 * l).toFixed(2) + ')'; } },
@@ -6621,16 +6662,27 @@ window.__sfx = (function () {
     { id: 'offline', name: 'Offline Storage', base: 250, grow: 1.8, max: 10, desc: function (l) { return (1.5 + l) + 'h of offline accrual (+1h)'; } },
   ];
 
-  var ASM = { grow: 1.6, max: 20 };
+  // Per-bay upgrades: each open production bay tunes its own Assembler (speed),
+  // March (speed), Weapon and Armor. Weapon + Armor (and, a little, Assembler +
+  // March) drive that bay's POWER; the sum of all bay power gives the adventure
+  // robot a small-to-medium combat boost. Rendered as compact cards in the
+  // Production Bays panel, one per bay -- next to the machines, not in the list.
   function asmBase(i) { return Math.ceil(8 * Math.pow(2.4, i)); }
-  function bayAsmList() {
-    var n = (window.__foundry && window.__foundry.bays) || 1, out = [];
-    for (var i = 0; i < n; i++) out.push({
-      id: 'asm' + i, name: 'Assembler ' + (i + 1), base: asmBase(i), grow: ASM.grow, max: ASM.max,
-      desc: function (l) { return '+25% this bay speed (x' + (1 + 0.25 * l).toFixed(2) + ')'; }
-    });
-    return out;
+  var BAY_UP = [
+    { k: 'asm',  name: 'Assembler', abbr: 'ASM', grow: 1.6,  max: 20, base: function (b) { return Math.ceil(8 * Math.pow(2.4, b)); },  desc: function (l) { return '+25% bay speed (x' + (1 + 0.25 * l).toFixed(2) + ')'; } },
+    { k: 'mrch', name: 'March',     abbr: 'MCH', grow: 1.55, max: 15, base: function (b) { return Math.ceil(10 * Math.pow(2.4, b)); }, desc: function (l) { return '+10% this bay march (x' + (1 + 0.10 * l).toFixed(2) + ')'; } },
+    { k: 'wpn',  name: 'Weapon',    abbr: 'WPN', grow: 1.7,  max: 20, base: function (b) { return Math.ceil(14 * Math.pow(2.4, b)); }, desc: function (l) { return '+' + (2 * l) + ' bay power (weapon)'; } },
+    { k: 'arm',  name: 'Armor',     abbr: 'ARM', grow: 1.7,  max: 20, base: function (b) { return Math.ceil(12 * Math.pow(2.4, b)); }, desc: function (l) { return '+' + (1.5 * l).toFixed(1) + ' bay power (armor)'; } },
+  ];
+  function bayUpgDef(u, b) { return { id: u.k + b, name: u.name + ' ' + (b + 1), base: u.base(b), grow: u.grow, max: u.max, desc: u.desc }; }
+  function bayArch(b) { var a = window.__bayArch || []; return (a.length ? a[b % a.length] : null) || { name: 'Bay ' + (b + 1), archetype: '', base: 8, move: 'legs', eye: '#ff3b3b' }; }
+  function bayStrength(b) {
+    var a = bayArch(b);
+    return Math.round(a.base * (1 + 0.25 * lvl('wpn' + b) + 0.18 * lvl('arm' + b) + 0.08 * lvl('asm' + b) + 0.06 * lvl('mrch' + b)));
   }
+  function bayOpenCount() { return 1 + lvl('bays'); }
+  function totalBayPower() { for (var b = 0, s = 0, n = bayOpenCount(); b < n; b++) s += bayStrength(b); return s; }
+  function bayPowerMult() { return 1 + Math.min(0.5, totalBayPower() / 500); }   // small-to-medium adventurer boost, capped +50%
 
   // ---- Refinery: an adamantium forge and a vibranium forge cast ingots onto
   // one belt that feeds a currency press. Each machine and the belt upgrade
@@ -6994,7 +7046,7 @@ window.__sfx = (function () {
 
   function renderUpgrades() {
     if (!upsEl) return;
-    var list = UPGRADES.concat(bayAsmList());
+    var list = UPGRADES;   // per-bay upgrades now live in the Production Bays panel (renderBays)
     upsEl.innerHTML = list.map(function (u) {
       var l = lvl(u.id), maxed = l >= u.max, c = cost(u), can = state.bits >= c && !maxed;
       return '<button type="button" class="foundry-up' + (can ? ' affordable' : '') + '" data-up="' + u.id + '"' + (maxed ? ' disabled' : '') + '>' +
@@ -7015,6 +7067,38 @@ window.__sfx = (function () {
         publish();
         if (u.id === 'bays' && window.__roomRelayout) window.__roomRelayout();
         dirty = true; save(); renderUpgrades();
+      });
+    });
+    renderBays();
+  }
+
+  var baysEl = document.getElementById('foundry-bays');
+  function renderBays() {
+    if (!baysEl) return;
+    var n = bayOpenCount(), total = totalBayPower(), boost = Math.round((bayPowerMult() - 1) * 100), cards = '';
+    for (var b = 0; b < n; b++) {
+      var a = bayArch(b), pw = bayStrength(b);
+      var ups = BAY_UP.map(function (u) {
+        var def = bayUpgDef(u, b), l = lvl(def.id), maxed = l >= u.max, c = cost(def), can = state.bits >= c && !maxed;
+        return '<button type="button" class="bay-up' + (can ? ' can' : '') + '" data-bup="' + u.k + '" data-bay="' + b + '"' + (maxed ? ' disabled' : '') + ' title="' + esc(u.name + ' — ' + def.desc(l)) + '">' +
+          '<span class="bay-up-k">' + u.abbr + '</span><span class="bay-up-l">' + l + '</span><span class="bay-up-c">' + (maxed ? 'max' : fmt(c)) + '</span></button>';
+      }).join('');
+      cards += '<div class="bay-card" style="--bec:' + (a.eye || '#ff3b3b') + '">' +
+        '<div class="bay-card-h"><span class="bay-nm">' + esc(a.name) + '</span><span class="bay-arch">' + esc(a.archetype + ' · ' + a.move) + '</span></div>' +
+        '<div class="bay-pw">⚔ Power <b>' + pw + '</b></div>' +
+        '<div class="bay-ups">' + ups + '</div></div>';
+    }
+    baysEl.innerHTML = '<div class="bays-tot">Total bay power <b>' + total + '</b> → <span class="bays-boost">+' + boost + '% adventurer power</span></div>' +
+      '<div class="bays-grid">' + cards + '</div>';
+    baysEl.querySelectorAll('[data-bup]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var u = BAY_UP.filter(function (x) { return x.k === btn.dataset.bup; })[0]; if (!u) return;
+        var def = bayUpgDef(u, +btn.dataset.bay), c = cost(def);
+        if (lvl(def.id) >= u.max || state.bits < c) return;
+        state.bits -= c; state.up[def.id] = lvl(def.id) + 1;
+        if (window.__sfx) window.__sfx('unlock');
+        gamePop('▲ ' + def.name + ' Lv ' + lvl(def.id), '#ffd88a');
+        publish(); dirty = true; save(); renderBays(); renderBalance(); if (typeof renderAdventure === 'function') renderAdventure();
       });
     });
   }
@@ -7426,7 +7510,7 @@ window.__sfx = (function () {
     var region = REGIONS[ri] || REGIONS[0];
     var lootSkill = Math.floor(skillLvl('loot') / 2);
     var ilvl = isDungeon ? (dungeonIlvl(di) + lootSkill) : (run.ilvl + (region.ilvl || 0) + lootSkill + (isBoss ? 2 : 0));
-    var pmult = 1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum');   // Kinetic + Ballistics + Quantum
+    var pmult = (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult();   // skills + the army's total bay power
     var bmult = isDungeon ? dungeonBossMult(di) : (isBoss ? 2.2 : 0);
     var battle = window.Combat ? Combat.resolveRun(a.gear, { ilvl: ilvl, dur: a.dur, seed: 'b' + Date.now() + Math.random(), powerMult: pmult, bossMult: bmult }) : null;
     a.lastBattle = battle; a.lastBoss = isDungeon ? dungeon.name : isBoss ? BOSSES[ri].name : null;
