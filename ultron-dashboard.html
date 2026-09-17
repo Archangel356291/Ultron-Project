@@ -758,6 +758,15 @@
   .exp-item.on{ box-shadow:inset 0 0 0 1px currentColor; }
   .exp-i-stats{ width:100%; font-family:var(--font-mono); font-size:9.5px; color:var(--text-dim); }
   .exp-i-ab{ width:100%; font-size:10px; color:var(--text-faint); font-style:italic; }
+  .exp-salv{ color:#9be8ff !important; }
+  .exp-salv:hover{ border-color:rgba(120,200,255,.55) !important; }
+  .exp-mats{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:10px 0 4px; }
+  .mat{ font-family:var(--font-mono); font-size:11px; padding:3px 8px; border-radius:5px; border:1px solid var(--line); background:var(--void); }
+  .mat.scrap{ color:#c9ccd2; } .mat.alloy{ color:#9be8ff; } .mat.core{ color:#ff9db8; }
+  .mat-hint{ font-size:10.5px; color:var(--text-faint); }
+  .exp-reinf{ display:block; width:100%; margin-top:6px; font-family:var(--font-mono); font-size:10px; color:var(--text-faint); background:none; border:1px solid var(--line); border-radius:5px; padding:3px 7px; cursor:not-allowed; }
+  .exp-reinf.can{ color:#9be8ff; border-color:rgba(120,200,255,.5); cursor:pointer; }
+  .exp-reinf.can:hover{ background:rgba(120,200,255,.08); }
   .exp-hint{ font-size:11px; color:var(--text-faint); margin-top:10px; }
   .exp-stat.pow{ border-color:rgba(230,164,30,.55); color:#ffd88a; }
   .exp-battle{ margin-top:10px; padding:9px 12px; border-radius:8px; border:1px solid var(--line); background:var(--panel-raised); font-size:12.5px; border-left-width:3px; }
@@ -6414,7 +6423,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -6425,6 +6434,7 @@ window.__sfx = (function () {
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
   if (!state.adv.region) state.adv.region = 0;
+  if (!state.mats) state.mats = { scrap: 0, alloy: 0, core: 0 };
 
   var saveTimer = null;
   function save() {
@@ -6879,6 +6889,24 @@ window.__sfx = (function () {
   var VENDOR = 6;   // sell scales loot value into foundry bits (tunable)
   function sellValue(it) { return Math.max(1, Math.round((it.sellPrice || Math.round((it.value || 10) * 0.25)) * VENDOR)); }
   function gearHasId(gear, id) { return Object.keys(gear || {}).some(function (k) { return gear[k] && gear[k].id === id; }); }
+  // ---- Crafting economy: dismantle spare loot into materials (scrap / alloy /
+  // core, richer from higher-tier loot), then spend them to REINFORCE equipped
+  // parts (+8% to every stat per level). ----
+  function matYield(tier) {
+    tier = tier || 1; var y = { scrap: 0, alloy: 0, core: 0 };
+    if (tier <= 2) y.scrap = 2 + tier * 2;
+    else if (tier === 3) { y.scrap = 6; y.alloy = 1; }
+    else if (tier === 4) { y.scrap = 4; y.alloy = 3; }
+    else if (tier === 5) { y.alloy = 5; y.core = 1; }
+    else { y.alloy = 4; y.core = 3; }
+    return y;
+  }
+  function itemTier(it) { return it.tier || ({ Common: 1, Uncommon: 2, Rare: 3, Epic: 4, Legendary: 5, Mythic: 6 }[it.rarity] || 1); }
+  function reinforceCost(plus) { return { scrap: 8 * (plus + 1), alloy: 3 * (plus + 1), core: plus >= 4 ? (plus - 3) : 0 }; }
+  function canAfford(c) { var m = state.mats || {}; return (m.scrap || 0) >= (c.scrap || 0) && (m.alloy || 0) >= (c.alloy || 0) && (m.core || 0) >= (c.core || 0); }
+  function payMats(c) { state.mats.scrap -= (c.scrap || 0); state.mats.alloy -= (c.alloy || 0); state.mats.core -= (c.core || 0); }
+  function addMats(y) { state.mats = state.mats || { scrap: 0, alloy: 0, core: 0 }; state.mats.scrap += y.scrap || 0; state.mats.alloy += y.alloy || 0; state.mats.core += y.core || 0; }
+  function costStr(c) { var p = []; if (c.scrap) p.push('\u2B22' + c.scrap); if (c.alloy) p.push('\u25C8' + c.alloy); if (c.core) p.push('\u2726' + c.core); return p.join(' '); }
   function claimAdventure() {
     var a = state.adv, run = ADV_DUR[a.dur] || ADV_DUR[0];
     var region = REGIONS[a.region || 0] || REGIONS[0];
@@ -7026,12 +7054,16 @@ window.__sfx = (function () {
     // loadout: five slots, click an inventory part to equip
     var load = SLOTS.map(function (sl) {
       var it = gear[sl.id];
+      var reinf = '';
+      if (it) { var pls = it.plus || 0, rc = reinforceCost(pls), aff = canAfford(rc); reinf = '<button type="button" class="exp-reinf' + (aff ? ' can' : '') + '" data-a="reinforce" data-slot="' + sl.id + '"' + (aff ? '' : ' disabled') + '>reinforce +' + (pls + 1) + ' \u00b7 ' + costStr(rc) + '</button>'; }
       return '<div class="exp-slot' + (it ? '' : ' empty') + '" style="border-color:' + (it ? it.color : 'var(--line)') + '">' +
         '<div class="exp-slot-h">' + sl.ic + ' ' + sl.name + '</div>' +
-        '<div class="exp-slot-n"' + (it ? ' style="color:' + it.color + '"' : '') + '>' + (it ? esc(it.name) : '— empty —') + '</div>' +
-        (it ? '<div class="exp-i-stats">' + statLine(it.stats) + '</div>' + (it.id.indexOf('seed_') ? '<button type="button" class="exp-x" data-a="unequip" data-slot="' + sl.id + '">unequip</button>' : '') : '') +
+        '<div class="exp-slot-n"' + (it ? ' style="color:' + it.color + '"' : '') + '>' + (it ? esc(it.name) + (it.plus ? ' +' + it.plus : '') : '— empty —') + '</div>' +
+        (it ? '<div class="exp-i-stats">' + statLine(it.stats) + '</div>' + reinf + (it.id.indexOf('seed_') ? '<button type="button" class="exp-x" data-a="unequip" data-slot="' + sl.id + '">unequip</button>' : '') : '') +
         '</div>';
     }).join('');
+    var mats = state.mats || { scrap: 0, alloy: 0, core: 0 };
+    var matBar = '<div class="exp-mats"><span class="mat scrap">\u2B22 Scrap ' + Math.floor(mats.scrap) + '</span><span class="mat alloy">\u25C8 Alloy ' + Math.floor(mats.alloy) + '</span><span class="mat core">\u2726 Core ' + Math.floor(mats.core) + '</span><span class="mat-hint">salvage spare loot \u2192 reinforce your gear</span></div>';
     var tot = {}; SLOTS.forEach(function (sl) { var it = gear[sl.id]; if (it && it.stats) { for (var k in it.stats) tot[k] = (tot[k] || 0) + it.stats[k]; } });
     var totKeys = Object.keys(tot).filter(function (k) { return tot[k]; });
     var power = window.Combat ? Combat.deriveStats(gear).power : 0;
@@ -7051,7 +7083,7 @@ window.__sfx = (function () {
         '<span class="exp-i-rar">' + it.rarity + (on ? ' · equipped' : '') + '</span>' +
         (it.stats ? '<span class="exp-i-stats">' + statLine(it.stats) + '</span>' : '') +
         (it.mods && it.mods.length ? '<span class="exp-i-ab">' + esc(it.mods.join(' · ')) + '</span>' : '') +
-        (on ? '' : '<button type="button" class="exp-sell" data-a="sell" data-id="' + it.id + '">sell \u25C9' + sellValue(it) + '</button>') + '</div>';
+        (on ? '' : '<button type="button" class="exp-sell" data-a="sell" data-id="' + it.id + '">sell \u25C9' + sellValue(it) + '</button><button type="button" class="exp-sell exp-salv" data-a="salvage" data-id="' + it.id + '">salvage</button>') + '</div>';
     }).join('');
     expEl.innerHTML =
       '<div class="exp-build"><div class="' + robotCls + '" style="--rc:' + r.color + '"><span class="exp-head"></span><span class="exp-eye"></span><span class="exp-body"></span><span class="exp-base"></span></div>' +
@@ -7060,9 +7092,9 @@ window.__sfx = (function () {
       '<label class="exp-lab">Region</label><div class="exp-row exp-regions">' + regionChips + '</div>' +
       '<div class="exp-hint">Design the look under Chassis Builder; looted parts (with stats) snap into the five slots below.</div></div></div>' +
       renderBuilder(a) +
-      '<div class="exp-load">' + load + '</div>' + totHtml +
+      matBar + '<div class="exp-load">' + load + '</div>' + totHtml +
       status + battleHtml + haul +
-      (inv ? '<div class="exp-inv-h">Inventory (' + (a.inv || []).length + ') \u2014 tap a part to equip<button type="button" class="exp-selljunk" data-a="sell-junk">Sell all Common</button></div><div class="exp-inv">' + inv + '</div>' : '');
+      (inv ? '<div class="exp-inv-h">Inventory (' + (a.inv || []).length + ') \u2014 tap a part to equip<button type="button" class="exp-selljunk" data-a="sell-junk">Sell all Common</button><button type="button" class="exp-selljunk" data-a="salvage-junk">Salvage all Common</button></div><div class="exp-inv">' + inv + '</div>' : '');
   }
   if (expEl) {
     expEl.addEventListener('click', function (e) {
@@ -7075,6 +7107,9 @@ window.__sfx = (function () {
       else if (act === 'unequip') { if (a.gear) { delete a.gear[b.dataset.slot]; dirty = true; save(); renderAdventure(); } }
       else if (act === 'sell') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { state.bits += sellValue(it); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); dirty = true; save(); renderBalance(); renderAdventure(); } }
       else if (act === 'sell-junk') { var kept = [], gained = 0; (a.inv || []).forEach(function (x) { if (x.rarity === 'Common' && !gearHasId(a.gear, x.id)) gained += sellValue(x); else kept.push(x); }); if (gained > 0) { state.bits += gained; a.inv = kept; dirty = true; save(); renderBalance(); renderAdventure(); } }
+      else if (act === 'salvage') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { addMats(matYield(itemTier(it))); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); if (window.__sfx) window.__sfx('press'); dirty = true; save(); renderAdventure(); } }
+      else if (act === 'salvage-junk') { var kept2 = [], got = false; (a.inv || []).forEach(function (x) { if (x.rarity === 'Common' && !gearHasId(a.gear, x.id)) { addMats(matYield(itemTier(x))); got = true; } else kept2.push(x); }); if (got) { a.inv = kept2; if (window.__sfx) window.__sfx('press'); dirty = true; save(); renderAdventure(); } }
+      else if (act === 'reinforce') { var g = a.gear && a.gear[b.dataset.slot]; if (g) { var pls = g.plus || 0, rc = reinforceCost(pls); if (canAfford(rc)) { payMats(rc); for (var sk in g.stats) g.stats[sk] = Math.max(1, Math.round(g.stats[sk] * 1.08)); g.plus = pls + 1; if (window.__sfx) window.__sfx('unlock'); dirty = true; save(); renderAdventure(); } } }
       else if (act === 'preset') { var pr = PRESETS[b.dataset.v]; if (pr) { a.build = a.build || {}; for (var k in pr) { if (k === '_color') a.robot.color = pr[k]; else a.build[k] = pr[k]; } dirty = true; save(); renderAdventure(); } }
       else if (act === 'save-load') { var inp = expEl.querySelector('.exp-ldname'); var nm = (inp && inp.value.trim()) || ('Build ' + (Object.keys(a.loadouts || {}).length + 1)); a.loadouts = a.loadouts || {}; a.loadouts[nm] = { build: Object.assign({}, a.build), color: a.robot.color }; dirty = true; save(); renderAdventure(); }
       else if (act === 'load-ld') { var ld = (a.loadouts || {})[b.dataset.v]; if (ld) { a.build = Object.assign({}, ld.build); if (ld.color) a.robot.color = ld.color; dirty = true; save(); renderAdventure(); } }
@@ -7122,6 +7157,7 @@ window.__sfx = (function () {
       if (j.prestige) state.prestige = j.prestige;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
+      if (j.mats) state.mats = j.mats;
       UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
       if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
       publish();
