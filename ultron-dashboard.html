@@ -651,7 +651,8 @@
 
   /* Ultron's foundry -- the idle-game panel under his corner. */
   .foundry{ max-width:1280px; }
-  .foundry-bal{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-mono); position:relative; }
+  /* sticky so the currency stays posted at the top of the game panel while scrolling */
+  .foundry-bal{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-mono); position:sticky; top:0; z-index:40; background:var(--bg,#0b0d10); padding:8px 6px; margin:-8px -6px 4px; border-bottom:1px solid var(--line); box-shadow:0 6px 14px -8px rgba(0,0,0,.6); }
   .game-pops{ position:absolute; left:0; right:0; top:-4px; pointer-events:none; display:flex; flex-direction:column; align-items:center; gap:1px; z-index:6; }
   .game-pop{ font-family:var(--font-display); font-weight:700; font-size:12.5px; animation:gamePop 1s ease-out forwards; text-shadow:0 1px 4px rgba(0,0,0,.7); white-space:nowrap; }
   @keyframes gamePop{ 0%{opacity:0; transform:translateY(6px) scale(.8);} 18%{opacity:1; transform:translateY(0) scale(1.12);} 100%{opacity:0; transform:translateY(-24px) scale(1);} }
@@ -5902,6 +5903,70 @@ function toggleReducedVisuals(el) {
     if (walkX <= walkMinX) { walkX = walkMinX; walkDir = 1; }
   }
 
+  // ---- Recurring gag: a little Iron Man sneaks into Ultron's office; Ultron
+  // beats him up and throws him out the window. Fires every 45s with a
+  // notification toast so the user can scroll up and watch. ----
+  var ironMan = { phase: 'gone', pt: 0, x: 0, y: 0, vx: 0, vy: 0, punchT: 0, rot: 0 };
+  function imToast() {
+    var el = document.getElementById('im-toast');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'im-toast';
+      el.style.cssText = 'position:fixed; top:14px; right:14px; z-index:99999; background:#16181c; border:1px solid #ff3b3b; color:#ffd6d6; font:12px/1.45 ui-monospace,monospace; padding:9px 13px; border-radius:7px; box-shadow:0 8px 24px -6px rgba(0,0,0,.75); cursor:pointer; max-width:250px; transition:opacity .3s;';
+      el.addEventListener('click', function () { var c = document.getElementById('pixel-room-canvas'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      document.body.appendChild(el);
+    }
+    el.innerHTML = '⚡ <b>Intruder in Ultron’s office!</b><br>He’s dealing with it — click to watch 👀';
+    el.style.opacity = '1'; el.style.display = 'block';
+    clearTimeout(el._t); el._t = setTimeout(function () { el.style.opacity = '0'; setTimeout(function () { el.style.display = 'none'; }, 300); }, 6000);
+  }
+  function startIronMan() {
+    if (ironMan.phase !== 'gone' || typeof officeFloorY !== 'number') return;
+    ironMan.phase = 'enter'; ironMan.pt = 0; ironMan.rot = 0;
+    ironMan.x = LEFT - 24; ironMan.y = officeFloorY - 4;
+    imToast();
+    if (window.__sfx) window.__sfx('boss');
+  }
+  setTimeout(startIronMan, 10000);   // first cameo shortly after load
+  setInterval(startIronMan, 45000);  // then every 45s
+  function stepIronMan(t, dt) {
+    var im = ironMan; if (im.phase === 'gone') return;
+    var target = Math.max(walkMinX + 40, walkX - 34);   // stand just left of Ultron
+    if (im.phase === 'enter') {
+      im.y = officeFloorY - 4; im.x += (target - im.x) * Math.min(1, dt * 3.2); im.pt += dt;
+      if (Math.abs(im.x - target) < 6 || im.pt > 2.6) { im.phase = 'beat'; im.pt = 0; }
+    } else if (im.phase === 'beat') {
+      im.x = target + Math.sin(t * 34) * 2.4; im.y = officeFloorY - 4; im.pt += dt;
+      if (Math.random() < dt * 7) { im.punchT = t + 0.16; if (window.__sfx) window.__sfx('punch'); }
+      if (im.pt > 2.2) { im.phase = 'toss'; im.pt = 0; im.vx = 210; im.vy = -300; if (window.__sfx) window.__sfx('thud'); }
+    } else if (im.phase === 'toss') {
+      im.x += im.vx * dt; im.y += im.vy * dt; im.vy += 560 * dt; im.rot += dt * 7; im.pt += dt;
+      if (im.pt > 1.8 || im.y > officeFloorY + 60) im.phase = 'gone';
+    }
+  }
+  function drawIronMan(t) {
+    var im = ironMan; if (im.phase === 'gone') return;
+    var R = '#c0392b', G = '#f1c40f', GD = '#c9a227';
+    ctx.save(); ctx.translate(im.x, im.y); ctx.scale(1.7, 1.7); if (im.phase === 'toss') ctx.rotate(im.rot);
+    if (im.phase !== 'toss') { ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0, 2, 8, 2.2, 0, 0, 6.28); ctx.fill(); }
+    ctx.fillStyle = R; ctx.fillRect(-4, -6, 3.4, 6); ctx.fillRect(0.6, -6, 3.4, 6);                 // legs
+    ctx.fillStyle = GD; ctx.fillRect(-4, -1.6, 3.4, 1.6); ctx.fillRect(0.6, -1.6, 3.4, 1.6);        // gold boots
+    ctx.fillStyle = R; ctx.fillRect(-5, -15, 10, 9);                                                // torso
+    ctx.fillStyle = G; ctx.fillRect(-5, -15, 2, 9); ctx.fillRect(3, -15, 2, 9);                     // gold panels
+    ctx.fillStyle = '#0af'; ctx.beginPath(); ctx.arc(0, -11, 2.1, 0, 6.28); ctx.fill();             // arc reactor
+    ctx.fillStyle = '#dffbff'; ctx.beginPath(); ctx.arc(0, -11, 1, 0, 6.28); ctx.fill();
+    ctx.fillStyle = R; ctx.fillRect(-7, -14, 2.4, 7); ctx.fillRect(4.6, -14, 2.4, 7);               // arms
+    ctx.fillStyle = G; ctx.fillRect(-3.4, -22, 6.8, 6.6);                                           // gold faceplate
+    ctx.fillStyle = GD; ctx.fillRect(-3.4, -22, 6.8, 1);
+    ctx.fillStyle = im.phase === 'beat' ? '#fff' : '#9be8ff'; ctx.fillRect(-2.4, -19.6, 1.8, 1.2); ctx.fillRect(0.6, -19.6, 1.8, 1.2);   // eyes
+    ctx.restore();
+    if (im.phase === 'beat' && t < im.punchT + 0.16) {   // "POW!" impact star
+      var px = (im.x + walkX) / 2, py = officeFloorY - 34;
+      ctx.save(); ctx.translate(px, py); ctx.fillStyle = '#ffd24b';
+      ctx.beginPath(); for (var k = 0; k < 10; k++) { var a = k * Math.PI / 5, r = k % 2 ? 5 : 12; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#c0392b'; ctx.font = 'bold 9px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('POW', 0, 0); ctx.restore();
+    }
+  }
+
   // ---- basement: a production line that stamps out pixel robots which fall
   // in, salute "for a Better World", and march up the stairs and out the same
   // OUT the packages leave by -- on a permanent loop. ----
@@ -6501,6 +6566,7 @@ function toggleReducedVisuals(el) {
     drawRelics(t);   // Tesseract / Orb / Eye on pedestals + the Aether tube on the desk
     drawPowerStation(t);   // vibranium body + Infinity Stones + arc reactor + charge meter
     if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, officeFloorY + 4);
+    drawIronMan(t);   // recurring gag: the intruder Ultron is beating up / tossing out
 
     drawBelt(LEFT, liftX, officeFloorY, t, 1);                     // Ultron's office belt -> lift
     SUBAGENTS.forEach(function (a, i) { if (i % cols === 0) drawBelt(LEFT, liftX, a.floorY, t, 1); });
@@ -6594,6 +6660,7 @@ function toggleReducedVisuals(el) {
     lastFrameT = t;
     if (!laidOut && !(laidOut = layout())) return;
     stepWalk(t);
+    stepIronMan(t, dt);
     updateParcels(t, dt);
     updateBays(t, dt);
     updateCoins(dt);
@@ -6708,22 +6775,60 @@ window.__sfx = (function () {
     if (ctx && ctx.state === 'suspended') { try { ctx.resume(); } catch (e) { } }
     return ctx;
   }
-  function tone(freq, dur, type, vol, slideTo) {
-    var c = ac(); if (!c) return;
-    var o = c.createOscillator(), g = c.createGain();
-    o.type = type || 'sine'; o.frequency.setValueAtTime(freq, c.currentTime);
-    if (slideTo) { try { o.frequency.exponentialRampToValueAtTime(slideTo, c.currentTime + dur); } catch (e) { } }
-    g.gain.setValueAtTime(vol || 0.12, c.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
-    o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + dur);
+  // ---- Richer procedural audio engine (Web Audio, zero samples/deps). Each
+  // sound is composed from ADSR-enveloped oscillator voices + filtered white
+  // noise, so effects have body (attack transient, tone, texture) instead of a
+  // bare beep. A shared master gain keeps the mix from clipping. ----
+  var master = null, noiseBuf = null;
+  function bus() { var c = ac(); if (!c) return null; if (!master) { master = c.createGain(); master.gain.value = 0.9; master.connect(c.destination); } return master; }
+  function getNoise(c) {
+    if (noiseBuf) return noiseBuf;
+    var n = Math.floor(c.sampleRate * 0.7), b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    noiseBuf = b; return b;
   }
+  // one oscillator voice with an attack + exponential decay envelope, optional
+  // pitch slide, detune and a band/low/high filter.
+  function voice(freq, o) {
+    var c = ac(), b = bus(); if (!c || !b) return; o = o || {};
+    var t0 = c.currentTime + (o.delay || 0), dur = o.dur || 0.15, a = o.a || 0.006;
+    var osc = c.createOscillator(), g = c.createGain(), node = osc;
+    osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(freq, t0);
+    if (o.slide) { try { osc.frequency.exponentialRampToValueAtTime(Math.max(20, o.slide), t0 + dur); } catch (e) { } }
+    if (o.detune) osc.detune.setValueAtTime(o.detune, t0);
+    if (o.filter) { var f = c.createBiquadFilter(); f.type = o.filter; f.frequency.setValueAtTime(o.filterFreq || 1200, t0); if (o.q) f.Q.value = o.q; osc.connect(f); node = f; }
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(o.vol != null ? o.vol : 0.12, t0 + a); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    node.connect(g); g.connect(b); osc.start(t0); osc.stop(t0 + dur + 0.03);
+  }
+  // a filtered white-noise burst -- texture for hits, clanks, explosions, sweeps.
+  function noise(o) {
+    var c = ac(), b = bus(); if (!c || !b) return; o = o || {};
+    var t0 = c.currentTime + (o.delay || 0), dur = o.dur || 0.2;
+    var src = c.createBufferSource(); src.buffer = getNoise(c);
+    var f = c.createBiquadFilter(); f.type = o.filter || 'lowpass'; f.frequency.setValueAtTime(o.freq || 1000, t0);
+    if (o.slide) { try { f.frequency.exponentialRampToValueAtTime(Math.max(60, o.slide), t0 + dur); } catch (e) { } }
+    if (o.q) f.Q.value = o.q;
+    var g = c.createGain(); g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(o.vol != null ? o.vol : 0.1, t0 + (o.a || 0.004)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(f); f.connect(g); g.connect(b); src.start(t0); src.stop(t0 + dur + 0.03);
+  }
+  function arp(freqs, o) { o = o || {}; freqs.forEach(function (fr, i) { voice(fr, { type: o.type || 'sine', dur: o.dur || 0.16, vol: o.vol || 0.1, delay: i * (o.step || 0.08), detune: o.detune || 0 }); if (o.oct) voice(fr * 2, { type: o.type || 'sine', dur: (o.dur || 0.16) * 0.7, vol: (o.vol || 0.1) * 0.3, delay: i * (o.step || 0.08) }); }); }
+  // A distinct, textured sound per event -- no two share a signature.
   function fn(name) {
     if (muted) return;
-    if (name === 'coin') { var now = Date.now(); if (now - lastCoin < 220) return; lastCoin = now; tone(880, 0.09, 'triangle', 0.07, 1320); }
-    else if (name === 'unlock') { tone(523, 0.12, 'sine', 0.11); setTimeout(function () { tone(784, 0.14, 'sine', 0.11); }, 90); }
-    else if (name === 'level') { tone(659, 0.12, 'sine', 0.12); setTimeout(function () { tone(988, 0.2, 'sine', 0.12); }, 110); }
-    else if (name === 'reboot') { tone(200, 0.5, 'sawtooth', 0.1, 1200); }
-    else if (name === 'press') { tone(120, 0.11, 'square', 0.07, 60); }
+    switch (name) {
+      case 'coin': case 'earn': { var now = Date.now(); if (now - lastCoin < 200) return; lastCoin = now; voice(880, { type: 'triangle', dur: 0.07, vol: 0.09, slide: 1180 }); voice(1320, { type: 'triangle', dur: 0.09, vol: 0.08, delay: 0.06, slide: 1560 }); break; }   // money: bright rising ping
+      case 'upgrade': voice(440, { type: 'square', dur: 0.06, vol: 0.08, slide: 560, filter: 'lowpass', filterFreq: 2400 }); voice(660, { type: 'square', dur: 0.09, vol: 0.07, delay: 0.06, slide: 800, filter: 'lowpass', filterFreq: 2800 }); break;   // upgrade: filtered square blips up
+      case 'unlock': arp([523, 659, 784], { type: 'sine', dur: 0.16, vol: 0.09, step: 0.08, oct: true }); break;   // new thing: bright 3-note chime + octave shimmer
+      case 'level': arp([659, 988, 1319, 1760], { type: 'sine', dur: 0.18, vol: 0.1, step: 0.08 }); arp([659, 988, 1319, 1760], { type: 'triangle', dur: 0.18, vol: 0.04, step: 0.08, detune: 9 }); break;   // level: triumphant detuned arpeggio
+      case 'build': noise({ filter: 'bandpass', freq: 1700, q: 2.4, dur: 0.09, vol: 0.09 }); voice(190, { type: 'square', dur: 0.11, vol: 0.08, delay: 0.03, slide: 120 }); break;   // assemble: metallic clank + thunk
+      case 'die': voice(330, { type: 'sawtooth', dur: 0.5, vol: 0.1, slide: 70 }); voice(330, { type: 'square', dur: 0.5, vol: 0.04, slide: 70, detune: -12 }); noise({ filter: 'lowpass', freq: 900, slide: 180, dur: 0.5, vol: 0.06, delay: 0.05 }); break;   // defeat: descending buzz + fizzle
+      case 'boss': voice(80, { type: 'sawtooth', dur: 0.65, vol: 0.11, slide: 62, detune: -7 }); voice(120, { type: 'square', dur: 0.65, vol: 0.06 }); noise({ filter: 'lowpass', freq: 320, slide: 1100, dur: 0.65, vol: 0.06 }); break;   // boss/vault: ominous detuned drone swell
+      case 'reward': arp([784, 1047, 1568, 2093], { type: 'triangle', dur: 0.14, vol: 0.09, step: 0.07 }); noise({ filter: 'highpass', freq: 6500, dur: 0.35, vol: 0.02, delay: 0.1 }); break;   // haul: shimmer up + sparkle
+      case 'reboot': voice(200, { type: 'sawtooth', dur: 0.6, vol: 0.1, slide: 1400 }); voice(200, { type: 'square', dur: 0.6, vol: 0.05, slide: 1400, detune: 6 }); noise({ filter: 'lowpass', freq: 300, slide: 3200, dur: 0.6, vol: 0.05 }); break;   // prestige: deep power-up sweep
+      case 'press': voice(120, { type: 'square', dur: 0.12, vol: 0.09, slide: 55 }); noise({ filter: 'highpass', freq: 3200, dur: 0.045, vol: 0.06 }); break;   // press stamp: thunk + metallic click
+      case 'thud': voice(90, { type: 'sine', dur: 0.22, vol: 0.13, slide: 44 }); noise({ filter: 'lowpass', freq: 520, slide: 110, dur: 0.22, vol: 0.09 }); break;   // heavy impact / toss
+      case 'punch': noise({ filter: 'bandpass', freq: 900, q: 1.6, dur: 0.06, vol: 0.11 }); voice(160, { type: 'square', dur: 0.05, vol: 0.08, slide: 70 }); break;   // punch: filtered noise hit + low
+    }
   }
   fn.toggle = function () { muted = !muted; try { localStorage.setItem('ultron_sfx_muted', muted ? '1' : '0'); } catch (e) { } if (!muted) { ac(); fn('unlock'); } return muted; };
   fn.muted = function () { return muted; };
@@ -7195,7 +7300,7 @@ window.__sfx = (function () {
         var c = cost(u);
         if (state.bits < c) return;
         state.bits -= c; state.up[u.id] = lvl(u.id) + 1;
-        if (window.__sfx) window.__sfx('unlock');
+        if (window.__sfx) window.__sfx('upgrade');
         gamePop('\u25B2 ' + u.name + ' Lv ' + lvl(u.id), '#ffd88a');
         publish();
         if (u.id === 'bays' && window.__roomRelayout) window.__roomRelayout();
@@ -7240,7 +7345,7 @@ window.__sfx = (function () {
         var g = GENERATORS[+btn.dataset.genup]; if (!g || !genUnlocked(g.id)) return; var c = genUpCost(g);
         if (state.bits < c) return;
         state.bits -= c; state.gen.up = state.gen.up || {}; state.gen.up[g.id] = genLvl(g.id) + 1;
-        if (window.__sfx) window.__sfx('unlock'); gamePop('▲ ' + g.name + ' Lv ' + genLvl(g.id), '#5fe39a');
+        if (window.__sfx) window.__sfx('upgrade'); gamePop('▲ ' + g.name + ' Lv ' + genLvl(g.id), '#5fe39a');
         publish(); dirty = true; save(); renderGenerators(); renderBalance();
       });
     });
@@ -7319,7 +7424,7 @@ window.__sfx = (function () {
     var vb = refEl.querySelector('[data-vendorup]');
     if (vb) vb.addEventListener('click', function () {
       var c = vendorUpCost(); if (state.bits < c) return;
-      state.bits -= c; state.up.vendor = lvl('vendor') + 1; if (window.__sfx) window.__sfx('unlock'); gamePop('\u25b2 Auto-Vendor Lv ' + lvl('vendor'), '#9be8ff'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
+      state.bits -= c; state.up.vendor = lvl('vendor') + 1; if (window.__sfx) window.__sfx('upgrade'); gamePop('\u25b2 Auto-Vendor Lv ' + lvl('vendor'), '#9be8ff'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
     });
     refEl.querySelectorAll('[data-refunl]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -7334,7 +7439,7 @@ window.__sfx = (function () {
         if (!u || !refUnlocked(u.need)) return;
         var l = refLvl(u.id); if (l >= u.max) return;
         var c = Math.ceil(u.base * Math.pow(u.grow, l)); if (state.bits < c) return;
-        state.bits -= c; state.ref.up = state.ref.up || {}; state.ref.up[u.id] = l + 1; if (window.__sfx) window.__sfx('unlock'); gamePop('\u25B2 ' + u.name, '#9be8ff'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
+        state.bits -= c; state.ref.up = state.ref.up || {}; state.ref.up[u.id] = l + 1; if (window.__sfx) window.__sfx('upgrade'); gamePop('\u25B2 ' + u.name, '#9be8ff'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
       });
     });
   }
@@ -7458,7 +7563,7 @@ window.__sfx = (function () {
         if (!sk || (state.prog.pts || 0) <= 0 || skillLvl(sk.id) >= sk.max) return;
         state.prog.skills[sk.id] = skillLvl(sk.id) + 1; state.prog.pts--;
         publish(); dirty = true; save();
-        if (window.__sfx) window.__sfx('unlock');
+        if (window.__sfx) window.__sfx('upgrade');
         renderProgression(); renderBalance(); renderRefinery();
       });
     });
@@ -7715,6 +7820,7 @@ window.__sfx = (function () {
     var bmult = isDungeon ? dungeonBossMult(di) : (isBoss ? 2.2 : 0);
     var battle = window.Combat ? Combat.resolveRun(a.gear, { ilvl: ilvl, dur: a.dur, seed: 'b' + Date.now() + Math.random(), powerMult: pmult, bossMult: bmult }) : null;
     a.lastBattle = battle; a.lastBoss = isDungeon ? dungeon.name : isBoss ? BOSSES[ri].name : null;
+    if (window.__sfx) { if (battle && !battle.win) window.__sfx('die'); else if (isBoss || isDungeon) window.__sfx('boss'); else window.__sfx('reward'); }   // defeat / boss / haul, each its own sound
     var mult = battle ? battle.lootMult : 1;
     var lootCount = Math.max(1, Math.round((isDungeon ? 3 + di : run.loot) * mult));
     var bonusIlvl = ilvl + (battle && battle.win ? 1 : 0);   // a win yields better loot
@@ -7936,7 +8042,7 @@ window.__sfx = (function () {
       else if (act === 'sell-junk') { var kept = [], gained = 0; (a.inv || []).forEach(function (x) { if (x.rarity === 'Common' && !gearHasId(a.gear, x.id)) gained += sellValue(x); else kept.push(x); }); if (gained > 0) { state.bits += gained; a.inv = kept; dirty = true; save(); renderBalance(); renderAdventure(); } }
       else if (act === 'salvage') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { addMats(matYield(itemTier(it))); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); if (window.__sfx) window.__sfx('press'); dirty = true; save(); renderAdventure(); } }
       else if (act === 'salvage-junk') { var kept2 = [], got = false; (a.inv || []).forEach(function (x) { if (x.rarity === 'Common' && !gearHasId(a.gear, x.id)) { addMats(matYield(itemTier(x))); got = true; } else kept2.push(x); }); if (got) { a.inv = kept2; if (window.__sfx) window.__sfx('press'); dirty = true; save(); renderAdventure(); } }
-      else if (act === 'reinforce') { var g = a.gear && a.gear[b.dataset.slot]; if (g) { var pls = g.plus || 0, rc = reinforceCost(pls); if (canAfford(rc)) { payMats(rc); for (var sk in g.stats) g.stats[sk] = Math.max(1, Math.round(g.stats[sk] * 1.08)); g.plus = pls + 1; if (window.__sfx) window.__sfx('unlock'); dirty = true; save(); renderAdventure(); } } }
+      else if (act === 'reinforce') { var g = a.gear && a.gear[b.dataset.slot]; if (g) { var pls = g.plus || 0, rc = reinforceCost(pls); if (canAfford(rc)) { payMats(rc); for (var sk in g.stats) g.stats[sk] = Math.max(1, Math.round(g.stats[sk] * 1.08)); g.plus = pls + 1; if (window.__sfx) window.__sfx('build'); dirty = true; save(); renderAdventure(); } } }
       else if (act === 'preset') { var pr = PRESETS[b.dataset.v]; if (pr) { a.build = a.build || {}; for (var k in pr) { if (k === '_color') a.robot.color = pr[k]; else a.build[k] = pr[k]; } dirty = true; save(); renderAdventure(); } }
       else if (act === 'save-load') { var inp = expEl.querySelector('.exp-ldname'); var nm = (inp && inp.value.trim()) || ('Build ' + (Object.keys(a.loadouts || {}).length + 1)); a.loadouts = a.loadouts || {}; a.loadouts[nm] = { build: Object.assign({}, a.build), color: a.robot.color }; dirty = true; save(); renderAdventure(); }
       else if (act === 'load-ld') { var ld = (a.loadouts || {})[b.dataset.v]; if (ld) { a.build = Object.assign({}, ld.build); if (ld.color) a.robot.color = ld.color; dirty = true; save(); renderAdventure(); } }
