@@ -8367,6 +8367,7 @@ window.__sfx = (function () {
   }
 
   var progEl = document.getElementById('progression');
+  var progOpen = { sys: false, yield: false };   // remember which collapsible panels the user left open across re-renders
   // Live XP feed: every gain shows here and fades out after 15s. Runs on each
   // gain (addXp) and once a second (for the fade), and only touches #xplog-feed
   // so it's cheap and doesn't rebuild the skill tree.
@@ -8406,13 +8407,13 @@ window.__sfx = (function () {
       '<div class="prog-xp">' + (pr.level >= LEVEL_CAP ? 'MAX LEVEL ★' : Math.floor(pr.xp) + ' / ' + need + ' XP') + '</div>' +
       (function () { var rs = robotStats((state.adv && state.adv.gear) || {}); return '<div class="prog-stats"><span>⚔ Power <b>' + rs.power + '</b></span><span>♥ HP <b>' + rs.ehp + '</b></span><span>↯ DPS <b>' + rs.dps + '</b></span><span>FW <b>' + rs.firmware + '</b></span></div>'; })() +
       '<div class="attr-head">Core attributes</div>' + attrHtml() +
-      '<details class="prog-sys"><summary>🤖 Robot systems — full attribute sheet</summary>' + statsSheetHtml((state.adv && state.adv.gear) || {}) + '</details>' +
+      '<details class="prog-sys" data-dk="sys"' + (progOpen.sys ? ' open' : '') + '><summary>🤖 Robot systems — full attribute sheet</summary>' + statsSheetHtml((state.adv && state.adv.gear) || {}) + '</details>' +
       (function () {   // what the foundry mints: per-bot value per bay + per package
         var f = window.__foundry || {}, gm = globalMult(), by = (f.botYield || 0.1);
         var pkg = by * (f.pkgMult || 1) * gm, n = bayOpenCount();
         var chips = '';
         for (var b = 0; b < n; b++) chips += '<span class="py-chip">Bay ' + (b + 1) + ' <b style="color:' + fmtColor(by * Math.pow(1.5, b) * gm) + '">◉' + fmt(by * Math.pow(1.5, b) * gm) + '</b></span>';
-        return '<details class="prog-yield"><summary>🏭 Foundry output — per bot &amp; per package</summary>' +
+        return '<details class="prog-yield" data-dk="yield"' + (progOpen.yield ? ' open' : '') + '><summary>🏭 Foundry output — per bot &amp; per package</summary>' +
           '<div class="py-line">📦 Package <b style="color:' + fmtColor(pkg) + '">◉' + fmt(pkg) + '</b> each · 🤖 per bot (×globalMult):</div>' +
           '<div class="py-grid">' + chips + '</div></details>';
       })() +
@@ -8424,6 +8425,7 @@ window.__sfx = (function () {
       '<div class="xplog"><div class="xplog-h">XP log <span class="xplog-live">live</span></div><div class="xplog-feed" id="xplog-feed"></div></div>' +
       cats;
     renderXpLog();
+    progEl.querySelectorAll('details[data-dk]').forEach(function (d) { d.addEventListener('toggle', function () { progOpen[d.dataset.dk] = d.open; }); });
     var xcb = progEl.querySelector('[data-xpcore]');
     if (xcb) xcb.addEventListener('click', function () {
       if (state.bits < XPCORE_COST || xpcoreUnlocked()) return;
