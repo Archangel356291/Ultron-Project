@@ -47,6 +47,9 @@ services:
       - "${ULTRON_DATA_DIR}:/data"
       # Pixel-game per-user saves, at the owner's chosen browsable path.
       - "C:\\Ultron Project\\Ultrons Game:/game-saves"
+      # The built offline APK (private, secret-free), read-only, so the phone
+      # can download it over the tailnet from /download/ultrons-corner.apk.
+      - "C:\\Ultron Project\\Ultrons APK Game\\apk:/apk:ro"
       # Host-issued TLS material, gitignored/dockerignored (never baked
       # into the image or committed) -- read-only, this container only
       # ever reads it.

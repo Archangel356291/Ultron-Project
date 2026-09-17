@@ -2979,6 +2979,41 @@ def _game_db():
     return conn
 
 
+# --- offline APK download ---------------------------------------------------
+# Serves the newest built APK from the read-only /apk bind mount so the owner
+# can install the game on a phone straight from the tailnet. Served open on the
+# same private boundary as the dashboard itself (Tailscale is the network gate);
+# the APK is deliberately secret-free -- no credentials are baked into it -- so
+# there is nothing here to protect beyond that boundary. A browser download
+# can't carry the Bearer token require_role needs, which is the other reason
+# this can't sit behind it.
+APK_DIR = os.environ.get("ULTRON_APK_DIR", "/apk")
+
+
+def _latest_apk():
+    try:
+        apks = [f for f in os.listdir(APK_DIR) if f.lower().endswith(".apk")]
+    except OSError:
+        return None
+    if not apks:
+        return None
+    # names are Ultrons-Corner-<YYYY.MM.DD.HHMM>.apk -> lexical sort == newest last
+    return sorted(apks)[-1]
+
+
+@app.route("/download/ultrons-corner.apk")
+def download_apk():
+    name = _latest_apk()
+    if not name:
+        return Response("No APK build available yet.", status=404, mimetype="text/plain")
+    resp = send_from_directory(
+        APK_DIR, name, mimetype="application/vnd.android.package-archive",
+        as_attachment=True, download_name="Ultrons-Corner.apk",
+    )
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
 @app.route("/api/game/save", methods=["GET"])
 @require_role
 def game_save_get():
