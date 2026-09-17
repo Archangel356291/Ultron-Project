@@ -6749,15 +6749,15 @@ function toggleReducedVisuals(el) {
   // Shared geometry so the couch (left of the display gap) and the relic tubes
   // (right of it) never overlap. Couch sits left, clear of Ultron's pacing.
   function couchBox() {
-    var couchW = 150, arm = 10, zoneL = walkMaxX + 100, zoneR = uDeskX - 20;
+    var couchW = 186, arm = 12, zoneL = walkMaxX + 100, zoneR = uDeskX - 20;
     if (zoneR - zoneL < couchW + 2 * arm) return { draw: false, right: zoneL };
     var cx = Math.round(zoneL + arm + couchW / 2);
     return { draw: true, cx: cx, couchW: couchW, arm: arm, right: cx + couchW / 2 + arm };
   }
   function drawCouch(t) {
     var cb = couchBox(); if (!cb.draw) return;
-    var sc = 3.6, fy = officeFloorY, cx = cb.cx, couchW = cb.couchW, hw = couchW / 2, arm = cb.arm;
-    var seatH = 32, backH = 60;
+    var sc = 4.5, fy = officeFloorY, cx = cb.cx, couchW = cb.couchW, hw = couchW / 2, arm = cb.arm;
+    var seatH = 40, backH = 76;
     ctx.fillStyle = 'rgba(0,0,0,0.30)'; ctx.beginPath(); ctx.ellipse(cx, fy + 2, hw + 6, 6, 0, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#4a3d5e'; ctx.fillRect(cx - hw, fy - seatH - backH, couchW, backH); ctx.fillStyle = '#5a4d6e'; ctx.fillRect(cx - hw, fy - seatH - backH, couchW, 4);   // backrest
     ctx.fillStyle = '#3a2f4a'; ctx.fillRect(cx - hw, fy - seatH, couchW, seatH);                                                         // seat block
@@ -7147,6 +7147,7 @@ function toggleReducedVisuals(el) {
 
     // Ultron's office at the top: recharge pod, desk, and the man himself.
     var working = charMode === 'sit';
+    drawOfficeWall(t);  // solid backdrop wall FIRST -- hides the baked window; everything else draws on top
     drawWallMonitor(t);                                   // BTC / memory / health, on the wall
     wallGlow(uDeskX + 85, officeFloorY - 180, 220, RED, working ? 0.24 : 0.1);
     drawSprite(IMG.tubeRed, uTubeX, officeFloorY);
@@ -7156,7 +7157,6 @@ function toggleReducedVisuals(el) {
       plate('Ultron', heroState, uDeskX + 9, officeFloorY - U_DESK_H + 34, U_DESK_W - 18, U_DESK_H - 44, '#ff6b6b', '#e8e6e0');
       drawStones(uDeskX + U_DESK_W * 0.42, officeFloorY - U_DESK_H + 10, t);   // Infinity Stones on the desktop
     }
-    drawOfficeWall(t);  // solid wall across the whole office -- hides the baked window entirely
     drawRelics(t);   // Aether tube on the desk + vibranium/Venom/Carnage tubes on the floor
     drawTrophies(t);    // trophy shelves, centred on the clean wall
     drawCouch(t);       // Wanda + her brother waiting on a couch
@@ -7270,9 +7270,20 @@ function toggleReducedVisuals(el) {
   // the cursor into room units and shows the name of whatever it is over.
   var roomTip = document.createElement('div');
   roomTip.style.cssText = 'position:absolute; z-index:6; pointer-events:none; display:none; background:var(--panel-raised,#16191c); ' +
-    'border:1px solid var(--line,#2c2f33); color:var(--text,#e9edf7); font:11px/1.3 ' + fontFamily + '; padding:4px 8px; ' +
-    'border-radius:5px; white-space:normal; max-width:240px; text-align:left; box-shadow:0 6px 18px -6px rgba(0,0,0,0.7); transform:translate(-50%,-125%);';
+    'border:1px solid var(--line,#2c2f33); color:var(--text,#e9edf7); font:11px/1.35 ' + fontFamily + '; padding:6px 9px; ' +
+    'border-radius:6px; white-space:normal; text-align:left; box-shadow:0 6px 18px -6px rgba(0,0,0,0.7);';
   wrap.appendChild(roomTip);
+  // Position the tip near (px,py) but clamp it fully on-screen so long item
+  // descriptions are always readable in their entirety.
+  function placeRoomTip(px, py) {
+    var ww = wrap.clientWidth, wh = wrap.clientHeight;
+    roomTip.style.maxWidth = Math.min(300, ww - 16) + 'px';
+    var w = roomTip.offsetWidth, h = roomTip.offsetHeight;
+    var left = Math.max(6, Math.min(px - w / 2, ww - w - 6));
+    var top = py - h - 12; if (top < 6) top = Math.min(py + 16, wh - h - 6);   // flip below if no room above
+    top = Math.max(6, Math.min(top, wh - h - 6));
+    roomTip.style.left = left + 'px'; roomTip.style.top = top + 'px';
+  }
   canvas.addEventListener('pointermove', function (e) {
     if (e.pointerType === 'touch') return;
     var rect = canvas.getBoundingClientRect();
@@ -7285,9 +7296,8 @@ function toggleReducedVisuals(el) {
     }
     if (hit) {
       if (hit.tip) roomTip.innerHTML = hit.tip; else roomTip.textContent = hit.name;
-      roomTip.style.left = (e.clientX - rect.left) + 'px';
-      roomTip.style.top = (e.clientY - rect.top) + 'px';
       roomTip.style.display = 'block';
+      placeRoomTip(e.clientX - rect.left, e.clientY - rect.top);
       canvas.style.cursor = 'help';
     } else if (roomTip.style.display !== 'none') {
       roomTip.style.display = 'none'; canvas.style.cursor = 'default';
@@ -7301,8 +7311,9 @@ function toggleReducedVisuals(el) {
     for (var i = 0; i < hoverables.length; i++) { var hb = hoverables[i], dx = hb.x - rx, dy = hb.y - ry, d = dx * dx + dy * dy; if (d < hb.r * hb.r && d < best) { best = d; hit = hb; } }
     if (hit) {
       if (hit.tip) roomTip.innerHTML = hit.tip; else roomTip.textContent = hit.name;
-      roomTip.style.left = (e.clientX - rect.left) + 'px'; roomTip.style.top = (e.clientY - rect.top) + 'px'; roomTip.style.display = 'block';
-      clearTimeout(roomTip._t); roomTip._t = setTimeout(function () { roomTip.style.display = 'none'; }, 3800);
+      roomTip.style.display = 'block';
+      placeRoomTip(e.clientX - rect.left, e.clientY - rect.top);
+      clearTimeout(roomTip._t); roomTip._t = setTimeout(function () { roomTip.style.display = 'none'; }, 4600);
     }
   });
 
@@ -8581,7 +8592,13 @@ window.__sfx = (function () {
   // (rarity tiers + prefix/base/suffix affixes, per the owner's blueprint). ----
   var ADV_COST = 5000;
   // ilvl scales stats with the run's length; loot = parts dropped.
-  var ADV_DUR = [{ n: 'Scout', mins: 5, loot: 1, ilvl: 1 }, { n: 'Delve', mins: 30, loot: 2, ilvl: 2 }, { n: 'Odyssey', mins: 120, loot: 3, ilvl: 4 }];
+  var ADV_DUR = [
+    { n: 'Scout', mins: 2, loot: 1, ilvl: 1 },
+    { n: 'Patrol', mins: 8, loot: 2, ilvl: 2 },
+    { n: 'Delve', mins: 18, loot: 3, ilvl: 3 },
+    { n: 'Odyssey', mins: 45, loot: 4, ilvl: 5 },
+    { n: 'Conquest', mins: 80, loot: 6, ilvl: 8 },
+  ];
   // Rarity: note's colours + stat multiplier + an innate rarity perk, plus a
   // vanishingly rare Mythic top. mult scales every base stat on the part.
   var RARITIES = [

@@ -55,8 +55,8 @@
     { id: 'sentinel_prime', name: 'Rogue Sentinel Prime', kind: 'boss', tier: 'boss', hp: 600, dmg: 30, armor: 20, shield: 120, spd: 1.0, evade: 6, regen: 0.015, drop: 'blueprint' },
   ];
   var TRASH = ENEMIES.filter(function (e) { return e.tier === 'trash'; });
-  // dur -> capstone enemy (Scout beatable with starter gear; Odyssey is a boss)
-  var CAP = { 0: 'bulwark', 1: 'warden', 2: 'sentinel_prime' };
+  // dur -> capstone enemy (Scout beatable with starter gear; longer runs are bosses)
+  var CAP = { 0: 'bulwark', 1: 'warden', 2: 'sentinel_prime', 3: 'sentinel_prime', 4: 'sentinel_prime' };
 
   // Aggregate the equipped items' stats into combat stats.
   function deriveStats(gear) {
@@ -117,7 +117,7 @@
     var p = deriveStats(gear);
     if (opts.powerMult && opts.powerMult !== 1) { p.dps *= opts.powerMult; p.ehp *= opts.powerMult; p.power = Math.round(p.power * opts.powerMult); }  // skill-tree combat bonus
     p.ehpCur = p.ehp;
-    var waveCount = [3, 5, 8][dur] || 3;
+    var waveCount = [3, 5, 8, 10, 13][dur] || 3;
     var waves = [], i;
     for (i = 0; i < waveCount - 1; i++) waves.push(scaleEnemy(TRASH[Math.floor(rnd() * TRASH.length)], ilvl));
     var capId = opts.bossMult ? 'sentinel_prime' : (CAP[dur] || 'warden');
