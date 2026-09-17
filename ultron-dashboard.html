@@ -9009,8 +9009,19 @@ window.__sfx = (function () {
     for (var j = sparks.length - 1; j >= 0; j--) { var s2 = sparks[j]; s2.life += dt; s2.x += s2.vx * dt; s2.y += s2.vy * dt; s2.vy += 130 * dt; if (s2.life > 0.5) sparks.splice(j, 1); }
   }
 
+  // brushed-metal machine body: vertical gradient + rim light + edge shadows
+  function metalBox(x0, y0, w, h, lit) {
+    var g = ctx.createLinearGradient(x0, y0, x0, y0 + h);
+    if (lit) { g.addColorStop(0, '#434a55'); g.addColorStop(0.45, '#2d323a'); g.addColorStop(1, '#191d22'); }
+    else { g.addColorStop(0, '#23272e'); g.addColorStop(1, '#131519'); }
+    ctx.fillStyle = g; ctx.fillRect(x0, y0, w, h);
+    ctx.fillStyle = 'rgba(255,255,255,' + (lit ? 0.12 : 0.05) + ')'; ctx.fillRect(x0, y0, w, 2);   // top rim highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.fillRect(x0, y0, 2, h);                          // left sheen
+    ctx.fillStyle = 'rgba(0,0,0,0.42)'; ctx.fillRect(x0 + w - 2, y0, 2, h);                        // right shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.38)'; ctx.fillRect(x0, y0 + h - 2, w, 2);                        // bottom shadow
+  }
   function extractor(x, label, active, tint) {
-    ctx.fillStyle = active ? '#2b3038' : '#181b20'; ctx.fillRect(x - 27, beltY - 76, 54, 76);
+    metalBox(x - 27, beltY - 76, 54, 76, active);
     ctx.globalAlpha = active ? 0.5 : 0.22; ctx.fillStyle = tint; ctx.fillRect(x - 27, beltY - 76, 54, 10); ctx.globalAlpha = 1;
     ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.5; ctx.strokeRect(x - 27, beltY - 76, 54, 76);
     ctx.fillStyle = active ? '#33d17a' : '#5a2323'; ctx.fillRect(x - 21, beltY - 70, 8, 5);
@@ -9020,7 +9031,7 @@ window.__sfx = (function () {
     if (!active) { ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.fillRect(x - 27, beltY - 76, 54, 76); ctx.fillStyle = '#8a93a3'; ctx.font = '9px ui-monospace,monospace'; ctx.fillText('locked', x, beltY - 36); }
   }
   function smelter(x, active, flash, tint, t) {
-    ctx.fillStyle = active ? '#2b3038' : '#181b20'; ctx.fillRect(x - 28, beltY - 74, 56, 74);
+    metalBox(x - 28, beltY - 74, 56, 74, active);
     ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.5; ctx.strokeRect(x - 28, beltY - 74, 56, 74);
     ctx.fillStyle = active ? '#3a3038' : '#20232a'; ctx.fillRect(x - 19, beltY - 102, 38, 20); ctx.strokeRect(x - 19, beltY - 102, 38, 20);
     if (active) {
@@ -9120,9 +9131,11 @@ window.__sfx = (function () {
     for (var gx = 40; gx < W; gx += 80) { ctx.beginPath(); ctx.moveTo(gx, 6); ctx.lineTo(gx, beltY - 4); ctx.stroke(); }
     var vg = ctx.createRadialGradient(W / 2, beltY - 30, 40, W / 2, beltY - 30, W * 0.6);
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.35)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
-    // conveyor: dark bed, metallic rails, moving rollers, and a lit leading edge
-    ctx.fillStyle = '#16191f'; ctx.fillRect(0, beltY, W, 18);
-    ctx.fillStyle = '#3a424e'; ctx.fillRect(0, beltY, W, 2);                 // top rail highlight
+    // conveyor: brushed-metal bed with a vertical sheen, metallic rails, rollers
+    var beltG = ctx.createLinearGradient(0, beltY, 0, beltY + 18);
+    beltG.addColorStop(0, '#242a31'); beltG.addColorStop(0.5, '#181c22'); beltG.addColorStop(1, '#0f1216');
+    ctx.fillStyle = beltG; ctx.fillRect(0, beltY, W, 18);
+    ctx.fillStyle = '#4a545f'; ctx.fillRect(0, beltY, W, 2);                 // top rail highlight
     ctx.fillStyle = '#0a0c10'; ctx.fillRect(0, beltY + 17, W, 3);            // shadow under belt
     var off = (t * 60 * (cfg().convMult || 1)) % 22;
     for (var bx = -22 + off; bx < W; bx += 22) {
@@ -9137,7 +9150,7 @@ window.__sfx = (function () {
       if (m.ext) progBar(xExt(mi), beltY - 30, 42, Math.min(1, (t - (lastSpawn[mi] || 0)) * (m.rate || 0)), m.color);   // extractor: fills toward the next ore
       if (m.sm) progBar(xSm(mi), beltY - 30, 46, (t * 0.7 * (m.smelt || 1)) % 1, '#ff9d3c');                            // smelter: smelting throughput
     }
-    ctx.fillStyle = c.unlP ? '#2b3038' : '#181b20'; ctx.fillRect(pressX - 32, beltY - 88, 76, 88);
+    metalBox(pressX - 32, beltY - 88, 76, 88, c.unlP);
     ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.5; ctx.strokeRect(pressX - 32, beltY - 88, 76, 88);
     ctx.fillStyle = (t < pressFlash) ? '#ffe08a' : (c.unlP ? '#565d68' : '#333'); ctx.fillRect(pressX - 24, beltY - 34 - (t < pressFlash ? 6 : 0), 60, 15);
     ctx.fillStyle = '#8a93a3'; ctx.font = '10px ui-monospace,monospace'; ctx.textAlign = 'center';
