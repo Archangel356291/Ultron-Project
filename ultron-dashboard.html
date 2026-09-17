@@ -7100,7 +7100,18 @@ window.__sfx = (function () {
   // ---- Player progression: XP -> levels -> skill points spent on a small tree.
   // Skills feed income (foundry+refinery), combat power, loot, and offline. ----
   function skillLvl(id) { return (state.prog && state.prog.skills && state.prog.skills[id]) || 0; }
-  function globalMult() { return (1 + 0.1 * ((state.prestige && state.prestige.cores) || 0)) * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()); }
+  // Milestone multipliers (Cookie-Clicker style): each cumulative-investment
+  // threshold grants a permanent global x1.5, so older tiers stay relevant and
+  // progress past the exponential wall comes in satisfying jumps. Total upgrade
+  // levels = every foundry/refinery/bay/reactor level you've bought.
+  // ponytail: JS doubles are exact to 2^53 and finite to ~1.8e308 -- fmt() already
+  // renders past Nanits with toLocaleString; swap in break_infinity.js only if
+  // play ever approaches 1e308 (it won't for a long, long time).
+  var MILESTONES = [25, 50, 100, 175, 275, 400, 600];
+  function totalUpgradeLevels() { var s = 0, u = state.up || {}; for (var k in u) s += u[k] || 0; return s; }
+  function milestonesReached() { var n = totalUpgradeLevels(), c = 0; for (var i = 0; i < MILESTONES.length; i++) if (n >= MILESTONES[i]) c++; return c; }
+  function milestoneMult() { return Math.pow(1.5, milestonesReached()); }
+  function globalMult() { return (1 + 0.1 * ((state.prestige && state.prestige.cores) || 0)) * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult(); }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -7573,6 +7584,7 @@ window.__sfx = (function () {
       '<div class="prestige-row"><span class="prestige-core">\u25C8 ' + cores + ' Nanite Core' + (cores === 1 ? '' : 's') + '</span>' +
       '<span class="prestige-bonus">+' + Math.round(cores * 10) + '% to all income</span></div>' +
       '<div class="prestige-sub">Lifetime minted: ' + fmt(state.lifetime || 0) + ' \u00b7 Ultron\u2019s power-core is <b>' + Math.round(prestigeChargePct() * 100) + '%</b> charged. When his army falls he reboots &mdash; foundry &amp; refinery reset, but every defeat banks a Nanite Core (a permanent buff) and unlocks a harder endgame dungeon. Expedition, loot and cores are kept.</div>' +
+      (function () { var r = milestonesReached(), tot = totalUpgradeLevels(), nxt = MILESTONES[r]; return '<div class="prestige-sub" style="color:#5fe39a">\u2726 Milestones: <b>' + r + '/' + MILESTONES.length + '</b> reached \u2014 <b>\u00d7' + milestoneMult().toFixed(2) + '</b> global income' + (nxt ? ' \u00b7 next at ' + nxt + ' upgrades (you have ' + tot + ')' : ' \u00b7 all reached') + '</div>'; })() +
       '<button type="button" class="prestige-btn' + (gain > 0 ? ' can' : '') + '" data-reboot="1"' + (gain > 0 ? '' : ' disabled') + '>' +
       (gain <= 0 ? 'Charge the core to bank a defeat' : rebootArmed ? 'Confirm \u2014 fall and rebuild for ' + gain + ' core' + (gain === 1 ? '' : 's') + '?' : 'Fall &amp; rebuild for ' + gain + ' Nanite Core' + (gain === 1 ? '' : 's')) + '</button>';
     var btn = prestigeEl.querySelector('[data-reboot]');
