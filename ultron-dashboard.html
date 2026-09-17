@@ -6406,6 +6406,70 @@ function toggleReducedVisuals(el) {
     eyeOfAgamotto(gapL + span * 0.84, fy - 25, t); pedestal(gapL + span * 0.84, fy, 40);
   }
 
+  // Trophy wall: relics Ultron has "collected", mounted over his office --
+  // Captain America's shield, Mjolnir, Hawkeye's bow, and his own power sword,
+  // each in its true colours.
+  function capShield(cx, cy, t) {
+    relicGlow(cx, cy, 22, '40,110,220', 0.28);
+    var r = 15, rings = [['#c0392b', 1], ['#ecf0f1', 0.78], ['#c0392b', 0.56], ['#ecf0f1', 0.4], ['#2b5cb8', 0.3]];
+    rings.forEach(function (g) { ctx.fillStyle = g[0]; ctx.beginPath(); ctx.arc(cx, cy, r * g[1], 0, 6.28); ctx.fill(); });
+    ctx.fillStyle = '#ecf0f1'; ctx.beginPath(); for (var k = 0; k < 10; k++) { var a = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? r * 0.13 : r * 0.29; ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } ctx.closePath(); ctx.fill();
+    caption('shield', cx, cy + 26); hover("Captain America's Shield", cx, cy, r);
+  }
+  function mjolnir(cx, cy, t) {
+    relicGlow(cx, cy - 2, 17, '120,180,255', 0.22 + 0.16 * Math.sin(t * 4));
+    ctx.fillStyle = '#8b93a0'; ctx.fillRect(cx - 9, cy - 6, 18, 12);
+    ctx.fillStyle = '#b6bcc6'; ctx.fillRect(cx - 9, cy - 6, 18, 2);
+    ctx.fillStyle = '#3a3f47'; ctx.fillRect(cx - 9, cy - 6, 2, 12); ctx.fillRect(cx + 7, cy - 6, 2, 12);
+    ctx.fillStyle = 'rgba(150,200,255,' + (0.5 + 0.4 * Math.sin(t * 5)) + ')'; ctx.fillRect(cx - 3, cy - 1, 6, 2);
+    ctx.fillStyle = '#6b4a2a'; ctx.fillRect(cx - 1.6, cy + 6, 3.2, 15); ctx.fillStyle = '#4a3520'; ctx.fillRect(cx - 2.2, cy + 19, 4.4, 2);
+    if (Math.sin(t * 3 + cx) > 0.6) { ctx.strokeStyle = '#9be8ff'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx + 9, cy - 5); ctx.lineTo(cx + 13, cy - 9); ctx.lineTo(cx + 11, cy - 7); ctx.lineTo(cx + 16, cy - 12); ctx.stroke(); }
+    caption('mjolnir', cx, cy + 30); hover("Mjolnir — Thor's Hammer", cx, cy, 14);
+  }
+  function hawkeyeBow(cx, cy, t) {
+    ctx.strokeStyle = '#7a4dff'; ctx.lineWidth = 2.8; ctx.beginPath(); ctx.arc(cx + 4, cy, 16, Math.PI * 0.58, Math.PI * 1.42); ctx.stroke();
+    var a1 = Math.PI * 0.58, a2 = Math.PI * 1.42; ctx.strokeStyle = '#cfcfe0'; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(cx + 4 + Math.cos(a1) * 16, cy + Math.sin(a1) * 16); ctx.lineTo(cx + 4 + Math.cos(a2) * 16, cy + Math.sin(a2) * 16); ctx.stroke();
+    ctx.strokeStyle = '#b6bcc6'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(cx - 9, cy); ctx.lineTo(cx + 11, cy); ctx.stroke();
+    ctx.fillStyle = '#7a4dff'; ctx.beginPath(); ctx.moveTo(cx + 11, cy - 2.5); ctx.lineTo(cx + 15, cy); ctx.lineTo(cx + 11, cy + 2.5); ctx.closePath(); ctx.fill();
+    caption('bow', cx, cy + 26); hover("Hawkeye's Bow", cx, cy, 16);
+  }
+  function powerSword(cx, cy, t) {
+    var glow = 0.55 + 0.35 * Math.sin(t * 4);
+    relicGlow(cx, cy - 4, 18, '0,230,255', 0.32 * glow);
+    ctx.save(); ctx.shadowColor = '#00e5ff'; ctx.shadowBlur = 9;
+    ctx.fillStyle = 'rgba(180,245,255,0.9)'; ctx.fillRect(cx - 2.2, cy - 19, 4.4, 21);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(cx - 0.9, cy - 19, 1.8, 21); ctx.shadowBlur = 0; ctx.restore();
+    ctx.fillStyle = '#c9a227'; ctx.fillRect(cx - 6, cy + 2, 12, 2.6);
+    ctx.fillStyle = '#3a3f47'; ctx.fillRect(cx - 1.8, cy + 4.6, 3.6, 9);
+    ctx.fillStyle = '#00e5ff'; ctx.beginPath(); ctx.arc(cx, cy + 14, 1.9, 0, 6.28); ctx.fill();
+    caption('power sword', cx, cy + 26); hover("Ultron's Power Sword", cx, cy, 18);
+  }
+  function drawTrophies(t) {
+    var gapL = walkMaxX + 34, gapR = uDeskX - 26; if (gapR - gapL < 170) return;
+    var span = gapR - gapL, y = ROOF_H + 100;
+    ctx.fillStyle = M_GUN; ctx.fillRect(gapL + span * 0.05, y + 24, span * 0.9, 4);
+    ctx.fillStyle = M_STEEL; ctx.fillRect(gapL + span * 0.05, y + 24, span * 0.9, 1);
+    capShield(gapL + span * 0.16, y, t);
+    mjolnir(gapL + span * 0.40, y, t);
+    hawkeyeBow(gapL + span * 0.63, y, t);
+    powerSword(gapL + span * 0.86, y, t);
+  }
+  function drawWorldPlan(t) {
+    var gapL = walkMaxX + 34, gapR = uDeskX - 26; if (gapR - gapL < 170) return;
+    var cx = (gapL + gapR) / 2, w = Math.min(158, (gapR - gapL) * 0.72), x = cx - w / 2, y = ROOF_H + 34, h = 52;
+    ctx.fillStyle = M_DARK; ctx.fillRect(x - 3, y - 3, w + 6, h + 6);
+    ctx.fillStyle = '#0e1a12'; ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = '#1f5a2f'; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = '#ff5a5a'; setFont(fontPx * 0.78, true); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText('WORLD DOMINATION', cx, y + 12);
+    ctx.fillStyle = 'rgba(80,220,120,0.5)';
+    var blobs = [[0.28, 32, 15, 8], [0.6, 30, 12, 7], [0.5, 43, 9, 4], [0.78, 40, 8, 5]];
+    blobs.forEach(function (b) { ctx.beginPath(); ctx.ellipse(x + w * b[0], y + b[1], b[2], b[3], 0, 0, 6.28); ctx.fill(); });
+    ctx.fillStyle = 'rgba(255,60,60,' + (0.4 + 0.5 * Math.sin(t * 3)) + ')';
+    blobs.forEach(function (b) { ctx.beginPath(); ctx.arc(x + w * b[0], y + b[1], 2, 0, 6.28); ctx.fill(); });
+    ctx.fillStyle = '#5fe39a'; setFont(fontPx * 0.6, false); ctx.textAlign = 'right'; ctx.fillText('PHASE ▮▮▯', x + w - 5, y + h - 4);
+    hover('Ultron’s plans for world domination', cx, y + h / 2, w / 2);
+  }
+
   // A wall monitor over Ultron's desk: live BTC / memory / health (owner
   // request). Reads roomStats, fed by the main script's status/crypto fetches.
   function drawWallMonitor(t) {
@@ -6614,6 +6678,8 @@ function toggleReducedVisuals(el) {
       drawStones(uDeskX + U_DESK_W * 0.42, officeFloorY - U_DESK_H + 10, t);   // Infinity Stones on the desktop
     }
     drawRelics(t);   // Tesseract / Orb / Eye on pedestals + the Aether tube on the desk
+    drawWorldPlan(t);   // world-domination plans on the wall
+    drawTrophies(t);    // Cap's shield / Mjolnir / Hawkeye's bow / power sword mounted above
     drawPowerStation(t);   // vibranium body + Infinity Stones + arc reactor + charge meter
     if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, officeFloorY + 4);
     drawIronMan(t);   // recurring gag: the intruder Ultron is beating up / tossing out
