@@ -516,6 +516,7 @@
   .gl-input{ display:block; width:100%; box-sizing:border-box; margin-bottom:8px; padding:10px 12px; border-radius:8px; border:1px solid #3a3f47; background:#14171d; color:var(--text); font-family:var(--font-mono); font-size:13px; }
   .gl-submit{ width:100%; padding:10px; border-radius:8px; border:1px solid #ff5a6e; background:rgba(255,90,110,.12); color:#ffb0b8; cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:13px; }
   .gl-submit:hover{ background:rgba(255,90,110,.2); }
+  .gl-setup-hint{ font-family:var(--font-mono); font-size:11px; line-height:1.5; color:#9fb0c0; margin-bottom:10px; text-align:left; }
   .gl-msg{ min-height:14px; margin-top:9px; font-family:var(--font-mono); font-size:10.5px; color:#ff6b6b; }
   .game-lock.shake .gl-panel{ animation:lv-shake .35s; }
   /* the big red warning that flashes as the doors open */
@@ -1051,6 +1052,15 @@
   .bl-finalize{ display:block; width:100%; margin:2px 0 10px; padding:9px; border-radius:8px; border:1px solid rgba(58,200,255,.5); background:rgba(58,200,255,.1); color:#bfe6ff; cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:11.5px; }
   .bl-finalize:hover{ background:rgba(58,200,255,.18); }
   .exp-timescale{ font-family:var(--font-mono); font-size:10px; color:#9fc4e0; margin-bottom:6px; }
+  .palettes{ margin-top:8px; }
+  .pal-h{ font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text-dim); margin-bottom:5px; }
+  .pal-sub{ font-family:var(--font-mono); font-size:9px; font-weight:400; color:var(--text-faint); }
+  .pal-row{ display:flex; flex-wrap:wrap; gap:6px; }
+  .pal-chip{ display:flex; align-items:center; gap:6px; padding:5px 9px; border-radius:7px; border:1px solid var(--line,rgba(255,255,255,.14)); background:rgba(0,0,0,.28); color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:10px; }
+  .pal-chip .pal-sw{ width:13px; height:13px; border-radius:50%; background:linear-gradient(135deg,var(--pp,#888),var(--pb,#ccc)); box-shadow:0 0 7px -1px var(--pb,#ccc); flex-shrink:0; }
+  .pal-chip.on{ border-color:var(--pb,#ccc); color:var(--text,#fff); box-shadow:0 0 11px -4px var(--pb,#ccc); }
+  .pal-chip.lk{ opacity:.5; cursor:default; }
+  .pal-chip:not(.lk):hover{ background:rgba(255,255,255,.05); }
   .cosmic{ margin-top:10px; padding:11px 13px; border:1px solid rgba(155,107,255,.45); border-radius:8px; background:linear-gradient(180deg,rgba(120,80,220,.12),rgba(30,20,60,.15)); }
   .cz-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#c9a6ff; }
   .cz-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); }
@@ -2119,6 +2129,14 @@
             <div class="gl-tabs">
               <button type="button" class="gl-tab active" data-glmode="pin">PIN</button>
               <button type="button" class="gl-tab" data-glmode="pass">Username &amp; Password</button>
+              <button type="button" class="gl-tab" data-glmode="setup" id="gl-setup-tab">Set up profile</button>
+            </div>
+            <div class="gl-setupwrap" id="gl-setupwrap" hidden>
+              <div class="gl-setup-hint">First time here? Create your profile — you'll be logged in automatically after this.</div>
+              <input type="text" class="gl-input" id="gl-su-user" placeholder="Choose a username" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="24">
+              <input type="password" class="gl-input" id="gl-su-pass" placeholder="Choose a password" autocomplete="new-password">
+              <input type="text" class="gl-input" id="gl-su-pin" placeholder="Choose a PIN (4–12 digits)" inputmode="numeric" autocomplete="off" maxlength="12">
+              <button type="button" class="gl-submit" id="gl-su-btn">▶ Create &amp; enter</button>
             </div>
             <div class="gl-pinwrap" id="gl-pinwrap">
               <div class="gl-display" id="gl-display"></div>
@@ -2155,6 +2173,7 @@
               <div class="game-pops" id="game-pops"></div>
             </div>
             <div class="save-picker" id="save-picker" hidden></div>
+            <div class="palettes" id="palettes"></div>
             <div class="foundry-offline" id="foundry-offline" hidden></div>
             <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
@@ -8437,7 +8456,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev; if (j.palette) state.palette = j.palette;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -8631,6 +8650,34 @@ window.__sfx = (function () {
     setTimeout(function () { t.classList.add('out'); setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 400); }, 5400);
     while (c.children.length > 5) c.removeChild(c.firstChild);
   };
+  // ---- Colour palettes: 4 new themes + a prestige-unlocked metals ladder
+  // (Copper→Bronze→Silver→Gold→Diamond→Vibranium). Recolours the game accent. ----
+  var PALETTES = [
+    { id: 'red', name: 'Ultron Red', p: '#C0392B', b: '#FF3B3B' },
+    { id: 'toxic', name: 'Neon Toxic', p: '#2fbf2f', b: '#6aff3d' },
+    { id: 'ocean', name: 'Deep Ocean', p: '#0e8fa8', b: '#22d3ee' },
+    { id: 'void', name: 'Royal Void', p: '#7b2fd6', b: '#b06bff' },
+    { id: 'ember', name: 'Ember Forge', p: '#d8541f', b: '#ff8a3d' },
+    { id: 'copper', name: 'Copper', p: '#b87333', b: '#d99a5b', pr: 0 },
+    { id: 'bronze', name: 'Bronze', p: '#a86a2c', b: '#cd7f32', pr: 1 },
+    { id: 'silver', name: 'Silver', p: '#9aa4ad', b: '#d6dee6', pr: 2 },
+    { id: 'gold', name: 'Gold', p: '#d4a017', b: '#ffd700', pr: 3 },
+    { id: 'diamond', name: 'Diamond', p: '#5fb8d8', b: '#b9f2ff', pr: 4 },
+    { id: 'vibranium', name: 'Vibranium', p: '#3a4d7a', b: '#7f9bd8', pr: 5 }
+  ];
+  function prestigeCount() { return (state.prestige && state.prestige.cores) || 0; }
+  function paletteUnlocked(pl) { return pl.pr == null || prestigeCount() >= pl.pr; }
+  function applyPalette(id) { var pl = PALETTES.filter(function (x) { return x.id === id; })[0] || PALETTES[0]; try { document.documentElement.style.setProperty('--red', pl.p); document.documentElement.style.setProperty('--red-bright', pl.b); } catch (e) {} }
+  var palettesEl = document.getElementById('palettes');
+  function renderPalettes() {
+    if (!palettesEl) return; var cur = state.palette || 'red';
+    palettesEl.innerHTML = '<div class="pal-h">🎨 Colour palette <span class="pal-sub">— metals unlock as you prestige</span></div><div class="pal-row">' + PALETTES.map(function (pl) {
+      var unl = paletteUnlocked(pl), on = cur === pl.id;
+      return '<button type="button" class="pal-chip' + (on ? ' on' : '') + (unl ? '' : ' lk') + '" data-pal="' + pl.id + '"' + (unl ? '' : ' disabled title="Prestige ' + pl.pr + '× to unlock"') + ' style="--pp:' + pl.p + ';--pb:' + pl.b + '"><span class="pal-sw"></span>' + pl.name + (unl ? '' : ' 🔒' + pl.pr) + '</button>';
+    }).join('') + '</div>';
+    palettesEl.querySelectorAll('[data-pal]').forEach(function (b) { b.addEventListener('click', function () { if (b.disabled) return; state.palette = b.dataset.pal; applyPalette(b.dataset.pal); if (window.__sfx) window.__sfx('unlock'); gamePop('🎨 Palette: ' + b.textContent.trim(), '#ffcf5a'); dirty = true; save(); renderPalettes(); }); });
+  }
+  applyPalette(state.palette || 'red');
   // ---- Timestamped local save history. Every manual save also drops a stamped
   // snapshot into a rolling ring (newest first, capped) so the player can reload
   // a specific earlier save from the Load picker. ----
@@ -9826,7 +9873,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); }
       dirty = false;
     }
   }, 500);
@@ -10419,6 +10466,7 @@ window.__sfx = (function () {
   renderRelics();
   renderArmory();
   renderBrain();
+  renderPalettes();
   renderProgression();
   renderDevPanel();
   renderCodex();
@@ -10451,7 +10499,7 @@ window.__sfx = (function () {
       if (j.prog) state.prog = j.prog;
       if (j.mats) state.mats = j.mats;
       state.matsWipe = (typeof j.matsWipe === 'number') ? j.matsWipe : 0;   // key the wipe off THIS save's provenance, not init's flag
-      if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev;   // one-time dev grant flag rides along so it never re-grants
+      if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev; if (j.palette) state.palette = j.palette;   // one-time dev grant flag rides along so it never re-grants
       matsWipeGuard();   // wipe once if this save predates the reset; flag rides along thereafter
       UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
       if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
@@ -10470,7 +10518,7 @@ window.__sfx = (function () {
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
@@ -11318,9 +11366,26 @@ window.__sfx = (function () {
   var lock = document.getElementById('game-lock'); if (!lock) return;
   var display = document.getElementById('gl-display'), keysEl = document.getElementById('gl-keys'),
       msg = document.getElementById('gl-msg'), pinWrap = document.getElementById('gl-pinwrap'),
-      passWrap = document.getElementById('gl-passwrap'), core = document.getElementById('sec-ultron-core');
+      passWrap = document.getElementById('gl-passwrap'), setupWrap = document.getElementById('gl-setupwrap'),
+      core = document.getElementById('sec-ultron-core');
   var pinBuf = '', attempts = 0, locked = false;
   function accts() { return window.__GAME_ACCOUNTS || []; }
+  // ---- user-set profile: saved locally on first startup, auto-logs in after ----
+  var CRED_KEY = 'ultron_user_cred', LOG_KEY = 'ultron_user_log';
+  function loadCred() { try { var r = localStorage.getItem(CRED_KEY); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+  function credIsAdmin(c) { return accts().some(function (a) { if (!a.admin) return false; var nameOk = a.name && c.name && a.name.toLowerCase() === c.name.toLowerCase(); var secOk = (a.pin && c.pin && a.pin === c.pin) || (a.pass && c.pass && a.pass === c.pass) || (!a.pin && !a.pass); return nameOk && secOk; }); }
+  function saveCred(c) {
+    try {
+      localStorage.setItem(CRED_KEY, JSON.stringify(c));
+      var log = []; try { log = JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); } catch (e) {}
+      log.push({ name: c.name, at: new Date().toISOString(), event: 'setup' });
+      localStorage.setItem(LOG_KEY, JSON.stringify(log.slice(-50)));
+    } catch (e) {}
+  }
+  function switchMode(mode) {
+    lock.querySelectorAll('[data-glmode]').forEach(function (t) { t.classList.toggle('active', t.dataset.glmode === mode); });
+    pinWrap.hidden = mode !== 'pin'; passWrap.hidden = mode !== 'pass'; if (setupWrap) setupWrap.hidden = mode !== 'setup'; msg.textContent = '';
+  }
   function anyConfigured() { return accts().some(function (a) { return (a.pin && a.pin.length) || (a.name && a.name.length); }); }
   function renderPin() { display.textContent = pinBuf ? pinBuf.replace(/./g, '•') : '– – – –'; }
   function matchPin(p) { if (!anyConfigured()) return { ok: true, admin: false }; var a = accts().filter(function (x) { return x.pin && x.pin === p; })[0]; return a ? { ok: true, admin: !!a.admin } : { ok: false }; }
@@ -11358,23 +11423,42 @@ window.__sfx = (function () {
     if (lock.classList.contains('unlocked') || lock.classList.contains('open')) return;
     if (!core || !core.classList.contains('active')) return;
     if (passWrap.hidden === false) return;
+    if (setupWrap && setupWrap.hidden === false) return;
     if (e.key >= '0' && e.key <= '9' && pinBuf.length < 12) { pinBuf += e.key; renderPin(); }
     else if (e.key === 'Backspace') { pinBuf = pinBuf.slice(0, -1); renderPin(); }
     else if (e.key === 'Enter') { submitPin(); }
   });
-  // PIN / username-password tabs
+  // PIN / username-password / set-up tabs
   lock.querySelectorAll('[data-glmode]').forEach(function (tab) {
-    tab.addEventListener('click', function () {
-      lock.querySelectorAll('[data-glmode]').forEach(function (t) { t.classList.remove('active'); });
-      tab.classList.add('active');
-      var pin = tab.dataset.glmode === 'pin'; pinWrap.hidden = !pin; passWrap.hidden = pin; msg.textContent = '';
-    });
+    tab.addEventListener('click', function () { switchMode(tab.dataset.glmode); });
   });
   document.getElementById('gl-passbtn').addEventListener('click', submitPass);
   document.getElementById('gl-pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') submitPass(); });
-  // already unlocked this session? skip the lock. else mark locked (elevates sidebar).
-  try { if (sessionStorage.getItem('ultronGameUnlocked') === '1') { lock.classList.add('unlocked'); return; } } catch (e) {}
+  // set up a personal profile (first startup) -> saved locally, auto-login after
+  function submitSetup() {
+    var u = (document.getElementById('gl-su-user').value || '').trim();
+    var pw = document.getElementById('gl-su-pass').value || '';
+    var pin = (document.getElementById('gl-su-pin').value || '').trim();
+    if (u.length < 2) { msg.textContent = 'Pick a username (2+ characters).'; return; }
+    if (!/^\d{4,12}$/.test(pin)) { msg.textContent = 'PIN must be 4–12 digits.'; return; }
+    var c = { name: u, pass: pw, pin: pin }; c.admin = credIsAdmin(c);
+    saveCred(c);
+    window.__GAME_ACCOUNTS = (window.__GAME_ACCOUNTS || []).concat([{ name: u, pass: pw, pin: pin, admin: c.admin }]);
+    unlock(c.admin);
+  }
+  document.getElementById('gl-su-btn').addEventListener('click', submitSetup);
+  document.getElementById('gl-su-pin').addEventListener('keydown', function (e) { if (e.key === 'Enter') submitSetup(); });
+  // Blast doors + red warning flash EVERY time the game opens (no session skip).
   document.body.classList.add('game-locked');
+  var savedCred = loadCred();
+  if (savedCred) {
+    // returning player: auto-login with their saved profile, still play the cinematic
+    msg.textContent = 'Welcome back, ' + savedCred.name + ' — initialising…';
+    setTimeout(function () { unlock(credIsAdmin(savedCred)); }, 1200);
+  } else {
+    // first startup: default to the profile set-up
+    switchMode('setup');
+  }
 })();
 </script>
 </body>
