@@ -7025,6 +7025,42 @@ function toggleReducedVisuals(el) {
     }
     ctx.lineCap = 'butt';
   }
+  // A vertical XP-gauge tube on the right of the chamber, filled to the player's
+  // live XP fraction; red pulses run down a power line from the agents above each
+  // time a subagent grants XP (see window.__xpPulse). Its bounds are cached so
+  // pulses know where to land.
+  var xpGaugeBox = { x: 0, top: 0, bot: 0 };
+  function drawXpGauge(top, floorY, t) {
+    var f = foundryCfg(), pct = Math.max(0, Math.min(1, f.xppct || 0)), lvl = f.xplevel || 1;
+    var gx = W - 66, gw = 30, gtop = top + 40, gbot = floorY - 20, gh = gbot - gtop;
+    xpGaugeBox.x = gx + gw / 2; xpGaugeBox.top = gtop; xpGaugeBox.bot = gbot;
+    // feed line from the agents above down to the tube
+    ctx.strokeStyle = '#3a1414'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(gx + gw / 2, top - 40); ctx.lineTo(gx + gw / 2, gtop); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,60,60,0.35)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(gx + gw / 2, top - 40); ctx.lineTo(gx + gw / 2, gtop); ctx.stroke();
+    // tube shell
+    ctx.fillStyle = 'rgba(16,20,26,0.92)'; roundRectPath(gx, gtop, gw, gh, 7); ctx.fill();
+    // fill (red XP energy)
+    var fillY = gbot - gh * pct;
+    ctx.save(); roundRectPath(gx + 2, gtop + 2, gw - 4, gh - 4, 6); ctx.clip();
+    var fg = ctx.createLinearGradient(0, gbot, 0, gtop);
+    fg.addColorStop(0, 'rgba(255,70,70,0.9)'); fg.addColorStop(1, 'rgba(255,150,90,0.7)');
+    ctx.fillStyle = fg; ctx.fillRect(gx, fillY, gw, gbot - fillY);
+    for (var b = 0; b < 5; b++) { var by = gbot - ((t * 26 + b * 40) % Math.max(1, gbot - fillY)); ctx.fillStyle = 'rgba(255,200,180,0.5)'; ctx.beginPath(); ctx.arc(gx + 6 + (b * 7) % (gw - 12), by, 1.6, 0, 6.28); ctx.fill(); }
+    ctx.restore();
+    ctx.strokeStyle = '#4a2020'; ctx.lineWidth = 2; roundRectPath(gx, gtop, gw, gh, 7); ctx.stroke();
+    ctx.fillStyle = '#ff8098'; setFont(fontPx * 0.7, true); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText('XP', gx + gw / 2, gtop - 6); ctx.fillStyle = '#ffd6d6'; ctx.fillText('Lv ' + lvl, gx + gw / 2, gbot + 14);
+    // active pulses travelling from an agent above down into the tube
+    for (var pi = xpPulses.length - 1; pi >= 0; pi--) {
+      var pu = xpPulses[pi], age = t - pu.t0, dur = 0.85;
+      if (age > dur) { xpPulses.splice(pi, 1); continue; }
+      var u = age / dur, px = pu.x0 + (xpGaugeBox.x - pu.x0) * u, py = pu.y0 + (gtop - pu.y0) * u;
+      ctx.strokeStyle = 'rgba(255,60,60,' + (0.5 * (1 - u)) + ')'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(pu.x0, pu.y0); ctx.lineTo(px, py); ctx.stroke();
+      ctx.save(); ctx.shadowColor = '#ff3b3b'; ctx.shadowBlur = 8; ctx.fillStyle = '#ff5a5a'; ctx.beginPath(); ctx.arc(px, py, 3, 0, 6.28); ctx.fill(); ctx.restore();
+    }
+  }
   function drawXpCrystal(t) {
     var top = xpCrystalTop, h = XPCRYSTAL_H, floorY = top + h - 26, cx = W * 0.5;
     var bg = ctx.createLinearGradient(0, top, 0, top + h);
@@ -7039,8 +7075,9 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = '#1a2a1c'; ctx.fillRect(0, floorY, W, 2);
     drawXpConveyor(cx, top, floorY, t);
     drawCrystalGem(cx, floorY, t);
-    var n = 10, span = Math.min(W - 140, 780), x0 = cx - span / 2, step = span / (n - 1);
+    var n = 10, span = Math.min(W - 200, 720), x0 = cx - span / 2, step = span / (n - 1);
     for (var i = 0; i < n; i++) { var bx = x0 + step * i; if (Math.abs(bx - cx) < 52) continue; drawMinerBot(bx, floorY, cx, floorY - 70, t, i); }
+    drawXpGauge(top, floorY, t);          // the separate XP gauge tube (fed by red agent pulses)
     ctx.fillStyle = '#5a6270'; setFont(fontPx * 0.8, false); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     ctx.fillText("XP CRYSTAL CHAMBER — Ultron's secret resource", cx, top + 16);
     hover('XP Crystal Chamber', cx, floorY - 80, 100,
@@ -7271,6 +7308,18 @@ function toggleReducedVisuals(el) {
   // always appear the moment they unlock.
   function forceDraw() { if (laidOut || (laidOut = layout())) { ensureBays(); drawScene(now()); } }
   window.__roomRelayout = function () { laidOut = layout(); forceDraw(); };
+  // Red XP pulses: each time a subagent grants the player XP (addXp calls
+  // window.__xpPulse), a pulse runs from a random agent down the power line into
+  // the XP-gauge tube on the crystal floor. Rate-limited so it never spams.
+  var xpPulses = [], lastXpPulse = 0;
+  window.__xpPulse = function () {
+    if (!xpFloorOn() || !laidOut) return;
+    var tn = now(); if (tn - lastXpPulse < 0.4 || xpPulses.length >= 12) return; lastXpPulse = tn;
+    var bottomRowY = storeyBaseY + (storeys - 1) * STOREY_H;
+    var row = SUBAGENTS.filter(function (a) { return a.floorY >= bottomRowY; });
+    var a = row.length ? row[Math.floor(Math.random() * row.length)] : SUBAGENTS[SUBAGENTS.length - 1];
+    if (a) xpPulses.push({ x0: a.x + STATION_W / 2, y0: a.floorY - 18, t0: tn });
+  };
   if (window.ResizeObserver) {
     new ResizeObserver(function () { laidOut = layout(); forceDraw(); }).observe(wrap);
   } else {
@@ -7699,6 +7748,7 @@ window.__sfx = (function () {
     if (up) { dirty = true; if (window.__sfx) window.__sfx('level'); gamePop('\u2605 LEVEL ' + state.prog.level, '#ff3b3b'); }
     if (up && typeof renderProgression === 'function') { renderProgression(); renderAdventure(); }
     else if (typeof renderXpLog === 'function') renderXpLog();   // light feed update, no full re-render
+    if (window.__foundry) { window.__foundry.xppct = state.prog.level >= LEVEL_CAP ? 1 : Math.max(0, Math.min(1, state.prog.xp / xpForLevel(state.prog.level))); window.__foundry.xplevel = state.prog.level; if (window.__xpPulse) window.__xpPulse(); }   // live XP gauge + red agent pulse
   }
 
   // ---- Expedition regions (biomes): each sets a difficulty (ilvl), a loot bias,
@@ -7834,6 +7884,8 @@ window.__sfx = (function () {
       cores: (state.prestige && state.prestige.cores) || 0,   // banked defeats -> permanent buffs
       charge: prestigeChargePct(),                             // 0..1 power-core fill toward next reboot
       xpcore: !!(state.xpcore && state.xpcore.unlocked),       // XP Crystal chamber floor is built
+      xppct: (function () { var p = state.prog; if (!p) return 0; return p.level >= LEVEL_CAP ? 1 : Math.max(0, Math.min(1, p.xp / xpForLevel(p.level))); })(),   // live XP gauge fill
+      xplevel: (state.prog && state.prog.level) || 1,
     };
     window.__refinery = refConfig();
   }
