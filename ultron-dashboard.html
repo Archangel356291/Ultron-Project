@@ -652,7 +652,8 @@
   /* Ultron's foundry -- the idle-game panel under his corner. */
   .foundry{ max-width:1280px; }
   /* sticky so the currency stays posted at the top of the game panel while scrolling */
-  .foundry-bal{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-mono); position:sticky; top:0; z-index:40; background:var(--bg,#0b0d10); padding:8px 6px; margin:-8px -6px 4px; border-bottom:1px solid var(--line); box-shadow:0 6px 14px -8px rgba(0,0,0,.6); }
+  .foundry-bal{ display:flex; align-items:center; gap:8px; font-family:var(--font-mono); position:sticky; top:0; z-index:40; background:var(--bg,#0b0d10); padding:8px 6px; margin:-8px -6px 4px; border-bottom:1px solid var(--line); box-shadow:0 6px 14px -8px rgba(0,0,0,.6); }
+  .foundry-bal-hint{ font-size:10px; color:var(--text-faint); margin-right:auto; }
   .game-pops{ position:absolute; left:0; right:0; top:-4px; pointer-events:none; display:flex; flex-direction:column; align-items:center; gap:1px; z-index:6; }
   .game-pop{ font-family:var(--font-display); font-weight:700; font-size:12.5px; animation:gamePop 1s ease-out forwards; text-shadow:0 1px 4px rgba(0,0,0,.7); white-space:nowrap; }
   @keyframes gamePop{ 0%{opacity:0; transform:translateY(6px) scale(.8);} 18%{opacity:1; transform:translateY(0) scale(1.12);} 100%{opacity:0; transform:translateY(-24px) scale(1);} }
@@ -814,8 +815,10 @@
   .bay-card{ border:1px solid var(--line); border-left:3px solid var(--bec); border-radius:7px; background:var(--panel-raised); padding:7px 8px; }
   .bay-card-h{ display:flex; justify-content:space-between; align-items:baseline; gap:6px; }
   .bay-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:var(--text); }
-  .bay-arch{ font-family:var(--font-mono); font-size:8.5px; color:var(--text-faint); text-align:right; }
-  .bay-pw{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); margin:3px 0 6px; }
+  .bay-arch{ font-family:var(--font-mono); font-size:8.5px; color:var(--text-faint); }
+  .bay-lvl{ font-family:var(--font-mono); font-weight:700; font-size:10px; color:#0c0e13; background:var(--bec); border-radius:4px; padding:1px 6px; white-space:nowrap; }
+  .bay-sub{ display:flex; justify-content:space-between; align-items:baseline; gap:6px; margin:3px 0 6px; }
+  .bay-pw{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); }
   .bay-pw b{ color:var(--bec); font-size:12px; }
   .bay-ups{ display:grid; grid-template-columns:repeat(4,1fr); gap:4px; }
   .bay-up{ display:flex; flex-direction:column; align-items:center; gap:1px; padding:4px 2px; border:1px solid var(--line); border-radius:5px; background:var(--void); color:var(--text-dim); cursor:default; }
@@ -823,7 +826,7 @@
   .bay-up.can:hover{ background:rgba(255,216,138,.08); }
   .bay-up:disabled{ opacity:.55; }
   .bay-up-k{ font-family:var(--font-mono); font-size:8px; letter-spacing:.04em; color:var(--text-faint); }
-  .bay-up-l{ font-family:var(--font-display); font-weight:700; font-size:12px; }
+  .bay-up-l{ font-family:var(--font-display); font-weight:700; font-size:10px; color:var(--bec); }
   .bay-up-c{ font-family:var(--font-mono); font-size:8px; color:#e6a41e; }
   .foundry-offline{ margin:8px 0 2px; padding:7px 11px; border:1px solid rgba(230,164,30,0.45); border-radius:6px; background:rgba(230,164,30,0.08); color:#ffd88a; font-size:12px; }
   .foundry-loot{ margin:8px 0 2px; padding:9px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel-raised); max-width:60ch; }
@@ -919,7 +922,7 @@
   .exp-viewer-wrap{ margin-top:14px; border:1px solid var(--line); border-radius:8px; background:var(--void); overflow:hidden; }
   .exp-viewer-h{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); padding:6px 10px; border-bottom:1px solid var(--line); }
   .exp-viewer-h b{ color:#7fd0ff; }
-  #exp-viewer-canvas{ display:block; width:100%; height:132px; }
+  #exp-viewer-canvas{ display:block; width:100%; height:200px; }
   .exp-equipbtn{ border-color:rgba(95,227,154,.55) !important; color:#5fe39a !important; }
   /* full robot stats sheet */
   .rstats{ margin-top:10px; border:1px solid var(--line); border-radius:8px; background:var(--panel-raised); padding:9px 11px; }
@@ -1615,9 +1618,7 @@
           <div class="panel-label" style="margin-top:28px;">Ultron's foundry</div>
           <div class="foundry" id="foundry">
             <div class="foundry-bal">
-              <span class="foundry-coin" aria-hidden="true">◉</span>
-              <span class="foundry-bits" id="foundry-bits">0</span>
-              <span class="foundry-rate" id="foundry-rate"></span>
+              <span class="foundry-bal-hint">Currency &amp; /s tracked in the fixed panel (bottom-left)</span>
               <button type="button" class="game-save-btn" id="game-save-btn" title="Save all game progress now">💾 Save</button>
               <button type="button" class="sfx-btn" id="sfx-toggle" title="Game sound effects" aria-label="Toggle game sound">🔊</button>
               <div class="game-pops" id="game-pops"></div>
@@ -6558,6 +6559,21 @@ function toggleReducedVisuals(el) {
     caption('gauntlet', cx, cy + 32); hover('Infinity Gauntlet', cx, cy, 22,
       relicTip('Infinity Gauntlet', '#ffbe3c', 'A gauntlet built to wield all six Infinity Stones.', 'Dwarven-forged on Nidavellir for a mad titan.', 'Ultron seized the empty gauntlet to seat the stones he is gathering.'));
   }
+  // A solid dark-metal wall panel behind the whole right-hand display gap, so
+  // the trophy shelves + world-plan sit on clean wall instead of over the
+  // baked-in office window (which now shows only in the centre, behind Ultron).
+  function drawOfficeWall(t) {
+    var gapL = walkMaxX + 28, gapR = uDeskX - 18; if (gapR - gapL < 170) return;
+    var y0 = ROOF_H + 24, y1 = ROOF_H + 232, w = gapR - gapL;
+    ctx.fillStyle = '#0d0f13'; ctx.fillRect(gapL, y0, w, y1 - y0);
+    ctx.fillStyle = '#191d23'; ctx.fillRect(gapL, y0, w, 3);                 // top trim
+    ctx.fillStyle = '#070809'; ctx.fillRect(gapL, y1 - 3, w, 3);            // bottom shadow
+    ctx.strokeStyle = M_LINE; ctx.lineWidth = 1; ctx.strokeRect(gapL + 0.5, y0 + 0.5, w - 1, y1 - y0 - 1);
+    ctx.fillStyle = 'rgba(255,255,255,0.015)';                              // faint panel seams
+    for (var sx = gapL + 42; sx < gapR - 10; sx += 60) ctx.fillRect(sx, y0 + 2, 1, y1 - y0 - 4);
+    ctx.fillStyle = '#5a6270'; setFont(fontPx * 0.62, false); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText("ULTRON'S TROPHIES", gapL + 6, y1 - 6);
+  }
   function shelf(gapL, span, y) {
     ctx.fillStyle = M_GUN; ctx.fillRect(gapL + span * 0.03, y, span * 0.94, 5);
     ctx.fillStyle = M_STEEL; ctx.fillRect(gapL + span * 0.03, y, span * 0.94, 1.5);
@@ -6886,6 +6902,7 @@ function toggleReducedVisuals(el) {
       plate('Ultron', heroState, uDeskX + 9, officeFloorY - U_DESK_H + 34, U_DESK_W - 18, U_DESK_H - 44, '#ff6b6b', '#e8e6e0');
       drawStones(uDeskX + U_DESK_W * 0.42, officeFloorY - U_DESK_H + 10, t);   // Infinity Stones on the desktop
     }
+    drawOfficeWall(t);  // solid backdrop behind the display gap -- hides the baked window there
     drawRelics(t);   // Tesseract / Orb / Eye on pedestals + the Aether tube on the desk
     drawWorldPlan(t);   // world-domination plans on the wall
     drawTrophies(t);    // Cap's shield / Mjolnir / Hawkeye's bow / power sword mounted above
@@ -7726,15 +7743,16 @@ window.__sfx = (function () {
     if (!baysEl) return;
     var n = bayOpenCount(), total = totalBayPower(), boost = Math.round((bayPowerMult() - 1) * 100), cards = '';
     for (var b = 0; b < n; b++) {
-      var a = bayArch(b), pw = bayStrength(b);
+      var a = bayArch(b), pw = bayStrength(b), bayLvl = 0;
       var ups = BAY_UP.map(function (u) {
         var def = bayUpgDef(u, b), l = lvl(def.id), maxed = l >= u.max, c = cost(def), can = state.bits >= c && !maxed;
-        return '<button type="button" class="bay-up' + (can ? ' can' : '') + '" data-bup="' + u.k + '" data-bay="' + b + '"' + (maxed ? ' disabled' : '') + ' title="' + esc(u.name + ' — ' + def.desc(l)) + '">' +
-          '<span class="bay-up-k">' + u.abbr + '</span><span class="bay-up-l">' + l + '</span><span class="bay-up-c"' + (maxed ? '' : ' style="color:' + fmtColor(c) + '"') + '>' + (maxed ? 'max' : fmt(c)) + '</span></button>';
+        bayLvl += l;
+        return '<button type="button" class="bay-up' + (can ? ' can' : '') + '" data-bup="' + u.k + '" data-bay="' + b + '"' + (maxed ? ' disabled' : '') + ' title="' + esc(u.name + ' — Lv ' + l + '/' + u.max + ' — ' + def.desc(l)) + '">' +
+          '<span class="bay-up-k">' + u.abbr + '</span><span class="bay-up-l">Lv ' + l + '</span><span class="bay-up-c"' + (maxed ? '' : ' style="color:' + fmtColor(c) + '"') + '>' + (maxed ? 'max' : fmt(c)) + '</span></button>';
       }).join('');
       cards += '<div class="bay-card" style="--bec:' + (a.eye || '#ff3b3b') + '">' +
-        '<div class="bay-card-h"><span class="bay-nm">' + esc(a.name) + '</span><span class="bay-arch">' + esc(a.archetype + ' · ' + a.move) + '</span></div>' +
-        '<div class="bay-pw">⚔ Power <b>' + pw + '</b></div>' +
+        '<div class="bay-card-h"><span class="bay-nm">' + esc(a.name) + '</span><span class="bay-lvl">Lv ' + bayLvl + '</span></div>' +
+        '<div class="bay-sub"><span class="bay-arch">' + esc(a.archetype + ' · ' + a.move) + '</span><span class="bay-pw">⚔ Power <b>' + pw + '</b></span></div>' +
         '<div class="bay-ups">' + ups + '</div></div>';
     }
     baysEl.innerHTML = '<div class="bays-tot">Total bay power <b>' + total + '</b> → <span class="bays-boost">+' + boost + '% adventurer power</span></div>' +
@@ -7989,6 +8007,7 @@ window.__sfx = (function () {
       idleXpAcc += dt * 0.6; if (idleXpAcc >= 1) { var whole = Math.floor(idleXpAcc); idleXpAcc -= whole; addXp(whole, 'Idle ops'); }   // "do to learn": a small XP trickle while running the line
     }
     advTick();                         // expeditions run on wall-clock time -> progress in the background regardless
+    currencyHud(((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus());   // keep the one fixed currency tracker live on EVERY tab
     var shown = Math.round(state.bits * 10);
     if (gameOnline() && dirty && shown !== lastShown) {
       lastShown = shown;
@@ -8808,26 +8827,38 @@ window.__sfx = (function () {
 (function () {
   var canvas = document.getElementById('exp-viewer-canvas'); if (!canvas || !canvas.getContext) return;
   var wrap = document.getElementById('exp-viewer-wrap'), ctx = canvas.getContext('2d');
-  var W = 600, H = 132, dpr = Math.min(window.devicePixelRatio || 1, 2), onScreen = true;
+  var W = 600, H = 200, dpr = Math.min(window.devicePixelRatio || 1, 2), onScreen = true;
+  var botAim = -0.15, botScale = 1.7;   // bigger bot + a gun that aims at the enemy
   function size() { var cw = (wrap && wrap.clientWidth) || canvas.clientWidth || 600; W = Math.max(320, Math.round(cw)); canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
   size(); window.addEventListener('resize', size);
   if (window.ResizeObserver && wrap) new ResizeObserver(size).observe(wrap);
   if (window.IntersectionObserver) new IntersectionObserver(function (e) { onScreen = e[e.length - 1].isIntersecting; }).observe(canvas);
   function view() { return window.__advView || { active: false, color: '#ff3b3b', ground: '#00e5ff' }; }
   var creatures = [], bolts = [], pops = [], loots = [], stars = [];
-  var lastFire = 0, lastSpawn = 0, botBob = 0, muzzle = 0, botX = 62;
+  var lastFire = 0, lastSpawn = 0, botBob = 0, muzzle = 0, botX = 84;
   for (var i = 0; i < 26; i++) stars.push({ x: Math.random() * 600, y: 8 + Math.random() * 84, s: Math.random() * 22 + 6 });
   function hexToRgb(h) { h = (h || '#888').replace('#', ''); if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2]; return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
   function update(t, dt) {
     var v = view(); if (!v.active) return;
     botBob += dt * 4;
-    if (t - lastSpawn > 0.85 + Math.random() * 0.6 && creatures.length < 5) { lastSpawn = t; creatures.push({ x: W + 18, y: H - 34 - Math.random() * 22, wob: Math.random() * 6, r: 6 + Math.random() * 3 }); }
+    if (t - lastSpawn > 0.85 + Math.random() * 0.6 && creatures.length < 5) { lastSpawn = t; creatures.push({ x: W + 18, y: H - 28 - Math.random() * 74, wob: Math.random() * 6, r: 10 + Math.random() * 6 }); }   // bigger, spread over more height so aiming shows
     creatures.forEach(function (cr) { cr.x -= (24 + Math.random() * 6) * dt; cr.wob += dt * 6; });
-    if (t - lastFire > 0.5 && creatures.length) { lastFire = t; muzzle = t + 0.06; bolts.push({ x: botX + 20, y: H - 30, vx: 300 }); }
+    if (t - lastFire > 0.5 && creatures.length) {
+      lastFire = t; muzzle = t + 0.06;
+      // aim at the nearest creature: rotate the gun and fire a bolt along the
+      // line of sight, so shots track wherever the enemy actually is.
+      var feet = H - 12, tgt = creatures[0];
+      for (var ti = 1; ti < creatures.length; ti++) if (creatures[ti].x < tgt.x) tgt = creatures[ti];
+      var shX = botX + (8 - 0) * botScale, shY = feet + (-24 - 0) * botScale;   // shoulder in screen space (scaled about feet base)
+      botAim = Math.max(-1.15, Math.min(1.15, Math.atan2(tgt.y - shY, tgt.x - shX)));
+      var mx = shX + Math.cos(botAim) * 22 * botScale, my = shY + Math.sin(botAim) * 22 * botScale;   // barrel tip
+      var dx = tgt.x - mx, dy = tgt.y - my, d = Math.hypot(dx, dy) || 1, sp = 360;
+      bolts.push({ x: mx, y: my, vx: dx / d * sp, vy: dy / d * sp });
+    }
     for (var bi = bolts.length - 1; bi >= 0; bi--) {
-      var b = bolts[bi]; b.x += b.vx * dt; var hit = false;
-      for (var ci = 0; ci < creatures.length; ci++) { var cr = creatures[ci]; if (cr.x > botX && Math.abs(b.x - cr.x) < 11 && Math.abs(b.y - cr.y) < 18) { killCreature(cr, ci, v); hit = true; break; } }
-      if (hit || b.x > W + 20) bolts.splice(bi, 1);
+      var b = bolts[bi]; b.x += b.vx * dt; b.y += b.vy * dt; var hit = false;
+      for (var ci = 0; ci < creatures.length; ci++) { var cr = creatures[ci]; if (cr.x > botX && Math.abs(b.x - cr.x) < 13 && Math.abs(b.y - cr.y) < 16) { killCreature(cr, ci, v); hit = true; break; } }
+      if (hit || b.x > W + 20 || b.x < -20 || b.y < -20 || b.y > H + 20) bolts.splice(bi, 1);
     }
     for (var k = creatures.length - 1; k >= 0; k--) if (creatures[k].x < botX + 4) { pops.push({ x: creatures[k].x, y: creatures[k].y, life: 0, col: '#ff6b6b' }); creatures.splice(k, 1); }
     for (var pi = pops.length - 1; pi >= 0; pi--) { pops[pi].life += dt; if (pops[pi].life > 0.5) pops.splice(pi, 1); }
@@ -8839,9 +8870,9 @@ window.__sfx = (function () {
     creatures.splice(ci, 1);
   }
   function drawBot(t, v) {
-    var rgb = hexToRgb(v.color), col = v.color, x = botX, feet = H - 12, bob = Math.sin(botBob) * 1.5;
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(x, feet + 2, 15, 3.5, 0, 0, 6.28); ctx.fill();
-    ctx.save(); ctx.translate(0, bob);
+    var rgb = hexToRgb(v.color), col = v.color, x = botX, feet = H - 12, bob = Math.sin(botBob) * 1.5, S = botScale;
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(x, feet + 2, 15 * S, 3.5 * S, 0, 0, 6.28); ctx.fill();
+    ctx.save(); ctx.translate(x, feet); ctx.scale(S, S); ctx.translate(-x, -feet); ctx.translate(0, bob);   // scale the whole bot up
     ctx.fillStyle = '#2a2e34'; ctx.fillRect(x - 7, feet - 12, 5, 12); ctx.fillRect(x + 2, feet - 12, 5, 12);            // legs
     ctx.fillStyle = col; ctx.fillRect(x - 8, feet - 12, 2, 12);
     var g = ctx.createLinearGradient(x - 11, 0, x + 11, 0); g.addColorStop(0, 'rgba(' + rgb + ',0.9)'); g.addColorStop(1, '#3a3f47');
@@ -8850,9 +8881,12 @@ window.__sfx = (function () {
     ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, feet - 20.5, 3.4, 0, 6.28); ctx.fill();                          // core
     ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x, feet - 20.5, 1.4, 0, 6.28); ctx.fill();
     ctx.fillStyle = '#3a3f47'; ctx.fillRect(x - 15, feet - 28, 5, 8);                                                 // back arm
-    ctx.fillStyle = '#4a5058'; ctx.fillRect(x + 9, feet - 26, 14, 5);                                                 // gun arm
-    ctx.fillStyle = '#2a2e34'; ctx.fillRect(x + 21, feet - 26.5, 6, 6);
-    if (t < muzzle) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x + 28, feet - 23.5, 4, 0, 6.28); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x + 28, feet - 23.5, 1.8, 0, 6.28); ctx.fill(); }
+    // gun arm pivots at the shoulder and rotates toward the target (botAim)
+    ctx.save(); ctx.translate(x + 8, feet - 24); ctx.rotate(botAim);
+    ctx.fillStyle = '#4a5058'; ctx.fillRect(0, -2.5, 15, 5);                                                          // barrel arm
+    ctx.fillStyle = '#2a2e34'; ctx.fillRect(13, -3, 7, 6);                                                            // gun housing
+    if (t < muzzle) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(22, 0, 4, 0, 6.28); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(22, 0, 1.8, 0, 6.28); ctx.fill(); }
+    ctx.restore();
     ctx.fillStyle = '#9298a3'; ctx.fillRect(x - 6, feet - 42, 12, 12);                                                // head
     ctx.fillStyle = col; ctx.fillRect(x - 6, feet - 42, 12, 2);
     ctx.fillStyle = '#14161b'; ctx.fillRect(x - 4.5, feet - 38, 9, 4);
@@ -8872,14 +8906,18 @@ window.__sfx = (function () {
     ctx.fillStyle = 'rgba(' + grgb + ',0.35)'; ctx.fillRect(0, H - 10, W, 2);                                        // ground line
     ctx.fillStyle = '#0d0f14'; ctx.fillRect(0, H - 8, W, 8);
     if (!v.active) { ctx.fillStyle = '#5a6270'; ctx.font = '12px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('Send your robot on a run to watch it fight.', W / 2, H / 2); return; }
-    creatures.forEach(function (cr) {                                                                                // creatures
-      var y = cr.y + Math.sin(cr.wob) * 2;
+    creatures.forEach(function (cr) {                                                                                // creatures (scaled by their own r)
+      var y = cr.y + Math.sin(cr.wob) * 2, e = cr.r / 8;
       ctx.fillStyle = '#3a2030'; ctx.beginPath(); ctx.ellipse(cr.x, y, cr.r, cr.r * 0.8, 0, 0, 6.28); ctx.fill();
       ctx.fillStyle = '#7a3050'; ctx.beginPath(); ctx.ellipse(cr.x - 1, y - 1, cr.r * 0.6, cr.r * 0.5, 0, 0, 6.28); ctx.fill();
-      ctx.fillStyle = '#ff4d6a'; ctx.fillRect(cr.x - 3, y - 1.5, 2, 2); ctx.fillRect(cr.x + 1, y - 1.5, 2, 2);        // eyes
-      ctx.strokeStyle = '#2a1020'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cr.x - cr.r, y + cr.r * 0.7); ctx.lineTo(cr.x - cr.r - 2, y + cr.r); ctx.moveTo(cr.x + cr.r, y + cr.r * 0.7); ctx.lineTo(cr.x + cr.r + 2, y + cr.r); ctx.stroke();
+      ctx.fillStyle = '#ff4d6a'; ctx.fillRect(cr.x - 3.4 * e, y - 1.5 * e, 2.4 * e, 2.4 * e); ctx.fillRect(cr.x + 1 * e, y - 1.5 * e, 2.4 * e, 2.4 * e);   // eyes
+      ctx.strokeStyle = '#2a1020'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(cr.x - cr.r, y + cr.r * 0.7); ctx.lineTo(cr.x - cr.r - 3, y + cr.r); ctx.moveTo(cr.x + cr.r, y + cr.r * 0.7); ctx.lineTo(cr.x + cr.r + 3, y + cr.r); ctx.stroke();
     });
-    bolts.forEach(function (b) { ctx.strokeStyle = v.color; ctx.lineWidth = 2.4; ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.moveTo(b.x - 9, b.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.globalAlpha = 1; });
+    bolts.forEach(function (b) {   // bolt drawn as a streak along its actual travel direction
+      var a = Math.atan2(b.vy, b.vx), lx = Math.cos(a) * 13, ly = Math.sin(a) * 13;
+      ctx.save(); ctx.strokeStyle = v.color; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.shadowColor = v.color; ctx.shadowBlur = 6; ctx.globalAlpha = 0.95;
+      ctx.beginPath(); ctx.moveTo(b.x - lx, b.y - ly); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.restore();
+    });
     drawBot(t, v);
     pops.forEach(function (p) { ctx.globalAlpha = Math.max(0, 1 - p.life / 0.5); ctx.fillStyle = p.col; var px = p.x + (p.vx || 0) * p.life, py = p.y + (p.vy || 0) * p.life; ctx.fillRect(px - 1.5, py - 1.5, 3, 3); ctx.globalAlpha = 1; });
     loots.forEach(function (l) { ctx.globalAlpha = Math.max(0, 1 - l.life); ctx.fillStyle = l.col; ctx.font = '11px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.fillText('◉', l.x, l.y); ctx.globalAlpha = 1; });
