@@ -613,7 +613,45 @@
   .foundry-up .fu-cost{ font-family:var(--font-mono); font-size:12px; color:#e6a41e; }
   .foundry-up .fu-cost.short{ color:var(--text-faint); }
   .foundry-offline{ margin:8px 0 2px; padding:7px 11px; border:1px solid rgba(230,164,30,0.45); border-radius:6px; background:rgba(230,164,30,0.08); color:#ffd88a; font-size:12px; }
+  .foundry-loot{ margin:8px 0 2px; padding:9px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel-raised); max-width:60ch; }
+  .foundry-loot .loot-head{ display:flex; align-items:center; gap:8px; }
+  .foundry-loot .loot-gem{ width:9px; height:9px; border-radius:2px; flex-shrink:0; }
+  .foundry-loot .loot-name{ font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--text); }
+  .foundry-loot .loot-rar{ font-family:var(--font-mono); font-size:10.5px; margin-left:auto; text-transform:uppercase; letter-spacing:0.04em; }
+  .foundry-loot .loot-lore{ font-size:12px; color:var(--text-dim); margin-top:4px; font-style:italic; }
   .foundry-note{ font-size:11.5px; color:var(--text-faint); max-width:60ch; }
+
+  /* Ultron's Expedition -- custom robot + idle adventure + weighted loot. */
+  .expedition{ max-width:1000px; font-size:12.5px; }
+  .exp-lock{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; color:var(--text-dim); background:var(--panel-raised); border:1px solid var(--line); border-radius:8px; padding:12px 14px; }
+  .exp-btn{ font-family:var(--font-display); font-weight:700; font-size:12.5px; padding:7px 12px; border-radius:7px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text); cursor:pointer; }
+  .exp-btn.big{ font-size:14px; padding:9px 16px; }
+  .exp-btn.can{ border-color:rgba(230,164,30,0.55); color:#ffd88a; }
+  .exp-btn:disabled{ opacity:0.5; cursor:not-allowed; }
+  .exp-build{ display:flex; gap:16px; align-items:flex-start; background:var(--panel-raised); border:1px solid var(--line); border-radius:8px; padding:12px 14px; flex-wrap:wrap; }
+  .exp-robot{ width:56px; height:70px; border-radius:6px; background:linear-gradient(180deg,#2c313a,#181c22); border:1px solid var(--line); position:relative; flex-shrink:0; box-shadow:0 0 14px -4px var(--rc); }
+  .exp-robot::before{ content:''; position:absolute; left:12px; right:12px; top:10px; height:20px; border-radius:4px 4px 0 0; background:#9c9a90; }
+  .exp-robot .exp-eye{ position:absolute; left:18px; top:16px; width:20px; height:6px; border-radius:2px; background:var(--rc); box-shadow:0 0 8px var(--rc); }
+  .exp-robot::after{ content:''; position:absolute; left:12px; right:12px; top:32px; bottom:10px; border-radius:4px; background:#3a4049; }
+  .exp-cfg{ flex:1; min-width:220px; }
+  .exp-lab{ display:block; font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); margin:6px 0 3px; text-transform:uppercase; letter-spacing:0.05em; }
+  .exp-name{ width:100%; max-width:240px; background:var(--void); border:1px solid var(--line); border-radius:6px; padding:6px 9px; color:var(--text); font-family:var(--font-mono); }
+  .exp-row{ display:flex; gap:6px; flex-wrap:wrap; }
+  .exp-chip{ width:20px; height:20px; border-radius:5px; border:2px solid transparent; cursor:pointer; }
+  .exp-chip.on{ border-color:#fff; }
+  .exp-wpn{ font-family:var(--font-mono); font-size:10.5px; padding:3px 8px; border-radius:12px; border:1px solid var(--line); background:var(--void); color:var(--text-dim); cursor:pointer; }
+  .exp-wpn.on{ border-color:var(--blue,#4fa6e0); color:var(--blue-bright,#78c8ff); }
+  .exp-status, .exp-send{ margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .exp-status.ready{ color:#ffd88a; }
+  .exp-prog{ flex:1; min-width:120px; height:7px; background:var(--void); border:1px solid var(--line); border-radius:4px; overflow:hidden; }
+  .exp-prog i{ display:block; height:100%; background:#e6a41e; }
+  .exp-haul{ margin-top:8px; font-size:12px; color:var(--text-dim); }
+  .exp-inv-h{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); margin:12px 0 6px; text-transform:uppercase; letter-spacing:0.05em; }
+  .exp-inv{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:7px; }
+  .exp-item{ display:flex; align-items:center; gap:7px; background:var(--panel-raised); border:1px solid var(--line); border-left-width:3px; border-radius:6px; padding:6px 9px; }
+  .exp-i-ic{ font-size:14px; flex-shrink:0; }
+  .exp-i-name{ font-weight:600; font-size:12px; }
+  .exp-i-rar{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-left:auto; text-align:right; }
 
   /* "What Ultron knows": the Brain vault graph under his corner. Same frame
      as the room above it, so the two read as one place. */
@@ -1266,9 +1304,13 @@
               <span class="foundry-rate" id="foundry-rate"></span>
             </div>
             <div class="foundry-offline" id="foundry-offline" hidden></div>
+            <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
             <div class="foundry-note">Every package shipped out and every squad that marches out mints data-bits — and it keeps minting while you're away. Spend them on upgrades to run the line faster.</div>
           </div>
+
+          <div class="panel-label" style="margin-top:28px;">Ultron's expedition</div>
+          <div class="expedition" id="expedition"></div>
 
           <div class="panel-label" style="margin-top:28px;">What Ultron knows</div>
           <div class="vault-head">
@@ -5437,7 +5479,8 @@ function toggleReducedVisuals(el) {
     }
   }
 
-  function drawMarcher(m, t, style, s) {
+  function drawMarcher(m, t, style, s, tier) {
+    tier = tier || 1;
     var x = m.x, footY = m.y;
     var body = style.body, plate = style.plate, eye = style.eye;
     var saluting = t < m.saluteT;
@@ -5445,6 +5488,12 @@ function toggleReducedVisuals(el) {
     var step = moving ? Math.sin(m.wp) : 0;
     ctx.fillStyle = 'rgba(0,0,0,0.32)';
     ctx.beginPath(); ctx.ellipse(x, footY + 1, 7 * s, 2.2 * s, 0, 0, Math.PI * 2); ctx.fill();
+    if (tier >= 3) {                                            // evolved aura
+      var ag = ctx.createRadialGradient(x, footY - 11 * s, 2, x, footY - 11 * s, 17 * s);
+      ag.addColorStop(0, eye); ag.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = 0.16 + 0.06 * Math.sin(t * 3 + x); ctx.fillStyle = ag;
+      ctx.fillRect(x - 17 * s, footY - 27 * s, 34 * s, 32 * s); ctx.globalAlpha = 1;
+    }
     ctx.fillStyle = M_DARK;                                     // legs + feet
     ctx.fillRect(x - 3 * s + step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
     ctx.fillRect(x + 0.8 * s - step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
@@ -5453,6 +5502,7 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = body; ctx.fillRect(x - 4 * s, footY - 13 * s, 8 * s, 8 * s);           // torso
     ctx.fillStyle = plate; ctx.globalAlpha = 0.5; ctx.fillRect(x - 4 * s, footY - 13 * s, 2.4 * s, 8 * s); ctx.globalAlpha = 1;
     ctx.fillStyle = M_LINE; ctx.fillRect(x - 4 * s, footY - 9.4 * s, 8 * s, 0.7 * s);
+    if (tier >= 2) { ctx.fillStyle = plate; ctx.fillRect(x - 5.4 * s, footY - 13.4 * s, 2 * s, 3.4 * s); ctx.fillRect(x + 3.4 * s, footY - 13.4 * s, 2 * s, 3.4 * s); }  // pauldrons
     ctx.fillStyle = M_DARK; ctx.fillRect(x - 2.1 * s, footY - 11.6 * s, 4.2 * s, 3.4 * s);
     ctx.fillStyle = eye; ctx.fillRect(x - 1.2 * s, footY - 11 * s, 2.4 * s, 2.4 * s);      // core (bay colour)
     ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fillRect(x - 0.5 * s, footY - 10.4 * s, 1 * s, 1.1 * s);
@@ -5464,6 +5514,18 @@ function toggleReducedVisuals(el) {
     // crest tuft varies by bay
     ctx.fillStyle = plate; ctx.fillRect(x - 0.3 * s, footY - 22 * s, 0.8 * s, 3 * s);
     ctx.fillStyle = eye; ctx.fillRect(x - 0.5 * s, footY - 22.6 * s, 1.2 * s, 1 * s);
+    if (tier >= 3) {                                            // paladin crest
+      ctx.fillStyle = plate; ctx.fillRect(x - 3.4 * s, footY - 20 * s, 6.8 * s, 1.2 * s);
+      ctx.beginPath(); ctx.moveTo(x - 2.4 * s, footY - 20 * s); ctx.lineTo(x, footY - 23.5 * s); ctx.lineTo(x + 2.4 * s, footY - 20 * s); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = eye; ctx.fillRect(x - 0.6 * s, footY - 23 * s, 1.2 * s, 1.2 * s);
+    }
+    if (tier >= 4) {                                            // orbiting particle effects
+      for (var pk = 0; pk < 3; pk++) {
+        var pa = t * 2.2 + pk * 2.094, ppx = x + Math.cos(pa) * 11 * s, ppy = footY - 12 * s + Math.sin(pa) * 7.5 * s;
+        ctx.globalAlpha = 0.85; ctx.fillStyle = pk % 2 ? '#ffffff' : eye;
+        ctx.fillRect(ppx - 1.3, ppy - 1.3, 2.6, 2.6); ctx.globalAlpha = 1;
+      }
+    }
     if (saluting) {                                             // salute
       ctx.fillStyle = body; ctx.fillRect(x - 4.6 * s, footY - 18.5 * s, 1.9 * s, 5.5 * s);
       ctx.fillStyle = M_STEEL; ctx.fillRect(x - 5.2 * s, footY - 20 * s, 3 * s, 1.8 * s);
@@ -5535,7 +5597,8 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = (b === 0 && t < hatchFlashUntil) ? RED : style.eye; ctx.beginPath(); ctx.arc(outX - 8, oY - 15, 5, 0, Math.PI * 2); ctx.fill();
     caption('out', outX - 2, oY - 36);
 
-    bay.marchers.forEach(function (m) { drawMarcher(m, t, style, 3.2); });
+    var tier = foundryCfg().tier || 1;
+    bay.marchers.forEach(function (m) { drawMarcher(m, t, style, 3.2, tier); });
 
     if (t < bay.sayUntil && bay.marchers.length) {
       var bx = bayMusterX() + (perBayCap() - 1) * 23, by = floor - 22 * 3.2 - 16;
@@ -5920,9 +5983,10 @@ function toggleReducedVisuals(el) {
   var state = { bits: 0, up: {} };
   try {
     var raw = localStorage.getItem(KEY);
-    if (raw) { var j = JSON.parse(raw); if (j && typeof j.bits === 'number') { state.bits = j.bits; state.up = j.up || {}; } }
+    if (raw) { var j = JSON.parse(raw); if (j && typeof j.bits === 'number') { state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; } }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
   UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
+  if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b', weapon: 'blaster' }, endsAt: 0, dur: 0, inv: [] };
 
   var saveTimer = null;
   function save() {
@@ -5946,6 +6010,7 @@ function toggleReducedVisuals(el) {
       passive: 0.5 * lvl('collector'),
       marchMult: 1 + 0.15 * lvl('march'),
       offlineHours: 1.5 + lvl('offline'),
+      tier: 1 + Math.min(3, Math.floor((lvl('yield') + lvl('perbay') + lvl('assembler')) / 3)),
     };
   }
   publish();
@@ -5967,7 +6032,7 @@ function toggleReducedVisuals(el) {
     offlineCapped = away > capSec;
     var eff = Math.min(away, capSec);
     offlineEarned = prodRate() * eff;
-    if (offlineEarned > 0.05) { state.bits += offlineEarned; }
+    if (offlineEarned > 0.05) { state.bits += offlineEarned; dirty = true; }   // loot rolled below, once the pool is defined
   }
   // flush last-seen when the tab is hidden/closed so offline time is accurate
   function flush() { state.seen = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } }
@@ -6034,6 +6099,7 @@ function toggleReducedVisuals(el) {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
     var p = window.__foundry.passive || 0;
     if (p > 0) { state.bits += p * dt; dirty = true; save(); }
+    advTick();
     var shown = Math.round(state.bits * 10);
     if (dirty && shown !== lastShown) {
       lastShown = shown;
@@ -6041,6 +6107,37 @@ function toggleReducedVisuals(el) {
       dirty = false;
     }
   }, 500);
+
+  // AI-flavoured loot: when the crew returns from idling, mint a procedurally
+  // generated piece of gear, themed on what you and Ultron talked about today
+  // (recent conversation topics from the Brain vault, if loaded) -- local, no
+  // paid API call.
+  var LOOT_ADJ = ['Overclocked', 'Ancient', 'Encrypted', 'Quantum', 'Recursive', 'Hardened', 'Volatile', 'Gilded', 'Phantom', 'Runic', 'Self-Aware'];
+  var LOOT_MAT = ['Titanium', 'Obsidian', 'Plasma', 'Neon', 'Chrome', 'Carbon', 'Cobalt', 'Photon', 'Vibranium-ish'];
+  var LOOT_TYPE = ['Blaster', 'Rifle', 'Cannon', 'Spear', 'Scythe', 'Sawblade', 'Laser Lance', 'Warhammer', 'Bow', 'Core', 'Sigil', 'Relay'];
+  var LOOT_RARITY = [{ n: 'Common', c: '#9aa2ae', p: 0 }, { n: 'Uncommon', c: '#33d17a', p: 3 }, { n: 'Rare', c: '#3d9bff', p: 30 }, { n: 'Epic', c: '#b084f0', p: 150 }, { n: 'Legendary', c: '#ffcf6a', p: 800 }];
+  function pick(a, r) { return a[Math.floor(r * a.length) % a.length]; }
+  function genLoot(earned) {
+    var topics = (window.__recentTopics || []).filter(Boolean);
+    var theme = topics.length ? topics[Math.floor(Math.random() * topics.length)] : pick(['the Home Lab', 'the Tailnet', 'the Data Stream', 'the Night Shift', 'the Vault', 'Recursion'], Math.random());
+    theme = String(theme).replace(/[<>]/g, '').slice(0, 60);
+    var rar = LOOT_RARITY[0];
+    for (var i = LOOT_RARITY.length - 1; i >= 0; i--) { if (earned >= LOOT_RARITY[i].p && Math.random() < 0.35 + i * 0.06) { rar = LOOT_RARITY[i]; break; } }
+    var name = pick(LOOT_ADJ, Math.random()) + ' ' + pick(LOOT_MAT, Math.random()) + ' ' + pick(LOOT_TYPE, Math.random());
+    var lore = 'Ultron forged it while you were away, mulling over ' + theme + '. It hums with ' + fmt(earned) + ' data-bits of idle labour.';
+    return { name: name + ' of ' + theme.replace(/^the /i, ''), lore: lore, rarity: rar.n, color: rar.c, at: Date.now() };
+  }
+
+  function renderLoot() {
+    var el = document.getElementById('foundry-loot');
+    if (!el || !state.loot) return;
+    var L = state.loot;
+    el.innerHTML = '<div class="loot-head"><span class="loot-gem" style="background:' + L.color + ';box-shadow:0 0 10px ' + L.color + '"></span>' +
+      '<span class="loot-name">' + L.name.replace(/[<>]/g, '') + '</span>' +
+      '<span class="loot-rar" style="color:' + L.color + '">' + L.rarity + '</span></div>' +
+      '<div class="loot-lore">' + L.lore.replace(/[<>]/g, '') + '</div>';
+    el.hidden = false;
+  }
 
   var offEl = document.getElementById('foundry-offline');
   if (offEl && offlineEarned > 0.05) {
@@ -6050,6 +6147,118 @@ function toggleReducedVisuals(el) {
     offEl.hidden = false;
   }
 
+  // ---- Ultron's Expedition: unlock a bay to build a CUSTOM robot and send it
+  // on an idle adventure; it returns with loot rolled from a weighted pool
+  // (rarity tiers + prefix/base/suffix affixes, per the owner's blueprint). ----
+  var ADV_COST = 5000;
+  var ADV_DUR = [{ n: 'Scout', mins: 5, loot: 1 }, { n: 'Delve', mins: 30, loot: 2 }, { n: 'Odyssey', mins: 120, loot: 3 }];
+  var RARITIES = [
+    { n: 'Common', w: 6000, c: '#9aa2ae', aff: 0 },
+    { n: 'Uncommon', w: 2500, c: '#33d17a', aff: 0 },
+    { n: 'Rare', w: 1100, c: '#3d9bff', aff: 1 },
+    { n: 'Epic', w: 350, c: '#b084f0', aff: 2 },
+    { n: 'Legendary', w: 45, c: '#ffcf6a', aff: 3 },
+    { n: 'Mythic', w: 5, c: '#ff5a7a', aff: 3 },
+  ];
+  var BASES = {
+    weapon: ['Claymore', 'Staff', 'Bow', 'Dagger', 'Blaster', 'Warhammer', 'Laser Lance'],
+    armor: ['Helm', 'Chestplate', 'Boots', 'Greatshield'],
+    accessory: ['Ring', 'Amulet', 'Cape'],
+    shard: ['Fire Shard', 'Frost Shard', 'Void Shard', 'Mind Shard', 'Pixel Dust'],
+    relic: ['Idle Booster', 'Gold Statue', 'Recursion Core'],
+  };
+  var CAT_ICON = { weapon: '⚔', armor: '⛨', accessory: '◉', shard: '◆', relic: '✦' };
+  var PREFIX = [
+    { n: 'Searing', m: '+Fire Dmg' }, { n: 'Glinting', m: '+Gold' }, { n: 'Mind-Braced', m: '+Mana' },
+    { n: 'Vampiric', m: '+Life Steal' }, { n: 'Hardened', m: '+Def' }, { n: 'Swift', m: '+Speed' },
+  ];
+  var SUFFIX = [
+    { n: 'of the Bear', m: '+HP' }, { n: 'of Swiftness', m: '+SPD' }, { n: 'of the Titan', m: '+Crit' },
+    { n: 'of Carnage', m: '+Crit' }, { n: 'of the Mind', m: '+Max Mana' },
+  ];
+  var ADV_COLORS = ['#ff3b3b', '#3dd6ff', '#33d17a', '#ffc24b', '#b084f0', '#00beb4', '#e650c8', '#ff8a1e'];
+  var ADV_WEAPONS = ['blaster', 'rifle', 'cannon', 'spear', 'scythe', 'saw', 'laser', 'hammer', 'bow'];
+
+  function rollLoot() {
+    var total = 0, i; for (i = 0; i < RARITIES.length; i++) total += RARITIES[i].w;
+    var roll = Math.random() * total, r = RARITIES[0];
+    for (i = 0; i < RARITIES.length; i++) { roll -= RARITIES[i].w; if (roll <= 0) { r = RARITIES[i]; break; } }
+    var cats = Object.keys(BASES), cat = cats[Math.floor(Math.random() * cats.length)];
+    var base = BASES[cat][Math.floor(Math.random() * BASES[cat].length)];
+    var name = base, mods = [];
+    if (r.aff >= 1) { var pf = PREFIX[Math.floor(Math.random() * PREFIX.length)]; name = pf.n + ' ' + name; mods.push(pf.m); }
+    if (r.aff >= 2) { var sf = SUFFIX[Math.floor(Math.random() * SUFFIX.length)]; name = name + ' ' + sf.n; mods.push(sf.m); }
+    if (r.aff >= 3) { var sf2 = SUFFIX[Math.floor(Math.random() * SUFFIX.length)]; if (mods.indexOf(sf2.m) < 0) mods.push(sf2.m); }
+    return { name: name, rarity: r.n, color: r.c, cat: cat, mods: mods, at: Date.now() };
+  }
+
+  function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function claimAdventure() {
+    var a = state.adv, out = [];
+    for (var i = 0; i < (ADV_DUR[a.dur] ? ADV_DUR[a.dur].loot : 1); i++) out.push(rollLoot());
+    a.inv = (a.inv || []).concat(out).slice(-30);
+    a.endsAt = 0; a.lastHaul = out;
+    dirty = true; save();
+    return out;
+  }
+
+  var expEl = document.getElementById('expedition');
+  function renderAdventure() {
+    if (!expEl) return;
+    var a = state.adv, now = Date.now();
+    if (!a.unlocked) {
+      var can = state.bits >= ADV_COST;
+      expEl.innerHTML = '<div class="exp-lock"><div>Open the <b>Expedition Bay</b> to build a custom robot and send it on idle adventures for loot.</div>' +
+        '<button type="button" class="exp-btn big' + (can ? ' can' : '') + '" data-a="unlock"' + (can ? '' : ' disabled') + '>Unlock ◉ ' + fmt(ADV_COST) + '</button></div>';
+      return;
+    }
+    var r = a.robot, away = a.endsAt > now, ready = a.endsAt > 0 && a.endsAt <= now;
+    var colorChips = ADV_COLORS.map(function (c) { return '<button type="button" class="exp-chip' + (r.color === c ? ' on' : '') + '" style="background:' + c + '" data-a="color" data-v="' + c + '"></button>'; }).join('');
+    var wpnChips = ADV_WEAPONS.map(function (w) { return '<button type="button" class="exp-wpn' + (r.weapon === w ? ' on' : '') + '" data-a="weapon" data-v="' + w + '">' + w + '</button>'; }).join('');
+    var status;
+    if (ready) {
+      status = '<div class="exp-status ready">Your robot has returned! <button type="button" class="exp-btn can" data-a="claim">Claim rewards</button></div>';
+    } else if (away) {
+      var left = Math.max(0, a.endsAt - now), tot = (ADV_DUR[a.dur] ? ADV_DUR[a.dur].mins * 60000 : 1);
+      status = '<div class="exp-status"><div>On <b>' + esc(ADV_DUR[a.dur] ? ADV_DUR[a.dur].n : '') + '</b> — returns in <span id="exp-clock">' + Math.ceil(left / 1000) + 's</span></div>' +
+        '<div class="exp-prog"><i style="width:' + Math.round((1 - left / tot) * 100) + '%"></i></div></div>';
+    } else {
+      status = '<div class="exp-send">' + ADV_DUR.map(function (d, i) { return '<button type="button" class="exp-btn can" data-a="send" data-v="' + i + '">' + d.n + ' · ' + (d.mins < 60 ? d.mins + 'm' : (d.mins / 60) + 'h') + ' · ' + d.loot + ' loot</button>'; }).join('') + '</div>';
+    }
+    var haul = a.lastHaul && a.lastHaul.length ? '<div class="exp-haul">Last haul: ' + a.lastHaul.map(function (it) { return '<span style="color:' + it.color + '">' + esc(it.name) + '</span>'; }).join(', ') + '</div>' : '';
+    var inv = (a.inv || []).slice().reverse().map(function (it) {
+      return '<div class="exp-item" style="border-color:' + it.color + '"><span class="exp-i-ic" style="color:' + it.color + '">' + (CAT_ICON[it.cat] || '◉') + '</span>' +
+        '<span class="exp-i-name" style="color:' + it.color + '">' + esc(it.name) + '</span>' +
+        '<span class="exp-i-rar">' + it.rarity + (it.mods && it.mods.length ? ' · ' + esc(it.mods.join(' ')) : '') + '</span></div>';
+    }).join('');
+    expEl.innerHTML =
+      '<div class="exp-build"><div class="exp-robot" style="--rc:' + r.color + '"><span class="exp-eye"></span></div>' +
+      '<div class="exp-cfg"><label class="exp-lab">Name</label><input class="exp-name" data-a="name" maxlength="18" value="' + esc(r.name) + '">' +
+      '<label class="exp-lab">Colour</label><div class="exp-row">' + colorChips + '</div>' +
+      '<label class="exp-lab">Weapon</label><div class="exp-row exp-wpns">' + wpnChips + '</div></div></div>' +
+      status + haul +
+      (inv ? '<div class="exp-inv-h">Inventory (' + (a.inv || []).length + ')</div><div class="exp-inv">' + inv + '</div>' : '');
+  }
+  if (expEl) {
+    expEl.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-a]'); if (!b) return; var act = b.dataset.a, a = state.adv;
+      if (act === 'unlock') { if (state.bits >= ADV_COST) { state.bits -= ADV_COST; a.unlocked = true; dirty = true; save(); renderBalance(); renderAdventure(); } }
+      else if (act === 'color') { a.robot.color = b.dataset.v; save(); renderAdventure(); }
+      else if (act === 'weapon') { a.robot.weapon = b.dataset.v; save(); renderAdventure(); }
+      else if (act === 'send') { a.dur = +b.dataset.v; a.endsAt = Date.now() + ADV_DUR[a.dur].mins * 60000; a.lastHaul = null; save(); renderAdventure(); }
+      else if (act === 'claim') { claimAdventure(); renderBalance(); renderAdventure(); }
+    });
+    expEl.addEventListener('input', function (e) { var b = e.target.closest('[data-a="name"]'); if (b) { state.adv.robot.name = b.value.slice(0, 18); dirty = true; save(); } });
+  }
+  function advTick() {
+    var a = state.adv; if (!a.unlocked) return;
+    if (a.endsAt > 0 && a.endsAt <= Date.now()) { renderAdventure(); return; }   // just returned
+    if (a.endsAt > Date.now()) { var c = document.getElementById('exp-clock'); if (c) { var left = Math.ceil((a.endsAt - Date.now()) / 1000); c.textContent = left < 60 ? left + 's' : Math.floor(left / 60) + 'm ' + (left % 60) + 's'; } }
+  }
+
+  if (offlineEarned > 0.05) state.loot = genLoot(offlineEarned);   // now LOOT_* pools are defined
+  renderLoot();
+  renderAdventure();
   renderBalance();
   renderUpgrades();
 })();
@@ -6260,6 +6469,13 @@ function toggleReducedVisuals(el) {
       var res = await fetch(state.baseUrl + '/api/brain-graph', { headers: authHeaders() });
       if (!res.ok) throw new Error('http ' + res.status);
       var data = await res.json();
+      // Feed the foundry's loot generator: recent conversation topics (the
+      // headings carry the owner's own words) -- what you and Ultron discussed.
+      try {
+        window.__recentTopics = (data.nodes || [])
+          .filter(function (n) { return n.kind === 'conversation' && !n.page && n.label; })
+          .map(function (n) { return n.label; }).slice(0, 15);
+      } catch (e) { /* ignore */ }
       var s = data.stats;
       if (!data.available || !data.nodes.length) {
         wrap.classList.add('empty');
