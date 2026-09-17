@@ -3131,9 +3131,22 @@ _sentinel_state = {"last_run": None, "findings": {}, "runs": 0}
 # short timeout, once per Sentinel pass -- no credentials, no commands.
 MONITOR_TARGETS_PATH = os.environ.get("ULTRON_MONITOR_TARGETS", os.path.join(DATA_DIR, "monitoring-targets.json"))
 MONITOR_PROBE_TIMEOUT_SECONDS = 5
+# The owner's own tailnet (e.g. "tailc5bde9.ts.net"): MagicDNS names under
+# it are the owner's devices, reached over WireGuard with real certificates,
+# so they count as private for the allowlist. Unset = tailnet names refused.
+TAILNET_SUFFIX = os.environ.get("ULTRON_TAILNET_SUFFIX", "").strip().lower().lstrip(".")
 _PRIVATE_HOST_RE = re.compile(
     r"^(localhost|127\.\d+\.\d+\.\d+|host\.docker\.internal|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|"
     r"172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|[a-z0-9][a-z0-9-]*)$", re.I)
+
+
+def _is_private_host(host):
+    host = (host or "").lower()
+    if not host:
+        return False
+    if TAILNET_SUFFIX and host.endswith("." + TAILNET_SUFFIX) and host.count(".") == TAILNET_SUFFIX.count(".") + 1:
+        return True
+    return bool(_PRIVATE_HOST_RE.match(host)) and not host.endswith((".com", ".net", ".org", ".io"))
 
 
 def _load_monitor_targets():
@@ -3156,7 +3169,7 @@ def _target_host(target):
 def _probe_target(t):
     """Returns (ok, detail). Refuses anything not on a private host."""
     host = _target_host(str(t["target"]))
-    if not host or not _PRIVATE_HOST_RE.match(host) or host.endswith((".com", ".net", ".org", ".io")):
+    if not _is_private_host(host):
         return None, f"refused: {host or t['target']} is not a private host (allowlist is local-only)"
     kind = (t.get("type") or "http").lower()
     try:

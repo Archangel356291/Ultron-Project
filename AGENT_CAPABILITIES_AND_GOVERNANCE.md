@@ -57,7 +57,7 @@ Recommended, not installed: the `playwright` plugin's MCP (already installed, di
 | Role | In scope | Explicitly out of scope |
 |---|---|---|
 | All | This Windows PC; its Docker containers (`ultron-backend`, `ultron-discord-bot`, `ultron-searxng`, the pihole stack, the jellyfin stack); the Ultron repository; the owner's dashboard and Discord (allowlisted user IDs); `D:\ultron's Brain&Knowledge` | Tailnet devices other than this PC (phones, the pihole/jellyfin *tailscale sidecars* as peers), any Pi/M715q/M920q/NAS, any public host, any third-party account, network or API |
-| Monitoring probes | Entries in `D:\ultron's Brain&Knowledge\monitoring-targets.json` (private hosts only; currently Ultron's port, Jellyfin `/health`, SearXNG `/healthz`) | Pi-hole's admin/DNS (not reachable from the backend without changing that stack — watched via its Docker healthcheck instead); anything not listed |
+| Monitoring probes | Entries in `D:\ultron's Brain&Knowledge\monitoring-targets.json` (private hosts, or names directly under the owner's tailnet suffix `ULTRON_TAILNET_SUFFIX`; currently Ultron's port, `https://jellyfin.tailc5bde9.ts.net/health`, `https://pihole.tailc5bde9.ts.net/admin/`, SearXNG `/healthz`) | Pi-hole DNS itself (watched via its Docker healthcheck + autoheal); anything not listed |
 | Security review | The repository, this deployment's configuration, the running containers' images (CVE scan, manual) | Any target not owned by the owner; any active exploitation |
 | Web access | SearXNG on the compose network; Anthropic API; Fish Audio TTS; Docker Hub for Scout scans | Any other outbound service without the owner's approval |
 
@@ -92,4 +92,6 @@ Routing: coding → `engineering`; security/monitoring → `sentinel`; research 
 | Sentinel posture review (CORS, TLS, token length, interval) | done |
 | Monitoring allowlist, private-host rule, Docker-healthcheck awareness | done; file at `D:\ultron's Brain&Knowledge\monitoring-targets.json` |
 | Tests | `dev-tools/test_agents.py` |
-| Not done, needs the owner | setting real caps in `.env`; `ULTRON_ALLOWED_ORIGIN` to the dashboard's address (Sentinel now flags `*`); reconnecting the playwright plugin |
+| Admin token rotated to 48 random characters; `ULTRON_ALLOWED_ORIGIN` pinned to the dashboard origin | done 2026-09-16 (owner-approved); Sentinel's two posture findings cleared on its next pass |
+| HTTPS everywhere the owner reaches: Ultron (Tailscale cert), Jellyfin and Pi-hole via `tailscale serve` in their sidecars (`https://jellyfin.tailc5bde9.ts.net`, `https://pihole.tailc5bde9.ts.net/admin/`); URLs recorded in `.env` (`ULTRON_PUBLIC_URL`, `JELLYFIN_URL`, `PIHOLE_URL`) and monitored by Sentinel | done 2026-09-16. SearXNG stays plain HTTP on the private compose bridge (no host port; traffic never leaves this PC) — the standard choice, noted rather than hidden |
+| Not done, needs the owner | setting real per-agent caps in `.env`; reconnecting the playwright plugin |

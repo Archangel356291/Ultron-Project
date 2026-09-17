@@ -30,10 +30,13 @@ os.environ["ULTRON_ALLOWED_ORIGIN"] = "*"
 os.environ.pop("ULTRON_TLS_CERT", None)
 os.environ.pop("ULTRON_TLS_KEY", None)
 os.environ["ULTRON_MONITOR_TARGETS"] = os.path.join(DATA_DIR, "monitoring-targets.json")
+os.environ["ULTRON_TAILNET_SUFFIX"] = "tailc5bde9.ts.net"
 json.dump({"targets": [
     {"name": "local ok", "type": "http", "target": "http://host.docker.internal:8096/health"},
     {"name": "local down", "type": "http", "target": "http://127.0.0.1:9/nothing"},
     {"name": "public", "type": "http", "target": "https://example.com/"},
+    {"name": "tailnet ok", "type": "http", "target": "https://jellyfin.tailc5bde9.ts.net/health"},
+    {"name": "lookalike", "type": "http", "target": "https://evil.tailc5bde9.ts.net.attacker.com/"},
 ]}, open(os.environ["ULTRON_MONITOR_TARGETS"], "w"))
 
 import anthropic  # noqa: E402
@@ -140,7 +143,7 @@ def demo():
 
     def fake_urlopen(req, timeout=None):
         probed.append(req.full_url)
-        if "8096" in req.full_url:
+        if "8096" in req.full_url or "jellyfin.tailc5bde9" in req.full_url:
             class R:
                 status = 200
                 def __enter__(self): return self
@@ -159,6 +162,13 @@ def demo():
     assert "monitor_refused:public" in findings, findings.keys()
     assert not any("example.com" in u for u in probed), "a public host must never be probed: " + str(probed)
     assert "monitor_down:local ok" not in findings
+    # The owner's tailnet names count as private; a look-alike with the
+    # suffix in the middle does not, and is never contacted.
+    assert "monitor_down:tailnet ok" not in findings and "monitor_refused:tailnet ok" not in findings, findings.keys()
+    assert "monitor_refused:lookalike" in findings, findings.keys()
+    assert not any("attacker.com" in u for u in probed), probed
+    assert app._is_private_host("pihole.tailc5bde9.ts.net") and not app._is_private_host("tailc5bde9.ts.net")
+    assert not app._is_private_host("a.b.tailc5bde9.ts.net")
 
     print("OK: agent registry/status (admin-only), task lifecycle (transitions, evidence, high-risk approval, "
           "dedup, audit), deny-by-default tool dispatch with a permission event, per-agent daily caps with a "
