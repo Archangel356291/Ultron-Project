@@ -987,6 +987,21 @@
   .arm-lname{ font-family:var(--font-mono); font-size:11px; padding:6px 9px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text); }
   .arm-lbtn, .arm-lchip{ padding:6px 10px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:10px; }
   .arm-lchip:hover, .arm-lbtn:hover{ background:rgba(255,255,255,.05); }
+  .insp{ cursor:pointer; }
+  .arm-opt.insp:hover, .bl-comp-t.insp:hover, .bl-part.insp:hover{ filter:brightness(1.2); }
+  .arm-rack{ margin-top:10px; padding:8px 10px; border:1px solid rgba(120,170,255,.3); border-radius:8px; background:rgba(120,170,255,.05); }
+  .arm-rack-h{ font-family:var(--font-display); font-weight:700; font-size:11px; color:#9fc4ff; margin-bottom:6px; }
+  .arm-w{ display:flex; align-items:center; gap:8px; padding:6px 9px; margin-bottom:4px; border:1px solid var(--line); border-radius:6px; background:var(--void); }
+  .arm-w.eq{ border-color:#7fb4ff; box-shadow:0 0 10px -4px rgba(120,170,255,.6); }
+  .arm-w-n{ flex:1; font-family:var(--font-mono); font-size:10.5px; color:var(--text); }
+  .arm-w-b{ padding:5px 9px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:9.5px; }
+  .arm-w-b:hover{ background:rgba(255,255,255,.05); }
+  .part-inspect{ position:fixed; inset:0; z-index:1400; display:flex; align-items:center; justify-content:center; background:rgba(4,6,10,.72); padding:16px; }
+  .pi-box{ width:min(440px,94vw); max-height:80vh; overflow:auto; background:linear-gradient(180deg,#12151b,#0b0d12); border:1px solid #2a3a55; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.6); padding:14px 16px; }
+  .pi-h{ display:flex; align-items:center; justify-content:space-between; font-family:var(--font-display); font-weight:800; font-size:13px; color:#cfe0ff; margin-bottom:10px; }
+  .pi-x{ background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:14px; }
+  .pi-cols{ display:grid; grid-template-columns:1.2fr 1fr 1.4fr 0.9fr; gap:6px; font-family:var(--font-mono); font-size:8.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.04em; padding:0 8px 4px; }
+  .pi-row{ display:grid; grid-template-columns:1.2fr 1fr 1.4fr 0.9fr; gap:6px; align-items:center; padding:6px 8px; margin-bottom:4px; border:1px solid var(--line); border-left:3px solid; border-radius:6px; background:var(--void); font-family:var(--font-mono); font-size:10px; color:var(--text-dim); }
   .brainlab{ margin-top:10px; padding:12px 14px; border:1px solid rgba(58,200,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(28,107,176,.14),rgba(8,20,36,.25)); }
   .bl-logo{ display:block; width:100%; max-width:340px; height:auto; margin:0 auto 8px; border-radius:9px; }
   .bl-head{ font-family:var(--font-display); font-weight:800; font-size:13px; color:#bfe6ff; }
@@ -1017,6 +1032,8 @@
   .bl-build.can{ cursor:pointer; border-color:#3ac8ff; color:#bfe6ff; } .bl-build.can:hover{ background:rgba(58,200,255,.12); }
   .bl-build:disabled{ opacity:.55; }
   .bl-max{ text-align:center; font-family:var(--font-mono); font-size:9.5px; color:#ffcf5a; padding:5px; }
+  .bl-finalize{ display:block; width:100%; margin:2px 0 10px; padding:9px; border-radius:8px; border:1px solid rgba(58,200,255,.5); background:rgba(58,200,255,.1); color:#bfe6ff; cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:11.5px; }
+  .bl-finalize:hover{ background:rgba(58,200,255,.18); }
   .exp-timescale{ font-family:var(--font-mono); font-size:10px; color:#9fc4e0; margin-bottom:6px; }
   .cosmic{ margin-top:10px; padding:11px 13px; border:1px solid rgba(155,107,255,.45); border-radius:8px; background:linear-gradient(180deg,rgba(120,80,220,.12),rgba(30,20,60,.15)); }
   .cz-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#c9a6ff; }
@@ -9188,13 +9205,38 @@ window.__sfx = (function () {
   function optName(o) { return o.split(':')[0]; }
   function optLvl(o) { return +o.split(':')[1]; }
   var armoryEl = document.getElementById('armory');
-  function armInit() { state.armory = state.armory || { cls: 'pistol', sel: {}, built: null, loadouts: {}, parts: [] }; if (!state.armory.parts) state.armory.parts = []; WEAPON_GROUPS.forEach(function (g) { if (!state.armory.sel[g.id]) state.armory.sel[g.id] = { o: 0, r: 0 }; }); return state.armory; }
+  function armInit() { state.armory = state.armory || { cls: 'pistol', sel: {}, weapons: [], equipped: -1, loadouts: {}, parts: [] }; var a = state.armory; if (!a.parts) a.parts = []; if (!a.weapons) a.weapons = []; if (typeof a.equipped !== 'number') a.equipped = -1; if (a.built) { a.weapons.push(a.built); a.equipped = a.weapons.length - 1; delete a.built; } WEAPON_GROUPS.forEach(function (g) { if (!a.sel[g.id]) a.sel[g.id] = { o: 0, r: 0 }; }); return a; }
   function partPrice(g, oi, ri) { return Math.ceil(2e6 * Math.pow(1.5, optLvl(g.opts[oi]) / 8) * WEAPON_RAR[ri].price); }
   function partLvlReq(g, oi, ri) { return optLvl(g.opts[oi]) + WEAPON_RAR[ri].lvl; }
   function ownsPart(gid, oi, ri) { return armInit().parts.some(function (p) { return p.g === gid && p.o === oi && p.r === ri; }); }
   function weaponPower(cls, sel) { var c = WEAPON_CLASSES.filter(function (x) { return x.id === cls; })[0] || WEAPON_CLASSES[0], s = 0; WEAPON_GROUPS.forEach(function (g) { var sv = sel[g.id] || { o: 0, r: 0 }; s += WEAPON_RAR[sv.r].pow; }); return Math.round(c.pow * s * 12); }
-  function armoryPowerMult() { var a = state.armory; return (a && a.built) ? (1 + a.built.power / 400) : 1; }
+  function armoryPowerMult() { var a = state.armory; if (!a || !a.weapons || a.equipped == null || a.equipped < 0 || !a.weapons[a.equipped]) return 1; return 1 + a.weapons[a.equipped].power / 400; }
   function armForgeCost() { var a = armInit(), cost = 0; WEAPON_GROUPS.forEach(function (g) { var sv = a.sel[g.id]; if (!ownsPart(g.id, sv.o, sv.r)) cost += partPrice(g, sv.o, sv.r); }); return cost; }
+  // Shared click-to-inspect modal: rarity, stats, cost, unlock requirement for a part.
+  function partInspect(title, rows) {
+    var el = document.getElementById('part-inspect');
+    if (!el) { el = document.createElement('div'); el.id = 'part-inspect'; el.className = 'part-inspect'; el.hidden = true; document.body.appendChild(el); el.addEventListener('click', function (e) { if (e.target === el || e.target.classList.contains('pi-x')) el.hidden = true; }); }
+    el.innerHTML = '<div class="pi-box"><div class="pi-h">' + title + '<button type="button" class="pi-x">✕</button></div><div class="pi-cols"><b>Rarity</b><b>Stat</b><b>Cost</b><b>Unlock</b></div>' + rows + '</div>';
+    el.hidden = false;
+  }
+  function inspectWeaponPart(gid, oi) {
+    var g = WEAPON_GROUPS.filter(function (x) { return x.id === gid; })[0]; if (!g) return;
+    var rows = WEAPON_RAR.map(function (rar, ri) {
+      var price = partPrice(g, oi, ri), req = partLvlReq(g, oi, ri), ok = playerLevel() >= req, owns = ownsPart(g.id, oi, ri);
+      return '<div class="pi-row" style="border-left-color:' + rar.col + '"><span style="color:' + rar.col + '">' + rar.n + '</span><span>power ×' + rar.pow + '</span><span>◉' + fmt(price) + '</span><span>' + (owns ? '✓ owned' : ok ? 'Lv' + req + ' ✓' : '🔒 Lv' + req) + '</span></div>';
+    }).join('');
+    partInspect(optName(g.opts[oi]) + ' — ' + g.name, rows);
+  }
+  function inspectBrainPart(id) {
+    var comp = BRAIN_COMPONENTS.filter(function (x) { return x.id === id; })[0]; if (!comp) return;
+    var cur = brainTier(comp.id);
+    var rows = BRAIN_RAR.map(function (rar, ri) {
+      var tier = ri + 1, mats = {}; ['syn', 'log', 'dat'].forEach(function (k) { mats[k] = Math.ceil((comp.c[k] || 0) * rar.price); });
+      var bits = Math.ceil(8e6 * rar.price), matStr = ['syn', 'log', 'dat'].filter(function (k) { return mats[k]; }).map(function (k) { return BRAIN_MATS.filter(function (x) { return x.id === k; })[0].sym + mats[k]; }).join(' ');
+      return '<div class="pi-row" style="border-left-color:' + rar.col + '"><span style="color:' + rar.col + '">' + rar.n + '</span><span>cognition +' + rar.pow + '</span><span>◉' + fmt(bits) + ' ' + matStr + '</span><span>' + (cur >= tier ? '✓ built' : cur + 1 === tier ? 'next' : 'tier ' + tier) + '</span></div>';
+    }).join('');
+    partInspect(comp.name + ' — ' + comp.desc, rows);
+  }
   function renderArmory() {
     if (!armoryEl) return; var a = armInit(), lvl = playerLevel();
     var clsBtns = WEAPON_CLASSES.map(function (c) { var lk = lvl < c.lvl; return '<button type="button" class="arm-cls' + (a.cls === c.id ? ' on' : '') + '" data-armc="' + c.id + '"' + (lk ? ' disabled' : '') + '>' + c.name + (lk ? ' · Lv' + c.lvl : ' · ×' + c.pow) + '</button>'; }).join('');
@@ -9202,34 +9244,40 @@ window.__sfx = (function () {
     var groups = WEAPON_GROUPS.map(function (g) {
       var sv = a.sel[g.id], req = partLvlReq(g, sv.o, sv.r), ok = lvl >= req, owns = ownsPart(g.id, sv.o, sv.r), price = partPrice(g, sv.o, sv.r), rar = WEAPON_RAR[sv.r];
       return '<div class="arm-grp" style="--gr:' + rar.col + '"><div class="arm-gh">' + g.name + '</div>' +
-        '<div class="arm-pick"><button type="button" class="arm-cyc" data-armo="' + g.id + '" data-d="-1">◀</button><span class="arm-opt">' + optName(g.opts[sv.o]) + '</span><button type="button" class="arm-cyc" data-armo="' + g.id + '" data-d="1">▶</button></div>' +
+        '<div class="arm-pick"><button type="button" class="arm-cyc" data-armo="' + g.id + '" data-d="-1">◀</button><span class="arm-opt insp" data-arminsp="' + g.id + ':' + sv.o + '" title="Tap for rarity / stats / cost / unlock">' + optName(g.opts[sv.o]) + ' ⓘ</span><button type="button" class="arm-cyc" data-armo="' + g.id + '" data-d="1">▶</button></div>' +
         '<div class="arm-pick"><button type="button" class="arm-cyc" data-armr="' + g.id + '" data-d="-1">◀</button><span class="arm-rar" style="color:' + rar.col + '">' + rar.n + '</span><button type="button" class="arm-cyc" data-armr="' + g.id + '" data-d="1">▶</button></div>' +
         '<div class="arm-meta">' + (owns ? '<span class="arm-own">✓ owned</span>' : ok ? '<span>◉' + fmt(price) + '</span>' : '<span class="arm-lk">🔒 Lv' + req + '</span>') + '</div></div>';
     }).join('');
     var power = weaponPower(a.cls, a.sel), cost = armForgeCost();
     var canForge = state.bits >= cost && WEAPON_GROUPS.every(function (g) { var sv = a.sel[g.id]; return lvl >= partLvlReq(g, sv.o, sv.r); });
-    var disCost = a.built ? Math.ceil((a.built.cost || 0) * 0.25) : 0;
-    armoryEl.innerHTML = '<div class="arm-head">🔧 Armory Forge <span class="arm-sub">— custom-build your bot’s weapon' + (a.built ? ' · equipped ×' + armoryPowerMult().toFixed(2) + ' power' : '') + '</span></div>' +
+    var rack = a.weapons.length ? '<div class="arm-rack"><div class="arm-rack-h">🗄 Weapon rack (' + a.weapons.length + ') — equip one for your bot</div>' + a.weapons.map(function (w, i) {
+      var eq = i === a.equipped, cn = WEAPON_CLASSES.filter(function (x) { return x.id === w.cls; })[0];
+      return '<div class="arm-w' + (eq ? ' eq' : '') + '"><span class="arm-w-n">' + (cn ? cn.name : w.cls) + ' · <b>pw ' + w.power + '</b>' + (eq ? ' · ×' + (1 + w.power / 400).toFixed(2) : '') + '</span>' +
+        '<button type="button" class="arm-w-b" data-armeq="' + i + '">' + (eq ? '✓ equipped' : 'equip') + '</button><button type="button" class="arm-w-b dis" data-armdis="' + i + '" title="Disassemble (keep parts)">🔩</button></div>';
+    }).join('') + '</div>' : '';
+    armoryEl.innerHTML = '<div class="arm-head">🔧 Armory Forge <span class="arm-sub">— build &amp; hold multiple weapons' + (a.equipped >= 0 && a.weapons[a.equipped] ? ' · equipped ×' + armoryPowerMult().toFixed(2) : '') + '</span></div>' +
       '<div class="arm-classes">' + clsBtns + '</div>' + preview +
       '<div class="arm-power">Weapon power <b>' + power + '</b> → bot combat ×' + (1 + power / 400).toFixed(2) + '</div>' +
       '<div class="arm-groups">' + groups + '</div>' +
-      '<div class="arm-actions"><button type="button" class="arm-forge' + (canForge ? ' can' : '') + '" data-arm="forge"' + (canForge ? '' : ' disabled') + '>⚒ Forge weapon — ◉' + fmt(cost) + '</button>' +
-      (a.built ? '<button type="button" class="arm-forge dis" data-arm="disasm">🔩 Disassemble (keep parts) — ◉' + fmt(disCost) + '</button>' : '') + '</div>' +
+      '<div class="arm-actions"><button type="button" class="arm-forge' + (canForge ? ' can' : '') + '" data-arm="forge"' + (canForge ? '' : ' disabled') + '>⚒ Forge &amp; add to rack — ◉' + fmt(cost) + '</button></div>' + rack +
       '<div class="arm-load"><input class="arm-lname" id="arm-lname" maxlength="14" placeholder="loadout name" autocomplete="off"><button type="button" class="arm-lbtn" data-arm="save">Save build</button>' +
       Object.keys(a.loadouts || {}).map(function (n) { return '<button type="button" class="arm-lchip" data-arml="' + esc(n) + '">' + esc(n) + '</button>'; }).join('') + '</div>';
     armoryEl.querySelectorAll('[data-armc]').forEach(function (b) { b.addEventListener('click', function () { if (b.disabled) return; a.cls = b.dataset.armc; save(); renderArmory(); }); });
     armoryEl.querySelectorAll('[data-armo]').forEach(function (b) { b.addEventListener('click', function () { var g = WEAPON_GROUPS.filter(function (x) { return x.id === b.dataset.armo; })[0], sv = a.sel[g.id]; sv.o = (sv.o + (+b.dataset.d) + g.opts.length) % g.opts.length; save(); renderArmory(); }); });
     armoryEl.querySelectorAll('[data-armr]').forEach(function (b) { b.addEventListener('click', function () { var sv = a.sel[b.dataset.armr]; sv.r = (sv.r + (+b.dataset.d) + WEAPON_RAR.length) % WEAPON_RAR.length; save(); renderArmory(); }); });
+    armoryEl.querySelectorAll('[data-arminsp]').forEach(function (b) { b.addEventListener('click', function () { var p = b.dataset.arminsp.split(':'); inspectWeaponPart(p[0], +p[1]); }); });
     var fb = armoryEl.querySelector('[data-arm="forge"]'); if (fb) fb.addEventListener('click', function () {
       var cost = armForgeCost(); if (state.bits < cost) return;
       WEAPON_GROUPS.forEach(function (g) { var sv = a.sel[g.id]; if (lvl < partLvlReq(g, sv.o, sv.r)) return; if (!ownsPart(g.id, sv.o, sv.r)) a.parts.push({ g: g.id, o: sv.o, r: sv.r }); });
       state.bits -= cost;
       var totalCost = 0; WEAPON_GROUPS.forEach(function (g) { var sv = a.sel[g.id]; totalCost += partPrice(g, sv.o, sv.r); });
-      a.built = { cls: a.cls, sel: JSON.parse(JSON.stringify(a.sel)), power: weaponPower(a.cls, a.sel), cost: totalCost };
-      if (window.__sfx) window.__sfx('build'); gamePop('⚒ Weapon forged — power ' + a.built.power, '#ffcf5a');
+      var w = { cls: a.cls, sel: JSON.parse(JSON.stringify(a.sel)), power: weaponPower(a.cls, a.sel), cost: totalCost };
+      a.weapons.push(w); a.equipped = a.weapons.length - 1;
+      if (window.__sfx) window.__sfx('build'); gamePop('⚒ Weapon forged & equipped — power ' + w.power, '#ffcf5a');
       publish(); dirty = true; save(); renderArmory(); renderBalance(); renderProgression(); renderAdventure();
     });
-    var db = armoryEl.querySelector('[data-arm="disasm"]'); if (db) db.addEventListener('click', function () { if (!a.built) return; var fee = Math.ceil((a.built.cost || 0) * 0.25); if (state.bits < fee) { gamePop('Not enough currency to disassemble', '#ff8098'); return; } state.bits -= fee; a.built = null; if (window.__sfx) window.__sfx('press'); gamePop('🔩 Weapon disassembled — parts kept', '#9fb0c8'); publish(); dirty = true; save(); renderArmory(); renderBalance(); renderProgression(); renderAdventure(); });
+    armoryEl.querySelectorAll('[data-armeq]').forEach(function (b) { b.addEventListener('click', function () { a.equipped = +b.dataset.armeq; if (window.__sfx) window.__sfx('unlock'); gamePop('⚔ Weapon equipped', '#7fb4ff'); publish(); dirty = true; save(); renderArmory(); renderProgression(); renderAdventure(); }); });
+    armoryEl.querySelectorAll('[data-armdis]').forEach(function (b) { b.addEventListener('click', function () { var i = +b.dataset.armdis, w = a.weapons[i]; if (!w) return; var fee = Math.ceil((w.cost || 0) * 0.25); if (state.bits < fee) { gamePop('Not enough currency to disassemble', '#ff8098'); return; } state.bits -= fee; a.weapons.splice(i, 1); if (a.equipped === i) a.equipped = -1; else if (a.equipped > i) a.equipped--; if (window.__sfx) window.__sfx('press'); gamePop('🔩 Weapon disassembled — parts kept', '#9fb0c8'); publish(); dirty = true; save(); renderArmory(); renderBalance(); renderProgression(); renderAdventure(); }); });
     var sb = armoryEl.querySelector('[data-arm="save"]'); if (sb) sb.addEventListener('click', function () { var nm = (document.getElementById('arm-lname').value || '').trim(); if (!nm) return; a.loadouts = a.loadouts || {}; a.loadouts[nm] = { cls: a.cls, sel: JSON.parse(JSON.stringify(a.sel)) }; save(); gamePop('💾 Loadout “' + nm + '” saved', '#8fd8ff'); renderArmory(); });
     armoryEl.querySelectorAll('[data-arml]').forEach(function (b) { b.addEventListener('click', function () { var lo = a.loadouts[b.dataset.arml]; if (!lo) return; a.cls = lo.cls; a.sel = JSON.parse(JSON.stringify(lo.sel)); save(); gamePop('📂 Loadout loaded', '#8fd8ff'); renderArmory(); }); });
   }
@@ -9268,12 +9316,13 @@ window.__sfx = (function () {
     '<g fill="#9becff" filter="url(#blglow)"><circle cx="50" cy="27" r="2.6"/><circle cx="104" cy="35" r="2.6"/><circle cx="67" cy="81" r="2.6"/><circle cx="90" cy="47" r="2.3"/></g>' +
     '<text x="140" y="93" text-anchor="end" font-family="sans-serif" font-size="8" font-weight="800" fill="#c8ecff" letter-spacing="1">BRAIN LAB</text></svg>';
   var brainEl = document.getElementById('brainlab');
-  function brainInit() { state.brain = state.brain || { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {} }; if (!state.brain.mats) state.brain.mats = { syn: 0, log: 0, dat: 0 }; if (!state.brain.comp) state.brain.comp = {}; return state.brain; }
+  function brainInit() { state.brain = state.brain || { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {}, banked: 0, built: 0 }; if (!state.brain.mats) state.brain.mats = { syn: 0, log: 0, dat: 0 }; if (!state.brain.comp) state.brain.comp = {}; if (typeof state.brain.banked !== 'number') state.brain.banked = 0; if (typeof state.brain.built !== 'number') state.brain.built = 0; return state.brain; }
+  function brainCurrentCog() { if (typeof BRAIN_COMPONENTS === 'undefined' || !BRAIN_COMPONENTS) return 0; var s = 0; BRAIN_COMPONENTS.forEach(function (c) { s += brainCog(c.id); }); return s; }
   function brainUnlocked() { return !!(state.brain && state.brain.unlocked); }
   function brainTier(id) { return (state.brain && state.brain.comp && state.brain.comp[id]) || 0; }   // 0 = not built, 1..6 = Common..Mythic
   function brainMaxed(id) { return brainTier(id) >= BRAIN_RAR.length; }
   function brainCog(id) { var t = brainTier(id); return t > 0 ? BRAIN_RAR[t - 1].pow : 0; }
-  function brainTotal() { if (typeof BRAIN_COMPONENTS === 'undefined' || !BRAIN_COMPONENTS) return 0; var s = 0; BRAIN_COMPONENTS.forEach(function (c) { s += brainCog(c.id); }); return s; }
+  function brainTotal() { return ((state.brain && state.brain.banked) || 0) + brainCurrentCog(); }   // banked (finalized brains) + the current build -> stacks over time
   function brainMult() { return brainUnlocked() ? 1 + 0.02 * brainTotal() : 1; }
   function brainCompCost(comp) { var t = brainTier(comp.id), rar = BRAIN_RAR[Math.min(t, BRAIN_RAR.length - 1)], mats = {}; ['syn', 'log', 'dat'].forEach(function (k) { mats[k] = Math.ceil((comp.c[k] || 0) * rar.price); }); return { bits: Math.ceil(8e6 * rar.price), mats: mats }; }
   function brainCanBuild(comp) { if (brainMaxed(comp.id)) return false; var c = brainCompCost(comp), m = brainInit().mats; return state.bits >= c.bits && m.syn >= c.mats.syn && m.log >= c.mats.log && m.dat >= c.mats.dat; }
@@ -9290,23 +9339,26 @@ window.__sfx = (function () {
       // Large detailed view: the brain + every part shown as a glowing node, coloured by its built rarity.
       var diagram = '<div class="bl-diagram">' + BRAIN_LOGO + '<div class="bl-parts">' + BRAIN_COMPONENTS.map(function (comp) {
         var t = brainTier(comp.id), rar = t > 0 ? BRAIN_RAR[t - 1] : null, col = rar ? rar.col : '#3a3f47';
-        return '<div class="bl-part" style="border-color:' + col + ';box-shadow:0 0 ' + (t ? 6 + t * 2 : 0) + 'px -2px ' + col + '"><span class="bl-part-dot" style="background:' + col + ';box-shadow:0 0 8px ' + col + '"></span><span class="bl-part-n">' + comp.name + '</span><span class="bl-part-r" style="color:' + col + '">' + (rar ? rar.n : 'unbuilt') + '</span></div>';
+        return '<div class="bl-part insp" data-blinsp="' + comp.id + '" title="Tap for rarity / stats / cost / requirement" style="border-color:' + col + ';box-shadow:0 0 ' + (t ? 6 + t * 2 : 0) + 'px -2px ' + col + '"><span class="bl-part-dot" style="background:' + col + ';box-shadow:0 0 8px ' + col + '"></span><span class="bl-part-n">' + comp.name + '</span><span class="bl-part-r" style="color:' + col + '">' + (rar ? rar.n : 'unbuilt') + '</span></div>';
       }).join('') + '</div></div>';
       var cats = {}; BRAIN_COMPONENTS.forEach(function (c) { (cats[c.cat] = cats[c.cat] || []).push(c); });
       var catHtml = Object.keys(cats).map(function (cn) {
         var comps = cats[cn].map(function (comp) {
           var t = brainTier(comp.id), maxed = brainMaxed(comp.id), rar = t > 0 ? BRAIN_RAR[t - 1] : null, next = maxed ? null : BRAIN_RAR[t], cost = brainCompCost(comp), can = brainCanBuild(comp);
-          return '<div class="bl-comp" style="--bc:' + (rar ? rar.col : 'var(--line)') + '"><div class="bl-comp-t">' + comp.name + ' <span class="bl-comp-l" style="color:' + (rar ? rar.col : 'var(--text-faint)') + '">' + (rar ? rar.n : 'unbuilt') + '</span></div><div class="bl-comp-d">' + comp.desc + ' · cognition +' + brainCog(comp.id).toFixed(1) + '</div>' +
+          return '<div class="bl-comp" style="--bc:' + (rar ? rar.col : 'var(--line)') + '"><div class="bl-comp-t insp" data-blinsp="' + comp.id + '" title="Tap for rarity / stats / cost / requirement">' + comp.name + ' ⓘ <span class="bl-comp-l" style="color:' + (rar ? rar.col : 'var(--text-faint)') + '">' + (rar ? rar.n : 'unbuilt') + '</span></div><div class="bl-comp-d">' + comp.desc + ' · cognition +' + brainCog(comp.id).toFixed(1) + '</div>' +
             (maxed ? '<div class="bl-max">★ MYTHIC — maxed</div>' : '<button type="button" class="bl-build' + (can ? ' can' : '') + '" data-blc="' + comp.id + '"' + (can ? '' : ' disabled') + '>' + (t ? 'Upgrade' : 'Build') + ' → <b style="color:' + next.col + '">' + next.n + '</b> · ◉' + fmt(cost.bits) + ' · ' + ['syn', 'log', 'dat'].filter(function (k) { return cost.mats[k]; }).map(function (k) { return BRAIN_MATS.filter(function (x) { return x.id === k; })[0].sym + cost.mats[k]; }).join(' ') + '</button>') + '</div>';
         }).join('');
         return '<div class="bl-cat"><div class="bl-cat-h">' + cn + '</div><div class="bl-comps">' + comps + '</div></div>';
       }).join('');
-      brainEl.innerHTML = '<div class="bl-head">🧠 AI Brain Lab <span class="bl-sub">— cognition ' + brainTotal().toFixed(1) + ' · ×' + brainMult().toFixed(2) + ' XP &amp; income · growing ' + brainGrowRate().toFixed(2) + ' mat/s</span></div>' +
-        diagram + '<div class="bl-mats">' + matChips + '</div>' + catHtml;
+      var finalize = brainCurrentCog() > 0 ? '<button type="button" class="bl-finalize" data-bl="finalize">🧠 Finalize this brain → bank +' + brainCurrentCog().toFixed(1) + ' cognition &amp; start a new custom brain (buffs stack)</button>' : '';
+      brainEl.innerHTML = '<div class="bl-head">🧠 AI Brain Lab <span class="bl-sub">— cognition ' + brainTotal().toFixed(1) + ' · ×' + brainMult().toFixed(2) + ' XP &amp; income · ' + b.built + ' brains banked · growing ' + brainGrowRate().toFixed(2) + ' mat/s</span></div>' +
+        diagram + '<div class="bl-mats">' + matChips + '</div>' + finalize + catHtml;
     }
     var u = brainEl.querySelector('[data-bl="unlock"]'); if (u) u.addEventListener('click', function () { if (state.bits < BRAINLAB_COST) return; state.bits -= BRAINLAB_COST; state.brain = { unlocked: true, mats: { syn: 5, log: 5, dat: 5 }, comp: {} }; if (window.__sfx) window.__sfx('unlock'); gamePop('🧠 AI Brain Lab online', '#7fd0ff'); addXp(400, 'Discovery: AI Brain Lab'); publish(); dirty = true; save(); renderBrain(); renderBalance(); });
     brainEl.querySelectorAll('[data-blbuy]').forEach(function (bt) { bt.addEventListener('click', function () { var m = BRAIN_MATS.filter(function (x) { return x.id === bt.dataset.blbuy; })[0]; if (!m) return; var cost = m.buy * 10; if (state.bits < cost) return; state.bits -= cost; brainInit().mats[m.id] += 10; if (window.__sfx) window.__sfx('press'); publish(); dirty = true; save(); renderBrain(); renderBalance(); }); });
     brainEl.querySelectorAll('[data-blc]').forEach(function (bt) { bt.addEventListener('click', function () { var comp = BRAIN_COMPONENTS.filter(function (x) { return x.id === bt.dataset.blc; })[0]; if (!comp || !brainCanBuild(comp)) return; var c = brainCompCost(comp); state.bits -= c.bits; var m = brainInit().mats; m.syn -= c.mats.syn; m.log -= c.mats.log; m.dat -= c.mats.dat; state.brain.comp[comp.id] = Math.min(BRAIN_RAR.length, brainTier(comp.id) + 1); var rn = BRAIN_RAR[state.brain.comp[comp.id] - 1].n; if (window.__sfx) window.__sfx('build'); gamePop('🧠 ' + comp.name + ' → ' + rn, '#7fd0ff'); addXp(60 * state.brain.comp[comp.id], 'Brain: ' + comp.name); publish(); dirty = true; save(); renderBrain(); renderBalance(); renderProgression(); }); });
+    brainEl.querySelectorAll('[data-blinsp]').forEach(function (bt) { bt.addEventListener('click', function () { inspectBrainPart(bt.dataset.blinsp); }); });
+    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); });
   }
   function prestigePointsFor(roundGain, coresGained) { return Math.floor(Math.sqrt(Math.max(0, roundGain) / 6000)) + coresGained * 3; }
   function doReboot() {
