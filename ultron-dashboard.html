@@ -741,7 +741,10 @@
   /* XP log */
   .xplog{ margin:9px 0 3px; border:1px solid var(--line); border-radius:6px; background:var(--void); padding:6px 8px; max-height:132px; overflow-y:auto; }
   .xplog-h{ font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); margin-bottom:4px; }
-  .xplog-row{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-mono); font-size:10.5px; padding:2px 0; border-top:1px solid rgba(255,255,255,.04); }
+  .xplog-live{ color:#5fe39a; margin-left:6px; }
+  .xplog-live::before{ content:"\25CF"; margin-right:3px; animation:xplog-pulse 1.4s ease-in-out infinite; display:inline-block; }
+  @keyframes xplog-pulse{ 0%,100%{ opacity:.35; } 50%{ opacity:1; } }
+  .xplog-row{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-mono); font-size:10.5px; padding:2px 0; border-top:1px solid rgba(255,255,255,.04); transition:opacity .8s linear; }
   .xplog-row:first-of-type{ border-top:0; }
   .xplog-amt{ color:#ff8098; font-weight:700; min-width:44px; }
   .xplog-src{ color:var(--text-dim); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -6736,15 +6739,18 @@ window.__sfx = (function () {
   function xpForLevel(l) { return Math.floor(80 * Math.pow(1.35, l) * Math.max(0.6, 1 - 0.02 * skillLvl('firmware'))); }
   function addXp(n, source) {
     if (!state.prog || !(n > 0)) return;
-    if (source) {   // log meaningful XP gains (source + amount + time); tiny per-package slivers pass no source
-      state.prog.log = state.prog.log || [];
-      state.prog.log.unshift({ n: Math.round(n), s: source, t: Date.now() });
-      if (state.prog.log.length > 40) state.prog.log.length = 40;
-    }
+    // Log EVERY gain (all sources). A burst of the same source within 2s
+    // coalesces into one growing row so the per-shipment slivers don't spam.
+    state.prog.log = state.prog.log || [];
+    var src = source || 'Foundry', tnow = Date.now(), top = state.prog.log[0];
+    if (top && top.s === src && tnow - top.t < 2000) { top.n += Math.round(n); top.t = tnow; }
+    else state.prog.log.unshift({ n: Math.round(n), s: src, t: tnow });
+    if (state.prog.log.length > 40) state.prog.log.length = 40;
     state.prog.xp += n; var up = false;
     while (state.prog.xp >= xpForLevel(state.prog.level)) { state.prog.xp -= xpForLevel(state.prog.level); state.prog.level++; state.prog.pts++; up = true; }
     if (up) { dirty = true; if (window.__sfx) window.__sfx('level'); gamePop('\u2605 LEVEL ' + state.prog.level, '#ff3b3b'); }
-    if (typeof renderProgression === 'function') { renderProgression(); if (up) renderAdventure(); }
+    if (up && typeof renderProgression === 'function') { renderProgression(); renderAdventure(); }
+    else if (typeof renderXpLog === 'function') renderXpLog();   // light feed update, no full re-render
   }
 
   // ---- Expedition regions (biomes): each sets a difficulty (ilvl), a loot bias,
@@ -7123,15 +7129,22 @@ window.__sfx = (function () {
   }
 
   var progEl = document.getElementById('progression');
-  function xpLogHtml() {
-    var log = (state.prog && state.prog.log) || [];
-    if (!log.length) return '<div class="xplog-empty">No XP logged yet — ship robots, run expeditions, or let agents finish tasks.</div>';
-    var now = Date.now();
-    return log.slice(0, 12).map(function (e) {
-      var ago = Math.max(0, (now - e.t) / 1000), when = ago < 60 ? Math.floor(ago) + 's' : ago < 3600 ? Math.floor(ago / 60) + 'm' : Math.floor(ago / 3600) + 'h';
-      return '<div class="xplog-row"><span class="xplog-amt">+' + e.n + '</span><span class="xplog-src">' + e.s + '</span><span class="xplog-t">' + when + ' ago</span></div>';
-    }).join('');
+  // Live XP feed: every gain shows here and fades out after 15s. Runs on each
+  // gain (addXp) and once a second (for the fade), and only touches #xplog-feed
+  // so it's cheap and doesn't rebuild the skill tree.
+  function renderXpLog() {
+    var feed = document.getElementById('xplog-feed'); if (!feed) return;
+    var log = (state.prog && state.prog.log) || [], now = Date.now(), LIFE = 15000, out = [];
+    for (var i = 0; i < log.length; i++) {
+      var e = log[i], age = now - e.t; if (age >= LIFE) break;   // newest-first: once one is expired, the rest are older
+      var op = age > 12000 ? Math.max(0, (LIFE - age) / 3000) : 1;
+      var secs = Math.floor(age / 1000), when = secs < 1 ? 'now' : secs + 's ago';
+      out.push('<div class="xplog-row" style="opacity:' + op.toFixed(2) + '"><span class="xplog-amt">+' + e.n + '</span><span class="xplog-src">' + esc(e.s) + '</span><span class="xplog-t">' + when + '</span></div>');
+    }
+    while (log.length && now - log[log.length - 1].t >= LIFE) log.pop();   // drop expired from state
+    feed.innerHTML = out.length ? out.join('') : '<div class="xplog-empty">Live XP feed — every gain shows here and fades after 15s.</div>';
   }
+  setInterval(renderXpLog, 1000);   // keep the fade + pruning moving even when no new XP arrives
   function renderProgression() {
     if (!progEl) return;
     var pr = state.prog || { xp: 0, level: 1, pts: 0, skills: {} };
@@ -7153,8 +7166,9 @@ window.__sfx = (function () {
       (nextTier ? '<span class="prog-tier-next">next: ' + nextTier.name + ' @ Lv ' + nextTier.min + '</span>' : '<span class="prog-tier-next">max tier</span>') + '</div>' +
       '<div class="prog-bar"><i style="width:' + pct + '%"></i></div>' +
       '<div class="prog-xp">' + Math.floor(pr.xp) + ' / ' + need + ' XP</div>' +
-      '<div class="xplog"><div class="xplog-h">XP log</div>' + xpLogHtml() + '</div>' +
+      '<div class="xplog"><div class="xplog-h">XP log <span class="xplog-live">live</span></div><div class="xplog-feed" id="xplog-feed"></div></div>' +
       cats;
+    renderXpLog();
     progEl.querySelectorAll('[data-skill]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var sk = SKILLS.filter(function (x) { return x.id === btn.dataset.skill; })[0];
