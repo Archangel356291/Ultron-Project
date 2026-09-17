@@ -7953,7 +7953,7 @@ window.__sfx = (function () {
   var ctx = canvas.getContext('2d');
   function cfg() { return window.__refinery || {}; }
   var N = (cfg().mats || []).length || 6;
-  var seg = 210, startX = 90, pressX = startX + N * seg + 40;
+  var seg = 170, startX = 90, pressX = startX + N * seg + 40;   // tighter spacing => the canvas (width:100%) renders the machines ~1.25x larger
   var W = pressX + 100, H = 176; canvas.width = W; canvas.height = H;
   var beltY = 132;
   var onScreen = true, ingots = [], lastSpawn = [], smeltFlash = [], pressFlash = 0, sparks = [], drones = [];
@@ -8059,6 +8059,14 @@ window.__sfx = (function () {
     ctx.restore();
   }
 
+  // a thin progress/throughput bar under a machine (or over a drone)
+  function progBar(cx, y, w, p, color) {
+    var x0 = cx - w / 2;
+    ctx.fillStyle = '#0c0e12'; ctx.fillRect(x0, y, w, 3);
+    ctx.fillStyle = color; ctx.fillRect(x0, y, w * Math.max(0, Math.min(1, p)), 3);
+    ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.fillRect(x0, y, w, 0.8);
+  }
+
   function draw(t) {
     ctx.clearRect(0, 0, W, H);
     // industrial hall backdrop: a steel gradient, a faint structural grid, a lit floor line
@@ -8083,6 +8091,8 @@ window.__sfx = (function () {
       var m = mats[mi];
       extractor(xExt(mi), m.name.toUpperCase(), m.ext, m.color);
       smelter(xSm(mi), m.sm, smeltFlash[mi] || 0, m.color, t);
+      if (m.ext) progBar(xExt(mi), beltY - 30, 42, Math.min(1, (t - (lastSpawn[mi] || 0)) * (m.rate || 0)), m.color);   // extractor: fills toward the next ore
+      if (m.sm) progBar(xSm(mi), beltY - 30, 46, (t * 0.7 * (m.smelt || 1)) % 1, '#ff9d3c');                            // smelter: smelting throughput
     }
     ctx.fillStyle = c.unlP ? '#2b3038' : '#181b20'; ctx.fillRect(pressX - 32, beltY - 88, 76, 88);
     ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.5; ctx.strokeRect(pressX - 32, beltY - 88, 76, 88);
@@ -8090,10 +8100,11 @@ window.__sfx = (function () {
     ctx.fillStyle = '#8a93a3'; ctx.font = '10px ui-monospace,monospace'; ctx.textAlign = 'center';
     ctx.fillText(c.unlP ? 'PRESS' : 'PRESS (locked)', pressX + 6, beltY - 94);
     if (t < pressFlash) { ctx.fillStyle = '#ffe08a'; ctx.font = 'bold 12px ui-monospace,monospace'; ctx.fillText('\u25c9', pressX + 6, beltY - 44); }
+    if (c.unlP) progBar(pressX + 6, beltY - 18, 58, (t * 0.5 * (c.convMult || 1)) % 1, '#ffe08a');                       // press: stamping cycle
     if (!c.unlP) { ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(pressX - 32, beltY - 88, 76, 88); }
     ingots.forEach(function (g) { if (g.stage === 'ore') drawOre(g, t); else drawIngot(g, t); });
     sparks.forEach(function (s2) { ctx.globalAlpha = Math.max(0, 1 - s2.life / 0.5); ctx.fillStyle = '#ffe08a'; ctx.fillRect(s2.x, s2.y, 2, 2); ctx.globalAlpha = 1; });
-    for (var dmi = 0; dmi < mats.length; dmi++) if (mats[dmi].ext) drawDrone(dmi, t);
+    for (var dmi = 0; dmi < mats.length; dmi++) if (mats[dmi].ext) { drawDrone(dmi, t); progBar(drones[dmi] ? drones[dmi].x : xExt(dmi), beltY - 112, 24, (t * 0.6 + dmi) % 1, mats[dmi].color); }   // drone: mining cycle
     if (mats.some(function (m) { return m.ext; })) { ctx.fillStyle = '#5a6270'; ctx.font = '9px ui-monospace,monospace'; ctx.textAlign = 'left'; ctx.fillText("ULTRON'S DRONES \u2014 laser-mining the ore", 8, 14); }
     else { ctx.fillStyle = '#5a6270'; ctx.font = '11px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.fillText('unlock an extractor below to begin', W / 2, 22); }
   }
