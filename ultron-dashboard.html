@@ -674,10 +674,34 @@
   .skill-name{ font-family:var(--font-display); font-weight:700; font-size:12px; }
   .skill-lvl{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
   .skill-desc{ font-size:10.5px; color:var(--text-dim); margin-top:2px; }
+  .skill.maxed{ border-color:rgba(95,227,154,.4); }
+  .skill.maxed .skill-lvl{ color:#5fe39a; }
+  /* tier milestone banner */
+  .prog-tier{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin:8px 0 2px; padding:5px 9px; border:1px solid rgba(255,216,138,.3); border-radius:6px; background:linear-gradient(90deg,rgba(255,216,138,.09),transparent); }
+  .prog-tier-name{ font-family:var(--font-display); font-weight:700; font-size:12.5px; color:#ffd88a; }
+  .prog-tier-buff{ font-family:var(--font-mono); font-size:10px; color:#5fe39a; }
+  .prog-tier-next{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-left:auto; }
+  /* XP log */
+  .xplog{ margin:9px 0 3px; border:1px solid var(--line); border-radius:6px; background:var(--void); padding:6px 8px; max-height:132px; overflow-y:auto; }
+  .xplog-h{ font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); margin-bottom:4px; }
+  .xplog-row{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-mono); font-size:10.5px; padding:2px 0; border-top:1px solid rgba(255,255,255,.04); }
+  .xplog-row:first-of-type{ border-top:0; }
+  .xplog-amt{ color:#ff8098; font-weight:700; min-width:44px; }
+  .xplog-src{ color:var(--text-dim); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .xplog-t{ color:var(--text-faint); }
+  .xplog-empty{ font-size:10.5px; color:var(--text-faint); }
+  .skill-cat{ margin-top:11px; }
+  .skill-cat-h{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:#9be8ff; letter-spacing:.03em; padding-bottom:2px; border-bottom:1px solid var(--line); }
   .exp-regions{ gap:5px !important; }
   .exp-region{ font-family:var(--font-mono); font-size:10px; padding:3px 8px; border-radius:12px; border:1px solid var(--line); background:var(--void); color:var(--text-dim); cursor:pointer; }
   .exp-region.on{ border-color:var(--rgc); color:var(--rgc); box-shadow:0 0 0 1px var(--rgc) inset; }
   .exp-region.locked{ opacity:.45; cursor:not-allowed; }
+  .exp-dgn-h{ margin-top:9px; font-family:var(--font-display); font-weight:700; font-size:11.5px; color:#ff6b6b; }
+  .exp-dgn-sub{ font-family:var(--font-mono); font-weight:400; font-size:9.5px; color:var(--text-faint); margin-left:6px; }
+  .exp-dgn{ margin-top:5px; }
+  .exp-btn.dgn{ border-color:rgba(255,107,107,.3); }
+  .exp-btn.dgn.can{ border-color:var(--dgc); color:var(--dgc); box-shadow:0 0 0 1px var(--dgc) inset; }
+  .exp-btn.dgn:disabled{ opacity:.5; }
   .rt-enl{ color:#8a93a3; }
   .foundry-up:active:not(:disabled){ transform:translateY(1px); }
   .foundry-up:disabled{ opacity:0.55; cursor:not-allowed; }
@@ -6504,11 +6528,13 @@ window.__sfx = (function () {
   function refUnlocked(id) { return !!(state.ref && state.ref[id]); }
   function refConfig() {
     var dS = 1 + 0.1 * refLvl('dspeed'), dQ = 1 + 0.08 * refLvl('dqual'), dE = 1 + 0.06 * refLvl('deff');
+    // skill-tree factors: Mining -> ore, Alloy Smelting -> smelt, Cybernetic Crafting -> value
+    var kS = 1 + 0.06 * skillLvl('mining'), kE = 1 + 0.05 * skillLvl('smelting'), kV = 1 + 0.05 * skillLvl('circuit');
     var mats = REF_MATS.map(function (m) {
       return { id: m.id, name: m.name, rarity: m.rarity, color: m.color, ore: m.ore, glow: !!m.glow,
         ext: refUnlocked('ext_' + m.id), sm: refUnlocked('sm_' + m.id),
-        rate: refUnlocked('ext_' + m.id) ? m.rate * (1 + 0.2 * refLvl('mine_' + m.id)) * dS : 0,
-        smelt: (1 + 0.15 * refLvl('smh_' + m.id)) * dE, value: m.value * dQ };
+        rate: refUnlocked('ext_' + m.id) ? m.rate * (1 + 0.2 * refLvl('mine_' + m.id)) * dS * kS : 0,
+        smelt: (1 + 0.15 * refLvl('smh_' + m.id)) * dE * kE, value: m.value * dQ * kV };
     });
     return { unlP: refUnlocked('unlP'), convMult: 1 + 0.15 * refLvl('conv'), pressMult: 2 + 0.5 * refLvl('press'), quality: 'Mythic', mats: mats };
   }
@@ -6534,19 +6560,54 @@ window.__sfx = (function () {
   // ---- Player progression: XP -> levels -> skill points spent on a small tree.
   // Skills feed income (foundry+refinery), combat power, loot, and offline. ----
   function skillLvl(id) { return (state.prog && state.prog.skills && state.prog.skills[id]) || 0; }
-  function globalMult() { return (1 + 0.1 * ((state.prestige && state.prestige.cores) || 0)) * (1 + 0.05 * skillLvl('foundry')); }
-  var SKILLS = [
-    { id: 'foundry', name: 'Overclock', max: 10, desc: function (l) { return '+' + (5 * l) + '% foundry & refinery income'; } },
-    { id: 'combat', name: 'Combat Doctrine', max: 10, desc: function (l) { return '+' + (6 * l) + '% expedition combat power'; } },
-    { id: 'loot', name: 'Scavenger', max: 10, desc: function (l) { return '+' + Math.floor(l / 2) + ' loot tier, better drops'; } },
-    { id: 'offline', name: 'Deep Sleep', max: 8, desc: function (l) { return '+' + l + 'h offline storage'; } },
+  function globalMult() { return (1 + 0.1 * ((state.prestige && state.prestige.cores) || 0)) * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()); }
+  // Skill tree, grouped into four subsystems that mirror the Gather -> Process
+  // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
+  // game (income, ore rate, smelt yield, ingot value, offline, combat power),
+  // so points always do something. Old save ids (foundry/combat/loot/offline)
+  // are kept for back-compat; the rest are new.
+  var SKILL_CATS = [
+    { id: 'sys', name: 'Core Hardware', icon: '⚙' },
+    { id: 'harvest', name: 'Harvesting & Extraction', icon: '⛏' },
+    { id: 'mfg', name: 'Manufacturing', icon: '🔧' },
+    { id: 'combat', name: 'Combat Subsystems', icon: '⚔' },
   ];
-  function xpForLevel(l) { return Math.floor(80 * Math.pow(1.35, l)); }
-  function addXp(n) {
+  var SKILLS = [
+    { id: 'foundry',   cat: 'sys',     name: 'Overclocking',        max: 15, desc: function (l) { return '+' + (5 * l) + '% all foundry & refinery income'; } },
+    { id: 'multitask', cat: 'sys',     name: 'Memory Allocation',   max: 10, desc: function (l) { return '+' + (4 * l) + '% idle / background generation'; } },
+    { id: 'offline',   cat: 'sys',     name: 'Battery Capacity',    max: 10, desc: function (l) { return '+' + l + 'h offline progress storage'; } },
+    { id: 'firmware',  cat: 'sys',     name: 'Firmware Optimization', max: 10, desc: function (l) { return '−' + (2 * l) + '% XP needed per level'; } },
+    { id: 'mining',    cat: 'harvest', name: 'Mining',              max: 15, desc: function (l) { return '+' + (6 * l) + '% raw ore output (all drones)'; } },
+    { id: 'loot',      cat: 'harvest', name: 'Scrap Salvaging',     max: 10, desc: function (l) { return '+' + Math.floor(l / 2) + ' loot tier · +' + (8 * l) + '% salvage parts'; } },
+    { id: 'energy',    cat: 'harvest', name: 'Energy Harvesting',   max: 10, desc: function (l) { return '+' + (5 * l) + '% idle & offline energy income'; } },
+    { id: 'smelting',  cat: 'mfg',     name: 'Alloy Smelting',      max: 12, desc: function (l) { return '+' + (5 * l) + '% smelter yield (less lost)'; } },
+    { id: 'circuit',   cat: 'mfg',     name: 'Cybernetic Crafting', max: 12, desc: function (l) { return '+' + (5 * l) + '% ingot / press value'; } },
+    { id: 'software',  cat: 'mfg',     name: 'Software Programming', max: 10, desc: function (l) { return '+' + (3 * l) + '% global performance (all income)'; } },
+    { id: 'combat',    cat: 'combat',  name: 'Kinetic Warfare',     max: 15, desc: function (l) { return '+' + (6 * l) + '% melee / physical power'; } },
+    { id: 'ballistics', cat: 'combat', name: 'Ballistics & Targeting', max: 12, desc: function (l) { return '+' + (5 * l) + '% ranged crit & attack power'; } },
+    { id: 'quantum',   cat: 'combat',  name: 'Quantum Matrices',    max: 12, desc: function (l) { return '+' + (5 * l) + '% shields & tech power'; } },
+  ];
+  // Milestone tiers: reaching one grants an immediate permanent +10% income
+  // "mechanical evolution" bonus and a new title.
+  var TIERS = [
+    { name: 'Junk Automaton', min: 1 },
+    { name: 'Cyber Trooper', min: 20 },
+    { name: 'Mecha Overlord', min: 40 },
+  ];
+  function tierIdx() { var lv = playerLevel(), i = 0; for (var k = 0; k < TIERS.length; k++) if (lv >= TIERS[k].min) i = k; return i; }
+  function idleBonus() { return 1 + 0.04 * skillLvl('multitask') + 0.05 * skillLvl('energy'); }   // idle/offline-only
+  function xpForLevel(l) { return Math.floor(80 * Math.pow(1.35, l) * Math.max(0.6, 1 - 0.02 * skillLvl('firmware'))); }
+  function addXp(n, source) {
     if (!state.prog || !(n > 0)) return;
+    if (source) {   // log meaningful XP gains (source + amount + time); tiny per-package slivers pass no source
+      state.prog.log = state.prog.log || [];
+      state.prog.log.unshift({ n: Math.round(n), s: source, t: Date.now() });
+      if (state.prog.log.length > 40) state.prog.log.length = 40;
+    }
     state.prog.xp += n; var up = false;
     while (state.prog.xp >= xpForLevel(state.prog.level)) { state.prog.xp -= xpForLevel(state.prog.level); state.prog.level++; state.prog.pts++; up = true; }
-    if (up) { dirty = true; if (window.__sfx) window.__sfx('level'); gamePop('\u2605 LEVEL ' + state.prog.level, '#ff3b3b'); if (typeof renderProgression === 'function') { renderProgression(); renderAdventure(); } }
+    if (up) { dirty = true; if (window.__sfx) window.__sfx('level'); gamePop('\u2605 LEVEL ' + state.prog.level, '#ff3b3b'); }
+    if (typeof renderProgression === 'function') { renderProgression(); if (up) renderAdventure(); }
   }
 
   // ---- Expedition regions (biomes): each sets a difficulty (ilvl), a loot bias,
@@ -6575,6 +6636,23 @@ window.__sfx = (function () {
     { name: 'Omega Core', base: 'gravity_hammer', rarity: 'mythic' },
   ];
   function bossUnlockLevel(i) { return (REGIONS[i] ? REGIONS[i].unlock : 1) + 2; }
+
+  // ---- Endgame dungeons: sealed vaults unlocked ONE at a time by prestiging.
+  // state.adv.dungeons = how many are unlocked (== reboots, capped). Each is
+  // harder than the last on the same scale (ilvl, bossMult, rewards all step
+  // up), with a guaranteed mythic signature drop on a win. ----
+  var DUNGEONS = [
+    { name: 'Scrap Catacombs', color: '#e0621f', base: 'reactor_core_housing' },
+    { name: 'Neon Necropolis', color: '#ff2bd0', base: 'plasma_scattergun' },
+    { name: 'Fission Abyss', color: '#9dff1e', base: 'nano_swarm_emitter' },
+    { name: 'Cryo Sepulcher', color: '#9be8ff', base: 'void_phase_shield' },
+    { name: 'Void Sanctum', color: '#7a4dff', base: 'singularity_battery' },
+    { name: 'Omega Vault', color: '#ff2b3d', base: 'ultron_prime_core' },
+  ];
+  function dungeonsUnlocked() { return Math.min(DUNGEONS.length, (state.adv && state.adv.dungeons) || 0); }
+  function dungeonIlvl(di) { return 8 + di * 4; }                 // steps up per dungeon, same scale as regions
+  function dungeonBossMult(di) { return 2.6 + di * 0.7; }         // each vault deadlier than the last
+  function dungeonMins(di) { return 15 + di * 5; }
 
   // ---- Story / lore: unlocks as the player levels. Shown in the Codex. ----
   var LORE = [
@@ -6620,7 +6698,9 @@ window.__sfx = (function () {
   if (!state.prestige) state.prestige = { cores: 0 };
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
+  if (!state.prog.log) state.prog.log = [];
   if (!state.adv.region) state.adv.region = 0;
+  if (typeof state.adv.dungeons !== 'number') state.adv.dungeons = 0;   // endgame vaults unlocked by prestige
   if (!state.adv.bosses) state.adv.bosses = {};
   if (!state.mats) state.mats = { scrap: 0, alloy: 0, core: 0 };
 
@@ -6676,7 +6756,7 @@ window.__sfx = (function () {
     var capSec = (window.__foundry.offlineHours || 1.5) * 3600;
     offlineCapped = away > capSec;
     var eff = Math.min(away, capSec);
-    offlineEarned = prodRate() * eff * globalMult();
+    offlineEarned = prodRate() * eff * globalMult() * idleBonus();
     if (offlineEarned > 0.05) { state.bits += offlineEarned; state.lifetime = (state.lifetime || 0) + offlineEarned; dirty = true; }
     state.seen = Date.now();   // reset so returning to the tab doesn't double-count
   }
@@ -6689,7 +6769,7 @@ window.__sfx = (function () {
     var away = Math.max(0, (Date.now() - state.seen) / 1000); state.seen = Date.now();
     if (away < 3) return;
     var eff = Math.min(away, (window.__foundry.offlineHours || 1.5) * 3600);
-    var earned = prodRate() * eff * globalMult();
+    var earned = prodRate() * eff * globalMult() * idleBonus();
     if (earned > 0.05) {
       state.bits += earned; state.lifetime = (state.lifetime || 0) + earned; dirty = true; save(); renderBalance();
       if (window.__gamePop) gamePop('◉ +' + fmt(earned) + ' while away', '#5fe39a');
@@ -6738,7 +6818,7 @@ window.__sfx = (function () {
   // poller when it sees newly-completed agent tasks).
   window.__foundryXp = function (n, label) {
     n = n || 0; if (n <= 0) return;
-    addXp(n); gamePop((label || 'agent task') + ' \u2605 +' + Math.round(n) + ' XP', '#ff3b3b');
+    addXp(n, label || 'Agent task'); gamePop((label || 'agent task') + ' \u2605 +' + Math.round(n) + ' XP', '#ff3b3b');
     dirty = true; save();
   };
 
@@ -6850,8 +6930,15 @@ window.__sfx = (function () {
     state.prestige.cores = prestigeCores(state.lifetime || 0);
     state.bits = 0; state.up = {}; UPGRADES.forEach(function (u) { state.up[u.id] = 0; });
     state.ref = { unlA: false, unlV: false, unlP: false, up: {} };
+    // each defeat/reboot cracks open the next sealed endgame dungeon
+    state.adv = state.adv || {};
+    if ((state.adv.dungeons || 0) < DUNGEONS.length) {
+      state.adv.dungeons = (state.adv.dungeons || 0) + 1;
+      var newD = DUNGEONS[state.adv.dungeons - 1];
+      if (window.__gamePop) gamePop('☠ Vault breached: ' + newD.name, newD.color);
+    }
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderAdventure();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -6879,22 +6966,38 @@ window.__sfx = (function () {
   }
 
   var progEl = document.getElementById('progression');
+  function xpLogHtml() {
+    var log = (state.prog && state.prog.log) || [];
+    if (!log.length) return '<div class="xplog-empty">No XP logged yet — ship robots, run expeditions, or let agents finish tasks.</div>';
+    var now = Date.now();
+    return log.slice(0, 12).map(function (e) {
+      var ago = Math.max(0, (now - e.t) / 1000), when = ago < 60 ? Math.floor(ago) + 's' : ago < 3600 ? Math.floor(ago / 60) + 'm' : Math.floor(ago / 3600) + 'h';
+      return '<div class="xplog-row"><span class="xplog-amt">+' + e.n + '</span><span class="xplog-src">' + e.s + '</span><span class="xplog-t">' + when + ' ago</span></div>';
+    }).join('');
+  }
   function renderProgression() {
     if (!progEl) return;
     var pr = state.prog || { xp: 0, level: 1, pts: 0, skills: {} };
     var need = xpForLevel(pr.level), pct = Math.max(0, Math.min(100, 100 * pr.xp / need));
-    var nodes = SKILLS.map(function (sk) {
-      var l = skillLvl(sk.id), maxed = l >= sk.max, can = pr.pts > 0 && !maxed;
-      return '<button type="button" class="skill' + (can ? ' can' : '') + '" data-skill="' + sk.id + '"' + (can ? '' : ' disabled') + '>' +
-        '<div class="skill-top"><span class="skill-name">' + sk.name + '</span><span class="skill-lvl">' + l + '/' + sk.max + '</span></div>' +
-        '<div class="skill-desc">' + sk.desc(l) + '</div></button>';
+    var ti = tierIdx(), tier = TIERS[ti], nextTier = TIERS[ti + 1];
+    var cats = SKILL_CATS.map(function (c) {
+      var nodes = SKILLS.filter(function (s) { return s.cat === c.id; }).map(function (sk) {
+        var l = skillLvl(sk.id), maxed = l >= sk.max, can = pr.pts > 0 && !maxed;
+        return '<button type="button" class="skill' + (can ? ' can' : '') + (maxed ? ' maxed' : '') + '" data-skill="' + sk.id + '"' + (can ? '' : ' disabled') + '>' +
+          '<div class="skill-top"><span class="skill-name">' + sk.name + '</span><span class="skill-lvl">' + l + '/' + sk.max + '</span></div>' +
+          '<div class="skill-desc">' + sk.desc(l) + '</div></button>';
+      }).join('');
+      return '<div class="skill-cat"><div class="skill-cat-h">' + c.icon + ' ' + c.name + '</div><div class="prog-skills">' + nodes + '</div></div>';
     }).join('');
     progEl.innerHTML =
       '<div class="prog-head"><span class="prog-lvl">Level ' + pr.level + '</span>' +
       '<span class="prog-pts' + (pr.pts > 0 ? ' has' : '') + '">' + (pr.pts > 0 ? pr.pts + ' skill point' + (pr.pts === 1 ? '' : 's') + ' to spend' : 'no skill points') + '</span></div>' +
+      '<div class="prog-tier"><span class="prog-tier-name">▸ ' + tier.name + '</span><span class="prog-tier-buff">+' + (ti * 10) + '% income</span>' +
+      (nextTier ? '<span class="prog-tier-next">next: ' + nextTier.name + ' @ Lv ' + nextTier.min + '</span>' : '<span class="prog-tier-next">max tier</span>') + '</div>' +
       '<div class="prog-bar"><i style="width:' + pct + '%"></i></div>' +
       '<div class="prog-xp">' + Math.floor(pr.xp) + ' / ' + need + ' XP</div>' +
-      '<div class="prog-skills">' + nodes + '</div>';
+      '<div class="xplog"><div class="xplog-h">XP log</div>' + xpLogHtml() + '</div>' +
+      cats;
     progEl.querySelectorAll('[data-skill]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var sk = SKILLS.filter(function (x) { return x.id === btn.dataset.skill; })[0];
@@ -6923,7 +7026,7 @@ window.__sfx = (function () {
   var last = Date.now();
   setInterval(function () {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
-    var p = ((window.__foundry.passive || 0) + refIncome()) * globalMult();
+    var p = ((window.__foundry.passive || 0) + refIncome()) * globalMult() * idleBonus();
     if (p > 0) { state.bits += p * dt; state.lifetime = (state.lifetime || 0) + p * dt; dirty = true; save(); }
     advTick();
     var shown = Math.round(state.bits * 10);
@@ -7129,6 +7232,8 @@ window.__sfx = (function () {
     else if (tier === 4) { y.scrap = 4; y.alloy = 3; }
     else if (tier === 5) { y.alloy = 5; y.core = 1; }
     else { y.alloy = 4; y.core = 3; }
+    var sv = 1 + 0.08 * skillLvl('loot');   // Scrap Salvaging skill boosts recovered parts
+    y.scrap = Math.round(y.scrap * sv); y.alloy = Math.round(y.alloy * sv);
     return y;
   }
   function itemTier(it) { return it.tier || ({ Common: 1, Uncommon: 2, Rare: 3, Epic: 4, Legendary: 5, Mythic: 6 }[it.rarity] || 1); }
@@ -7138,31 +7243,39 @@ window.__sfx = (function () {
   function addMats(y) { state.mats = state.mats || { scrap: 0, alloy: 0, core: 0 }; state.mats.scrap += y.scrap || 0; state.mats.alloy += y.alloy || 0; state.mats.core += y.core || 0; }
   function costStr(c) { var p = []; if (c.scrap) p.push('\u2B22' + c.scrap); if (c.alloy) p.push('\u25C8' + c.alloy); if (c.core) p.push('\u2726' + c.core); return p.join(' '); }
   function claimAdventure() {
-    var a = state.adv, isBoss = !!a.bossRun, run = ADV_DUR[a.dur] || ADV_DUR[0];
+    var a = state.adv, isBoss = !!a.bossRun, isDungeon = !!a.dungeonRun, run = ADV_DUR[a.dur] || ADV_DUR[0];
+    var di = isDungeon ? (a.dungeonRun - 1) : 0, dungeon = isDungeon ? DUNGEONS[di] : null;
     var ri = isBoss ? (a.bossRegion || 0) : (a.region || 0);
     var region = REGIONS[ri] || REGIONS[0];
-    var ilvl = run.ilvl + (region.ilvl || 0) + Math.floor(skillLvl('loot') / 2) + (isBoss ? 2 : 0);
-    var pmult = 1 + 0.06 * skillLvl('combat');   // Combat Doctrine skill
-    var battle = window.Combat ? Combat.resolveRun(a.gear, { ilvl: ilvl, dur: a.dur, seed: 'b' + Date.now() + Math.random(), powerMult: pmult, bossMult: isBoss ? 2.2 : 0 }) : null;
-    a.lastBattle = battle; a.lastBoss = isBoss ? BOSSES[ri].name : null;
+    var lootSkill = Math.floor(skillLvl('loot') / 2);
+    var ilvl = isDungeon ? (dungeonIlvl(di) + lootSkill) : (run.ilvl + (region.ilvl || 0) + lootSkill + (isBoss ? 2 : 0));
+    var pmult = 1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum');   // Kinetic + Ballistics + Quantum
+    var bmult = isDungeon ? dungeonBossMult(di) : (isBoss ? 2.2 : 0);
+    var battle = window.Combat ? Combat.resolveRun(a.gear, { ilvl: ilvl, dur: a.dur, seed: 'b' + Date.now() + Math.random(), powerMult: pmult, bossMult: bmult }) : null;
+    a.lastBattle = battle; a.lastBoss = isDungeon ? dungeon.name : isBoss ? BOSSES[ri].name : null;
     var mult = battle ? battle.lootMult : 1;
-    var lootCount = Math.max(1, Math.round(run.loot * mult));
+    var lootCount = Math.max(1, Math.round((isDungeon ? 3 + di : run.loot) * mult));
     var bonusIlvl = ilvl + (battle && battle.win ? 1 : 0);   // a win yields better loot
     var out = [];
-    for (var i = 0; i < lootCount; i++) out.push(rollLoot(bonusIlvl, region.types));
-    if (isBoss && battle && battle.win && window.LootEngine) {   // boss victory -> guaranteed signature
+    for (var i = 0; i < lootCount; i++) out.push(rollLoot(bonusIlvl, isDungeon ? null : region.types));
+    if (isDungeon && battle && battle.win && window.LootEngine) {   // vault cleared -> guaranteed mythic signature, scaled reward
+      var dsig = LootEngine.generate(dungeon.base, { seed: 'dsig' + Date.now() + Math.random(), ilvl: ilvl + 3, rarity: 'mythic' });
+      dsig.rarity = dsig.tierLabel; dsig.name = dungeon.name + ' ' + dsig.name; out.push(dsig);
+      state.bits += 20000 * (di + 1) * globalMult(); addXp(400 * (di + 1), 'Vault: ' + dungeon.name);
+    } else if (isBoss && battle && battle.win && window.LootEngine) {   // boss victory -> guaranteed signature
       var boss = BOSSES[ri];
       if (boss) {
         var sig = LootEngine.generate(boss.base, { seed: 'sig' + Date.now() + Math.random(), ilvl: ilvl + 2, rarity: boss.rarity });
         sig.rarity = sig.tierLabel; sig.name = boss.name + "'s " + sig.name; out.push(sig);
       }
       a.bosses = a.bosses || {}; a.bosses[ri] = true;
-      state.bits += 5000 * globalMult(); addXp(200);
+      state.bits += 5000 * globalMult(); addXp(200, 'Boss: ' + boss.name);
     }
-    a.bossRun = 0;
+    a.bossRun = 0; a.dungeonRun = 0;
     a.inv = (a.inv || []).concat(out).slice(-40);
     a.endsAt = 0; a.lastHaul = out;
-    addXp((battle ? battle.wavesCleared * 12 + (battle.win ? 40 : 0) : 20) * (1 + 0.5 * (a.dur || 0)) * (isBoss ? 2 : 1));   // adventures grant XP
+    if (!(isDungeon && battle && battle.win))   // dungeon win already logged its big XP above
+      addXp((battle ? battle.wavesCleared * 12 + (battle.win ? 40 : 0) : 20) * (1 + 0.5 * (a.dur || 0)) * (isBoss || isDungeon ? 2 : 1), (isDungeon ? 'Vault: ' + dungeon.name : 'Expedition: ' + (region.name || 'run')));   // adventures grant XP
     dirty = true; save();
     return out;
   }
@@ -7282,13 +7395,21 @@ window.__sfx = (function () {
       status = '<div class="exp-status ready">Your robot has returned! <button type="button" class="exp-btn can" data-a="claim">Claim rewards</button></div>';
     } else if (away) {
       var left = Math.max(0, a.endsAt - now), tot = a.runMs || (ADV_DUR[a.dur] ? ADV_DUR[a.dur].mins * 60000 : 1);
-      var runLabel = a.bossRun ? (esc(BOSSES[a.bossRegion || 0].name) + ' (boss)') : esc(ADV_DUR[a.dur] ? ADV_DUR[a.dur].n : '');
+      var runLabel = a.dungeonRun ? (esc(DUNGEONS[a.dungeonRun - 1].name) + ' (vault)') : a.bossRun ? (esc(BOSSES[a.bossRegion || 0].name) + ' (boss)') : esc(ADV_DUR[a.dur] ? ADV_DUR[a.dur].n : '');
       status = '<div class="exp-status"><div>On <b>' + runLabel + '</b> — returns in <span id="exp-clock">' + Math.ceil(left / 1000) + 's</span></div>' +
         '<div class="exp-prog"><i style="width:' + Math.round((1 - left / tot) * 100) + '%"></i></div></div>';
     } else {
       var bi = a.region || 0, boss = BOSSES[bi], bok = boss && playerLevel() >= bossUnlockLevel(bi), bdone = a.bosses && a.bosses[bi];
       status = '<div class="exp-send">' + ADV_DUR.map(function (d, i) { return '<button type="button" class="exp-btn can" data-a="send" data-v="' + i + '">' + d.n + ' · ' + (d.mins < 60 ? d.mins + 'm' : (d.mins / 60) + 'h') + ' · ' + d.loot + ' loot</button>'; }).join('') +
         (boss ? '<button type="button" class="exp-btn boss' + (bok ? ' can' : '') + '"' + (bok ? ' data-a="boss"' : ' disabled title="Reach level ' + bossUnlockLevel(bi) + '"') + '>☠ ' + esc(boss.name) + (bdone ? ' ✓' : '') + ' · 10m</button>' : '') + '</div>';
+      // Endgame dungeons: one row of escalating sealed vaults, unlocked by prestige
+      var unl = dungeonsUnlocked();
+      status += '<div class="exp-dgn-h">☠ Endgame Vaults <span class="exp-dgn-sub">' + unl + '/' + DUNGEONS.length + ' breached · one opens per reboot</span></div><div class="exp-send exp-dgn">' +
+        DUNGEONS.map(function (d, i) {
+          var open = i < unl;
+          return '<button type="button" class="exp-btn dgn' + (open ? ' can' : '') + '"' + (open ? ' data-a="dungeon" data-v="' + i + '"' : ' disabled title="Prestige ' + (i + 1) + ' time' + (i ? 's' : '') + ' to breach"') + ' style="--dgc:' + d.color + '">' +
+            (open ? '' : '🔒 ') + esc(d.name) + ' · i' + dungeonIlvl(i) + ' · ' + dungeonMins(i) + 'm</button>';
+        }).join('') + '</div>';
     }
     // default every build category once, then derive the preview silhouette
     var b = a.build || (a.build = {});
@@ -7358,8 +7479,9 @@ window.__sfx = (function () {
       else if (act === 'save-load') { var inp = expEl.querySelector('.exp-ldname'); var nm = (inp && inp.value.trim()) || ('Build ' + (Object.keys(a.loadouts || {}).length + 1)); a.loadouts = a.loadouts || {}; a.loadouts[nm] = { build: Object.assign({}, a.build), color: a.robot.color }; dirty = true; save(); renderAdventure(); }
       else if (act === 'load-ld') { var ld = (a.loadouts || {})[b.dataset.v]; if (ld) { a.build = Object.assign({}, ld.build); if (ld.color) a.robot.color = ld.color; dirty = true; save(); renderAdventure(); } }
       else if (act === 'del-ld') { if (a.loadouts) { delete a.loadouts[b.dataset.v]; dirty = true; save(); renderAdventure(); } }
-      else if (act === 'send') { a.dur = +b.dataset.v; a.bossRun = 0; a.runMs = ADV_DUR[a.dur].mins * 60000; a.endsAt = Date.now() + a.runMs; a.lastHaul = null; save(); renderAdventure(); }
-      else if (act === 'boss') { a.bossRun = 1; a.bossRegion = a.region || 0; a.dur = 2; a.runMs = 10 * 60000; a.endsAt = Date.now() + a.runMs; a.lastHaul = null; save(); renderAdventure(); }
+      else if (act === 'send') { a.dur = +b.dataset.v; a.bossRun = 0; a.dungeonRun = 0; a.runMs = ADV_DUR[a.dur].mins * 60000; a.endsAt = Date.now() + a.runMs; a.lastHaul = null; save(); renderAdventure(); }
+      else if (act === 'boss') { a.bossRun = 1; a.dungeonRun = 0; a.bossRegion = a.region || 0; a.dur = 2; a.runMs = 10 * 60000; a.endsAt = Date.now() + a.runMs; a.lastHaul = null; save(); renderAdventure(); }
+      else if (act === 'dungeon') { var dv = +b.dataset.v; if (dv < dungeonsUnlocked()) { a.dungeonRun = dv + 1; a.bossRun = 0; a.dur = 2; a.runMs = dungeonMins(dv) * 60000; a.endsAt = Date.now() + a.runMs; a.lastHaul = null; save(); renderAdventure(); } }
       else if (act === 'claim') { claimAdventure(); renderBalance(); renderAdventure(); }
     });
     expEl.addEventListener('input', function (e) { var b = e.target.closest('[data-a="name"]'); if (b) { state.adv.robot.name = b.value.slice(0, 18); dirty = true; save(); } });
