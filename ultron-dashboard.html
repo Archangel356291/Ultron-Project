@@ -938,6 +938,12 @@
   .set-pip{ font-family:var(--font-mono); font-size:9px; width:16px; height:16px; line-height:16px; text-align:center; border-radius:50%; border:1px solid var(--line); color:var(--text-faint); }
   .set-pip.on{ background:#ffd24b; color:#0c0e13; border-color:#ffd24b; font-weight:700; }
   .set-bon{ font-family:var(--font-mono); font-size:10px; color:#5fe39a; margin-left:auto; }
+  /* D&D core attributes readout */
+  .attr-head{ font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); margin:6px 0 3px; }
+  .attr-row{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:4px; }
+  .attr-chip{ display:flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:10px; color:var(--text-dim); background:var(--void); border:1px solid var(--line); border-left-width:3px; border-radius:5px; padding:2px 8px; }
+  .attr-ab{ font-weight:700; letter-spacing:.03em; }
+  .attr-chip b{ color:var(--text); font-size:11px; }
   /* modular robot preview: parts drive body / legs / head silhouettes */
   .exp-robot{ width:66px; height:86px; }
   .exp-head{ position:absolute; left:15px; right:15px; top:8px; height:16px; border-radius:5px 5px 0 0; background:linear-gradient(180deg,#b8b6ac,#86847a); }
@@ -7311,17 +7317,45 @@ window.__sfx = (function () {
   var SET_TIERS = [2, 4, 6, 8, 10];
   function setCount(setId) { var a = state.adv || {}, n = 0; (a.inv || []).forEach(function (x) { if (x.set === setId) n++; }); return n; }
   function setTier(setId) { var n = setCount(setId), t = 0; for (var i = 0; i < SET_TIERS.length; i++) if (n >= SET_TIERS[i]) t++; return t; }   // 0..5
-  function setBonusMult() { return 1 + 0.08 * (setTier('dominion') + setTier('genesis')); }   // +8% adventurer power per set tier reached
+
+  // ---- D&D-style character attributes. Every source of "set/character power"
+  // now flows through six core attributes, tracked in the main stats and each
+  // upgradeable by a % boost + a × multiplier (growth skills) and flat prestige
+  // ranks. Set tiers GRANT attribute points; attributes drive the derived combat
+  // & economy multipliers. Kept on-scale so balance holds. ----
+  var CHAR_ATTRS = [
+    { id: 'str', name: 'Strength', abbr: 'STR', col: '#ff6b6b', eff: 'melee & physical power' },
+    { id: 'dex', name: 'Dexterity', abbr: 'DEX', col: '#5fe39a', eff: 'crit, accuracy & evasion' },
+    { id: 'con', name: 'Constitution', abbr: 'CON', col: '#ff9d3c', eff: 'health & shield power' },
+    { id: 'int', name: 'Intelligence', abbr: 'INT', col: '#7fd0ff', eff: 'XP gain & tech power' },
+    { id: 'wis', name: 'Wisdom', abbr: 'WIS', col: '#c9a6ff', eff: 'defense & resistance' },
+    { id: 'cha', name: 'Charisma', abbr: 'CHA', col: '#ffd24b', eff: 'income & loot fortune' },
+  ];
+  var SET_ATTR = { dominion: { str: 3, con: 3, dex: 2 }, genesis: { int: 3, wis: 2, cha: 2, str: 1, dex: 1, con: 1 } };
+  function attrFromSets(id) { return (SET_ATTR.dominion[id] || 0) * setTier('dominion') + (SET_ATTR.genesis[id] || 0) * setTier('genesis'); }
+  function attrMult() { return pct('attrp', 4) * xmul('attrm', 0.03); }   // Attribute Training (%) + Genetic Perfection (×) growth skills
+  function charAttr(id) { return Math.round((10 + 8 * pUp('a_' + id) + attrFromSets(id)) * attrMult()); }   // base 10 + prestige ranks + set grants, scaled
+  // derived from the "modifier" (points over the base 10), small per-point, on-scale
+  function attrCombatMult() { return (1 + 0.02 * (charAttr('str') - 10) + 0.015 * (charAttr('dex') - 10)) * (1 + 0.02 * (charAttr('con') - 10)) * (1 + 0.015 * (charAttr('wis') - 10)); }
+  function attrXpMult() { return 1 + 0.015 * (charAttr('int') - 10); }
+  function attrIncMult() { return 1 + 0.01 * (charAttr('cha') - 10); }
+  function setBonusMult() { return attrCombatMult(); }   // set/attribute-driven adventurer power
+  function attrHtml() {
+    return '<div class="attr-row">' + CHAR_ATTRS.map(function (a) {
+      return '<span class="attr-chip" style="border-color:' + a.col + '" title="' + a.name + ' — ' + a.eff + '"><span class="attr-ab" style="color:' + a.col + '">' + a.abbr + '</span><b>' + charAttr(a.id) + '</b></span>';
+    }).join('') + '</div>';
+  }
   function setBonusHtml() {
     var rows = Object.keys(GEAR_SETS).map(function (id) {
       var n = setCount(id), tier = setTier(id), next = SET_TIERS.filter(function (th) { return th > n; })[0];
       var pips = SET_TIERS.map(function (th) { return '<span class="set-pip' + (n >= th ? ' on' : '') + '">' + th + '</span>'; }).join('');
       var cls = id === 'genesis' ? 'set-holo' : 'set-god';
+      var grant = Object.keys(SET_ATTR[id]).map(function (k) { return '+' + (SET_ATTR[id][k] * tier) + ' ' + k.toUpperCase(); }).filter(function (g) { return g.indexOf('+0 ') !== 0; }).join(' ');
       return '<div class="set-row ' + cls + '"><span class="set-nm">' + GEAR_SETS[id] + '</span>' +
         '<span class="set-ct">' + n + ' pcs</span>' + pips +
-        '<span class="set-bon">+' + (tier * 8) + '% power' + (next ? ' · next @ ' + next : ' · MAX') + '</span></div>';
+        '<span class="set-bon">' + (tier > 0 ? grant : 'per tier: ' + Object.keys(SET_ATTR[id]).map(function (k) { return k.toUpperCase(); }).join('/')) + (next ? ' · next @ ' + next : ' · MAX') + '</span></div>';
     }).join('');
-    return '<div class="set-wrap"><div class="set-head">✦ Signature Gear Sets <span class="set-hint">— collect God-rarity pieces for permanent power (2/4/6/8/10)</span></div>' + rows + '</div>';
+    return '<div class="set-wrap"><div class="set-head">✦ Signature Gear Sets <span class="set-hint">— collect God-rarity pieces to raise your attributes (2/4/6/8/10)</span></div>' + rows + '</div>';
   }
   function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult(); }
   function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
@@ -7455,6 +7489,12 @@ window.__sfx = (function () {
     { id: 'pprod', cat: 'Production', name: 'Overdrive', max: 100, base: 1, grow: 1.16, desc: function (l) { return '×' + Math.pow(1.05, l).toFixed(2) + ' production'; } },
     { id: 'pbay', cat: 'Production', name: 'Army Command', max: 80, base: 2, grow: 1.17, desc: function (l) { return '+' + (3 * l) + '% total bay power'; } },
     { id: 'ppass', cat: 'Production', name: 'Reactor Bank', max: 80, base: 2, grow: 1.17, desc: function (l) { return '×' + Math.pow(1.05, l).toFixed(2) + ' passive income'; } },
+    { id: 'a_str', cat: 'Attributes', name: 'Strength', max: 100, base: 2, grow: 1.16, desc: function (l) { return '+' + (8 * l) + ' STR (' + charAttr('str') + ')'; } },
+    { id: 'a_dex', cat: 'Attributes', name: 'Dexterity', max: 100, base: 2, grow: 1.16, desc: function (l) { return '+' + (8 * l) + ' DEX (' + charAttr('dex') + ')'; } },
+    { id: 'a_con', cat: 'Attributes', name: 'Constitution', max: 100, base: 2, grow: 1.16, desc: function (l) { return '+' + (8 * l) + ' CON (' + charAttr('con') + ')'; } },
+    { id: 'a_int', cat: 'Attributes', name: 'Intelligence', max: 100, base: 2, grow: 1.16, desc: function (l) { return '+' + (8 * l) + ' INT (' + charAttr('int') + ')'; } },
+    { id: 'a_wis', cat: 'Attributes', name: 'Wisdom', max: 100, base: 2, grow: 1.16, desc: function (l) { return '+' + (8 * l) + ' WIS (' + charAttr('wis') + ')'; } },
+    { id: 'a_cha', cat: 'Attributes', name: 'Charisma', max: 100, base: 2, grow: 1.16, desc: function (l) { return '+' + (8 * l) + ' CHA (' + charAttr('cha') + ')'; } },
   ];
   function pUpCost(u) { return Math.ceil(u.base * Math.pow(u.grow, pUp(u.id))); }
   function prestigeCharMult() { return (1 + 0.04 * pUp('ppow')) * (1 + 0.05 * pUp('php')) * (1 + 0.02 * pUp('pcrit')); }   // adventurer power
@@ -7464,7 +7504,7 @@ window.__sfx = (function () {
   // Each time the Genesis Cannon fires and remakes the universe, EVERYTHING is
   // permanently multiplied -- the ultimate reward for the ultimate grind.
   function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult(); }
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult(); }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -7482,7 +7522,7 @@ window.__sfx = (function () {
   // exponential scale). Combined they let a stat be pushed hard late-game.
   function pct(l, per) { return 1 + (per / 100) * skillLvl(l); }       // additive %-boost skill
   function xmul(l, step) { return Math.pow(1 + step, skillLvl(l)); }   // compounding × skill
-  function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03); }
+  function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03) * attrXpMult(); }   // + Intelligence
   function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03) * prestigeProdMult(); }
   function prodQualMult() { return pct('prodqual', 5) * xmul('prodqualm', 0.025); }
   function incomeMult() { return pct('incboost', 4) * xmul('incmult', 0.03); }
@@ -7509,6 +7549,8 @@ window.__sfx = (function () {
     { id: 'prodqualm', cat: 'growth',  name: 'Master Craftsmanship', max: 12, desc: function (l) { return '×' + Math.pow(1.025, l).toFixed(2) + ' production quality multiplier'; } },
     { id: 'incboost',  cat: 'growth',  name: 'Market Manipulation', max: 20, desc: function (l) { return '+' + (4 * l) + '% all income'; } },
     { id: 'incmult',   cat: 'growth',  name: 'Compound Interest',    max: 15, desc: function (l) { return '×' + Math.pow(1.03, l).toFixed(2) + ' income multiplier'; } },
+    { id: 'attrp',     cat: 'growth',  name: 'Attribute Training',   max: 25, desc: function (l) { return '+' + (4 * l) + '% to ALL attributes'; } },
+    { id: 'attrm',     cat: 'growth',  name: 'Genetic Perfection',   max: 15, desc: function (l) { return '×' + Math.pow(1.03, l).toFixed(2) + ' attribute multiplier'; } },
   ];
   // Milestone tiers: reaching one grants an immediate permanent +10% income
   // "mechanical evolution" bonus and a new title.
@@ -7980,7 +8022,7 @@ window.__sfx = (function () {
   function renderPrestigeUpgrades() {
     if (!prestigeUpEl) return;
     var pts = (state.prestige && state.prestige.points) || 0;
-    var cats = ['Character', 'Economy', 'Production'];
+    var cats = ['Attributes', 'Character', 'Economy', 'Production'];
     var body = cats.map(function (cat) {
       var rows = PRESTIGE_UPGRADES.filter(function (u) { return u.cat === cat; }).map(function (u) {
         var l = pUp(u.id), maxed = l >= u.max, c = pUpCost(u), can = pts >= c && !maxed;
@@ -8174,6 +8216,7 @@ window.__sfx = (function () {
       '<div class="prog-bar"><i style="width:' + (pr.level >= LEVEL_CAP ? 100 : pct) + '%"></i></div>' +
       '<div class="prog-xp">' + (pr.level >= LEVEL_CAP ? 'MAX LEVEL ★' : Math.floor(pr.xp) + ' / ' + need + ' XP') + '</div>' +
       (function () { var rs = robotStats((state.adv && state.adv.gear) || {}); return '<div class="prog-stats"><span>⚔ Power <b>' + rs.power + '</b></span><span>♥ HP <b>' + rs.ehp + '</b></span><span>↯ DPS <b>' + rs.dps + '</b></span><span>FW <b>' + rs.firmware + '</b></span></div>'; })() +
+      '<div class="attr-head">Core attributes</div>' + attrHtml() +
       '<details class="prog-sys"><summary>🤖 Robot systems — full attribute sheet</summary>' + statsSheetHtml((state.adv && state.adv.gear) || {}) + '</details>' +
       (function () {   // what the foundry mints: per-bot value per bay + per package
         var f = window.__foundry || {}, gm = globalMult(), by = (f.botYield || 0.1);
