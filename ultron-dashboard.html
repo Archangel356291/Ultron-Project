@@ -5695,7 +5695,7 @@ function toggleReducedVisuals(el) {
     walkMinX = W >= 1000 ? 190 : 72;
     // Leave a display area beside the desk for the relic pedestals on wide
     // screens; on narrow ones he keeps a short beat and the relics are skipped.
-    walkMaxX = Math.max(walkMinX + 30, uDeskX - (W >= 1000 ? 320 : 196));
+    walkMaxX = Math.max(walkMinX + 30, uDeskX - (W >= 1000 ? 480 : 210));   // wider display gap: relics + couch + relic tubes all live here
     walkX = Math.max(walkMinX, Math.min(walkMaxX, walkX));
     return true;
   }
@@ -6423,7 +6423,8 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = 'rgba(44,96,150,0.95)'; ctx.fillRect(cx - s, cy - s, 2 * s, 2 * s);  // front face
     ctx.fillStyle = 'rgba(210,238,255,' + (0.85 * p) + ')'; ctx.beginPath(); ctx.ellipse(cx, cy, 2.6, 3.6, 0, 0, Math.PI * 2); ctx.fill();  // stone within
     ctx.strokeStyle = '#bfe4ff'; ctx.lineWidth = 1.3; ctx.strokeRect(cx - s, cy - s, 2 * s, 2 * s);
-    caption('tesseract', cx, cy + 26); hover('Tesseract — the Space Stone within', cx, cy, 16);
+    caption('tesseract', cx, cy + 26); hover('Tesseract', cx, cy, 17,
+      relicTip('Tesseract', '#7fbcff', 'A crystal casing holding the Space Stone.', 'An Asgardian relic lost on Earth for centuries.', 'Lifted from S.H.I.E.L.D.’s deepest archive by a sentry raid.'));
   }
   function orb(cx, cy, t) {         // Power -- a metallic patterned sphere
     var p = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(t * 1.5 + 1));
@@ -6436,7 +6437,8 @@ function toggleReducedVisuals(el) {
     ctx.beginPath(); ctx.ellipse(cx, cy, 5, 12, 0, 0, Math.PI * 2); ctx.stroke();
     ctx.fillStyle = 'rgba(190,100,255,' + (0.9 * p) + ')'; ctx.fillRect(cx - 1.6, cy - 10, 3.2, 20);  // core seam glow
     ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(cx - 4, cy - 4, 2, 0, Math.PI * 2); ctx.fill();
-    caption('orb', cx, cy + 26); hover('the Orb — the Power Stone within', cx, cy, 15);
+    caption('orb', cx, cy + 26); hover('the Orb', cx, cy, 16,
+      relicTip('the Orb', '#c07bff', 'A Cristalline sphere caging the Power Stone.', 'Hidden in a temple on the dead world of Morag.', 'Ultron’s drones tore it from the ruins before any Guardian could.'));
   }
   function eyeOfAgamotto(cx, cy, t) {  // Time -- a gold amulet with an eye lid
     var p = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(t * 1.4 + 2));
@@ -6448,7 +6450,8 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = '#7c8590';                                                   // metal lids, part open
     ctx.beginPath(); ctx.moveTo(cx - 8, cy - 1.5); ctx.quadraticCurveTo(cx, cy - 10, cx + 8, cy - 1.5); ctx.quadraticCurveTo(cx, cy - 5.5, cx - 8, cy - 1.5); ctx.fill();
     ctx.beginPath(); ctx.moveTo(cx - 8, cy + 1.5); ctx.quadraticCurveTo(cx, cy + 10, cx + 8, cy + 1.5); ctx.quadraticCurveTo(cx, cy + 5.5, cx - 8, cy + 1.5); ctx.fill();
-    caption('eye of agamotto', cx, cy + 26); hover('Eye of Agamotto — the Time Stone within', cx, cy, 15);
+    caption('eye of agamotto', cx, cy + 26); hover('Eye of Agamotto', cx, cy, 16,
+      relicTip('Eye of Agamotto', '#5fe39a', 'A sorcerer’s amulet housing the Time Stone.', 'Kept in the vault of Kamar-Taj by the masters of the mystic arts.', 'Taken when Ultron’s forces overran the sanctum.'));
   }
   function aetherTube(cx, footY, t) {  // Reality -- red fluid in a tube on the desk
     var w = 13, h = 40, x = cx - w / 2, y = footY - h;
@@ -6467,66 +6470,116 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = 'rgba(255,255,255,0.14)'; ctx.fillRect(x + 1.5, y, 2, h);  // glass sheen
     ctx.restore();
     ctx.strokeStyle = M_STEEL; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h);
-    caption('aether', cx, footY + 10); hover('the Aether — the Reality Stone, in fluid form', cx, footY - h / 2, 12);
+    caption('aether', cx, footY + 10); hover('the Aether', cx, footY - h / 2, 13,
+      relicTip('the Aether', '#ff5a5a', 'The Reality Stone in its liquid, unbound form.', 'Drawn from the Dark Elves of Svartalfheim.', 'Contained in a stasis flask Ultron keeps on his own desk.'));
   }
   function drawRelics(t) {
     var fy = officeFloorY;
     aetherTube(uDeskX + 30, fy - U_DESK_H + 4, t);                             // on Ultron's desk
-    var gapL = walkMaxX + 34, gapR = uDeskX - 26;
-    if (gapR - gapL < 150) return;                                            // no room on a narrow screen
-    var span = gapR - gapL;
-    tesseract(gapL + span * 0.16, fy - 27, t); pedestal(gapL + span * 0.16, fy, 40);
-    orb(gapL + span * 0.5, fy - 25, t); pedestal(gapL + span * 0.5, fy, 40);
-    eyeOfAgamotto(gapL + span * 0.84, fy - 25, t); pedestal(gapL + span * 0.84, fy, 40);
+    // The Infinity Stones now live on the trophy wall (drawTrophies); the floor
+    // to the RIGHT of the couch holds the vibranium repair tank + symbiote tubes.
+    var cb = couchBox(), tubeL = cb.right + 16, tubeR = uDeskX - 20;
+    if (tubeR - tubeL < 96) return;                                           // no room past the couch: skip
+    var n = 3, step = (tubeR - tubeL) / n;
+    vibraniumTank(tubeL + step * 0.5, fy, t);
+    symbioteTube(tubeL + step * 1.5, fy, t, '#0b0b12', '#4a4a66', '#ffffff', 'Venom',
+      relicTip('Venom Symbiote', '#c7c7d6', 'A living alien symbiote, caged behind reinforced glass.', 'A Klyntar organism that bonds to a host.', 'Captured and contained for Ultron to study its shapeshifting biology.'), '74,74,102');
+    symbioteTube(tubeL + step * 2.5, fy, t, '#3a0a0f', '#ff2b3d', '#ffe08a', 'Carnage',
+      relicTip('Carnage Symbiote', '#ff5a6e', 'A far more violent red symbiote, held in hardened stasis.', 'A spawn of the Venom symbiote, wild and murderous.', 'Locked away as a weapon of last resort.'), '255,43,61');
   }
 
-  // Trophy wall: relics Ultron has "collected", mounted over his office --
-  // Captain America's shield, Mjolnir, Hawkeye's bow, and his own power sword,
-  // each in its true colours.
+  // Trophy wall: relics Ultron has "collected", mounted over his office. Each
+  // is clickable/hoverable for its lore -- what it is, where it came from, and
+  // how Ultron took it (see relicTip()).
+  function relicTip(name, color, what, where, how) {
+    return '<b style="color:' + color + '">' + name + '</b><br><span class="rt-enl">' + what + '</span>' +
+      '<br><b style="color:#8b93a0">Origin:</b> ' + where + '<br><b style="color:#8b93a0">Acquired:</b> ' + how;
+  }
   function capShield(cx, cy, t) {
-    relicGlow(cx, cy, 22, '40,110,220', 0.28);
-    var r = 15, rings = [['#c0392b', 1], ['#ecf0f1', 0.78], ['#c0392b', 0.56], ['#ecf0f1', 0.4], ['#2b5cb8', 0.3]];
+    relicGlow(cx, cy, 26, '40,110,220', 0.30);
+    var r = 19, rings = [['#c0392b', 1], ['#ecf0f1', 0.78], ['#c0392b', 0.56], ['#ecf0f1', 0.4], ['#2b5cb8', 0.3]];
     rings.forEach(function (g) { ctx.fillStyle = g[0]; ctx.beginPath(); ctx.arc(cx, cy, r * g[1], 0, 6.28); ctx.fill(); });
     ctx.fillStyle = '#ecf0f1'; ctx.beginPath(); for (var k = 0; k < 10; k++) { var a = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? r * 0.13 : r * 0.29; ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } ctx.closePath(); ctx.fill();
-    caption('shield', cx, cy + 26); hover("Captain America's Shield", cx, cy, r);
+    caption('shield', cx, cy + 30); hover("Captain America's Shield", cx, cy, r + 3,
+      relicTip("Captain America's Shield", '#4f7fe0', 'Near-indestructible vibranium disc.', 'Forged by Howard Stark from the world’s vibranium.', 'Pried from the Captain after Ultron overwhelmed the Avengers.'));
   }
   function mjolnir(cx, cy, t) {
-    relicGlow(cx, cy - 2, 17, '120,180,255', 0.22 + 0.16 * Math.sin(t * 4));
-    ctx.fillStyle = '#8b93a0'; ctx.fillRect(cx - 9, cy - 6, 18, 12);
-    ctx.fillStyle = '#b6bcc6'; ctx.fillRect(cx - 9, cy - 6, 18, 2);
-    ctx.fillStyle = '#3a3f47'; ctx.fillRect(cx - 9, cy - 6, 2, 12); ctx.fillRect(cx + 7, cy - 6, 2, 12);
-    ctx.fillStyle = 'rgba(150,200,255,' + (0.5 + 0.4 * Math.sin(t * 5)) + ')'; ctx.fillRect(cx - 3, cy - 1, 6, 2);
-    ctx.fillStyle = '#6b4a2a'; ctx.fillRect(cx - 1.6, cy + 6, 3.2, 15); ctx.fillStyle = '#4a3520'; ctx.fillRect(cx - 2.2, cy + 19, 4.4, 2);
-    if (Math.sin(t * 3 + cx) > 0.6) { ctx.strokeStyle = '#9be8ff'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx + 9, cy - 5); ctx.lineTo(cx + 13, cy - 9); ctx.lineTo(cx + 11, cy - 7); ctx.lineTo(cx + 16, cy - 12); ctx.stroke(); }
-    caption('mjolnir', cx, cy + 30); hover("Mjolnir — Thor's Hammer", cx, cy, 14);
+    relicGlow(cx, cy - 2, 22, '120,180,255', 0.24 + 0.16 * Math.sin(t * 4));
+    ctx.fillStyle = '#8b93a0'; ctx.fillRect(cx - 12, cy - 8, 24, 16);
+    ctx.fillStyle = '#b6bcc6'; ctx.fillRect(cx - 12, cy - 8, 24, 3);
+    ctx.fillStyle = '#3a3f47'; ctx.fillRect(cx - 12, cy - 8, 3, 16); ctx.fillRect(cx + 9, cy - 8, 3, 16);
+    ctx.fillStyle = 'rgba(150,200,255,' + (0.5 + 0.4 * Math.sin(t * 5)) + ')'; ctx.fillRect(cx - 4, cy - 1.5, 8, 3);
+    ctx.fillStyle = '#6b4a2a'; ctx.fillRect(cx - 2, cy + 8, 4, 20); ctx.fillStyle = '#4a3520'; ctx.fillRect(cx - 3, cy + 25, 6, 3);
+    if (Math.sin(t * 3 + cx) > 0.6) { ctx.strokeStyle = '#9be8ff'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(cx + 12, cy - 6); ctx.lineTo(cx + 17, cy - 11); ctx.lineTo(cx + 14, cy - 9); ctx.lineTo(cx + 20, cy - 15); ctx.stroke(); }
+    caption('mjolnir', cx, cy + 34); hover("Mjolnir", cx, cy, 18,
+      relicTip('Mjolnir', '#9bd0ff', "Thor's enchanted Uru hammer.", 'Forged in a dying star at Nidavellir.', 'Ultron could never lift it — so he clamped it in a stasis cradle and took the cradle.'));
   }
   function hawkeyeBow(cx, cy, t) {
-    ctx.strokeStyle = '#7a4dff'; ctx.lineWidth = 2.8; ctx.beginPath(); ctx.arc(cx + 4, cy, 16, Math.PI * 0.58, Math.PI * 1.42); ctx.stroke();
-    var a1 = Math.PI * 0.58, a2 = Math.PI * 1.42; ctx.strokeStyle = '#cfcfe0'; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(cx + 4 + Math.cos(a1) * 16, cy + Math.sin(a1) * 16); ctx.lineTo(cx + 4 + Math.cos(a2) * 16, cy + Math.sin(a2) * 16); ctx.stroke();
-    ctx.strokeStyle = '#b6bcc6'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(cx - 9, cy); ctx.lineTo(cx + 11, cy); ctx.stroke();
-    ctx.fillStyle = '#7a4dff'; ctx.beginPath(); ctx.moveTo(cx + 11, cy - 2.5); ctx.lineTo(cx + 15, cy); ctx.lineTo(cx + 11, cy + 2.5); ctx.closePath(); ctx.fill();
-    caption('bow', cx, cy + 26); hover("Hawkeye's Bow", cx, cy, 16);
+    ctx.strokeStyle = '#7a4dff'; ctx.lineWidth = 3.4; ctx.beginPath(); ctx.arc(cx + 5, cy, 20, Math.PI * 0.58, Math.PI * 1.42); ctx.stroke();
+    var a1 = Math.PI * 0.58, a2 = Math.PI * 1.42; ctx.strokeStyle = '#cfcfe0'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx + 5 + Math.cos(a1) * 20, cy + Math.sin(a1) * 20); ctx.lineTo(cx + 5 + Math.cos(a2) * 20, cy + Math.sin(a2) * 20); ctx.stroke();
+    ctx.strokeStyle = '#b6bcc6'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(cx - 11, cy); ctx.lineTo(cx + 14, cy); ctx.stroke();
+    ctx.fillStyle = '#7a4dff'; ctx.beginPath(); ctx.moveTo(cx + 14, cy - 3); ctx.lineTo(cx + 19, cy); ctx.lineTo(cx + 14, cy + 3); ctx.closePath(); ctx.fill();
+    caption('bow', cx, cy + 30); hover("Hawkeye's Bow", cx, cy, 20,
+      relicTip("Hawkeye's Bow", '#9d7bff', 'A collapsible combat recurve with a smart quiver.', 'S.H.I.E.L.D. marksman issue.', 'Snatched mid-draw by a swarm of sentries and carried off.'));
   }
   function powerSword(cx, cy, t) {
     var glow = 0.55 + 0.35 * Math.sin(t * 4);
-    relicGlow(cx, cy - 4, 18, '0,230,255', 0.32 * glow);
-    ctx.save(); ctx.shadowColor = '#00e5ff'; ctx.shadowBlur = 9;
-    ctx.fillStyle = 'rgba(180,245,255,0.9)'; ctx.fillRect(cx - 2.2, cy - 19, 4.4, 21);
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(cx - 0.9, cy - 19, 1.8, 21); ctx.shadowBlur = 0; ctx.restore();
-    ctx.fillStyle = '#c9a227'; ctx.fillRect(cx - 6, cy + 2, 12, 2.6);
-    ctx.fillStyle = '#3a3f47'; ctx.fillRect(cx - 1.8, cy + 4.6, 3.6, 9);
-    ctx.fillStyle = '#00e5ff'; ctx.beginPath(); ctx.arc(cx, cy + 14, 1.9, 0, 6.28); ctx.fill();
-    caption('power sword', cx, cy + 26); hover("Ultron's Power Sword", cx, cy, 18);
+    relicGlow(cx, cy - 4, 22, '0,230,255', 0.34 * glow);
+    ctx.save(); ctx.shadowColor = '#00e5ff'; ctx.shadowBlur = 11;
+    ctx.fillStyle = 'rgba(180,245,255,0.92)'; ctx.fillRect(cx - 3, cy - 24, 6, 27);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(cx - 1.2, cy - 24, 2.4, 27); ctx.shadowBlur = 0; ctx.restore();
+    ctx.fillStyle = '#c9a227'; ctx.fillRect(cx - 8, cy + 3, 16, 3.4);
+    ctx.fillStyle = '#3a3f47'; ctx.fillRect(cx - 2.4, cy + 6, 4.8, 12);
+    ctx.fillStyle = '#00e5ff'; ctx.beginPath(); ctx.arc(cx, cy + 18, 2.4, 0, 6.28); ctx.fill();
+    caption('power sword', cx, cy + 30); hover("Ultron's Power Sword", cx, cy, 22,
+      relicTip("Ultron's Power Sword", '#00e5ff', 'A plasma-edged blade that cuts through vibranium.', 'Machined by Ultron himself in the foundry below.', 'Self-forged — the first weapon of the new age.'));
+  }
+  function lokiScepter(cx, cy, t) {
+    relicGlow(cx, cy, 22, '90,220,255', 0.26 + 0.14 * Math.sin(t * 3.5));
+    ctx.fillStyle = '#c9a227'; ctx.fillRect(cx - 1.8, cy - 6, 3.6, 30);                 // gold haft
+    ctx.fillStyle = '#e8c24a'; ctx.fillRect(cx - 1.8, cy - 6, 1.4, 30);
+    // curved gold head cradling a blue gem
+    ctx.strokeStyle = '#c9a227'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy - 10, 8, Math.PI * 0.15, Math.PI * 0.85, true); ctx.stroke();
+    ctx.fillStyle = '#0d2340'; ctx.beginPath(); ctx.ellipse(cx, cy - 9, 4, 6.5, 0, 0, 6.28); ctx.fill();
+    ctx.fillStyle = 'rgba(90,210,255,' + (0.7 + 0.3 * Math.sin(t * 4)) + ')'; ctx.beginPath(); ctx.ellipse(cx, cy - 9, 2.4, 4.5, 0, 0, 6.28); ctx.fill();
+    ctx.fillStyle = '#eaffff'; ctx.beginPath(); ctx.ellipse(cx - 0.6, cy - 10.5, 0.9, 1.6, 0, 0, 6.28); ctx.fill();
+    caption('scepter', cx, cy + 32); hover("Loki's Scepter", cx, cy, 20,
+      relicTip("Loki's Scepter", '#5ad0ff', 'Channels the Mind Stone hidden in its gem.', 'Given to Loki by Thanos for the Chitauri invasion.', 'Recovered from HYDRA’s vault — its stone later built Ultron’s own mind.'));
+  }
+  function infinityGauntlet(cx, cy, t) {
+    relicGlow(cx, cy, 24, '255,190,60', 0.24 + 0.12 * Math.sin(t * 3));
+    ctx.fillStyle = '#c9a227'; ctx.beginPath(); roundRectPath(cx - 10, cy - 12, 20, 22, 5); ctx.fill();   // gauntlet
+    ctx.fillStyle = '#e8c24a'; ctx.fillRect(cx - 10, cy - 12, 20, 3);
+    ctx.fillStyle = '#a5820f'; ctx.fillRect(cx - 10, cy + 2, 20, 2);
+    for (var f = 0; f < 4; f++) { ctx.fillStyle = '#c9a227'; ctx.fillRect(cx - 9 + f * 5, cy - 18, 3.6, 7); }   // fingers
+    ctx.fillStyle = '#c9a227'; ctx.fillRect(cx - 13, cy - 8, 4, 8);                                             // thumb
+    var gems = [['#7a4dff', -6, -6], ['#33d17a', 0, -7], ['#ff4d4d', 6, -6], ['#ff9d3c', -4, 1], ['#4f7fe0', 4, 1], ['#e8d84a', 0, 5]];
+    gems.forEach(function (g, i) { var on = 0.6 + 0.4 * Math.sin(t * 3 + i); ctx.fillStyle = g[0]; ctx.globalAlpha = on; ctx.beginPath(); ctx.arc(cx + g[1], cy + g[2], 1.9, 0, 6.28); ctx.fill(); ctx.globalAlpha = 1; });
+    caption('gauntlet', cx, cy + 32); hover('Infinity Gauntlet', cx, cy, 22,
+      relicTip('Infinity Gauntlet', '#ffbe3c', 'A gauntlet built to wield all six Infinity Stones.', 'Dwarven-forged on Nidavellir for a mad titan.', 'Ultron seized the empty gauntlet to seat the stones he is gathering.'));
+  }
+  function shelf(gapL, span, y) {
+    ctx.fillStyle = M_GUN; ctx.fillRect(gapL + span * 0.03, y, span * 0.94, 5);
+    ctx.fillStyle = M_STEEL; ctx.fillRect(gapL + span * 0.03, y, span * 0.94, 1.5);
+    ctx.fillStyle = M_DARK; ctx.fillRect(gapL + span * 0.03, y + 5, span * 0.94, 3);
+    for (var bx = 0.12; bx < 0.9; bx += 0.24) { ctx.fillStyle = M_DARK; ctx.fillRect(gapL + span * bx, y + 8, 3, 5); }   // small brackets
   }
   function drawTrophies(t) {
     var gapL = walkMaxX + 34, gapR = uDeskX - 26; if (gapR - gapL < 170) return;
-    var span = gapR - gapL, y = ROOF_H + 100;
-    ctx.fillStyle = M_GUN; ctx.fillRect(gapL + span * 0.05, y + 24, span * 0.9, 4);
-    ctx.fillStyle = M_STEEL; ctx.fillRect(gapL + span * 0.05, y + 24, span * 0.9, 1);
-    capShield(gapL + span * 0.16, y, t);
-    mjolnir(gapL + span * 0.40, y, t);
-    hawkeyeBow(gapL + span * 0.63, y, t);
-    powerSword(gapL + span * 0.86, y, t);
+    var span = gapR - gapL, y1 = ROOF_H + 92, y2 = ROOF_H + 158;
+    shelf(gapL, span, y1 + 30);
+    var s1 = [0.09, 0.245, 0.40, 0.555, 0.71, 0.89];
+    capShield(gapL + span * s1[0], y1, t);
+    mjolnir(gapL + span * s1[1], y1, t);
+    hawkeyeBow(gapL + span * s1[2], y1, t);
+    lokiScepter(gapL + span * s1[3], y1, t);
+    infinityGauntlet(gapL + span * s1[4], y1, t);
+    powerSword(gapL + span * s1[5], y1, t);
+    // second shelf: the loose Infinity Stones Ultron has already gathered
+    shelf(gapL, span, y2 + 30);
+    tesseract(gapL + span * 0.22, y2, t);
+    orb(gapL + span * 0.5, y2, t);
+    eyeOfAgamotto(gapL + span * 0.78, y2, t);
   }
   function drawWorldPlan(t) {
     var gapL = walkMaxX + 34, gapR = uDeskX - 26; if (gapR - gapL < 170) return;
@@ -6557,15 +6610,18 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = hair; ctx.fillRect(cx - 3.4 * sc, Y(-25) + bob, 6.8 * sc, 2.6 * sc); ctx.fillRect(cx - 3.4 * sc, Y(-24) + bob, 1.4 * sc, 5 * sc); ctx.fillRect(cx + 2 * sc, Y(-24) + bob, 1.4 * sc, 5 * sc);
     ctx.fillStyle = '#333'; ctx.fillRect(cx - 1.6 * sc, Y(-21) + bob, 1 * sc, 1.2 * sc); ctx.fillRect(cx + 0.6 * sc, Y(-21) + bob, 1 * sc, 1.2 * sc);
   }
+  // Shared geometry so the couch (left of the display gap) and the relic tubes
+  // (right of it) never overlap. Couch sits left, clear of Ultron's pacing.
+  function couchBox() {
+    var couchW = 150, arm = 10, zoneL = walkMaxX + 100, zoneR = uDeskX - 20;
+    if (zoneR - zoneL < couchW + 2 * arm) return { draw: false, right: zoneL };
+    var cx = Math.round(zoneL + arm + couchW / 2);
+    return { draw: true, cx: cx, couchW: couchW, arm: arm, right: cx + couchW / 2 + arm };
+  }
   function drawCouch(t) {
-    // Wanda & her brother, near Ultron's own size, on a couch on the office
-    // floor in the right-hand display gap -- clear of Ultron's pacing (starts
-    // past his reach) and directly under the wall trophies (which sit up high).
-    var sc = 3.6, fy = officeFloorY;
-    var couchW = 164, seatH = 32, backH = 60, arm = 10;
-    var zoneL = walkMaxX + 100, zoneR = uDeskX - 18;     // Ultron's sprite can't reach past walkMaxX+~95
-    if (zoneR - zoneL < couchW + 2 * arm) return;        // not enough clear room (narrow screens): skip
-    var cx = Math.round((zoneL + zoneR) / 2), hw = couchW / 2;
+    var cb = couchBox(); if (!cb.draw) return;
+    var sc = 3.6, fy = officeFloorY, cx = cb.cx, couchW = cb.couchW, hw = couchW / 2, arm = cb.arm;
+    var seatH = 32, backH = 60;
     ctx.fillStyle = 'rgba(0,0,0,0.30)'; ctx.beginPath(); ctx.ellipse(cx, fy + 2, hw + 6, 6, 0, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#4a3d5e'; ctx.fillRect(cx - hw, fy - seatH - backH, couchW, backH); ctx.fillStyle = '#5a4d6e'; ctx.fillRect(cx - hw, fy - seatH - backH, couchW, 4);   // backrest
     ctx.fillStyle = '#3a2f4a'; ctx.fillRect(cx - hw, fy - seatH, couchW, seatH);                                                         // seat block
@@ -6573,7 +6629,53 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = '#544766'; ctx.fillRect(cx - hw + 6, fy - seatH - 5, couchW / 2 - 9, 6); ctx.fillRect(cx + 3, fy - seatH - 5, couchW / 2 - 9, 6);   // seat cushions
     drawSeated(cx - couchW * 0.24, fy - 2 * sc, '#8e1b2e', '#5a2020', t, sc);      // Scarlet Witch (crimson)
     drawSeated(cx + couchW * 0.24, fy - 2 * sc, '#3a4a6a', '#c8ccd4', t, sc);      // Quicksilver (silver hair, blue jacket)
-    hover('Wanda &amp; her brother — awaiting Ultron’s command', cx, fy - seatH - backH * 0.5, hw);
+    hover('Wanda &amp; her brother — awaiting Ultron’s command', cx, fy - seatH - backH * 0.5, hw,
+      '<b style="color:#e05a6e">Wanda &amp; Pietro</b><br><span class="rt-enl">The twins wait on the couch for Ultron’s next order, then patrol the tower to report his progress.</span>');
+  }
+  // A repair tank of raw vibranium and two symbiote containment tubes, standing
+  // on the office floor to the right of the couch.
+  function vibraniumTank(cx, footY, t) {
+    var w = 34, h = 62, x = cx - w / 2, y = footY - h;
+    relicGlow(cx, footY - h / 2, 22, '120,150,255', 0.20 + 0.08 * Math.sin(t * 2));
+    ctx.fillStyle = M_GUN; ctx.fillRect(x - 4, footY - 5, w + 8, 6); ctx.fillStyle = M_STEEL; ctx.fillRect(x - 4, footY - 5, w + 8, 1.5);   // base
+    ctx.fillStyle = M_STEEL; ctx.fillRect(x - 3, y - 6, w + 6, 7); ctx.fillStyle = M_LINE; ctx.fillRect(x - 3, y - 6, w + 6, 1);           // lid
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    ctx.fillStyle = '#0b0d13'; ctx.fillRect(x, y, w, h);                                                                                   // dark interior
+    // raw vibranium chunks -- black metal veined with blue energy
+    var chunks = [[0.30, 0.72, 9], [0.66, 0.80, 7], [0.5, 0.55, 8], [0.32, 0.45, 5], [0.7, 0.5, 5]];
+    chunks.forEach(function (c, i) {
+      var gx = x + w * c[0], gy = y + h * c[1], r = c[2];
+      ctx.fillStyle = '#14161d'; ctx.beginPath(); ctx.moveTo(gx - r, gy + r * 0.4); ctx.lineTo(gx - r * 0.4, gy - r); ctx.lineTo(gx + r * 0.6, gy - r * 0.5); ctx.lineTo(gx + r, gy + r * 0.6); ctx.lineTo(gx, gy + r); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(90,150,255,' + (0.5 + 0.4 * Math.sin(t * 3 + i)) + ')'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(gx - r * 0.5, gy + r * 0.3); ctx.lineTo(gx, gy - r * 0.3); ctx.lineTo(gx + r * 0.4, gy); ctx.stroke();
+    });
+    ctx.fillStyle = 'rgba(255,255,255,0.10)'; ctx.fillRect(x + 3, y, 3, h);                                                                // glass sheen
+    ctx.restore();
+    ctx.strokeStyle = M_STEEL; ctx.lineWidth = 1.2; ctx.strokeRect(x, y, w, h);
+    caption('vibranium', cx, footY + 11);
+    hover('Vibranium Repair Stock', cx, footY - h / 2, w / 2 + 4,
+      relicTip('Vibranium Repair Stock', '#8fb0ff', 'A tank of raw vibranium ore Ultron melts down to repair and rebuild his own frame.', 'Mined and hoarded from the world’s only vibranium deposit.', 'Stockpiled from every seam his drones have stripped bare.'));
+  }
+  function symbioteTube(cx, footY, t, base, hi, eyes, name, tip, glowRgb) {
+    var w = 16, h = 54, x = cx - w / 2, y = footY - h;
+    relicGlow(cx, footY - h / 2, 15, glowRgb || '120,120,140', 0.22);
+    ctx.fillStyle = M_STEEL; ctx.fillRect(x - 2, y - 4, w + 4, 5); ctx.fillStyle = M_GUN; ctx.fillRect(x - 3, footY - 4, w + 6, 5);
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    ctx.fillStyle = '#0a0b10'; ctx.fillRect(x, y, w, h);
+    // the living symbiote: a churning blob that sends up tendrils
+    var by = y + h * (0.62 + 0.06 * Math.sin(t * 1.6));
+    ctx.fillStyle = base; ctx.beginPath(); ctx.ellipse(cx, by, w * 0.42, h * 0.3, 0, 0, 6.28); ctx.fill();
+    for (var t2 = 0; t2 < 3; t2++) {
+      var tx = cx + (t2 - 1) * 4, ty = by - h * 0.2 - (h * 0.18) * (0.5 + 0.5 * Math.sin(t * 2 + t2 * 2));
+      ctx.strokeStyle = base; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(cx, by); ctx.quadraticCurveTo(tx + Math.sin(t * 3 + t2) * 3, (by + ty) / 2, tx, ty); ctx.stroke();
+    }
+    ctx.fillStyle = hi; ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.ellipse(cx, by, w * 0.24, h * 0.16, 0, 0, 6.28); ctx.fill(); ctx.globalAlpha = 1;
+    ctx.fillStyle = eyes;   // menacing white/red eyes
+    ctx.beginPath(); ctx.moveTo(cx - 4, by - 2); ctx.lineTo(cx - 1, by - 1); ctx.lineTo(cx - 4, by + 1); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx + 4, by - 2); ctx.lineTo(cx + 1, by - 1); ctx.lineTo(cx + 4, by + 1); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(x + 1.5, y, 2, h);
+    ctx.restore();
+    ctx.strokeStyle = M_STEEL; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h);
+    caption(name, cx, footY + 10); hover(name, cx, footY - h / 2, w / 2 + 3, tip);
   }
 
   // A wall monitor over Ultron's desk: live BTC / memory / health (owner
