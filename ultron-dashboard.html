@@ -1027,7 +1027,7 @@
   .rstats{ margin-top:10px; border:1px solid var(--line); border-radius:8px; background:var(--panel-raised); padding:9px 11px; }
   .rstats-h{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); margin-bottom:8px; }
   .rstats-h b{ color:#7fd0ff; }
-  .rstats-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:8px 14px; }
+  .rstats-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:8px 14px; }
   .rstats-gh{ font-family:var(--font-display); font-weight:700; font-size:11px; color:#9be8ff; border-bottom:1px solid var(--line); padding-bottom:2px; margin-bottom:3px; }
   .rstats-row{ display:flex; align-items:baseline; gap:6px; font-family:var(--font-mono); font-size:10.5px; padding:1.5px 0; }
   .rstats-n{ color:var(--text-dim); }
@@ -1075,10 +1075,10 @@
   .exp-sec>summary::before{ content:'\25B8 '; color:var(--text-faint); }
   .exp-sec[open]>summary{ color:var(--text); border-bottom:1px solid var(--line); }
   .exp-sec[open]>summary::before{ content:'\25BE '; }
-  .exp-catgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:7px 12px; padding:11px; }
+  .exp-catgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:7px 12px; padding:11px; }
   .exp-catrow{ display:flex; align-items:center; gap:8px; justify-content:space-between; }
-  .exp-catn{ font-size:11.5px; color:var(--text-dim); flex-shrink:0; }
-  .exp-catrow select{ flex:1; max-width:132px; background:var(--void); border:1px solid var(--line); border-radius:5px; color:var(--text); font-family:var(--font-mono); font-size:10.5px; padding:4px 6px; }
+  .exp-catn{ font-size:11.5px; color:var(--text-dim); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .exp-catrow select{ flex:1; min-width:0; max-width:132px; background:var(--void); border:1px solid var(--line); border-radius:5px; color:var(--text); font-family:var(--font-mono); font-size:10.5px; padding:4px 6px; }
 
   /* "What Ultron knows": the Brain vault graph under his corner. Same frame
      as the room above it, so the two read as one place. */
