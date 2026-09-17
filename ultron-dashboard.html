@@ -8462,10 +8462,15 @@ window.__sfx = (function () {
     { name: 'Junk Automaton', min: 1 },
     { name: 'Cyber Trooper', min: 20 },
     { name: 'Mecha Overlord', min: 40 },
+    { name: 'War Titan', min: 80 },
+    { name: 'Sentinel Prime', min: 150 },
+    { name: 'Ultron Ascendant', min: 250 },
+    { name: 'Cosmic Harbinger', min: 375 },
+    { name: 'Singularity God', min: 500 },
   ];
   function tierIdx() { var lv = playerLevel(), i = 0; for (var k = 0; k < TIERS.length; k++) if (lv >= TIERS[k].min) i = k; return i; }
   function idleBonus() { return 1 + 0.04 * skillLvl('multitask') + 0.05 * skillLvl('energy'); }   // idle/offline-only
-  var LEVEL_CAP = 250;
+  var LEVEL_CAP = 500;
   // Modified polynomial-exponential XP curve (owner's economy spec): a smooth
   // steady ramp early (the l^1.8 term) that walls off at high levels (the
   // 1.15^l term) to push prestige/gear -- 150 is the hard cap. XP gains from
@@ -8473,7 +8478,7 @@ window.__sfx = (function () {
   // Curve retuned for the 250 cap: gentler exponential base (1.085) so the back
   // half stays reachable on the game's income scale; low levels are ~unchanged
   // (the polynomial dominates there), the endgame is the long grind.
-  function xpForLevel(l) { return Math.floor((100 * Math.pow(l, 1.8) + 100 * Math.pow(1.085, l)) * Math.max(0.6, 1 - 0.02 * skillLvl('firmware'))); }
+  function xpForLevel(l) { return Math.floor(80 * Math.pow(l, 2.4) * Math.max(0.6, 1 - 0.02 * skillLvl('firmware'))); }   // smooth polynomial curve tuned so the 500 cap is a long-but-reachable grind that scales with the XP economy
   function addXp(n, source) {
     if (!state.prog || !(n > 0)) return;
     n *= xpGainMult();   // Neural Learning + Deep Learning Core skills
@@ -10021,7 +10026,7 @@ window.__sfx = (function () {
   ];
   function xpUp(id) { return (state.xpcore && state.xpcore.up && state.xpcore.up[id]) || 0; }
   function xpUpCost(u) { return Math.ceil(u.base * Math.pow(1.6, xpUp(u.id))); }
-  function xpcoreRate() { var base = (5 + playerLevel() * 1.5) * (1 + 0.5 * ((state.prestige && state.prestige.cores) || 0)); return base * (1 + 0.15 * xpUp('rate')) * Math.pow(1.05, xpUp('mult')) * (1 + 0.1 * xpUp('speed')) * (1 + 0.1 * xpUp('quality')) * (1 + 0.1 * xpUp('eff')); }   // XP/sec: level + cores, boosted by the crystal upgrades
+  function xpcoreRate() { var base = (20 + playerLevel() * 5) * (1 + 1.0 * ((state.prestige && state.prestige.cores) || 0)); return base * (1 + 0.25 * xpUp('rate')) * Math.pow(1.06, xpUp('mult')) * (1 + 0.12 * xpUp('speed')) * (1 + 0.12 * xpUp('quality')) * (1 + 0.12 * xpUp('eff')); }   // XP/sec: level + cores, boosted by the crystal upgrades (rescaled for a much faster XP economy)
   // ---- Infinity Stone Laboratory: forge ONE custom stone of a chosen aspect,
   // then evolve its tier for a growing, aspect-specific power boost. ----
   var STONE_ASPECTS = [
@@ -10057,7 +10062,7 @@ window.__sfx = (function () {
       state.seen = now;                // heartbeat: while active, keep the away marker current so offline starts from "now" when you leave
       var p = passivePerSec();
       if (p > 0) { state.bits += p * dt; state.lifetime = (state.lifetime || 0) + p * dt; dirty = true; save(); }
-      idleXpAcc += dt * 0.6; if (idleXpAcc >= 1) { var whole = Math.floor(idleXpAcc); idleXpAcc -= whole; addXp(whole, 'Idle ops'); }   // "do to learn": a small XP trickle while running the line
+      idleXpAcc += dt * (2 + playerLevel() * 0.25); if (idleXpAcc >= 1) { var whole = Math.floor(idleXpAcc); idleXpAcc -= whole; addXp(whole, 'Idle ops'); }   // "do to learn": XP trickle while running the line, scales with level for a faster XP economy
       if (xpcoreUnlocked()) { crystalXpAcc += xpcoreRate() * dt; if (crystalXpAcc >= 1) { var cw = Math.floor(crystalXpAcc); crystalXpAcc -= cw; addXp(cw, 'XP Crystal'); } }   // the secret crystal mine feeds XP
       var he = activeHoliday(); if (he) { holEv(he.id).prod += dt * (1 + bayOpenCount()); }   // holiday production-milestone track fills from automated factory output
       checkRelics();   // award relics the instant their objective is met
