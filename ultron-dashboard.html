@@ -6504,13 +6504,16 @@ function toggleReducedVisuals(el) {
     var mx = (x1 + x2) / 2, my = Math.min(y1, y2) - 16;   // arc up between the two
     function pt(u) { var v = 1 - u; return [v * v * x1 + 2 * v * u * mx + u * u * x2, v * v * y1 + 2 * v * u * my + u * u * y2]; }
     ctx.lineCap = 'round';
-    ctx.strokeStyle = '#23283a'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();   // cable
-    ctx.strokeStyle = 'rgba(120,200,255,' + (0.25 + 0.55 * charge) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();   // energy core
-    var n = 4;
+    ctx.strokeStyle = '#1c2130'; ctx.lineWidth = 11; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();   // cable sheath (thicker)
+    ctx.strokeStyle = '#2c3346'; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();
+    ctx.save(); ctx.shadowColor = '#7fd0ff'; ctx.shadowBlur = 6 + 6 * charge;
+    ctx.strokeStyle = 'rgba(150,220,255,' + (0.45 + 0.55 * charge) + ')'; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();   // bright energy core
+    ctx.restore();
+    var n = 6;
     for (var i = 0; i < n; i++) {
-      var u = (t * 0.45 + i / n) % 1, p = pt(u);
-      ctx.fillStyle = 'rgba(200,240,255,' + (0.4 + 0.6 * charge) + ')';
-      ctx.beginPath(); ctx.arc(p[0], p[1], 1.8, 0, Math.PI * 2); ctx.fill();
+      var u = (t * 0.5 + i / n) % 1, p = pt(u);
+      ctx.fillStyle = 'rgba(220,245,255,' + (0.55 + 0.45 * charge) + ')';
+      ctx.beginPath(); ctx.arc(p[0], p[1], 2.6, 0, Math.PI * 2); ctx.fill();
     }
     ctx.lineCap = 'butt';
   }
@@ -6520,14 +6523,14 @@ function toggleReducedVisuals(el) {
     var floor = officeFloorY, x0 = LEFT + 14, w = 96;
     var top = floor - 224, bot = floor - 6, h = bot - top, cx = x0 + w / 2;
     if (top < ROOF_H + 6) return;   // no headroom on a very short canvas
-    wallGlow(cx, top + h * 0.42, 150, '#8f7bff', 0.10 + 0.16 * charge + Math.min(0.14, cores * 0.02));
+    wallGlow(cx, top + h * 0.42, 165, '#a48bff', 0.16 + 0.30 * charge + Math.min(0.16, cores * 0.02));   // brighter aura, climbs with charge
     ctx.fillStyle = M_DARK; ctx.fillRect(x0 - 10, bot, w + 20, 8);
     ctx.fillStyle = '#6b6f86'; ctx.fillRect(x0 - 10, bot, w + 20, 2);
     ctx.fillStyle = 'rgba(20,22,34,0.92)'; roundRectPath(x0, top, w, h, 10); ctx.fill();   // tube back
     var fillY = bot - (h - 8) * charge;
     ctx.save(); roundRectPath(x0 + 2, top + 2, w - 4, h - 4, 8); ctx.clip();
     var cg = ctx.createLinearGradient(0, bot, 0, top);
-    cg.addColorStop(0, 'rgba(150,120,255,0.30)'); cg.addColorStop(1, 'rgba(90,190,255,0.05)');
+    cg.addColorStop(0, 'rgba(170,140,255,' + (0.45 + 0.35 * charge) + ')'); cg.addColorStop(1, 'rgba(120,210,255,' + (0.12 + 0.15 * charge) + ')');   // brighter coolant, climbs with charge
     ctx.fillStyle = cg; ctx.fillRect(x0, fillY, w, bot - fillY);
     for (var b = 0; b < 6; b++) { var bx = x0 + 8 + ((b * 53) % (w - 16)); var span = Math.max(1, bot - fillY); var by = bot - ((t * (20 + b * 6) + b * 40) % span); ctx.fillStyle = 'rgba(180,210,255,0.5)'; ctx.beginPath(); ctx.arc(bx, by, 1.6, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
@@ -7621,7 +7624,21 @@ window.__sfx = (function () {
   }
 
   var coinEl = document.querySelector('.foundry-coin');
+  // A fixed, always-visible currency HUD (bottom-left) so the balance + rate can
+  // be tracked from anywhere on the dashboard, on any section.
+  var hudEl = null;
+  function currencyHud(perSec) {
+    if (!hudEl) {
+      hudEl = document.createElement('div'); hudEl.id = 'currency-hud';
+      hudEl.style.cssText = 'position:fixed; left:14px; bottom:14px; z-index:9998; background:rgba(16,18,22,0.94); border:1px solid var(--line,#2c2f33); border-radius:8px; padding:7px 12px; box-shadow:0 8px 22px -8px rgba(0,0,0,.75); font-family:ui-monospace,monospace; pointer-events:none;';
+      document.body.appendChild(hudEl);
+    }
+    hudEl.innerHTML = '<div style="font-size:8.5px;letter-spacing:.12em;color:#8b93a0;margin-bottom:2px;">ULTRON’S CORNER — CREDITS</div>' +
+      '<div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:16px;font-weight:700;color:' + fmtColor(state.bits) + ';">◉ ' + fmt(state.bits) + '</span>' +
+      (perSec > 0.001 ? '<span style="font-size:11px;color:#5fe39a;">▸ ' + fmt(perSec) + '/s</span>' : '') + '</div>';
+  }
   function renderBalance() {
+    var perSec = ((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus();
     if (bitsEl) {
       bitsEl.textContent = fmt(state.bits);
       bitsEl.style.color = fmtColor(state.bits);   // balance takes its tier's colour
@@ -7630,13 +7647,14 @@ window.__sfx = (function () {
       setTimeout(function () { bitsEl.classList.remove('pop'); }, 130);
     }
     if (rateEl) {
-      var p = window.__foundry.passive || 0;
-      rateEl.textContent = p ? '· +' + p.toFixed(1) + '/s idle' : '';
+      rateEl.textContent = perSec > 0.001 ? '▸ ' + fmt(perSec) + '/s' : '';
+      rateEl.style.color = perSec > 0.001 ? '#5fe39a' : '';
     }
+    currencyHud(perSec);
   }
 
   // passive income + refresh loop
-  var last = Date.now(), idleXpAcc = 0;
+  var last = Date.now(), idleXpAcc = 0, heavyTick = 0;
   setInterval(function () {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
     syncPresence();                    // catch in-app section switches while the tab is visible
@@ -7650,7 +7668,11 @@ window.__sfx = (function () {
     var shown = Math.round(state.bits * 10);
     if (gameOnline() && dirty && shown !== lastShown) {
       lastShown = shown;
-      renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderProgression();
+      renderBalance();                 // cheap (text only) -- every tick
+      // The heavy panels rebuild lots of DOM + re-attach listeners, so only
+      // refresh them ~every 1.5s (affordability doesn't change faster than the
+      // eye tracks). Purchases still re-render them instantly on click.
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderProgression(); }
       dirty = false;
     }
   }, 500);
