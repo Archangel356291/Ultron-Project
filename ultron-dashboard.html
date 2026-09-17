@@ -693,6 +693,27 @@
   .game-save-btn{ margin-left:auto; background:none; border:1px solid rgba(95,227,154,.4); border-radius:6px; color:#5fe39a; cursor:pointer; font-family:var(--font-mono); font-size:11px; line-height:1; padding:4px 9px; }
   .game-save-btn:hover{ background:rgba(95,227,154,.1); }
   .game-save-btn:active{ transform:scale(.96); }
+  .game-load-btn{ background:none; border:1px solid rgba(90,160,255,.45); border-radius:6px; color:#7fb4ff; cursor:pointer; font-family:var(--font-mono); font-size:11px; line-height:1; padding:4px 9px; }
+  .game-load-btn:hover{ background:rgba(90,160,255,.12); }
+  .game-load-btn:active{ transform:scale(.96); }
+  /* Developer / Admin console (admin-only, above the XP bar) */
+  .dev-panel{ margin-top:10px; }
+  .dev-details{ border:1px solid rgba(255,180,70,.5); border-radius:8px; background:linear-gradient(180deg,rgba(255,180,70,.08),transparent); padding:9px 11px; }
+  .dev-details > summary{ cursor:pointer; font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#ffce6a; list-style:none; display:flex; align-items:center; gap:8px; }
+  .dev-details > summary::-webkit-details-marker{ display:none; }
+  .dev-badge{ font-family:var(--font-mono); font-size:9px; font-weight:700; color:#1a1206; background:#ffce6a; border-radius:4px; padding:1px 6px; letter-spacing:.06em; }
+  .dev-note{ font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); margin:6px 0 9px; }
+  .dev-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; }
+  .dev-group{ display:flex; flex-wrap:wrap; align-items:center; gap:5px; padding:7px 8px; border:1px solid var(--line); border-radius:7px; background:var(--void); min-width:0; }
+  .dev-lbl{ width:100%; font-family:var(--font-mono); font-size:9px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; }
+  .dev-btn{ font-family:var(--font-display); font-weight:700; font-size:10.5px; padding:4px 9px; border-radius:5px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text); cursor:pointer; }
+  .dev-btn:hover{ background:rgba(255,255,255,.05); }
+  .dev-btn:active{ transform:scale(.95); }
+  .dev-btn.add{ border-color:rgba(95,227,154,.5); color:#8fe6b0; }
+  .dev-btn.add:hover{ background:rgba(95,227,154,.12); }
+  .dev-btn.rem{ border-color:rgba(255,90,110,.5); color:#ff8fa0; }
+  .dev-btn.rem:hover{ background:rgba(255,90,110,.12); }
+  .dev-num{ width:64px; font-family:var(--font-mono); font-size:11px; padding:3px 6px; border-radius:5px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text); }
   .sfx-btn{ background:none; border:1px solid var(--line); border-radius:6px; color:var(--text-faint); cursor:pointer; font-size:13px; line-height:1; padding:3px 7px; }
   .sfx-btn.on{ border-color:rgba(120,200,255,.5); color:#9be8ff; }
   .agent-roster{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px; }
@@ -1778,6 +1799,7 @@
             <div class="foundry-bal">
               <span class="foundry-bal-hint">Currency &amp; /s tracked in the fixed panel (bottom-left)</span>
               <button type="button" class="game-save-btn" id="game-save-btn" title="Save all game progress now">💾 Save</button>
+              <button type="button" class="game-load-btn" id="game-load-btn" title="Load your highest-level save from the cloud">📂 Load</button>
               <button type="button" class="sfx-btn" id="sfx-toggle" title="Game sound effects" aria-label="Toggle game sound">🔊</button>
               <div class="game-pops" id="game-pops"></div>
             </div>
@@ -1792,6 +1814,7 @@
             <div class="prestige-up" id="prestige-up"></div>
             <div class="stonelab" id="stonelab"></div>
             <div class="genesis" id="genesis"></div>
+            <div class="dev-panel" id="dev-panel" hidden></div>
             <div class="progression" id="progression"></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
           </div>
@@ -2970,7 +2993,17 @@
     const hostLabel = document.getElementById('hlo-host-label');
     if (hostLabel) hostLabel.textContent = (state.baseUrl || location.host).replace(/^https?:\/\//, '');
     showApp();
-    syncGameFromCloud();   // pull/push this user's game save across devices
+    // Pull/push this user's game save across devices, THEN (admin only) enable the
+    // in-game developer console + apply the one-time +1.5 Nanit dev grant on top of
+    // the restored save. Chained after the sync so the grant isn't lost to an import.
+    Promise.resolve(syncGameFromCloud()).then(function () {
+      if (state.role === 'admin') {
+        if (window.__foundryDevMode) window.__foundryDevMode(true);
+        if (window.__foundryAdminGrant) window.__foundryAdminGrant();
+      } else if (window.__foundryDevMode) {
+        window.__foundryDevMode(false);   // ensure the console is never shown to non-admins
+      }
+    });
 
     refreshAll().then(function () {
       startPolling();
@@ -3194,16 +3227,22 @@
     } catch (e) { /* ignore -- game still works without it */ }
   }
 
+  function saveLevel(str) { try { var j = typeof str === 'string' ? JSON.parse(str) : str; return (j && j.prog && j.prog.level) || 0; } catch (e) { return 0; } }
   async function syncGameFromCloud() {
     if (!state.token || !window.__foundryImport) return;
     try {
       const res = await apiGet('/api/game/save');
       const serverAt = (res && res.savedAt) || 0;
+      const localStr = (window.__foundryExport && window.__foundryExport()) || '';
       const localAt = (window.__foundrySavedAt && window.__foundrySavedAt()) || 0;
-      if (res && res.data && serverAt > localAt) {
-        window.__foundryImport(res.data);        // cloud is newer -> adopt it
-      } else if (window.__foundryExport && window.__foundryExport()) {
-        window.__foundryCloudPush();             // local is newer/only -> push it up
+      if (!res || !res.data) { if (localStr) window.__foundryCloudPush(); return; }
+      // HIGHEST player level wins so the account always gets its best progress
+      // back and is never dropped to a lower-level save; same level -> newest.
+      const cloudLvl = saveLevel(res.data), localLvl = saveLevel(localStr);
+      if (cloudLvl > localLvl || (cloudLvl === localLvl && serverAt > localAt)) {
+        window.__foundryImport(res.data);        // cloud is the higher/newer save -> adopt it
+      } else if (localStr) {
+        window.__foundryCloudPush();             // local is the higher/newer save -> push it up
       }
     } catch (e) { /* ignore — localStorage still works offline */ }
   }
@@ -3213,6 +3252,15 @@
   setInterval(function () { if (state.token) syncGameFromCloud(); }, 25000);
   window.addEventListener('focus', function () { if (state.token) syncGameFromCloud(); });
   document.addEventListener('visibilitychange', function () { if (!document.hidden && state.token) syncGameFromCloud(); });
+  // Manual "Load" button: pull the cloud save on demand (highest-level-wins, so it
+  // restores your best progress and never downgrades you).
+  (function () {
+    var b = document.getElementById('game-load-btn'); if (!b) return;
+    b.addEventListener('click', function () {
+      if (!state.token) { if (window.__gamePop) window.__gamePop('Sign in to load your cloud save', '#ff8098'); return; }
+      Promise.resolve(syncGameFromCloud()).then(function () { if (window.__gamePop) window.__gamePop('📂 Loaded your highest-level save', '#5fe39a'); if (window.__sfx) window.__sfx('unlock'); });
+    });
+  })();
 
   async function refreshAll() {
     try {
@@ -7987,7 +8035,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === 'number') state.devGrant = j.devGrant;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -8673,6 +8721,75 @@ window.__sfx = (function () {
     });
   }
 
+  // ---- Developer / Admin console. Rendered ONLY when the dashboard calls
+  // window.__foundryDevMode(true) after the admin (Archangel) signs in, so no
+  // other user ever sees it. Sits right above the XP bar; lets the admin change
+  // game state at will. Also holds the one-time +1.5 Nanit developer grant. ----
+  var devPanelEl = document.getElementById('dev-panel');
+  var devModeOn = false;
+  window.__foundryDevMode = function (on) { devModeOn = !!on; renderDevPanel(); };
+  window.__foundryAdminGrant = function () {
+    if (state.devGrant) return false;   // one-time per account (flag rides in the save)
+    state.devGrant = 1;
+    state.bits += 1.5e12; state.lifetime = (state.lifetime || 0) + 1.5e12;   // 1.5 Nanits
+    dirty = true; save(); renderBalance();
+    gamePop('◉ +1.5 Nanits — developer grant', '#ffcf5a');
+    return true;
+  };
+  function devRefresh() { publish(); dirty = true; save(); renderBalance(); renderProgression(); renderStonelab(); renderGenesis(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout(); }
+  function renderDevPanel() {
+    if (!devPanelEl) return;
+    if (!devModeOn) { devPanelEl.hidden = true; devPanelEl.innerHTML = ''; return; }
+    devPanelEl.hidden = false;
+    var lvl = (state.prog && state.prog.level) || 1;
+    devPanelEl.innerHTML =
+      '<details class="dev-details" open><summary>🛠 Developer / Admin Console <span class="dev-badge">ADMIN</span></summary>' +
+      '<div class="dev-note">Only you (admin/developer) can see this. Click to add or remove anything at will.</div>' +
+      '<div class="dev-grid">' +
+        '<div class="dev-group"><span class="dev-lbl">Currency</span><button type="button" class="dev-btn add" data-dev="cur" data-amt="1e12">+1 Nanit</button><button type="button" class="dev-btn add" data-dev="cur" data-amt="1e9">+1 Scrip</button><button type="button" class="dev-btn add" data-dev="cur" data-amt="1e6">+1 Chit</button><button type="button" class="dev-btn rem" data-dev="cur" data-amt="-1e9">−1 Scrip</button><button type="button" class="dev-btn rem" data-dev="curzero">Zero</button></div>' +
+        '<div class="dev-group"><span class="dev-lbl">XP</span><button type="button" class="dev-btn add" data-dev="xp" data-amt="1000">+1k</button><button type="button" class="dev-btn add" data-dev="xp" data-amt="100000">+100k</button><button type="button" class="dev-btn add" data-dev="xp" data-amt="10000000">+10M</button></div>' +
+        '<div class="dev-group"><span class="dev-lbl">Materials</span><button type="button" class="dev-btn add" data-dev="mats" data-amt="10000">+10k</button><button type="button" class="dev-btn rem" data-dev="mats" data-amt="-10000">−10k</button></div>' +
+        '<div class="dev-group"><span class="dev-lbl">Parts (chip/cpu/gpu/ram)</span><button type="button" class="dev-btn add" data-dev="comps" data-amt="500">+500</button><button type="button" class="dev-btn rem" data-dev="comps" data-amt="-500">−500</button></div>' +
+        '<div class="dev-group"><span class="dev-lbl">Gear</span><button type="button" class="dev-btn add" data-dev="gear" data-r="rand">Grant gear</button><button type="button" class="dev-btn add" data-dev="gear" data-r="mythic">Grant Mythic</button></div>' +
+        '<div class="dev-group"><span class="dev-lbl">Level (1–' + LEVEL_CAP + ')</span><input type="number" class="dev-num" id="dev-level" min="1" max="' + LEVEL_CAP + '" value="' + lvl + '"><button type="button" class="dev-btn" data-dev="setlevel">Set</button></div>' +
+        '<div class="dev-group"><span class="dev-lbl">Unlocks</span><button type="button" class="dev-btn add" data-dev="unlockstone">Stone Lab</button><button type="button" class="dev-btn add" data-dev="unlockxp">XP Crystal</button></div>' +
+        '<div class="dev-group"><span class="dev-lbl">Prestige</span><button type="button" class="dev-btn add" data-dev="cores" data-amt="5">+5 Cores</button><button type="button" class="dev-btn rem" data-dev="cores" data-amt="-5">−5 Cores</button><button type="button" class="dev-btn add" data-dev="points" data-amt="100">+100 Pts</button></div>' +
+        '<div class="dev-group"><span class="dev-lbl">Stones</span><button type="button" class="dev-btn add" data-dev="stones" data-amt="1">All +1 tier</button><button type="button" class="dev-btn rem" data-dev="stones" data-amt="-1">All −1 tier</button></div>' +
+      '</div></details>';
+    function grantGear(forceMythic) {
+      if (typeof makePart !== 'function' || typeof BASES === 'undefined') return;
+      var slot = SLOTS[Math.floor(Math.random() * SLOTS.length)].id;
+      if (!BASES[slot] || !BASES[slot].length) return;
+      var idx = Math.floor(Math.random() * BASES[slot].length), gi = 1 + ((state.prog && state.prog.level) || 1);
+      var rar;
+      if (forceMythic) rar = RARITIES[RARITIES.length - 1];
+      else { var total = 0; RARITIES.forEach(function (x) { total += x.w; }); var roll = Math.random() * total; rar = RARITIES[0]; for (var i = 0; i < RARITIES.length; i++) { roll -= RARITIES[i].w; if (roll <= 0) { rar = RARITIES[i]; break; } } }
+      var item = makePart(slot, idx, rar, gi); if (!item) return;
+      item.rarity = item.tierLabel || rar.n;
+      state.adv = state.adv || { inv: [] }; state.adv.inv = (state.adv.inv || []).concat([item]).slice(-40);
+      gamePop('🎁 ' + item.rarity + ' gear granted', rar.c);
+    }
+    devPanelEl.querySelectorAll('[data-dev]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var k = b.dataset.dev, amt = parseFloat(b.dataset.amt) || 0;
+        if (k === 'cur') { state.bits = Math.max(0, state.bits + amt); if (amt > 0) state.lifetime = (state.lifetime || 0) + amt; gamePop('◉ ' + (amt >= 0 ? '+' : '−') + fmt(Math.abs(amt)), '#ffcf5a'); }
+        else if (k === 'curzero') { state.bits = 0; gamePop('◉ currency zeroed', '#ff8098'); }
+        else if (k === 'xp') { addXp(amt, 'Dev grant'); }
+        else if (k === 'setlevel') { var inp = document.getElementById('dev-level'); var n = Math.max(1, Math.min(LEVEL_CAP, Math.floor(+inp.value || 1))); var old = (state.prog && state.prog.level) || 1; state.prog.level = n; state.prog.xp = 0; if (n > old) state.prog.pts = (state.prog.pts || 0) + (n - old); gamePop('★ Level set to ' + n, '#8fe64b'); }
+        else if (k === 'mats') { state.mats = state.mats || { scrap: 0, alloy: 0, core: 0 }; ['scrap', 'alloy', 'core'].forEach(function (m) { state.mats[m] = Math.max(0, (state.mats[m] || 0) + amt); }); gamePop('⬢ ' + (amt >= 0 ? '+' : '−') + fmtN(Math.abs(amt)) + ' materials', '#9fb0c8'); }
+        else if (k === 'comps') { state.comp = state.comp || { chip: 0, cpu: 0, gpu: 0, ram: 0 }; ['chip', 'cpu', 'gpu', 'ram'].forEach(function (c) { state.comp[c] = Math.max(0, (state.comp[c] || 0) + amt); }); gamePop('▦ ' + (amt >= 0 ? '+' : '−') + fmtN(Math.abs(amt)) + ' parts', '#4aa3ff'); }
+        else if (k === 'gear') { grantGear(b.dataset.r === 'mythic'); }
+        else if (k === 'unlockstone') { state.stoneforge = state.stoneforge || { unlocked: false, tiers: {} }; state.stoneforge.unlocked = true; if (!state.stoneforge.tiers) state.stoneforge.tiers = {}; gamePop('💎 Stone Lab unlocked', '#c07bff'); }
+        else if (k === 'unlockxp') { state.xpcore = { unlocked: true }; gamePop('💎 XP Crystal unlocked', '#8fe64b'); }
+        else if (k === 'cores') { state.prestige = state.prestige || { cores: 0, points: 0, up: {} }; state.prestige.cores = Math.max(0, (state.prestige.cores || 0) + amt); gamePop('◈ ' + (amt >= 0 ? '+' : '−') + Math.abs(amt) + ' cores', '#a88bff'); }
+        else if (k === 'points') { state.prestige = state.prestige || { cores: 0, points: 0, up: {} }; state.prestige.points = Math.max(0, (state.prestige.points || 0) + amt); gamePop('◈ +' + amt + ' points', '#a88bff'); }
+        else if (k === 'stones') { state.stoneforge = state.stoneforge || { unlocked: true, tiers: {} }; state.stoneforge.unlocked = true; var t = stoneTiers(); STONE_ASPECTS.forEach(function (a) { t[a.id] = Math.max(0, (t[a.id] || 0) + amt); }); gamePop('💎 All stones ' + (amt >= 0 ? '+' : '−') + Math.abs(amt) + ' tier', '#c07bff'); }
+        if (window.__sfx) window.__sfx('upgrade');
+        devRefresh(); renderDevPanel();
+      });
+    });
+  }
+
   var coinEl = document.querySelector('.foundry-coin');
   // A fixed, always-visible currency HUD (bottom-left) so the balance + rate can
   // be tracked from anywhere on the dashboard, on any section.
@@ -9319,6 +9436,7 @@ window.__sfx = (function () {
   renderGenesis();
   renderStonelab();
   renderProgression();
+  renderDevPanel();
   renderCodex();
   // size the room canvas to the loaded bay count -- without this a refresh
   // leaves the room laid out for 1 floor (published after the room's first
@@ -9349,6 +9467,7 @@ window.__sfx = (function () {
       if (j.prog) state.prog = j.prog;
       if (j.mats) state.mats = j.mats;
       state.matsWipe = (typeof j.matsWipe === 'number') ? j.matsWipe : 0;   // key the wipe off THIS save's provenance, not init's flag
+      if (typeof j.devGrant === 'number') state.devGrant = j.devGrant;   // one-time dev grant flag rides along so it never re-grants
       matsWipeGuard();   // wipe once if this save predates the reset; flag rides along thereafter
       UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
       if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
