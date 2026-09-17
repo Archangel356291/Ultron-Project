@@ -915,6 +915,19 @@
   .exp-reinf.can:hover{ background:rgba(120,200,255,.08); }
   .exp-hint{ font-size:11px; color:var(--text-faint); margin-top:10px; }
   .exp-stat.pow{ border-color:rgba(230,164,30,.55); color:#ffd88a; }
+  /* full robot stats sheet */
+  .rstats{ margin-top:10px; border:1px solid var(--line); border-radius:8px; background:var(--panel-raised); padding:9px 11px; }
+  .rstats-h{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); margin-bottom:8px; }
+  .rstats-h b{ color:#7fd0ff; }
+  .rstats-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:8px 14px; }
+  .rstats-gh{ font-family:var(--font-display); font-weight:700; font-size:11px; color:#9be8ff; border-bottom:1px solid var(--line); padding-bottom:2px; margin-bottom:3px; }
+  .rstats-row{ display:flex; align-items:baseline; gap:6px; font-family:var(--font-mono); font-size:10.5px; padding:1.5px 0; }
+  .rstats-n{ color:var(--text-dim); }
+  .rstats-sub{ color:var(--text-faint); font-size:9px; }
+  .rstats-v{ color:var(--text); margin-left:auto; font-weight:700; }
+  /* compact stats strip by the XP bar */
+  .prog-stats{ display:flex; gap:10px; flex-wrap:wrap; font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); margin:2px 0 4px; }
+  .prog-stats b{ color:#ff8098; }
   .exp-battle{ margin-top:10px; padding:9px 12px; border-radius:8px; border:1px solid var(--line); background:var(--panel-raised); font-size:12.5px; border-left-width:3px; }
   .exp-battle.win{ border-left-color:#33d17a; } .exp-battle.win b{ color:#5fe39a; }
   .exp-battle.loss{ border-left-color:#ff5a7a; } .exp-battle.loss b{ color:#ff8098; }
@@ -7554,6 +7567,7 @@ window.__sfx = (function () {
       (nextTier ? '<span class="prog-tier-next">next: ' + nextTier.name + ' @ Lv ' + nextTier.min + '</span>' : '<span class="prog-tier-next">max tier</span>') + '</div>' +
       '<div class="prog-bar"><i style="width:' + (pr.level >= LEVEL_CAP ? 100 : pct) + '%"></i></div>' +
       '<div class="prog-xp">' + (pr.level >= LEVEL_CAP ? 'MAX LEVEL ★' : Math.floor(pr.xp) + ' / ' + need + ' XP') + '</div>' +
+      (function () { var rs = robotStats((state.adv && state.adv.gear) || {}); return '<div class="prog-stats"><span>⚔ Power <b>' + rs.power + '</b></span><span>♥ HP <b>' + rs.ehp + '</b></span><span>↯ DPS <b>' + rs.dps + '</b></span><span>FW <b>' + rs.firmware + '</b></span></div>'; })() +
       '<div class="xplog"><div class="xplog-h">XP log <span class="xplog-live">live</span></div><div class="xplog-feed" id="xplog-feed"></div></div>' +
       cats;
     renderXpLog();
@@ -7936,6 +7950,50 @@ window.__sfx = (function () {
       savedHtml + sections + '</div>';
   }
 
+  // ---- Robot stats: maps the combat model to the owner's full attribute sheet
+  // (Core / Technical / Resistances / Progression). Bay power + level feed in. ----
+  function robotStats(gear) {
+    var d = window.Combat ? Combat.deriveStats(gear) : { hp: 100, shield: 0, dmg: 8, dps: 8, armor: 0, crit: 0, accuracy: 80, moveSpeed: 0, fireRate: 0, elemResist: 0, ehp: 100, power: 0 };
+    var lv = playerLevel(), cores = (state.prestige && state.prestige.cores) || 0, bp = totalBayPower();
+    return {
+      power: d.power, dps: Math.round(d.dps), ehp: Math.round(d.ehp),
+      firmware: 'v' + Math.floor(lv / 10) + '.' + (lv % 10) + '.' + cores,
+      groups: [
+        ['Core Attributes', [
+          ['CPU Speed', 'agility', Math.round(10 + d.moveSpeed + d.fireRate * 0.5)],
+          ['Chassis Integrity', 'HP', Math.round(d.hp)],
+          ['Battery Capacity', 'energy', Math.round(50 + d.shield + lv * 3)],
+          ['Armor Plating', 'defense', Math.round(d.armor)]
+        ]],
+        ['Technical', [
+          ['Heat Dissipation', 'cooldown', Math.round(40 + d.moveSpeed * 0.5) + '%'],
+          ['Signal Range', 'accuracy', Math.round(d.accuracy) + '%'],
+          ['Memory Storage', 'skill slots', 3 + Math.floor(lv / 25)],
+          ['Processing Power', 'crit', Math.round(d.crit) + '%']
+        ]],
+        ['Resistances', [
+          ['EMPFriction', 'EMP', Math.round(d.elemResist * 0.6 + cores * 2) + '%'],
+          ['Corrosion Threshold', 'acid', Math.round(d.armor * 0.3) + '%'],
+          ['Insulation Rating', 'thermal', Math.round(d.elemResist * 0.8) + '%']
+        ]],
+        ['Progression', [
+          ['Data Scrapped', 'XP', Math.floor((state.prog && state.prog.xp) || 0)],
+          ['Wattage Output', 'dmg mult', 'x' + (bayPowerMult() * (1 + lv * 0.01)).toFixed(2)],
+          ['Firmware Version', 'level', 'v' + Math.floor(lv / 10) + '.' + (lv % 10) + '.' + cores]
+        ]]
+      ]
+    };
+  }
+  function statsSheetHtml(gear) {
+    var rs = robotStats(gear);
+    return '<div class="rstats"><div class="rstats-h">⚙ Robot systems — <b>' + rs.firmware + '</b> · ⚔ Power <b>' + rs.power + '</b> · DPS <b>' + rs.dps + '</b> · EHP <b>' + rs.ehp + '</b></div>' +
+      '<div class="rstats-grid">' + rs.groups.map(function (g) {
+        return '<div class="rstats-grp"><div class="rstats-gh">' + g[0] + '</div>' + g[1].map(function (row) {
+          return '<div class="rstats-row"><span class="rstats-n">' + row[0] + '</span><span class="rstats-sub">' + row[1] + '</span><span class="rstats-v">' + row[2] + '</span></div>';
+        }).join('') + '</div>';
+      }).join('') + '</div></div>';
+  }
+
   var expEl = document.getElementById('expedition');
   function renderAdventure() {
     if (!expEl) return;
@@ -8026,6 +8084,7 @@ window.__sfx = (function () {
       '<div class="exp-hint">Design the look under Chassis Builder; looted parts (with stats) snap into the five slots below.</div></div></div>' +
       renderBuilder(a) +
       matBar + '<div class="exp-load">' + load + '</div>' + totHtml +
+      statsSheetHtml(gear) +
       status + battleHtml + haul +
       (inv ? '<div class="exp-inv-h">Inventory (' + (a.inv || []).length + ') \u2014 tap a part to equip<button type="button" class="exp-selljunk" data-a="sell-junk">Sell all Common</button><button type="button" class="exp-selljunk" data-a="salvage-junk">Salvage all Common</button></div><div class="exp-inv">' + inv + '</div>' : '');
   }
