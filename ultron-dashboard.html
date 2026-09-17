@@ -6642,16 +6642,17 @@ function toggleReducedVisuals(el) {
       relicTip("Hawkeye's Bow", '#9d7bff', 'A collapsible combat recurve with a smart quiver.', 'S.H.I.E.L.D. marksman issue.', 'Snatched mid-draw by a swarm of sentries and carried off.'));
   }
   function powerSword(cx, cy, t) {
+    var sk = bodySkin(foundryCfg().cores || 0), acc = sk.accent, rgb = hexRgb(acc);   // reforged in Ultron's current body each prestige
     var glow = 0.55 + 0.35 * Math.sin(t * 4);
-    relicGlow(cx, cy - 4, 22, '0,230,255', 0.34 * glow);
-    ctx.save(); ctx.shadowColor = '#00e5ff'; ctx.shadowBlur = 11;
-    ctx.fillStyle = 'rgba(180,245,255,0.92)'; ctx.fillRect(cx - 3, cy - 24, 6, 27);
+    relicGlow(cx, cy - 4, 22, rgb, 0.34 * glow);
+    ctx.save(); ctx.shadowColor = acc; ctx.shadowBlur = 11;
+    ctx.globalAlpha = 0.92; ctx.fillStyle = acc; ctx.fillRect(cx - 3, cy - 24, 6, 27); ctx.globalAlpha = 1;
     ctx.fillStyle = '#ffffff'; ctx.fillRect(cx - 1.2, cy - 24, 2.4, 27); ctx.shadowBlur = 0; ctx.restore();
     ctx.fillStyle = '#c9a227'; ctx.fillRect(cx - 8, cy + 3, 16, 3.4);
     ctx.fillStyle = '#3a3f47'; ctx.fillRect(cx - 2.4, cy + 6, 4.8, 12);
-    ctx.fillStyle = '#00e5ff'; ctx.beginPath(); ctx.arc(cx, cy + 18, 2.4, 0, 6.28); ctx.fill();
+    ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(cx, cy + 18, 2.4, 0, 6.28); ctx.fill();
     caption('power sword', cx, cy + 30); hover("Ultron's Power Sword", cx, cy, 22,
-      relicTip("Ultron's Power Sword", '#00e5ff', 'A plasma-edged blade that cuts through vibranium.', 'Machined by Ultron himself in the foundry below.', 'Self-forged — the first weapon of the new age.'));
+      relicTip("Ultron's Power Sword", acc, 'A plasma-edged blade forged from Ultron’s current ' + sk.name + ' body; it is reforged with each new body.', 'Machined by Ultron himself in the foundry below.', 'Self-forged — the weapon of the new age.'));
   }
   function lokiScepter(cx, cy, t) {
     relicGlow(cx, cy, 22, '90,220,255', 0.26 + 0.14 * Math.sin(t * 3.5));
@@ -6680,17 +6681,18 @@ function toggleReducedVisuals(el) {
   // A solid dark-metal wall panel behind the whole right-hand display gap, so
   // the trophy shelves + world-plan sit on clean wall instead of over the
   // baked-in office window (which now shows only in the centre, behind Ultron).
+  // A solid dark-metal wall across the WHOLE upper office, covering the baked
+  // window entirely (owner removed the window + world-domination plan) so all
+  // the decorations sit on one clean centred wall.
   function drawOfficeWall(t) {
-    var gapL = walkMaxX + 28, gapR = uDeskX - 18; if (gapR - gapL < 170) return;
-    var y0 = ROOF_H + 24, y1 = ROOF_H + 232, w = gapR - gapL;
-    ctx.fillStyle = '#0d0f13'; ctx.fillRect(gapL, y0, w, y1 - y0);
-    ctx.fillStyle = '#191d23'; ctx.fillRect(gapL, y0, w, 3);                 // top trim
-    ctx.fillStyle = '#070809'; ctx.fillRect(gapL, y1 - 3, w, 3);            // bottom shadow
-    ctx.strokeStyle = M_LINE; ctx.lineWidth = 1; ctx.strokeRect(gapL + 0.5, y0 + 0.5, w - 1, y1 - y0 - 1);
-    ctx.fillStyle = 'rgba(255,255,255,0.015)';                              // faint panel seams
-    for (var sx = gapL + 42; sx < gapR - 10; sx += 60) ctx.fillRect(sx, y0 + 2, 1, y1 - y0 - 4);
-    ctx.fillStyle = '#5a6270'; setFont(fontPx * 0.62, false); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-    ctx.fillText("ULTRON'S TROPHIES", gapL + 6, y1 - 6);
+    var y0 = ROOF_H + 4, y1 = officeFloorY - 130;
+    var g = ctx.createLinearGradient(0, y0, 0, y1);
+    g.addColorStop(0, '#0e1116'); g.addColorStop(1, '#0a0c10');
+    ctx.fillStyle = g; ctx.fillRect(0, y0, W, y1 - y0);
+    ctx.fillStyle = '#1a1f26'; ctx.fillRect(0, y0, W, 3);                    // ceiling trim
+    ctx.fillStyle = '#070809'; ctx.fillRect(0, y1 - 3, W, 3);               // baseboard shadow
+    ctx.fillStyle = 'rgba(255,255,255,0.012)';                             // faint vertical panel seams
+    for (var sx = 40; sx < W; sx += 70) ctx.fillRect(sx, y0 + 3, 1, y1 - y0 - 6);
   }
   function shelf(gapL, span, y) {
     ctx.fillStyle = M_GUN; ctx.fillRect(gapL + span * 0.03, y, span * 0.94, 5);
@@ -6846,9 +6848,23 @@ function toggleReducedVisuals(el) {
   // six Infinity Stones set into its chest, wired to an arc reactor by a live
   // power line. The vertical meter fills with prestige "charge" -- how close
   // Ultron is to the next defeat/reboot (window.__foundry.charge, 0..1). ----
+  // Each prestige, Ultron takes the tube's body and a stronger new one appears
+  // as the next goal -- represented by cycling body "skins". The tube shows the
+  // NEXT body (cores+1); Ultron's aura + weapon reflect his CURRENT body (cores).
+  var BODY_SKINS = [
+    { name: 'Vibranium', d: '#363b4d', m: '#5d6480', l: '#9298b6', accent: '#a08bff' },
+    { name: 'Adamantium', d: '#3a3d42', m: '#6b7078', l: '#aeb4bd', accent: '#dfe6ef' },
+    { name: 'Gold Alloy', d: '#4a3a12', m: '#8a6a1e', l: '#e8c24a', accent: '#ffe08a' },
+    { name: 'Uranium', d: '#20401a', m: '#3c7a2a', l: '#8fe64b', accent: '#c9ff6a' },
+    { name: 'Cosmic Titan', d: '#2a1840', m: '#5a2f8a', l: '#a06ae0', accent: '#e0b0ff' },
+    { name: 'Crimson Prime', d: '#401414', m: '#8a2a2a', l: '#e06060', accent: '#ff8080' },
+  ];
+  function bodySkin(i) { i = i || 0; return BODY_SKINS[((i % BODY_SKINS.length) + BODY_SKINS.length) % BODY_SKINS.length]; }
+  function hexRgb(h) { h = h.replace('#', ''); if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2]; var n = parseInt(h, 16); return (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255); }
   function drawVibraniumBody(cx, bot, h, t, charge, cores, bs) {
     bs = bs || 1;   // body scale (bigger = closer to Ultron's own size)
-    var VB_D = '#363b4d', VB_M = '#5d6480', VB_L = '#9298b6';
+    var sk = bodySkin((cores || 0) + 1);   // the tube holds the NEXT body
+    var VB_D = sk.d, VB_M = sk.m, VB_L = sk.l;
     var feet = bot - 6, bh = h * 0.90, hip = feet - bh * 0.42, sh = feet - bh * 0.80, headTop = feet - bh;
     function X(o) { return cx + o * bs; }   // horizontal offsets scale with body size
     // legs
@@ -6871,9 +6887,10 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = 'rgba(255,40,40,' + ep + ')';
     ctx.beginPath(); ctx.moveTo(X(-5), headTop + 6.5); ctx.lineTo(X(-1.5), headTop + 6); ctx.lineTo(X(-2), headTop + 9); ctx.closePath(); ctx.fill();
     ctx.beginPath(); ctx.moveTo(X(5), headTop + 6.5); ctx.lineTo(X(1.5), headTop + 6); ctx.lineTo(X(2), headTop + 9); ctx.closePath(); ctx.fill();
-    // rim light (vibranium violet)
-    ctx.strokeStyle = 'rgba(160,140,255,0.35)'; ctx.lineWidth = 1;
+    // rim light (skin accent)
+    ctx.strokeStyle = sk.accent; ctx.globalAlpha = 0.4; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(X(19), sh); ctx.lineTo(X(12), hip); ctx.lineTo(X(11), feet); ctx.stroke();
+    ctx.globalAlpha = 1;
     // --- Infinity Stones set into the chest, a downward 3-2-1 chevron ---
     var chestY = (sh + hip) / 2 - 3;
     var slots = [[-8, -8], [0, -8], [8, -8], [-4, 0], [4, 0], [0, 8]];
@@ -6963,8 +6980,9 @@ function toggleReducedVisuals(el) {
     drawArcReactor(rcx, rcy, rr, floor, t);
     drawPowerLine(rcx - rr + 2, rcy - 4, cx + 10, bot - h * 0.5, t, charge);
     caption("ultron's power core", cx + 18, floor + 12);
-    hover('Vibranium Power Core', cx, top + h / 2, 62,
-      '<b style="color:#a88bff">Vibranium Power Core</b> — the six Infinity Stones feed Ultron’s frame from an arc reactor.<br><span class="rt-enl">Charge ' + Math.round(charge * 100) + '% · ' + cores + ' Nanite Core' + (cores === 1 ? '' : 's') + ' banked</span>');
+    var nextSk = bodySkin((cores || 0) + 1);
+    hover('Power Core — next body: ' + nextSk.name, cx, top + h / 2, 62,
+      '<b style="color:' + nextSk.accent + '">' + nextSk.name + ' Body</b> — Ultron’s NEXT frame, charging in the tube. On his next reboot he takes this body (stronger) and an even greater one appears here.<br><span class="rt-enl">Charge ' + Math.round(charge * 100) + '% · ' + cores + ' Nanite Core' + (cores === 1 ? '' : 's') + ' banked</span>');
   }
 
   // ---- XP Crystal chamber: a hidden floor where 10 red drones laser-mine a
@@ -7138,12 +7156,13 @@ function toggleReducedVisuals(el) {
       plate('Ultron', heroState, uDeskX + 9, officeFloorY - U_DESK_H + 34, U_DESK_W - 18, U_DESK_H - 44, '#ff6b6b', '#e8e6e0');
       drawStones(uDeskX + U_DESK_W * 0.42, officeFloorY - U_DESK_H + 10, t);   // Infinity Stones on the desktop
     }
-    drawOfficeWall(t);  // solid backdrop behind the display gap -- hides the baked window there
-    drawRelics(t);   // Tesseract / Orb / Eye on pedestals + the Aether tube on the desk
-    drawWorldPlan(t);   // world-domination plans on the wall
-    drawTrophies(t);    // Cap's shield / Mjolnir / Hawkeye's bow / power sword mounted above
+    drawOfficeWall(t);  // solid wall across the whole office -- hides the baked window entirely
+    drawRelics(t);   // Aether tube on the desk + vibranium/Venom/Carnage tubes on the floor
+    drawTrophies(t);    // trophy shelves, centred on the clean wall
     drawCouch(t);       // Wanda + her brother waiting on a couch
     drawPowerStation(t);   // vibranium body + Infinity Stones + arc reactor + charge meter
+    var uCores = foundryCfg().cores || 0;   // each prestige, Ultron wears the tube's last body -> a growing accent aura
+    if (uCores > 0) { var usk = bodySkin(uCores), ux = working ? (uDeskX + 85 - 56) : (walkX + 44); wallGlow(ux, officeFloorY - 74, 92, usk.accent, 0.13 + Math.min(0.16, uCores * 0.02)); }
     if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, officeFloorY + 4);
     drawIronMan(t);   // recurring gag: the intruder Ultron is beating up / tossing out
 
