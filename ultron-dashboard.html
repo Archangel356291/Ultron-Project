@@ -1957,6 +1957,14 @@
             <div><div class="stitle">Economy mode</div><div class="sdesc">Cheaper, shorter answers: a smaller model, at most two tool calls, and only the basic status tools. Same safety rules. Each reply is tagged so you can see which mode answered; real cost is on Data &amp; analytics.</div></div>
             <div class="switch" id="cfg-economy-mode" onclick="toggleEconomyMode(this)"></div>
           </div>
+          <div class="set-row">
+            <div><div class="stitle">Deep thought</div><div class="sdesc">For the hard questions: the strongest model, room for a long answer, up to eight tool calls. Costs about 2.5× a normal reply. Overrides Economy mode while on; replies are tagged "deep".</div></div>
+            <div class="switch" id="cfg-deep-mode" onclick="toggleDeepMode(this)"></div>
+          </div>
+          <div class="set-row">
+            <div><div class="stitle">Learn from our conversations</div><div class="sdesc">After each of your messages, one small check (about a tenth of a cent) asks whether it held one fact or preference worth remembering next month, and saves it if it's new. What he learns appears in his memory and in the activity feed.</div></div>
+            <div class="switch" id="cfg-learn-mode" onclick="toggleLearnMode(this)"></div>
+          </div>
           <div class="set-row" id="install-row" hidden>
             <div><div class="stitle">Install as an app</div><div class="sdesc">Adds Ultron to your home screen or desktop and opens it full-screen. Live data is never cached; only the page shell, fonts and sprites are.</div></div>
             <button type="button" class="conn-btn" style="padding:5px 12px; font-size:11px;" onclick="installApp()">Install</button>
@@ -3647,6 +3655,22 @@
     const sw = document.getElementById('cfg-economy-mode');
     if (sw && economyModeOn()) sw.classList.add('on');
   })();
+  // Deep thought and Learn-from-conversations: same persisted-switch shape.
+  function prefOn(key) { try { return localStorage.getItem(key) === '1'; } catch (e) { return false; } }
+  function togglePref(el, key) {
+    el.classList.toggle('on');
+    try { localStorage.setItem(key, el.classList.contains('on') ? '1' : '0'); } catch (e) { /* ignore */ }
+  }
+  function deepModeOn() { return prefOn('ultron_deep_mode'); }
+  function learnModeOn() { return prefOn('ultron_learn_mode'); }
+  function toggleDeepMode(el) { togglePref(el, 'ultron_deep_mode'); }
+  function toggleLearnMode(el) { togglePref(el, 'ultron_learn_mode'); }
+  (function () {
+    [['cfg-deep-mode', deepModeOn], ['cfg-learn-mode', learnModeOn]].forEach(function (pair) {
+      const sw = document.getElementById(pair[0]);
+      if (sw && pair[1]()) sw.classList.add('on');
+    });
+  })();
 
   async function postChat(message, history) {
     let res;
@@ -3654,7 +3678,7 @@
       res = await fetch(state.baseUrl + '/api/chat', {
         method: 'POST',
         headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
-        body: JSON.stringify({ message: message, history: history, lite: economyModeOn() }),
+        body: JSON.stringify({ message: message, history: history, lite: economyModeOn(), deep: deepModeOn(), learn: learnModeOn() }),
       });
     } catch (err) {
       throw new Error('network error reaching backend');
@@ -3902,7 +3926,7 @@
       appendChatBubble('ultron', data.reply, {
         // "economy" rides along with the tool tags so it's always visible
         // which mode answered -- the backend says, the switch only asks.
-        tools: (data.tools_used || []).concat(data.lite ? ['economy'] : []),
+        tools: (data.tools_used || []).concat(data.deep ? ['deep'] : data.lite ? ['economy'] : []),
         reveal: true,
         // The light follows the words: stay 'responding' until the last
         // word lands, then hand off to 'speaking' if voice took over, else idle.

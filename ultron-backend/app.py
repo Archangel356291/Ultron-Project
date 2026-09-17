@@ -207,12 +207,30 @@ DB_PATH = os.environ.get(
     "ULTRON_DB_PATH",
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "ultron.db"),
 )
-# Plain-text mirror of chat_log, owner-requested 2026-09-15: a file in the
-# same directory as ultron.db (D:\ultron's Brain&Knowledge on the host)
-# that's directly readable without a SQLite client -- every identity/
-# source (dashboard admin, beta testers, Discord) writes here since they
-# all funnel through the one _log_chat_turn function below.
-CHAT_LOG_FILE_PATH = os.path.join(os.path.dirname(DB_PATH), "chat_logs.txt")
+# Ultron's Brain & Knowledge folder (owner-requested 2026-09-15/16): the
+# directory ultron.db lives in -- D:\ultron's Brain&Knowledge on the host --
+# holds everything he knows in forms a person can open without a SQLite
+# client:
+#   chat logs/dashboard/YYYY-MM-DD.txt   web (dashboard) conversations
+#   chat logs/discord/YYYY-MM-DD.txt     Discord conversations, kept apart
+#   knowledge/memory-notes.md            his memory notebook, newest first,
+#                                        rewritten whenever a note is saved
+# Every identity/source funnels through the one _log_chat_turn below, so
+# the split is decided in exactly one place. The older combined
+# chat_logs.txt (pre-split) is left where it is as history.
+DATA_DIR = os.path.dirname(os.path.abspath(DB_PATH))
+CHAT_LOGS_DIR = os.path.join(DATA_DIR, "chat logs")
+KNOWLEDGE_DIR = os.path.join(DATA_DIR, "knowledge")
+for _d in (os.path.join(CHAT_LOGS_DIR, "dashboard"), os.path.join(CHAT_LOGS_DIR, "discord"), KNOWLEDGE_DIR):
+    try:
+        os.makedirs(_d, exist_ok=True)
+    except OSError:
+        pass  # a read-only or missing data dir must not stop the app; writes below are best-effort
+
+
+def _chat_log_path(identity):
+    source = "discord" if (identity or "").startswith("discord:") else "dashboard"
+    return os.path.join(CHAT_LOGS_DIR, source, time.strftime("%Y-%m-%d") + ".txt")
 
 
 def _get_db_connection():
@@ -535,6 +553,7 @@ def remember_note(note=None, **_ignored):
             conn.close()
     except Exception as e:
         return {"error": f"could not save note: {e}"}
+    _write_knowledge_mirror()
     return {"saved": note, "truncated": truncated}
 
 
@@ -593,6 +612,39 @@ def recall_related_notes(query=None, min_nodes=6, **_ignored):
         for n in result["nodes"]
     ]
     return {"notes": notes, "widened": result["widened"]}
+
+
+def _write_knowledge_mirror():
+    """knowledge/memory-notes.md -- the whole notebook, newest first, as a
+    file a person (or Obsidian) can read. Rewritten on every save; at most
+    MEMORY_NOTES_MAX_ROWS rows, so this stays a few KB. Best-effort."""
+    try:
+        conn = _get_db_connection()
+        try:
+            rows = conn.execute(
+                "SELECT created_at, note, tags, visibility FROM memory_notes ORDER BY id DESC"
+            ).fetchall()
+        finally:
+            conn.close()
+        lines = [
+            "# Ultron — memory notebook",
+            "",
+            f"{len(rows)} note(s), newest first. Written by the backend whenever a note is saved; "
+            "the source of truth is memory_notes in ultron.db next to this folder. Edit there via "
+            "the dashboard or chat, not here.",
+            "",
+        ]
+        for r in rows:
+            tags = ", ".join(json.loads(r["tags"])) if r["tags"] else ""
+            meta = f"{(r['created_at'] or '')[:16].replace('T', ' ')}" + (f" · {tags}" if tags else "")
+            lines.append(f"- **{meta}** — {r['note']}")
+        with open(os.path.join(KNOWLEDGE_DIR, "memory-notes.md"), "w", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
+    except Exception:
+        pass
+
+
+_write_knowledge_mirror()  # so the file exists from the first start, not only after the next save
 
 
 # --------------------------------------------------------------------------
@@ -3211,7 +3263,7 @@ def _log_chat_turn(identity, user_message, reply_text, input_tokens, output_toke
     # Plain-text mirror, best-effort like the DB write above -- a failure
     # here (disk full, permissions) must not break the chat response.
     try:
-        with open(CHAT_LOG_FILE_PATH, "a", encoding="utf-8") as f:
+        with open(_chat_log_path(identity), "a", encoding="utf-8") as f:
             f.write(f"[{now}] {identity} (user):\n{user_message}\n\n")
             token_note = f" [tokens: in={input_tokens}, out={output_tokens}]" if input_tokens or output_tokens else ""
             f.write(f"[{now}] {identity} (assistant){token_note}:\n{reply_text}\n\n")
@@ -4240,6 +4292,36 @@ LITE_ALLOWED_TOOLS = {
     "get_system_status", "list_containers", "get_storage_usage",
     "get_pending_updates", "recall_notes", "get_recent_activity", "get_briefing",
 }
+
+# Deep thought mode ("deep": true, owner-approved 2026-09-16): the mirror of
+# Economy for the questions that deserve the strongest reasoning -- the
+# top model, room for a long answer, more tool rounds. Admin-only (a beta
+# tester's request silently gets the normal model: their spend cap is
+# $1 lifetime and Opus would eat it), and it wins over "lite" if both are
+# sent. Same tools, same boundaries -- only the depth changes.
+DEEP_MODEL = os.environ.get("ULTRON_DEEP_MODEL", "claude-opus-5")
+DEEP_MAX_TOKENS = max(LLM_MAX_TOKENS, 2048)
+DEEP_MAX_TOOL_ITERATIONS = 8
+
+# Learn from conversations ("learn": true, owner-approved 2026-09-16, opt-in
+# switch in Settings): after an admin turn, one small call to the lite
+# model asks whether the exchange held ONE fact or preference worth
+# remembering next month; if so, and it isn't already in the notebook, it
+# is saved through remember_note like anything else. Never for beta
+# testers. Never automatic for web content (Scout's rule stands: only what
+# the person said or decided). Runs in a background thread so the reply
+# is never delayed; ULTRON_LEARN_INLINE=1 makes it synchronous for tests.
+LEARN_MODEL = LITE_MODEL
+LEARN_MAX_TOKENS = 120
+LEARN_PROMPT = (
+    "You maintain a small long-term notebook for an assistant that helps one person run their home "
+    "lab. Read the exchange below. If it contains exactly one thing worth remembering NEXT MONTH -- how "
+    "their systems are arranged or named, a preference about how they want things done, a decision and "
+    "its reason, a fact about their setup they stated -- write it as one plain sentence under 200 "
+    "characters, in the third person (\"The owner ...\"), with no preamble. Do not record questions, "
+    "greetings, live numbers (CPU, memory, prices), anything the assistant merely reported, or anything "
+    "from a web search result. If there is nothing of that kind, reply with exactly: NONE"
+)
 MAX_HISTORY_MESSAGES = 40  # ~20 turns; keeps context (and cost) bounded
 MAX_MESSAGE_CHARS = 4000
 # Caps each individual history entry's content, on top of the message-count
@@ -4282,7 +4364,7 @@ def _add_cache_breakpoint(msg):
     return {**msg, "content": new_content}
 
 
-def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker=None, lite=False):
+def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker=None, lite=False, deep=False):
     """Runs the tool-use loop against the Claude API and returns
     (reply_text, updated_history, tools_used).
 
@@ -4324,14 +4406,21 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
     else:
         mcp_schemas, mcp_dispatch = get_mcp_tools_and_dispatch()
         effective_tools = TOOLS + mcp_schemas
-    # Economy mode narrows, never widens: intersect with whatever the role
-    # already had (so MCP tools and the beta allowlist are both respected),
-    # and enforce the same set again at dispatch time below.
+    # Deep is resolved first so it can cancel lite before lite trims the
+    # tool list; Economy mode narrows, never widens: intersect with whatever
+    # the role already had (so MCP tools and the beta allowlist are both
+    # respected), and enforce the same set again at dispatch time below.
+    deep = bool(deep) and role == "admin"
+    if deep:
+        lite = False
     if lite:
         effective_tools = [t for t in effective_tools if t["name"] in LITE_ALLOWED_TOOLS]
-    model = LITE_MODEL if lite else LLM_MODEL
-    max_tokens = LITE_MAX_TOKENS if lite else LLM_MAX_TOKENS
-    max_rounds = LITE_MAX_TOOL_ITERATIONS if lite else MAX_TOOL_ITERATIONS
+    if deep:
+        model, max_tokens, max_rounds = DEEP_MODEL, DEEP_MAX_TOKENS, DEEP_MAX_TOOL_ITERATIONS
+    elif lite:
+        model, max_tokens, max_rounds = LITE_MODEL, LITE_MAX_TOKENS, LITE_MAX_TOOL_ITERATIONS
+    else:
+        model, max_tokens, max_rounds = LLM_MODEL, LLM_MAX_TOKENS, MAX_TOOL_ITERATIONS
 
     # The static prompt keeps its cache breakpoint; the situational block
     # (admin only -- it carries host state and memory a beta tester must not
@@ -4423,6 +4512,38 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
 
     _log_chat_turn(identity, user_message, reply_text, turn_input_tokens, turn_output_tokens)
     return reply_text, messages, tools_used
+
+
+def _learn_from_turn(user_message, reply_text):
+    """One small lite-model call: is there ONE durable fact in this exchange?
+    Saves it via remember_note unless the notebook already has it. Returns
+    the saved note text, or None. Best-effort -- never raises."""
+    try:
+        response = anthropic_client.messages.create(
+            model=LEARN_MODEL,
+            max_tokens=LEARN_MAX_TOKENS,
+            system=[{"type": "text", "text": LEARN_PROMPT, "cache_control": {"type": "ephemeral"}}],
+            messages=[{"role": "user", "content": f"Person: {user_message[:1500]}\n\nAssistant: {reply_text[:1500]}"}],
+        )
+        if hasattr(response, "usage"):
+            _log_llm_usage(response.usage, model=LEARN_MODEL)
+        text = "".join(b.text for b in response.content if getattr(b, "type", "") == "text").strip()
+        if not text or text.upper().startswith("NONE") or len(text) > 240 or "\n" in text:
+            return None
+        # Already known? Any existing note that contains this sentence (or
+        # vice versa, case-insensitively) counts as a duplicate.
+        needle = text.lower()
+        for existing in recall_notes(limit=MEMORY_NOTES_MAX_ROWS).get("notes", []):
+            hay = (existing.get("note") or "").lower()
+            if needle in hay or hay in needle:
+                return None
+        result = remember_note(note=text)
+        if "saved" in result:
+            log_activity("learned", "Ultron remembered: " + text[:140], status="success")
+            return text
+    except Exception:
+        pass
+    return None
 
 
 def _identity_result(role, beta_name):
@@ -4546,6 +4667,8 @@ def chat():
     # truthy opts in, and the response echoes the decision so the client
     # can label the reply honestly.
     lite = bool(body.get("lite"))
+    deep = bool(body.get("deep")) and g.role == "admin"
+    learn = bool(body.get("learn")) and g.role == "admin"
 
     if not user_message:
         return jsonify({"error": "message is required"}), 400
@@ -4579,7 +4702,7 @@ def chat():
 
         try:
             reply, new_history, tools_used = run_ultron_chat(
-                user_message, history, role=g.role, beta_name=g.beta_name, speaker=speaker, lite=lite,
+                user_message, history, role=g.role, beta_name=g.beta_name, speaker=speaker, lite=lite, deep=deep,
             )
         except anthropic.AuthenticationError:
             # Server misconfiguration, not the caller's fault — but surfacing it
@@ -4601,7 +4724,18 @@ def chat():
             # Anything else — malformed tool result, unexpected SDK behavior, etc.
             return jsonify({"error": "unexpected error: " + str(e)}), 500
 
-    return jsonify({"reply": reply, "history": new_history, "tools_used": tools_used, "lite": lite})
+    # If Ultron already chose to remember something this turn, the learner
+    # would only write a paraphrase of it -- skip.
+    if learn and "remember_note" not in tools_used:
+        if os.environ.get("ULTRON_LEARN_INLINE") == "1":
+            _learn_from_turn(user_message, reply)
+        else:
+            threading.Thread(target=_learn_from_turn, args=(user_message, reply), daemon=True).start()
+
+    return jsonify({
+        "reply": reply, "history": new_history, "tools_used": tools_used,
+        "lite": lite and not deep, "deep": deep, "learning": learn,
+    })
 
 
 @app.route("/api/chat/usage")

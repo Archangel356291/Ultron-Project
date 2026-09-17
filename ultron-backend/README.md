@@ -414,6 +414,28 @@ that's grounded in this backend's own data rather than guessing:
   safeguard is unchanged. The response carries `"lite": true/false` so the
   caller can label the reply. Usage is priced at the lite model's rate, so
   the saving shows as real dollars in `/api/chat/usage`.
+- **Deep thought mode** — `"deep": true` (Settings → "Deep thought")
+  answers with `ULTRON_DEEP_MODEL` (default `claude-opus-5`, about 2.5×
+  Sonnet per token), `max_tokens` at least 2048, and up to 8 tool rounds.
+  Admin-only — a beta tester's `deep` is ignored — and it wins over `lite`
+  if both are sent. The response echoes `"deep"`.
+- **Learn from our conversations** — `"learn": true` (Settings switch,
+  opt-in, admin-only): after the reply, one small call to the lite model
+  asks whether the exchange held *one* fact or preference worth
+  remembering next month; if so and it isn't already in the notebook, it
+  is saved through `remember_note` and an activity entry ("Ultron
+  remembered: …") is logged. Runs in a background thread so the reply is
+  never delayed (`ULTRON_LEARN_INLINE=1` makes it synchronous, for tests).
+  Live numbers, greetings and web-search content are excluded by the
+  learner's instructions.
+- **Where his knowledge lives** — the directory holding `ultron.db`
+  (`ULTRON_DATA_DIR`, `D:\ultron's Brain&Knowledge` on the owner's host)
+  also gets `chat logs\dashboard\YYYY-MM-DD.txt` and
+  `chat logs\discord\YYYY-MM-DD.txt` (web and Discord conversations kept
+  apart, decided by the `speaker` label in one place) and
+  `knowledge\memory-notes.md`, the whole memory notebook rewritten on
+  every save so it can be read — or opened in Obsidian — without a SQLite
+  client. `dev-tools/test_deep_learn_brain.py` covers all three.
 - Requests to the Anthropic API time out after 60s by default (override with
   `ULTRON_LLM_TIMEOUT_SECONDS`), and errors are mapped to distinct, useful
   responses instead of one generic failure: a bad/rejected key comes back

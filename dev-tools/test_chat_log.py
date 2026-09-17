@@ -59,11 +59,13 @@ def demo():
     # The user row carries no token cost of its own.
     assert user_turn["input_tokens"] is None and user_turn["output_tokens"] is None, user_turn
 
-    # Plain-text mirror (owner-requested 2026-09-15): same directory as
-    # ultron.db, human-readable, both sides of the turn with token usage.
-    assert os.path.exists(app.CHAT_LOG_FILE_PATH), app.CHAT_LOG_FILE_PATH
-    assert os.path.dirname(app.CHAT_LOG_FILE_PATH) == os.path.dirname(app.DB_PATH)
-    with open(app.CHAT_LOG_FILE_PATH, encoding="utf-8") as f:
+    # Plain-text mirror (owner-requested 2026-09-15, split by source
+    # 2026-09-16): a dated file under "<data dir>/chat logs/dashboard/",
+    # human-readable, both sides of the turn with token usage.
+    mirror_path = app._chat_log_path("admin")
+    assert os.path.exists(mirror_path), mirror_path
+    assert os.path.dirname(mirror_path) == os.path.join(os.path.dirname(app.DB_PATH), "chat logs", "dashboard"), mirror_path
+    with open(mirror_path, encoding="utf-8") as f:
         file_text = f.read()
     assert "(user):\nhi Ultron" in file_text, file_text
     assert "(assistant) [tokens: in=42, out=17]:\nhello there" in file_text, file_text

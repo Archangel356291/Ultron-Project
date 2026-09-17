@@ -178,20 +178,26 @@ recurring token cost:
   answer in his own words with the source URL, *offer* to keep it, save
   one distilled fact with its URL only when you say yes.
 
-**Two more, each with a real cost — your call:**
+**Both approved and built the same day, plus the Brain & Knowledge
+folder the owner asked for:**
 
-1. **Deep thought mode** — the mirror of Economy: a per-request
-   `"deep": true` that answers with `claude-opus-5` (pricing row already
-   present, ~2.5× Sonnet per token), a higher `max_tokens`, and up to 8
-   tool rounds, for the questions where you want the strongest reasoning
-   available. About 20 lines; the Settings switch pattern exists.
-2. **Learn from our conversations** — an opt-in switch: after each
-   admin turn, one Haiku call (~$0.001) extracts at most one durable fact
-   or preference and saves it through `remember_note` if it isn't already
-   there (`recall_related_notes` dedup). Turns every conversation into
-   memory without you having to say "remember that". Risk is noise in
-   the notebook; mitigations are the one-per-turn cap, the dedup, and the
-   existing 200-note trim.
+1. **Deep thought mode** — `"deep": true` (Settings switch) answers with
+   `ULTRON_DEEP_MODEL` (default `claude-opus-5`), `max_tokens` ≥ 2048,
+   up to 8 tool rounds; admin-only, wins over Economy, replies tagged
+   `deep`. Writing the test caught a real ordering bug (with both flags
+   sent, the Economy tool-trim ran before Deep took over).
+2. **Learn from our conversations** — opt-in `"learn": true`: after an
+   admin reply, one lite-model call asks whether the exchange held one
+   fact or preference worth remembering next month; if new, it is saved
+   through `remember_note` and logged as a "learned" activity event.
+   Background thread, never for beta, skipped when Ultron already used
+   `remember_note` that turn (the first live run showed the learner
+   paraphrasing what he had just saved himself — fixed before commit).
+3. **`D:\ultron's Brain&Knowledge`** — already the data dir; it now holds
+   `chat logs\dashboard\YYYY-MM-DD.txt` and `chat logs\discord\…` (web
+   and Discord kept apart, decided by the `speaker` label in one place)
+   and `knowledge\memory-notes.md`, the notebook rewritten on every save
+   for reading without a SQLite client. `dev-tools/test_deep_learn_brain.py`.
 
 ## Also fixed on the way
 
