@@ -301,19 +301,32 @@
        for a real layered-glass read, plus a hairline inset highlight for
        a soft top reflection -- same border/chamfer/shadow otherwise, so
        every .card/.hud-card sitewide picks this up for free. */
-    background: linear-gradient(160deg, rgba(15,17,19,0.82) 0%, rgba(22,25,28,0.82) 100%);
-    backdrop-filter: blur(16px) saturate(1.2);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    background:
+      radial-gradient(120% 90% at 12% 0%, rgba(120,150,190,0.06) 0%, transparent 45%),
+      linear-gradient(160deg, rgba(17,19,22,0.84) 0%, rgba(23,26,30,0.84) 100%);
+    backdrop-filter: blur(16px) saturate(1.25);
+    -webkit-backdrop-filter: blur(16px) saturate(1.25);
     border:1px solid var(--line);
     clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
     padding:20px 22px;
     position:relative;
-    box-shadow: 0 8px 28px -14px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05);
+    box-shadow: 0 10px 34px -14px rgba(0,0,0,0.75), 0 2px 6px -3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 40px -20px rgba(120,150,190,0.12);
+    transition: box-shadow .25s ease, border-color .25s ease;
   }
   .card::before{
     content:''; position:absolute; top:0; left:14px; right:14px; height:1px;
     background:linear-gradient(90deg, transparent, var(--metal-light), transparent);
   }
+  .card:hover, .hud-card:hover{ box-shadow: 0 16px 46px -14px rgba(0,0,0,0.82), 0 3px 10px -3px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.09), inset 0 0 46px -18px rgba(120,160,210,0.2); border-color: var(--metal-light); }
+  /* Global polish: slim modern scrollbars + snappy interactive feedback on
+     every button, so the whole dashboard feels more finished. */
+  *{ scrollbar-width:thin; scrollbar-color: rgba(120,150,190,0.4) transparent; }
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  ::-webkit-scrollbar-thumb{ background:linear-gradient(180deg, rgba(120,150,190,0.45), rgba(90,120,160,0.35)); border-radius:6px; border:2px solid transparent; background-clip:padding-box; }
+  ::-webkit-scrollbar-thumb:hover{ background:linear-gradient(180deg, rgba(150,180,220,0.6), rgba(110,145,190,0.5)); background-clip:padding-box; }
+  button{ transition: background .18s ease, box-shadow .18s ease, transform .1s ease, color .18s ease, border-color .18s ease; }
+  button:not(:disabled):active{ transform: translateY(1px); }
   .grid{ display:grid; gap:16px; }
   .cols-2{ grid-template-columns:1fr 1fr; }
   .cols-3{ grid-template-columns:repeat(3, 1fr); }
@@ -343,14 +356,17 @@
      this pass is scoped to the Home screen only, so every other section
      keeps its existing oxide-accented .card exactly as before. */
   .hud-card{
-    background: linear-gradient(160deg, rgba(15,17,19,0.82) 0%, rgba(22,25,28,0.82) 100%);
-    backdrop-filter: blur(16px) saturate(1.2);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    background:
+      radial-gradient(120% 90% at 12% 0%, rgba(120,150,190,0.06) 0%, transparent 45%),
+      linear-gradient(160deg, rgba(17,19,22,0.84) 0%, rgba(23,26,30,0.84) 100%);
+    backdrop-filter: blur(16px) saturate(1.25);
+    -webkit-backdrop-filter: blur(16px) saturate(1.25);
     border:1px solid var(--line);
     clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
     padding:20px 22px;
     position:relative;
-    box-shadow: 0 8px 28px -14px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05);
+    box-shadow: 0 10px 34px -14px rgba(0,0,0,0.75), 0 2px 6px -3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 40px -20px rgba(120,150,190,0.12);
+    transition: box-shadow .25s ease, border-color .25s ease;
   }
   .hud-card::before{
     content:''; position:absolute; top:0; left:14px; right:14px; height:1px;
