@@ -987,6 +987,37 @@
   .arm-lname{ font-family:var(--font-mono); font-size:11px; padding:6px 9px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text); }
   .arm-lbtn, .arm-lchip{ padding:6px 10px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:10px; }
   .arm-lchip:hover, .arm-lbtn:hover{ background:rgba(255,255,255,.05); }
+  .brainlab{ margin-top:10px; padding:12px 14px; border:1px solid rgba(58,200,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(28,107,176,.14),rgba(8,20,36,.25)); }
+  .bl-logo{ display:block; width:100%; max-width:340px; height:auto; margin:0 auto 8px; border-radius:9px; }
+  .bl-head{ font-family:var(--font-display); font-weight:800; font-size:13px; color:#bfe6ff; }
+  .bl-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); }
+  .bl-unlock{ display:block; width:100%; margin-top:8px; font-family:var(--font-display); font-weight:700; font-size:12px; padding:9px; border-radius:7px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; }
+  .bl-unlock.can{ cursor:pointer; border-color:#3ac8ff; color:#bfe6ff; box-shadow:0 0 14px -4px rgba(58,200,255,.6); } .bl-unlock.can:hover{ background:rgba(58,200,255,.14); }
+  .bl-unlock:disabled{ opacity:.6; }
+  .bl-diagram{ padding:12px; border:1px dashed rgba(58,200,255,.3); border-radius:8px; background:radial-gradient(circle at 50% 20%,rgba(58,200,255,.08),transparent 70%); margin-bottom:9px; }
+  .bl-diagram .bl-logo{ max-width:300px; }
+  .bl-parts{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:6px; margin-top:8px; }
+  .bl-part{ display:flex; align-items:center; gap:7px; padding:6px 9px; border:1px solid; border-radius:7px; background:linear-gradient(180deg,#0f1620,#0a0f16); }
+  .bl-part-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .bl-part-n{ font-family:var(--font-mono); font-size:10px; color:var(--text); margin-right:auto; }
+  .bl-part-r{ font-family:var(--font-mono); font-size:9px; font-weight:700; }
+  .bl-mats{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:7px; margin-bottom:10px; }
+  .bl-mat{ display:flex; align-items:center; gap:8px; padding:7px 9px; border:1px solid var(--line); border-left:3px solid var(--mc); border-radius:7px; background:var(--void); }
+  .bl-mat-n{ font-family:var(--font-mono); font-size:10px; margin-right:auto; } .bl-mat-n b{ color:var(--text); }
+  .bl-buy{ padding:5px 9px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:9.5px; white-space:nowrap; }
+  .bl-buy:hover{ background:rgba(255,255,255,.05); }
+  .bl-cat{ margin-top:8px; }
+  .bl-cat-h{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:#8fd8ff; margin-bottom:5px; }
+  .bl-comps{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:7px; }
+  .bl-comp{ padding:8px 10px; border:1px solid var(--line); border-top:3px solid var(--bc); border-radius:7px; background:var(--void); }
+  .bl-comp-t{ font-family:var(--font-display); font-weight:700; font-size:11px; color:var(--text); display:flex; align-items:center; gap:6px; }
+  .bl-comp-l{ margin-left:auto; font-family:var(--font-mono); font-size:9px; font-weight:700; }
+  .bl-comp-d{ font-family:var(--font-mono); font-size:9px; color:var(--text-faint); margin:3px 0 6px; }
+  .bl-build{ width:100%; padding:6px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; font-family:var(--font-mono); font-size:9.5px; }
+  .bl-build.can{ cursor:pointer; border-color:#3ac8ff; color:#bfe6ff; } .bl-build.can:hover{ background:rgba(58,200,255,.12); }
+  .bl-build:disabled{ opacity:.55; }
+  .bl-max{ text-align:center; font-family:var(--font-mono); font-size:9.5px; color:#ffcf5a; padding:5px; }
+  .exp-timescale{ font-family:var(--font-mono); font-size:10px; color:#9fc4e0; margin-bottom:6px; }
   .cosmic{ margin-top:10px; padding:11px 13px; border:1px solid rgba(155,107,255,.45); border-radius:8px; background:linear-gradient(180deg,rgba(120,80,220,.12),rgba(30,20,60,.15)); }
   .cz-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#c9a6ff; }
   .cz-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); }
@@ -2102,6 +2133,7 @@
             <div class="progression" id="progression"></div>
             <div class="relics" id="relics"></div>
             <div class="armory" id="armory"></div>
+            <div class="brainlab" id="brainlab"></div>
             <div class="stonelab" id="stonelab"></div>
             <div class="holiday" id="holiday"></div>
             <div class="cosmic" id="cosmic"></div>
@@ -8207,7 +8239,7 @@ window.__sfx = (function () {
   // permanently multiplied -- the ultimate reward for the ultimate grind.
   function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
   var PROD_BOOST = 1.25;   // owner buff: a little more currency across every source (all income routes through globalMult)
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * PROD_BOOST; }
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * PROD_BOOST; }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -8225,7 +8257,7 @@ window.__sfx = (function () {
   // exponential scale). Combined they let a stat be pushed hard late-game.
   function pct(l, per) { return 1 + (per / 100) * skillLvl(l); }       // additive %-boost skill
   function xmul(l, step) { return Math.pow(1 + step, skillLvl(l)); }   // compounding × skill
-  function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03) * attrXpMult() * stoneXpMult() * stoneMasteryMult() * relicXpMult(); }   // + Intelligence + Mind stone + stone mastery + relics
+  function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03) * attrXpMult() * stoneXpMult() * stoneMasteryMult() * relicXpMult() * brainMult(); }   // + INT + Mind stone + mastery + relics + brain cognition
   function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03) * prestigeProdMult() * stoneProdMult() * stoneMasteryMult(); }
   function prodQualMult() { return pct('prodqual', 5) * xmul('prodqualm', 0.025); }
   function incomeMult() { return pct('incboost', 4) * xmul('incmult', 0.03); }
@@ -8372,7 +8404,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -8391,6 +8423,7 @@ window.__sfx = (function () {
   if (!state.holiday) state.holiday = { events: {}, force: null, components: 0, jackpot: false, nextGuest: 0 };   // Holiday Events Calendar
   if (!state.relics) state.relics = {};   // Relics & Artifacts earned
   if (!state.armory) state.armory = { cls: 'pistol', sel: {}, built: null, loadouts: {}, parts: [] };   // Armory Forge
+  if (!state.brain) state.brain = { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {} };   // AI Brain Lab
   if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
@@ -8894,7 +8927,7 @@ window.__sfx = (function () {
     state.roundStart = state.lifetime || 0;
     gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderAdventure(); renderProgression();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderProgression();
     if (window.__roomRelayout) window.__roomRelayout();
   }
   var stonelabEl = document.getElementById('stonelab');
@@ -9200,6 +9233,81 @@ window.__sfx = (function () {
     var sb = armoryEl.querySelector('[data-arm="save"]'); if (sb) sb.addEventListener('click', function () { var nm = (document.getElementById('arm-lname').value || '').trim(); if (!nm) return; a.loadouts = a.loadouts || {}; a.loadouts[nm] = { cls: a.cls, sel: JSON.parse(JSON.stringify(a.sel)) }; save(); gamePop('💾 Loadout “' + nm + '” saved', '#8fd8ff'); renderArmory(); });
     armoryEl.querySelectorAll('[data-arml]').forEach(function (b) { b.addEventListener('click', function () { var lo = a.loadouts[b.dataset.arml]; if (!lo) return; a.cls = lo.cls; a.sel = JSON.parse(JSON.stringify(lo.sel)); save(); gamePop('📂 Loadout loaded', '#8fd8ff'); renderArmory(); }); });
   }
+  // ---- AI Brain Lab: custom-build Ultron's AI brain from real AI-architecture
+  // components across 4 layers, using three new lab materials (Synapse Filaments,
+  // Logic Cores, Data Crystals) the lab grows over time + you synthesize with
+  // currency. Total cognition boosts XP + income. ----
+  var BRAIN_MATS = [{ id: 'syn', name: 'Synapse Filaments', sym: '⌇', col: '#7fd0ff', buy: 4e5 }, { id: 'log', name: 'Logic Cores', sym: '◈', col: '#8fe64b', buy: 8e5 }, { id: 'dat', name: 'Data Crystals', sym: '◆', col: '#c07bff', buy: 1.6e6 }];
+  // Each brain part is built at a rarity tier (same rarity ladder as the rest of the
+  // game): higher rarity = more cognition, scaling cost. tier 0 = not built.
+  var BRAIN_RAR = [{ n: 'Common', col: '#9aa2ae', pow: 1, price: 1 }, { n: 'Uncommon', col: '#33d17a', pow: 1.5, price: 2.5 }, { n: 'Rare', col: '#3d9bff', pow: 2.2, price: 6 }, { n: 'Epic', col: '#b084f0', pow: 3.2, price: 15 }, { n: 'Legendary', col: '#ff9d3c', pow: 4.6, price: 40 }, { n: 'Mythic', col: '#ff5a7a', pow: 7, price: 110 }];
+  var BRAIN_COMPONENTS = [
+    { cat: 'Perception & Senses', id: 'sensory', name: 'Sensory Listeners', desc: 'event & audio detection', c: { syn: 5, log: 2, dat: 1 } },
+    { cat: 'Perception & Senses', id: 'vision', name: 'Vision Cones', desc: 'line-of-sight raycasting', c: { syn: 6, log: 2, dat: 1 } },
+    { cat: 'Perception & Senses', id: 'tactile', name: 'Tactile / Collision', desc: 'contact & damage triggers', c: { syn: 4, log: 3, dat: 1 } },
+    { cat: 'Memory & Blackboards', id: 'blackboard', name: 'Blackboard Component', desc: 'key-value working memory', c: { syn: 3, log: 5, dat: 3 } },
+    { cat: 'Memory & Blackboards', id: 'knowledge', name: 'Knowledge Base', desc: 'state memory over time', c: { syn: 3, log: 6, dat: 4 } },
+    { cat: 'Decision-Making & Logic', id: 'fsm', name: 'Finite State Machine', desc: 'idle → patrol → chase → attack', c: { syn: 2, log: 8, dat: 3 } },
+    { cat: 'Decision-Making & Logic', id: 'btree', name: 'Behavior Trees', desc: 'modular priority branches', c: { syn: 2, log: 10, dat: 5 } },
+    { cat: 'Decision-Making & Logic', id: 'utility', name: 'Utility AI', desc: 'scored mathematical choices', c: { syn: 2, log: 12, dat: 8 } },
+    { cat: 'Decision-Making & Logic', id: 'goap', name: 'GOAP Planner', desc: 'dynamic goal action planning', c: { syn: 3, log: 16, dat: 12 } },
+    { cat: 'Bridge & Execution', id: 'controller', name: 'AI Controller', desc: 'brain → body bridge', c: { syn: 4, log: 6, dat: 4 } },
+    { cat: 'Bridge & Execution', id: 'navmesh', name: 'NavMesh Agent', desc: 'pathfinding navigation', c: { syn: 4, log: 7, dat: 5 } },
+    { cat: 'Bridge & Execution', id: 'anim', name: 'Animation Link', desc: 'state → animation blend', c: { syn: 3, log: 5, dat: 3 } }
+  ];
+  var BRAINLAB_COST = 3e9;
+  // Circuit-brain logo (cyan traces + glowing nodes on blue), styled after the ref image.
+  var BRAIN_LOGO = '<svg class="bl-logo" viewBox="0 0 150 100" role="img" aria-label="AI Brain Lab">' +
+    '<defs><radialGradient id="blg" cx="42%" cy="32%" r="85%"><stop offset="0" stop-color="#1c6bb0"/><stop offset="1" stop-color="#081f38"/></radialGradient>' +
+    '<filter id="blglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.7"/></filter></defs>' +
+    '<rect width="150" height="100" rx="9" fill="url(#blg)"/>' +
+    '<g fill="none" stroke="#3ac8ff" stroke-width="1.15" opacity=".9" stroke-linecap="round">' +
+    '<path d="M32 62 Q29 36 50 27 Q62 17 77 24 Q95 17 104 35 Q116 41 111 60 Q116 77 98 82 Q82 90 67 81 Q49 88 39 75 Q29 71 32 62Z"/>' +
+    '<path d="M42 56h14v-12h11"/><path d="M72 30v14h13v11"/><path d="M60 72h17v-9h11v-11"/><path d="M50 63v-11h-9"/><path d="M90 68h11V55"/><path d="M46 40h9"/></g>' +
+    '<g fill="#3ac8ff"><circle cx="56" cy="44" r="1.6"/><circle cx="67" cy="30" r="1.6"/><circle cx="85" cy="44" r="1.6"/><circle cx="77" cy="63" r="1.6"/><circle cx="41" cy="52" r="1.6"/><circle cx="101" cy="55" r="1.6"/><circle cx="55" cy="40" r="1.4"/></g>' +
+    '<g fill="#9becff" filter="url(#blglow)"><circle cx="50" cy="27" r="2.6"/><circle cx="104" cy="35" r="2.6"/><circle cx="67" cy="81" r="2.6"/><circle cx="90" cy="47" r="2.3"/></g>' +
+    '<text x="140" y="93" text-anchor="end" font-family="sans-serif" font-size="8" font-weight="800" fill="#c8ecff" letter-spacing="1">BRAIN LAB</text></svg>';
+  var brainEl = document.getElementById('brainlab');
+  function brainInit() { state.brain = state.brain || { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {} }; if (!state.brain.mats) state.brain.mats = { syn: 0, log: 0, dat: 0 }; if (!state.brain.comp) state.brain.comp = {}; return state.brain; }
+  function brainUnlocked() { return !!(state.brain && state.brain.unlocked); }
+  function brainTier(id) { return (state.brain && state.brain.comp && state.brain.comp[id]) || 0; }   // 0 = not built, 1..6 = Common..Mythic
+  function brainMaxed(id) { return brainTier(id) >= BRAIN_RAR.length; }
+  function brainCog(id) { var t = brainTier(id); return t > 0 ? BRAIN_RAR[t - 1].pow : 0; }
+  function brainTotal() { if (typeof BRAIN_COMPONENTS === 'undefined' || !BRAIN_COMPONENTS) return 0; var s = 0; BRAIN_COMPONENTS.forEach(function (c) { s += brainCog(c.id); }); return s; }
+  function brainMult() { return brainUnlocked() ? 1 + 0.02 * brainTotal() : 1; }
+  function brainCompCost(comp) { var t = brainTier(comp.id), rar = BRAIN_RAR[Math.min(t, BRAIN_RAR.length - 1)], mats = {}; ['syn', 'log', 'dat'].forEach(function (k) { mats[k] = Math.ceil((comp.c[k] || 0) * rar.price); }); return { bits: Math.ceil(8e6 * rar.price), mats: mats }; }
+  function brainCanBuild(comp) { if (brainMaxed(comp.id)) return false; var c = brainCompCost(comp), m = brainInit().mats; return state.bits >= c.bits && m.syn >= c.mats.syn && m.log >= c.mats.log && m.dat >= c.mats.dat; }
+  function brainGrowRate() { return 0.15 + 0.03 * brainTotal(); }
+  function renderBrain() {
+    if (!brainEl) return;
+    if (!brainUnlocked()) {
+      var can = state.bits >= BRAINLAB_COST;
+      brainEl.innerHTML = BRAIN_LOGO + '<div class="bl-head">🧠 AI Brain Lab <span class="bl-sub">— custom-build Ultron’s mind</span></div>' +
+        '<button type="button" class="bl-unlock' + (can ? ' can' : '') + '" data-bl="unlock"' + (can ? '' : ' disabled') + '>Build the Brain Lab — <span style="color:' + fmtColor(BRAINLAB_COST) + '">◉' + fmt(BRAINLAB_COST) + '</span></button>';
+    } else {
+      var b = brainInit();
+      var matChips = BRAIN_MATS.map(function (m) { return '<div class="bl-mat" style="--mc:' + m.col + '"><span class="bl-mat-n" style="color:' + m.col + '">' + m.sym + ' ' + m.name + ' <b>' + fmtN(Math.floor(b.mats[m.id])) + '</b></span><button type="button" class="bl-buy" data-blbuy="' + m.id + '">+10 · ◉' + fmt(m.buy * 10) + '</button></div>'; }).join('');
+      // Large detailed view: the brain + every part shown as a glowing node, coloured by its built rarity.
+      var diagram = '<div class="bl-diagram">' + BRAIN_LOGO + '<div class="bl-parts">' + BRAIN_COMPONENTS.map(function (comp) {
+        var t = brainTier(comp.id), rar = t > 0 ? BRAIN_RAR[t - 1] : null, col = rar ? rar.col : '#3a3f47';
+        return '<div class="bl-part" style="border-color:' + col + ';box-shadow:0 0 ' + (t ? 6 + t * 2 : 0) + 'px -2px ' + col + '"><span class="bl-part-dot" style="background:' + col + ';box-shadow:0 0 8px ' + col + '"></span><span class="bl-part-n">' + comp.name + '</span><span class="bl-part-r" style="color:' + col + '">' + (rar ? rar.n : 'unbuilt') + '</span></div>';
+      }).join('') + '</div></div>';
+      var cats = {}; BRAIN_COMPONENTS.forEach(function (c) { (cats[c.cat] = cats[c.cat] || []).push(c); });
+      var catHtml = Object.keys(cats).map(function (cn) {
+        var comps = cats[cn].map(function (comp) {
+          var t = brainTier(comp.id), maxed = brainMaxed(comp.id), rar = t > 0 ? BRAIN_RAR[t - 1] : null, next = maxed ? null : BRAIN_RAR[t], cost = brainCompCost(comp), can = brainCanBuild(comp);
+          return '<div class="bl-comp" style="--bc:' + (rar ? rar.col : 'var(--line)') + '"><div class="bl-comp-t">' + comp.name + ' <span class="bl-comp-l" style="color:' + (rar ? rar.col : 'var(--text-faint)') + '">' + (rar ? rar.n : 'unbuilt') + '</span></div><div class="bl-comp-d">' + comp.desc + ' · cognition +' + brainCog(comp.id).toFixed(1) + '</div>' +
+            (maxed ? '<div class="bl-max">★ MYTHIC — maxed</div>' : '<button type="button" class="bl-build' + (can ? ' can' : '') + '" data-blc="' + comp.id + '"' + (can ? '' : ' disabled') + '>' + (t ? 'Upgrade' : 'Build') + ' → <b style="color:' + next.col + '">' + next.n + '</b> · ◉' + fmt(cost.bits) + ' · ' + ['syn', 'log', 'dat'].filter(function (k) { return cost.mats[k]; }).map(function (k) { return BRAIN_MATS.filter(function (x) { return x.id === k; })[0].sym + cost.mats[k]; }).join(' ') + '</button>') + '</div>';
+        }).join('');
+        return '<div class="bl-cat"><div class="bl-cat-h">' + cn + '</div><div class="bl-comps">' + comps + '</div></div>';
+      }).join('');
+      brainEl.innerHTML = '<div class="bl-head">🧠 AI Brain Lab <span class="bl-sub">— cognition ' + brainTotal().toFixed(1) + ' · ×' + brainMult().toFixed(2) + ' XP &amp; income · growing ' + brainGrowRate().toFixed(2) + ' mat/s</span></div>' +
+        diagram + '<div class="bl-mats">' + matChips + '</div>' + catHtml;
+    }
+    var u = brainEl.querySelector('[data-bl="unlock"]'); if (u) u.addEventListener('click', function () { if (state.bits < BRAINLAB_COST) return; state.bits -= BRAINLAB_COST; state.brain = { unlocked: true, mats: { syn: 5, log: 5, dat: 5 }, comp: {} }; if (window.__sfx) window.__sfx('unlock'); gamePop('🧠 AI Brain Lab online', '#7fd0ff'); addXp(400, 'Discovery: AI Brain Lab'); publish(); dirty = true; save(); renderBrain(); renderBalance(); });
+    brainEl.querySelectorAll('[data-blbuy]').forEach(function (bt) { bt.addEventListener('click', function () { var m = BRAIN_MATS.filter(function (x) { return x.id === bt.dataset.blbuy; })[0]; if (!m) return; var cost = m.buy * 10; if (state.bits < cost) return; state.bits -= cost; brainInit().mats[m.id] += 10; if (window.__sfx) window.__sfx('press'); publish(); dirty = true; save(); renderBrain(); renderBalance(); }); });
+    brainEl.querySelectorAll('[data-blc]').forEach(function (bt) { bt.addEventListener('click', function () { var comp = BRAIN_COMPONENTS.filter(function (x) { return x.id === bt.dataset.blc; })[0]; if (!comp || !brainCanBuild(comp)) return; var c = brainCompCost(comp); state.bits -= c.bits; var m = brainInit().mats; m.syn -= c.mats.syn; m.log -= c.mats.log; m.dat -= c.mats.dat; state.brain.comp[comp.id] = Math.min(BRAIN_RAR.length, brainTier(comp.id) + 1); var rn = BRAIN_RAR[state.brain.comp[comp.id] - 1].n; if (window.__sfx) window.__sfx('build'); gamePop('🧠 ' + comp.name + ' → ' + rn, '#7fd0ff'); addXp(60 * state.brain.comp[comp.id], 'Brain: ' + comp.name); publish(); dirty = true; save(); renderBrain(); renderBalance(); renderProgression(); }); });
+  }
   function prestigePointsFor(roundGain, coresGained) { return Math.floor(Math.sqrt(Math.max(0, roundGain) / 6000)) + coresGained * 3; }
   function doReboot() {
     if (window.__sfx) window.__sfx('reboot');
@@ -9224,7 +9332,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderAdventure();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -9425,7 +9533,7 @@ window.__sfx = (function () {
     gamePop('◉ +1.5 Nanits — developer grant', '#ffcf5a');
     return true;
   };
-  function devRefresh() { publish(); dirty = true; save(); renderBalance(); renderProgression(); renderStonelab(); renderGenesis(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout(); }
+  function devRefresh() { publish(); dirty = true; save(); renderBalance(); renderProgression(); renderStonelab(); renderGenesis(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout(); }
   function renderDevPanel() {
     if (!devPanelEl) return;
     if (!devModeOn) { devPanelEl.hidden = true; devPanelEl.innerHTML = ''; return; }
@@ -9602,6 +9710,7 @@ window.__sfx = (function () {
       if (xpcoreUnlocked()) { crystalXpAcc += xpcoreRate() * dt; if (crystalXpAcc >= 1) { var cw = Math.floor(crystalXpAcc); crystalXpAcc -= cw; addXp(cw, 'XP Crystal'); } }   // the secret crystal mine feeds XP
       var he = activeHoliday(); if (he) { holEv(he.id).prod += dt * (1 + bayOpenCount()); }   // holiday production-milestone track fills from automated factory output
       checkRelics();   // award relics the instant their objective is met
+      if (brainUnlocked()) { var bm = brainInit().mats, gr = brainGrowRate() * dt; bm.syn += gr; bm.log += gr * 0.6; bm.dat += gr * 0.35; }   // the brain lab grows its own materials over time
     }
     advTick();                         // expeditions run on wall-clock time -> progress in the background regardless
     currencyHud(passivePerSec());   // keep the one fixed currency tracker live on EVERY tab
@@ -9612,7 +9721,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderProgression(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); }
       dirty = false;
     }
   }, 500);
@@ -9668,6 +9777,9 @@ window.__sfx = (function () {
     { n: 'Odyssey', mins: 45, loot: 4, ilvl: 5 },
     { n: 'Conquest', mins: 80, loot: 6, ilvl: 8 },
   ];
+  // Timescale: expeditions run on a 60x clock -> 1 real minute = 1 in-game hour.
+  // The real wait is ADV_DUR.mins minutes; the GAME duration is that many hours.
+  function gtLabel(realMins) { var h = Math.round(realMins); if (h < 24) return h + 'h'; var d = Math.floor(h / 24), rh = h % 24; return d + 'd' + (rh ? ' ' + rh + 'h' : ''); }
   // Rarity: note's colours + stat multiplier + an innate rarity perk, plus a
   // vanishingly rare Mythic top. mult scales every base stat on the part.
   var RARITIES = [
@@ -10049,7 +10161,7 @@ window.__sfx = (function () {
         '<div class="exp-prog"><i style="width:' + Math.round((1 - left / tot) * 100) + '%"></i></div></div>';
     } else {
       var bi = a.region || 0, boss = BOSSES[bi], bok = boss && playerLevel() >= bossUnlockLevel(bi), bdone = a.bosses && a.bosses[bi];
-      status = '<div class="exp-send">' + ADV_DUR.map(function (d, i) { return '<button type="button" class="exp-btn can" data-a="send" data-v="' + i + '">' + d.n + ' · ' + (d.mins < 60 ? d.mins + 'm' : (d.mins / 60) + 'h') + ' · ' + d.loot + ' loot</button>'; }).join('') +
+      status = '<div class="exp-timescale">⏱ 60× clock — 1 real minute = 1 in-game hour</div><div class="exp-send">' + ADV_DUR.map(function (d, i) { return '<button type="button" class="exp-btn can" data-a="send" data-v="' + i + '">' + d.n + ' · ' + gtLabel(d.mins) + ' game · ' + d.loot + ' loot</button>'; }).join('') +
         (boss ? '<button type="button" class="exp-btn boss' + (bok ? ' can' : '') + '"' + (bok ? ' data-a="boss"' : ' disabled title="Reach level ' + bossUnlockLevel(bi) + '"') + '>☠ ' + esc(boss.name) + (bdone ? ' ✓' : '') + ' · 10m</button>' : '') + '</div>';
       // Endgame dungeons: one row of escalating sealed vaults, unlocked by prestige
       var unl = dungeonsUnlocked();
@@ -10184,7 +10296,7 @@ window.__sfx = (function () {
   function advTick() {
     var a = state.adv; if (!a.unlocked) return;
     if (a.endsAt > 0 && a.endsAt <= Date.now()) { renderAdventure(); return; }   // just returned
-    if (a.endsAt > Date.now()) { var c = document.getElementById('exp-clock'); if (c) { var left = Math.ceil((a.endsAt - Date.now()) / 1000); c.textContent = left < 60 ? left + 's' : Math.floor(left / 60) + 'm ' + (left % 60) + 's'; } }
+    if (a.endsAt > Date.now()) { var c = document.getElementById('exp-clock'); if (c) { var left = Math.ceil((a.endsAt - Date.now()) / 1000); var gmin = left, gstr = gmin < 60 ? gmin + 'm' : Math.floor(gmin / 60) + 'h' + (gmin % 60 ? ' ' + (gmin % 60) + 'm' : ''); c.textContent = (left < 60 ? left + 's' : Math.floor(left / 60) + 'm ' + (left % 60) + 's') + ' real · ' + gstr + ' game'; } }
   }
 
   if (offlineEarned > 0.05) state.loot = genLoot(offlineEarned);   // now LOOT_* pools are defined
@@ -10201,6 +10313,7 @@ window.__sfx = (function () {
   renderHoliday();
   renderRelics();
   renderArmory();
+  renderBrain();
   renderProgression();
   renderDevPanel();
   renderCodex();
@@ -10227,7 +10340,7 @@ window.__sfx = (function () {
       if (j.gen) state.gen = j.gen;
       if (j.comp) state.comp = j.comp;
       if (j.genesis) state.genesis = j.genesis;
-      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory;
+      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain;
       if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
@@ -10248,10 +10361,11 @@ window.__sfx = (function () {
       if (!state.holiday) state.holiday = { events: {}, force: null, components: 0, jackpot: false, nextGuest: 0 };
       if (!state.relics) state.relics = {};
       if (!state.armory) state.armory = { cls: 'pistol', sel: {}, built: null, loadouts: {}, parts: [] };
+      if (!state.brain) state.brain = { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {} };
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderProgression(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
