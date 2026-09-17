@@ -33,7 +33,7 @@ _WORD_RE = re.compile(r"[a-z0-9]+")
 
 def classify_visibility(node):
     """Private by default on any doubt (the roadmap's own instruction).
-    Sticky once private -- see graph-schema/GRAPH-SCHEMA-DESIGN.md for
+    Sticky once private -- see docs/GRAPH-SCHEMA-DESIGN.md for
     why re-deriving from already-redacted content would misread "no
     more telltale keywords" as "safe to make public," which is
     backwards."""

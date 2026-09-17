@@ -771,20 +771,21 @@
   .stonelab{ margin-top:10px; padding:11px 13px; border:1px solid rgba(192,123,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(192,123,255,.07),transparent); }
   .sl-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#c9a6ff; }
   .sl-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); }
-  .sl-unlock, .sl-forge{ display:block; width:100%; margin-top:8px; font-family:var(--font-display); font-weight:700; font-size:12px; padding:9px; border-radius:7px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; }
-  .sl-unlock.can, .sl-forge.can{ cursor:pointer; border-color:#c07bff; color:#c9a6ff; box-shadow:0 0 14px -4px rgba(192,123,255,.6); }
-  .sl-unlock.can:hover, .sl-forge.can:hover{ background:rgba(192,123,255,.14); }
-  .sl-unlock:disabled, .sl-forge:disabled{ opacity:.6; }
-  .sl-aspects{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:7px; margin-top:9px; }
-  .sl-aspect{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; padding:7px 9px; border:1px solid var(--line); border-left:3px solid var(--sc); border-radius:7px; background:var(--void); color:var(--text); cursor:pointer; text-align:left; }
-  .sl-aspect:hover{ background:rgba(255,255,255,.04); }
-  .sl-aspect b{ font-family:var(--font-display); font-size:12px; }
+  .sl-unlock{ display:block; width:100%; margin-top:8px; font-family:var(--font-display); font-weight:700; font-size:12px; padding:9px; border-radius:7px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; }
+  .sl-unlock.can{ cursor:pointer; border-color:#c07bff; color:#c9a6ff; box-shadow:0 0 14px -4px rgba(192,123,255,.6); }
+  .sl-unlock.can:hover{ background:rgba(192,123,255,.14); }
+  .sl-unlock:disabled{ opacity:.6; }
   .sl-gem{ width:14px; height:14px; border-radius:50%; box-shadow:0 0 8px var(--sc); flex-shrink:0; }
   .sl-eff{ font-family:var(--font-mono); font-size:9px; color:var(--text-faint); width:100%; }
-  .sl-forgebay{ display:flex; justify-content:center; padding:12px 0 6px; }
-  .sl-gembig{ width:44px; height:44px; border-radius:8px; transform:rotate(45deg); animation:slspin 6s linear infinite; }
-  @keyframes slspin{ from{ transform:rotate(45deg); } to{ transform:rotate(405deg); } }
-  .sl-boost{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); text-align:center; margin-bottom:4px; }
+  .sl-stones{ display:grid; grid-template-columns:repeat(auto-fill,minmax(158px,1fr)); gap:8px; margin-top:9px; }
+  .sl-stone{ display:flex; flex-direction:column; gap:6px; padding:8px 9px; border:1px solid var(--line); border-left:3px solid var(--sc); border-radius:7px; background:var(--void); }
+  .sl-stop{ display:flex; align-items:center; gap:7px; }
+  .sl-stop b{ font-family:var(--font-display); font-size:12px; }
+  .sl-tier{ margin-left:auto; font-family:var(--font-mono); font-size:9.5px; color:var(--sc); border:1px solid var(--sc); border-radius:10px; padding:1px 6px; }
+  .sl-mini{ font-family:var(--font-display); font-weight:700; font-size:10px; padding:6px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; text-align:center; }
+  .sl-mini.can{ cursor:pointer; border-color:#c07bff; color:#c9a6ff; }
+  .sl-mini.can:hover{ background:rgba(192,123,255,.14); }
+  .sl-mini:disabled{ opacity:.6; }
   .codex-wrap{ border:1px solid var(--line); border-radius:8px; background:var(--panel-raised); }
   .codex-wrap>summary{ cursor:pointer; padding:9px 12px; font-family:var(--font-display); font-weight:700; font-size:12.5px; color:var(--text-dim); list-style:none; }
   .codex-wrap>summary::-webkit-details-marker{ display:none; }
@@ -6788,21 +6789,6 @@ function toggleReducedVisuals(el) {
     orb(gapL + span * 0.5, y2, t);
     eyeOfAgamotto(gapL + span * 0.78, y2, t);
   }
-  function drawWorldPlan(t) {
-    var gapL = walkMaxX + 34, gapR = uDeskX - 26; if (gapR - gapL < 170) return;
-    var cx = (gapL + gapR) / 2, w = Math.min(158, (gapR - gapL) * 0.72), x = cx - w / 2, y = ROOF_H + 34, h = 52;
-    ctx.fillStyle = M_DARK; ctx.fillRect(x - 3, y - 3, w + 6, h + 6);
-    ctx.fillStyle = '#0e1a12'; ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = '#1f5a2f'; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h);
-    ctx.fillStyle = '#ff5a5a'; setFont(fontPx * 0.78, true); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText('WORLD DOMINATION', cx, y + 12);
-    ctx.fillStyle = 'rgba(80,220,120,0.5)';
-    var blobs = [[0.28, 32, 15, 8], [0.6, 30, 12, 7], [0.5, 43, 9, 4], [0.78, 40, 8, 5]];
-    blobs.forEach(function (b) { ctx.beginPath(); ctx.ellipse(x + w * b[0], y + b[1], b[2], b[3], 0, 0, 6.28); ctx.fill(); });
-    ctx.fillStyle = 'rgba(255,60,60,' + (0.4 + 0.5 * Math.sin(t * 3)) + ')';
-    blobs.forEach(function (b) { ctx.beginPath(); ctx.arc(x + w * b[0], y + b[1], 2, 0, 6.28); ctx.fill(); });
-    ctx.fillStyle = '#5fe39a'; setFont(fontPx * 0.6, false); ctx.textAlign = 'right'; ctx.fillText('PHASE ▮▮▯', x + w - 5, y + h - 4);
-    hover('Ultron’s plans for world domination', cx, y + h / 2, w / 2);
-  }
   // Wanda (Scarlet Witch) and her brother (Quicksilver) sit on a couch in the
   // office, awaiting Ultron's next command.
   function drawSeated(cx, cy, coat, hair, t, sc) {
@@ -7616,7 +7602,6 @@ window.__sfx = (function () {
   // March) drive that bay's POWER; the sum of all bay power gives the adventure
   // robot a small-to-medium combat boost. Rendered as compact cards in the
   // Production Bays panel, one per bay -- next to the machines, not in the list.
-  function asmBase(i) { return Math.ceil(8 * Math.pow(2.4, i)); }
   var BAY_UP = [
     { k: 'asm',  name: 'Assembler', abbr: 'ASM', grow: 1.6,  max: 20, base: function (b) { return Math.ceil(8 * Math.pow(2.4, b)); },  desc: function (l) { return '+25% bay speed (x' + (1 + 0.25 * l).toFixed(2) + ')'; } },
     { k: 'mrch', name: 'March',     abbr: 'MCH', grow: 1.55, max: 15, base: function (b) { return Math.ceil(10 * Math.pow(2.4, b)); }, desc: function (l) { return '+10% this bay march (x' + (1 + 0.10 * l).toFixed(2) + ')'; } },
@@ -7995,7 +7980,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -8009,7 +7994,7 @@ window.__sfx = (function () {
   if (!state.comp) state.comp = { chip: 0, cpu: 0, gpu: 0, ram: 0 };   // universe-weapon components from loot salvage
   if (!state.genesis) state.genesis = { built: {}, fired: 0 };          // Genesis Cannon build progress
   if (!state.xpcore) state.xpcore = { unlocked: false };               // XP Crystal chamber floor
-  if (!state.stoneforge) state.stoneforge = { unlocked: false, aspect: null, tier: 0 };   // Infinity Stone lab
+  if (!state.stoneforge) state.stoneforge = { unlocked: false, tiers: {} };   // Infinity Stone lab (all six)
   if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
@@ -8018,6 +8003,12 @@ window.__sfx = (function () {
   if (typeof state.adv.dungeons !== 'number') state.adv.dungeons = 0;   // endgame vaults unlocked by prestige
   if (!state.adv.bosses) state.adv.bosses = {};
   if (!state.mats) state.mats = { scrap: 0, alloy: 0, core: 0 };
+  // One-time material reset for ALL users (Genesis rebalance: parts now cost
+  // currency + materials). The flag rides in the save, so it wipes exactly once
+  // per account and legitimately re-earned materials accumulate normally after.
+  var MATS_WIPE = 1;
+  function matsWipeGuard() { if ((state.matsWipe || 0) < MATS_WIPE) { state.mats = { scrap: 0, alloy: 0, core: 0 }; state.matsWipe = MATS_WIPE; dirty = true; } }
+  matsWipeGuard();
 
   var saveTimer = null;
   function save() {
@@ -8053,7 +8044,7 @@ window.__sfx = (function () {
       xpcore: !!(state.xpcore && state.xpcore.unlocked),       // XP Crystal chamber floor is built
       xppct: (function () { var p = state.prog; if (!p) return 0; return p.level >= LEVEL_CAP ? 1 : Math.max(0, Math.min(1, p.xp / xpForLevel(p.level))); })(),   // live XP gauge fill
       xplevel: (state.prog && state.prog.level) || 1,
-      stonelab: (state.stoneforge && state.stoneforge.unlocked) ? { aspect: state.stoneforge.aspect, tier: state.stoneforge.tier } : null,   // Infinity Stone lab floor
+      stonelab: (state.stoneforge && state.stoneforge.unlocked) ? { tiers: stoneTiers() } : null,   // Infinity Stone lab floor
     };
     window.__refinery = refConfig();
   }
@@ -8389,18 +8380,19 @@ window.__sfx = (function () {
   // every stage to FIRE it: it ends this universe and remakes it in Ultron's
   // image -- a super-prestige with a huge payout, a permanent x3 to everything,
   // and a 3-perk best-in-game keepsake. The longest, hardest grind in the game. ----
+  // Every stage costs a MIX: raw currency (bits) + foundry materials + loot components.
   var GENESIS_PARTS = [
-    { id: 'frame', name: 'Containment Frame', need: { scrap: 6000, alloy: 2500 } },
-    { id: 'core', name: 'Singularity Core', need: { core: 900, chip: 250 } },
-    { id: 'logic', name: 'Genesis Logic Board', need: { chip: 600, cpu: 120 } },
-    { id: 'render', name: 'Reality Renderer', need: { cpu: 260, gpu: 70 } },
-    { id: 'memory', name: 'Universe Memory Bank', need: { gpu: 140, ram: 32 } },
-    { id: 'trigger', name: 'Omega Trigger', need: { ram: 90, core: 2400 } },
+    { id: 'frame', name: 'Containment Frame', need: { bits: 5e8, scrap: 6000, alloy: 2500 } },
+    { id: 'core', name: 'Singularity Core', need: { bits: 1.2e9, core: 900, chip: 250 } },
+    { id: 'logic', name: 'Genesis Logic Board', need: { bits: 2.5e9, chip: 600, cpu: 120 } },
+    { id: 'render', name: 'Reality Renderer', need: { bits: 5e9, cpu: 260, gpu: 70 } },
+    { id: 'memory', name: 'Universe Memory Bank', need: { bits: 1e10, gpu: 140, ram: 32 } },
+    { id: 'trigger', name: 'Omega Trigger', need: { bits: 2.5e10, ram: 90, core: 2400 } },
   ];
-  var COMP_SYM = { scrap: '⬢', alloy: '◈', core: '✦', chip: '▦', cpu: '◉', gpu: '⬣', ram: '⬚' };
+  var COMP_SYM = { bits: '◉', scrap: '⬢', alloy: '◈', core: '✦', chip: '▦', cpu: '◫', gpu: '⬣', ram: '⬚' };
   var COMP_NAME = { chip: 'chips', cpu: 'CPU', gpu: 'GPU', ram: 'RAM' };
-  function genHave(k) { return (k === 'scrap' || k === 'alloy' || k === 'core') ? ((state.mats && state.mats[k]) || 0) : ((state.comp && state.comp[k]) || 0); }
-  function genPay(need) { for (var k in need) { if (k === 'scrap' || k === 'alloy' || k === 'core') state.mats[k] -= need[k]; else state.comp[k] -= need[k]; } }
+  function genHave(k) { return k === 'bits' ? state.bits : (k === 'scrap' || k === 'alloy' || k === 'core') ? ((state.mats && state.mats[k]) || 0) : ((state.comp && state.comp[k]) || 0); }
+  function genPay(need) { for (var k in need) { if (k === 'bits') state.bits -= need[k]; else if (k === 'scrap' || k === 'alloy' || k === 'core') state.mats[k] -= need[k]; else state.comp[k] -= need[k]; } }
   function genCanBuild(part) { for (var k in part.need) if (genHave(k) < part.need[k]) return false; return true; }
   function genBuilt(id) { return !!(state.genesis && state.genesis.built && state.genesis.built[id]); }
   function genAllBuilt() { return GENESIS_PARTS.every(function (p) { return genBuilt(p.id); }); }
@@ -8425,7 +8417,7 @@ window.__sfx = (function () {
         var p = GENESIS_PARTS.filter(function (x) { return x.id === btn.dataset.gn; })[0]; if (!p || genBuilt(p.id) || !genCanBuild(p.id)) return;
         genPay(p.need); state.genesis.built = state.genesis.built || {}; state.genesis.built[p.id] = true;
         if (window.__sfx) window.__sfx('boss'); gamePop('⚙ ' + p.name + ' assembled', '#ff5a7a');
-        dirty = true; save(); renderGenesis();
+        dirty = true; save(); renderGenesis(); renderBalance();
       });
     });
     var fire = genesisEl.querySelector('[data-gn-fire]'); if (fire) fire.addEventListener('click', fireGenesis);
@@ -8456,37 +8448,44 @@ window.__sfx = (function () {
   var stonelabEl = document.getElementById('stonelab');
   function stoneBoostText(id) {
     switch (id) {
-      case 'power': return '+' + (5 * stoneTier()) + '% adventurer power';
-      case 'mind': return '×' + Math.pow(1.04, stoneTier()).toFixed(2) + ' XP gain';
-      case 'time': return '×' + Math.pow(1.04, stoneTier()).toFixed(2) + ' production';
-      case 'soul': return '×' + Math.pow(1.04, stoneTier()).toFixed(2) + ' income';
-      case 'space': return '+' + stoneTier() + 'h offline capacity';
-      case 'reality': return '+' + Math.floor(stoneTier() / 2) + ' loot item level';
+      case 'power': return '+' + (5 * stoneTier('power')) + '% adventurer power';
+      case 'mind': return '×' + Math.pow(1.04, stoneTier('mind')).toFixed(2) + ' XP gain';
+      case 'time': return '×' + Math.pow(1.04, stoneTier('time')).toFixed(2) + ' production';
+      case 'soul': return '×' + Math.pow(1.04, stoneTier('soul')).toFixed(2) + ' income';
+      case 'space': return '+' + stoneTier('space') + 'h offline capacity';
+      case 'reality': return '+' + Math.floor(stoneTier('reality') / 2) + ' loot item level';
     } return '';
   }
   function renderStonelab() {
     if (!stonelabEl) return;
-    var sf = state.stoneforge || { unlocked: false, aspect: null, tier: 0 };
+    var sf = state.stoneforge || { unlocked: false, tiers: {} };
     if (!sf.unlocked) {
       var can = state.bits >= STONELAB_COST;
-      stonelabEl.innerHTML = '<div class="sl-head">💎 Infinity Stone Laboratory <span class="sl-sub">— forge and evolve your own Infinity Stone</span></div>' +
+      stonelabEl.innerHTML = '<div class="sl-head">💎 Infinity Stone Laboratory <span class="sl-sub">— forge and evolve all six Infinity Stones</span></div>' +
         '<button type="button" class="sl-unlock' + (can ? ' can' : '') + '" data-sl="unlock"' + (can ? '' : ' disabled') + '>Build the Laboratory — <span style="color:' + fmtColor(STONELAB_COST) + '">◉' + fmt(STONELAB_COST) + '</span></button>';
-    } else if (!sf.aspect) {
-      var chips = STONE_ASPECTS.map(function (a) { return '<button type="button" class="sl-aspect" data-slasp="' + a.id + '" style="--sc:' + a.col + '"><span class="sl-gem" style="background:radial-gradient(circle at 35% 30%,#fff,' + a.col + ')"></span><b>' + a.name + '</b><span class="sl-eff">+' + a.eff + '</span></button>'; }).join('');
-      stonelabEl.innerHTML = '<div class="sl-head">💎 Infinity Stone Laboratory <span class="sl-sub">— choose an aspect to forge (permanent)</span></div><div class="sl-aspects">' + chips + '</div>';
     } else {
-      var a = STONE_ASPECTS.filter(function (x) { return x.id === sf.aspect; })[0] || STONE_ASPECTS[0];
-      var c = stoneForgeCost(), mc = { scrap: c.scrap, alloy: c.alloy, core: c.core }, canForge = state.bits >= c.bits && canAfford(mc);
-      stonelabEl.innerHTML = '<div class="sl-head" style="color:' + a.col + '">💎 ' + a.name + ' Stone — Tier ' + sf.tier + '</div>' +
-        '<div class="sl-forgebay"><span class="sl-gembig" style="background:radial-gradient(circle at 35% 30%,#fff,' + a.col + ');box-shadow:0 0 ' + (10 + sf.tier * 3) + 'px ' + a.col + '"></span></div>' +
-        '<div class="sl-boost">Boost: <b style="color:' + a.col + '">' + stoneBoostText(a.id) + '</b> · evolves each tier</div>' +
-        '<button type="button" class="sl-forge' + (canForge ? ' can' : '') + '" data-sl="forge"' + (canForge ? '' : ' disabled') + '>⚒ Forge → Tier ' + (sf.tier + 1) + ' — <span style="color:' + fmtColor(c.bits) + '">◉' + fmt(c.bits) + '</span> · ' + costStr(mc) + '</button>';
+      var built = STONE_ASPECTS.filter(function (a) { return stoneTier(a.id) > 0; }).length;
+      var cards = STONE_ASPECTS.map(function (a) {
+        var t = stoneTier(a.id), c = stoneForgeCost(a.id), mc = { scrap: c.scrap, alloy: c.alloy, core: c.core }, canForge = state.bits >= c.bits && canAfford(mc);
+        return '<div class="sl-stone" style="--sc:' + a.col + '">' +
+          '<div class="sl-stop"><span class="sl-gem" style="background:radial-gradient(circle at 35% 30%,#fff,' + a.col + ');box-shadow:0 0 ' + (6 + t * 2) + 'px ' + a.col + '"></span><b>' + a.name + '</b><span class="sl-tier">T' + t + '</span></div>' +
+          '<div class="sl-eff" style="width:auto">' + stoneBoostText(a.id) + '</div>' +
+          '<button type="button" class="sl-mini' + (canForge ? ' can' : '') + '" data-slforge="' + a.id + '"' + (canForge ? '' : ' disabled') + '>⚒ Tier ' + (t + 1) + ' — <span style="color:' + fmtColor(c.bits) + '">◉' + fmt(c.bits) + '</span> · ' + costStr(mc) + '</button>' +
+          '</div>';
+      }).join('');
+      stonelabEl.innerHTML = '<div class="sl-head">💎 Infinity Stone Laboratory <span class="sl-sub">— ' + built + '/6 forged · every stone\'s boost stacks</span></div><div class="sl-stones">' + cards + '</div>';
     }
     var u = stonelabEl.querySelector('[data-sl="unlock"]');
-    if (u) u.addEventListener('click', function () { if (state.bits < STONELAB_COST) return; state.bits -= STONELAB_COST; state.stoneforge = { unlocked: true, aspect: null, tier: 0 }; if (window.__sfx) window.__sfx('unlock'); gamePop('💎 Infinity Stone Lab online', '#c07bff'); addXp(300, 'Discovery: Stone Lab'); publish(); dirty = true; save(); renderStonelab(); renderBalance(); if (window.__roomRelayout) window.__roomRelayout(); });
-    stonelabEl.querySelectorAll('[data-slasp]').forEach(function (b) { b.addEventListener('click', function () { state.stoneforge.aspect = b.dataset.slasp; if (window.__sfx) window.__sfx('unlock'); gamePop('💎 Stone aspect set', '#c07bff'); publish(); dirty = true; save(); renderStonelab(); renderBalance(); renderBays(); renderAdventure(); }); });
-    var f = stonelabEl.querySelector('[data-sl="forge"]');
-    if (f) f.addEventListener('click', function () { var c = stoneForgeCost(), mc = { scrap: c.scrap, alloy: c.alloy, core: c.core }; if (state.bits < c.bits || !canAfford(mc)) return; state.bits -= c.bits; payMats(mc); state.stoneforge.tier++; if (window.__sfx) window.__sfx('boss'); gamePop('⚒ Stone forged → Tier ' + state.stoneforge.tier, '#c07bff'); addXp(60 * state.stoneforge.tier, 'Stone forge'); publish(); dirty = true; save(); renderStonelab(); renderBalance(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout(); });
+    if (u) u.addEventListener('click', function () { if (state.bits < STONELAB_COST) return; state.bits -= STONELAB_COST; state.stoneforge = { unlocked: true, tiers: {} }; if (window.__sfx) window.__sfx('unlock'); gamePop('💎 Infinity Stone Lab online', '#c07bff'); addXp(300, 'Discovery: Stone Lab'); publish(); dirty = true; save(); renderStonelab(); renderBalance(); if (window.__roomRelayout) window.__roomRelayout(); });
+    stonelabEl.querySelectorAll('[data-slforge]').forEach(function (b) { b.addEventListener('click', function () {
+      var id = b.dataset.slforge, c = stoneForgeCost(id), mc = { scrap: c.scrap, alloy: c.alloy, core: c.core };
+      if (state.bits < c.bits || !canAfford(mc)) return;
+      state.bits -= c.bits; payMats(mc);
+      var tiers = stoneTiers(); tiers[id] = (tiers[id] || 0) + 1;
+      var nm = STONE_ASPECTS.filter(function (x) { return x.id === id; })[0];
+      if (window.__sfx) window.__sfx('boss'); gamePop('⚒ ' + (nm ? nm.name : id) + ' Stone → Tier ' + tiers[id], (nm && nm.col) || '#c07bff'); addXp(60 * tiers[id], 'Stone forge');
+      publish(); dirty = true; save(); renderStonelab(); renderBalance(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout();
+    }); });
   }
   // Points minted by a reboot: from the currency earned THIS round (the method
   // = how much you grew before falling) plus a bonus per new core banked.
@@ -8704,16 +8703,17 @@ window.__sfx = (function () {
     { id: 'soul', name: 'Soul', col: '#ff9d3c', eff: 'all income' },
   ];
   var STONELAB_COST = 1e8;   // unlock the lab
-  function stoneUnlocked() { return !!(state.stoneforge && state.stoneforge.unlocked); }
-  function stoneAspect() { return state.stoneforge && state.stoneforge.aspect; }
-  function stoneTier() { return (state.stoneforge && state.stoneforge.tier) || 0; }
-  function stoneForgeCost() { var t = stoneTier(); return { bits: Math.ceil(2e7 * Math.pow(1.9, t)), scrap: 200 * (t + 1), alloy: 80 * (t + 1), core: 20 * (t + 1) }; }
-  function stonePowerMult() { return stoneAspect() === 'power' ? 1 + 0.05 * stoneTier() : 1; }
-  function stoneXpMult() { return stoneAspect() === 'mind' ? Math.pow(1.04, stoneTier()) : 1; }
-  function stoneProdMult() { return stoneAspect() === 'time' ? Math.pow(1.04, stoneTier()) : 1; }
-  function stoneIncMult() { return stoneAspect() === 'soul' ? Math.pow(1.04, stoneTier()) : 1; }
-  function stoneOffline() { return stoneAspect() === 'space' ? stoneTier() : 0; }
-  function stoneLoot() { return stoneAspect() === 'reality' ? Math.floor(stoneTier() / 2) : 0; }
+  // Per-aspect tiers so ALL six stones can be forged and evolve independently;
+  // migrates the old single-stone { aspect, tier } save shape in place.
+  function stoneTiers() { var sf = state.stoneforge; if (!sf) return {}; if (!sf.tiers) { sf.tiers = {}; if (sf.aspect && sf.tier) sf.tiers[sf.aspect] = sf.tier; delete sf.aspect; delete sf.tier; } return sf.tiers; }
+  function stoneTier(id) { return stoneTiers()[id] || 0; }
+  function stoneForgeCost(id) { var t = stoneTier(id); return { bits: Math.ceil(2e7 * Math.pow(1.9, t)), scrap: 200 * (t + 1), alloy: 80 * (t + 1), core: 20 * (t + 1) }; }
+  function stonePowerMult() { return 1 + 0.05 * stoneTier('power'); }
+  function stoneXpMult() { return Math.pow(1.04, stoneTier('mind')); }
+  function stoneProdMult() { return Math.pow(1.04, stoneTier('time')); }
+  function stoneIncMult() { return Math.pow(1.04, stoneTier('soul')); }
+  function stoneOffline() { return stoneTier('space'); }
+  function stoneLoot() { return Math.floor(stoneTier('reality') / 2); }
   setInterval(function () {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
     syncPresence();                    // catch in-app section switches while the tab is visible
@@ -9327,6 +9327,8 @@ window.__sfx = (function () {
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
       if (j.mats) state.mats = j.mats;
+      state.matsWipe = (typeof j.matsWipe === 'number') ? j.matsWipe : 0;   // key the wipe off THIS save's provenance, not init's flag
+      matsWipeGuard();   // wipe once if this save predates the reset; flag rides along thereafter
       UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
       if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
       if (!state.prestige) state.prestige = { cores: 0 };
@@ -9335,7 +9337,7 @@ window.__sfx = (function () {
       if (!state.comp) state.comp = { chip: 0, cpu: 0, gpu: 0, ram: 0 };
       if (!state.genesis) state.genesis = { built: {}, fired: 0 };
       if (!state.xpcore) state.xpcore = { unlocked: false };
-      if (!state.stoneforge) state.stoneforge = { unlocked: false, aspect: null, tier: 0 };
+      if (!state.stoneforge) state.stoneforge = { unlocked: false, tiers: {} };
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }

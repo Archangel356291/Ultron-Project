@@ -4098,7 +4098,7 @@ AGENT_REGISTRY = {
         "kind": "claude-code", "models": "sonnet (Claude Code)",
         "tools": "Read, Write, Edit, Grep, Glob, Bash (python gen_pixel_assets.py)",
         "forbidden": "copying Marvel's Ultron design, hard-coding one-off colours in gameplay code, hand-editing generated PNG bytes, blur-heavy effects that muddy sprites",
-        "scope": "dev-tools/gen_pixel_assets.py, pixel-assets/, pixel-game/palettes.js, COLOR_PALETTES.md",
+        "scope": "dev-tools/gen_pixel_assets.py, pixel-assets/, pixel-game/palettes.js, docs/COLOR_PALETTES.md",
     },
     "game_balancer": {
         "role": "Arbiter — game rules & balancing: tunes loot/combat data and upgrade cost curves, proves changes with the Node sims; keeps the loop fair and rewarding",
@@ -4918,7 +4918,7 @@ def get_capabilities(**_ignored):
         "mcp": get_mcp_servers(),
         "senses": KNOWN_SENSES,
         "devices": KNOWN_DEVICES,
-        "financial_action_boundary": "permanent -- no execute/write trade tool exists (see FINANCIAL-ACTION-BOUNDARY.md)",
+        "financial_action_boundary": "permanent -- no execute/write trade tool exists (see docs/FINANCIAL-ACTION-BOUNDARY.md)",
     }
 
 

@@ -4,6 +4,7 @@ Vault root. Read this first, then only the folder `_index.md` you need, then onl
 
 ## Folders
 
+- `docs/` — design specs, roadmaps, and module/graph/game design notes moved out of the root (COLOR_PALETTES, LOOT_SYSTEM, GAME_MASTER_ROADMAP, ULTRON-COLOR-SYSTEM, the MODULE-* and KNOWLEDGE-GRAPH/GRAPH-SCHEMA/HOME-* notes, LAUNCH-READINESS, FUTURE-TASKS, FINANCIAL-ACTION-BOUNDARY, GIT-SECRET-AUDIT). Wikilinks resolve by name, so `[[COLOR_PALETTES]]` etc. still work from anywhere.
 - [[ultron-backend/_index|ultron-backend]] — Flask backend (home lab data, chat/voice, beta launch checklist, Tailscale remote-access setup).
 - [[dev-tools/README|dev-tools]] — test/mock infrastructure for development only, not deployed with the real backend. Single note, no sub-index yet.
 - [[ultron-discord-bot/README|ultron-discord-bot]] — Discord remote-control surface for the backend; no logic of its own. Single note, no sub-index yet.

@@ -3,7 +3,7 @@ KNOWLEDGE-GRAPH-GAP-SPEC.md (Module 2) found missing: per-node
 timestamps, a real `tags` array + a standalone tag index, and a
 public/private `visibility` flag that's genuinely enforced (private
 node content is moved out of the plaintext graph entirely, encrypted
-at rest, not just labeled). See GRAPH-SCHEMA-DESIGN.md for the full
+at rest, not just labeled). See docs/GRAPH-SCHEMA-DESIGN.md for the full
 design this implements and its known limits.
 
 Deliberately NOT a fork of graphify's graph store: this reads
