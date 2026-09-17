@@ -556,6 +556,12 @@
   .floor-sign{ display:inline-block; font-family:var(--font-display); font-weight:800; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:#dfe7f2;
     padding:4px 13px; margin-bottom:11px; border-radius:5px; border-left:3px solid #4f9fff;
     background:linear-gradient(180deg,#1d2129,#12151b); box-shadow:0 0 14px -4px rgba(120,170,255,.55), inset 0 1px 0 rgba(255,255,255,.08); }
+  /* each floor is a click-to-collapse room: click the sign to open/close it */
+  .game-floor > .floor-sign{ cursor:pointer; user-select:none; }
+  .game-floor > .floor-sign::after{ content:'▾'; margin-left:9px; color:#8aa0c0; font-size:10px; }
+  .game-floor.collapsed > .floor-sign::after{ content:'▸'; }
+  .game-floor.collapsed > .floor-sign{ margin-bottom:0; opacity:.9; }
+  .game-floor.collapsed > :not(.floor-sign):not(.floor-keep){ display:none !important; }
   /* the big section containers lose their own box borders and blend into the floor */
   .game-floor > .foundry, .game-floor > .refinery, .game-floor > .expedition, .game-floor > .codex-wrap,
   .game-floor > .progression, .game-floor > .armory, .game-floor > .brainlab, .game-floor > .relics,
@@ -2242,12 +2248,12 @@
           <div class="foundry-generators" id="foundry-generators"></div>
           </div>
 
-          <!-- Ultron's Refinery -->
+          <!-- Ultron's Refinery (the machine visual + autosell stay visible when collapsed) -->
           <div class="game-floor"><div class="floor-sign">⚒️ Ultron's Refinery</div>
+          <div class="refinery-canvas-wrap floor-keep">
+            <canvas id="refinery-canvas" aria-label="Ultron's refinery: an adamantium forge and a vibranium forge cast ingots onto one conveyor that feeds a currency press."></canvas>
+          </div>
           <div class="refinery" id="refinery">
-            <div class="refinery-canvas-wrap">
-              <canvas id="refinery-canvas" aria-label="Ultron's refinery: an adamantium forge and a vibranium forge cast ingots onto one conveyor that feeds a currency press."></canvas>
-            </div>
             <div class="refinery-upgrades" id="refinery-upgrades"></div>
             <div class="foundry-note">Two forges cast adamantium (bright silver) and vibranium (black, blue-crackled) ingots onto one belt into the press, which mints extra bits. Unlock and upgrade each machine and the belt individually — same Bits → Nanits scale as the foundry.</div>
           </div>
@@ -11551,6 +11557,36 @@ window.__sfx = (function () {
   // never rendered on a real load, only when called manually after the
   // fact. Real bug, not theoretical.
   if (typeof state !== 'undefined' && state.connected) window.__kgRefresh();
+})();
+</script>
+<script>
+/* ---- Collapsible floors: every room in the building collapses/expands by
+   clicking its floor sign. The game ALWAYS starts with every floor collapsed
+   (owner request); the player's open/closed choices persist per browser. ---- */
+(function () {
+  var KEY = 'ultron_floors_open_v1';
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } }
+  function persist(arr) { try { localStorage.setItem(KEY, JSON.stringify(arr)); } catch (e) {} }
+  function wire() {
+    var building = document.querySelector('.game-building'); if (!building) return;
+    var floors = building.querySelectorAll(':scope > .game-floor');
+    var open = load();
+    floors.forEach(function (f, i) {
+      var sign = f.querySelector(':scope > .floor-sign'); if (!sign || f.dataset.fkey) return;
+      var key = (sign.textContent.replace(/[^A-Za-z]/g, '').slice(0, 24) || 'floor') + i;
+      f.dataset.fkey = key;
+      if (open.indexOf(key) === -1) f.classList.add('collapsed');   // default: collapsed
+      sign.addEventListener('click', function () {
+        f.classList.toggle('collapsed');
+        var arr = load(), on = !f.classList.contains('collapsed');
+        arr = arr.filter(function (k) { return k !== key; });
+        if (on) arr.push(key);
+        persist(arr);
+        if (!f.classList.contains('collapsed') && window.__roomRelayout) window.__roomRelayout();
+      });
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
 </script>
 <script>
