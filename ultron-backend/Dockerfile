@@ -27,6 +27,16 @@ COPY fonts/ fonts/
 # get_knowledge_graph() in app.py, not served as a raw static file.
 COPY graphify-out/graph.json graphify-out/graph.json
 
+# Not root: nothing here needs it. Everything the app writes goes to the
+# /data mount. The Docker socket is the one thing a plain user cannot open;
+# docker-compose.yml grants that through group_add rather than by keeping
+# root (see the note there).
+RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin ultron
+USER ultron
+
 WORKDIR /app/ultron-backend
 EXPOSE 5000
-CMD ["python", "app.py"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=25s --retries=3 CMD ["python", "healthcheck.py"]
+# gunicorn, not `python app.py` (Flask's development server) -- see
+# gunicorn.conf.py for why it is one worker with many threads.
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "app:app"]

@@ -54,6 +54,18 @@ services:
       # as root. The app's own require_role() gate is what actually keeps
       # beta-tester tokens away from the endpoints that use it.
       - /var/run/docker.sock:/var/run/docker.sock
+    # The backend runs as a plain user (see its Dockerfile). The Docker socket
+    # is root:root 0660 inside the container, so membership of group 0 is what
+    # lets it keep reading container status. That is group membership, not
+    # root -- though the socket itself is still powerful, which is what
+    # LAUNCH-READINESS item 3 (a socket proxy) narrows; this line goes then.
+    group_add:
+      - "0"
+    # The healthcheck is in the Dockerfile. The label lets the autoheal
+    # container already running in the Pi-hole stack restart this one if it
+    # ever reports unhealthy; with no autoheal running it does nothing.
+    labels:
+      autoheal: "true"
     networks:
       - ultron
 
@@ -71,7 +83,19 @@ services:
       - ULTRON_BACKEND_URL=https://ultron-backend:5000
       - TZ=America/Los_Angeles
     depends_on:
-      - ultron-backend
+      ultron-backend:
+        condition: service_healthy
+    # Healthy = the bot wrote its heartbeat file in the last two minutes,
+    # which it only does while its Discord gateway connection is alive
+    # (see _heartbeat_loop in bot.py).
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,sys,time; sys.exit(0 if time.time()-os.path.getmtime('/tmp/ultron-bot-heartbeat')<120 else 1)"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+    labels:
+      autoheal: "true"
     networks:
       - ultron
 
@@ -92,6 +116,14 @@ services:
       - TZ=America/Los_Angeles
     volumes:
       - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+    labels:
+      autoheal: "true"
     networks:
       - ultron
 

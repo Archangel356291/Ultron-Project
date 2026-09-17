@@ -14,6 +14,26 @@ estimates from reading the code, not measurements.
 Everything below was checked against the code or the running system on
 2026-09-16; each item says what was seen.
 
+**Scope, from the owner (2026-09-16):** personal, family and friends only --
+never public. So the bar is a dependable product for a handful of trusted
+people, not a storefront listing.
+
+## Progress
+
+- **Item 1 -- done 2026-09-16.** The backend is served by gunicorn (one
+  worker, 16 threads; `gunicorn.conf.py` says why one), runs as user
+  `ultron` (uid 10001) instead of root, and has a `HEALTHCHECK`. The bot
+  writes a heartbeat only while its Discord gateway connection is alive and
+  is health-checked on its age; SearXNG is checked on `/healthz`. All three
+  carry the `autoheal` label, so the autoheal container already running in
+  the Pi-hole stack restarts any that go unhealthy, and the bot now waits
+  for a healthy backend before starting. Verified live: no development-
+  server warning in the log, TLS still valid from outside, container list
+  (Docker socket), storage, agents, Brain graph and Sentinel all answer, data
+  folder writable, all three `healthy`, 31/31 checks pass. `python app.py`
+  still works for local Windows development. Not exercised: a spoken reply
+  (the one streamed response) -- it costs Fish Audio credit to test.
+
 ## Where it stands
 
 - Running: 8 containers up, no errors in the backend or bot logs, hourly
@@ -55,8 +75,8 @@ Everything below was checked against the code or the running system on
 Not needed for the goal above, listed so it is not a surprise later.
 
 - **The name and likeness.** "Ultron" is Marvel's trademark. The art is
-  original, and personal use is fine, but a public or store release would
-  need a different name and would be rejected with this one.
+  original and private use among family and friends is fine; this only
+  matters if the scope above ever changes.
 - Real multi-user accounts (today: one admin, beta testers as static tokens).
 - A native wrapper and store paperwork; an inventory of third-party licences.
 

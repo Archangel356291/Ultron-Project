@@ -57,6 +57,7 @@ Run:
 
 import asyncio
 import io
+import math
 import os
 import re
 import sys
@@ -585,12 +586,30 @@ class UltronBot(commands.Bot):
             await self.tree.sync(guild=guild)
         else:
             await self.tree.sync()
+        self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
+
+    async def _heartbeat_loop(self):
+        """Touches HEARTBEAT_PATH every 30s, but only while the Discord
+        gateway is really answering (a finite latency means heartbeats are
+        being acknowledged). The container's healthcheck reads the file's
+        age, so a bot that is running but cut off from Discord goes
+        unhealthy instead of looking fine forever."""
+        while not self.is_closed():
+            try:
+                if self.is_ready() and math.isfinite(self.latency):
+                    with open(HEARTBEAT_PATH, "w") as f:
+                        f.write(str(self.latency))
+            except Exception:
+                pass  # a full /tmp must not take the bot down; the check will say so
+            await asyncio.sleep(30)
 
     async def close(self):
         if self.http_session:
             await self.http_session.close()
         await super().close()
 
+
+HEARTBEAT_PATH = os.environ.get("ULTRON_BOT_HEARTBEAT", "/tmp/ultron-bot-heartbeat")
 
 bot = UltronBot()
 

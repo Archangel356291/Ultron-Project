@@ -38,8 +38,29 @@ def demo():
         "/app/tls/ultron.crt", "/app/tls/ultron.key",
     )
 
+    # The container is served by gunicorn, whose config file restates the
+    # rule (it cannot import app without starting the background schedulers
+    # in gunicorn's master process). Hold the two to the same answer, and to
+    # the one-worker setting the in-memory lockouts and rate limits rely on.
+    import runpy
+    conf_path = os.path.join(os.path.dirname(os.path.abspath(app.__file__)), "gunicorn.conf.py")
+    for cert, key in ((None, None), ("/c.crt", None), (None, "/k.key"), ("/c.crt", ""), ("  /c.crt ", " /k.key  ")):
+        for name, value in (("ULTRON_TLS_CERT", cert), ("ULTRON_TLS_KEY", key)):
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+        conf = runpy.run_path(conf_path)
+        expected = app._resolve_ssl_context(cert, key)
+        got = (conf["certfile"], conf["keyfile"]) if "certfile" in conf else None
+        assert got == expected, (cert, key, got, expected)
+        assert conf["workers"] == 1 and conf["worker_class"] == "gthread" and conf["threads"] >= 8, conf["workers"]
+    os.environ.pop("ULTRON_TLS_CERT", None)
+    os.environ.pop("ULTRON_TLS_KEY", None)
+
     print("OK: _resolve_ssl_context only enables TLS when both cert and key are configured, "
-          "falls back to plain HTTP for any other combination, and strips whitespace.")
+          "falls back to plain HTTP for any other combination, and strips whitespace; "
+          "gunicorn.conf.py gives the same answer and stays one threaded worker.")
 
 
 if __name__ == "__main__":
