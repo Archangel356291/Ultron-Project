@@ -91,6 +91,7 @@ import platform
 import re
 import secrets
 import shutil
+import socket
 import sqlite3
 import subprocess
 import sys
@@ -99,6 +100,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from functools import wraps
 
 import psutil
@@ -359,6 +361,31 @@ def _init_db():
                 storage_json TEXT
             )
         """)
+        # Agent governance (2026-09-16): every unit of work an agent does on
+        # the owner's behalf, with the lifecycle the owner specified.
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS agent_tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                task_uid TEXT NOT NULL UNIQUE,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                agent TEXT NOT NULL,
+                objective TEXT NOT NULL,
+                acceptance_criteria TEXT,
+                authorized_scope TEXT,
+                allowed_tools TEXT,
+                risk_level TEXT NOT NULL DEFAULT 'low',
+                approval_status TEXT NOT NULL DEFAULT 'not_required',
+                status TEXT NOT NULL DEFAULT 'created',
+                progress TEXT,
+                evidence TEXT,
+                review_status TEXT NOT NULL DEFAULT 'pending',
+                blocker TEXT
+            )
+        """)
+        existing_usage_cols = {row["name"] for row in conn.execute("PRAGMA table_info(llm_usage)")}
+        if "agent" not in existing_usage_cols:
+            conn.execute("ALTER TABLE llm_usage ADD COLUMN agent TEXT")
         conn.execute("""
             CREATE TABLE IF NOT EXISTS evolution_ideas (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -2916,6 +2943,31 @@ def briefing():
     return jsonify(get_briefing())
 
 
+@app.route("/api/agents")
+@require_token
+def agents():
+    return jsonify(get_agent_status())
+
+
+@app.route("/api/agents/tasks", methods=["GET", "POST"])
+@require_token
+def agent_tasks():
+    if request.method == "POST":
+        result = create_agent_task(request.get_json(silent=True) or {})
+        if "error" in result:
+            return jsonify(result), 409 if "duplicate_of" in result else 400
+        return jsonify(result), 201
+    return _json_result(get_agent_tasks(
+        agent=request.args.get("agent"), status=request.args.get("status"), limit=request.args.get("limit", "50")))
+
+
+@app.route("/api/agents/tasks/<task_uid>", methods=["PATCH"])
+@require_token
+def agent_task_update(task_uid):
+    result = update_agent_task(task_uid, request.get_json(silent=True) or {})
+    return _json_result(result, error_status=400)
+
+
 @app.route("/api/actions/backup", methods=["POST"])
 @require_token
 def action_backup():
@@ -3070,13 +3122,91 @@ _sentinel_lock = threading.Lock()
 _sentinel_state = {"last_run": None, "findings": {}, "runs": 0}
 
 
+# Monitoring allowlist (governance, 2026-09-16): the ONLY systems Sentinel
+# probes beyond this host's own Docker socket are listed in a JSON file the
+# owner controls, one entry per service with its owner/authorization
+# recorded. Deny by default: a target whose host is not private (loopback,
+# host.docker.internal, RFC1918, or a bare compose service name) is refused
+# and logged, never probed. Probes are read-only GET/TCP connects with a
+# short timeout, once per Sentinel pass -- no credentials, no commands.
+MONITOR_TARGETS_PATH = os.environ.get("ULTRON_MONITOR_TARGETS", os.path.join(DATA_DIR, "monitoring-targets.json"))
+MONITOR_PROBE_TIMEOUT_SECONDS = 5
+_PRIVATE_HOST_RE = re.compile(
+    r"^(localhost|127\.\d+\.\d+\.\d+|host\.docker\.internal|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|"
+    r"172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|[a-z0-9][a-z0-9-]*)$", re.I)
+
+
+def _load_monitor_targets():
+    """[{name, type: http|tcp, target, owner, authorization, classification}], or []."""
+    try:
+        with open(MONITOR_TARGETS_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        return []
+    targets = data.get("targets") if isinstance(data, dict) else data
+    return [t for t in (targets or []) if isinstance(t, dict) and t.get("name") and t.get("target")]
+
+
+def _target_host(target):
+    if "://" in target:
+        return (urllib.parse.urlsplit(target).hostname or "").lower()
+    return target.rsplit(":", 1)[0].strip("[]").lower()
+
+
+def _probe_target(t):
+    """Returns (ok, detail). Refuses anything not on a private host."""
+    host = _target_host(str(t["target"]))
+    if not host or not _PRIVATE_HOST_RE.match(host) or host.endswith((".com", ".net", ".org", ".io")):
+        return None, f"refused: {host or t['target']} is not a private host (allowlist is local-only)"
+    kind = (t.get("type") or "http").lower()
+    try:
+        if kind == "tcp":
+            h, _, port = str(t["target"]).rpartition(":")
+            with socket.create_connection((h.strip("[]"), int(port)), timeout=MONITOR_PROBE_TIMEOUT_SECONDS):
+                return True, "tcp open"
+        req = urllib.request.Request(str(t["target"]), headers={"User-Agent": "Ultron-Sentinel/1.0"}, method="GET")
+        with urllib.request.urlopen(req, timeout=MONITOR_PROBE_TIMEOUT_SECONDS) as resp:
+            return resp.status < 500, f"HTTP {resp.status}"
+    except urllib.error.HTTPError as e:
+        return e.code < 500, f"HTTP {e.code}"
+    except Exception as e:
+        return False, str(e)[:120]
+
+
+def _sentinel_posture():
+    """Local configuration review, no network: the things a security review
+    of THIS deployment would flag first. Keys are stable so they clear."""
+    findings = {}
+    if ALLOWED_ORIGIN == "*":
+        findings["posture:cors_any_origin"] = (
+            "warning", "CORS allows any origin (ULTRON_ALLOWED_ORIGIN is '*') — fine on a LAN, set it to the dashboard's address if this API is reachable beyond it")
+    if not (os.environ.get("ULTRON_TLS_CERT") and os.environ.get("ULTRON_TLS_KEY")):
+        findings["posture:no_tls"] = ("warning", "backend is serving plain HTTP (ULTRON_TLS_CERT/KEY unset)")
+    admin_token = os.environ.get("ULTRON_API_TOKEN") or ""
+    if len(admin_token) < 24:
+        findings["posture:weak_admin_token"] = ("error", f"admin API token is only {len(admin_token)} characters — use 32+ random characters")
+    if SENTINEL_INTERVAL_SECONDS and SENTINEL_INTERVAL_SECONDS > 900:
+        findings["posture:slow_watchdog"] = ("warning", f"Sentinel interval is {SENTINEL_INTERVAL_SECONDS}s — over 15 minutes between checks")
+    return findings
+
+
 def _sentinel_checks():
     """Everything currently wrong, as {key: (status, summary)}. A pure
     read -- no scan started, nothing mutated. Keys are stable per problem
     (one per locked-out source, one per stopped container, one per image
-    with critical CVEs) so the diff in _sentinel_run_once is exact."""
+    with critical CVEs, one per unreachable allowlisted service, one per
+    posture item) so the diff in _sentinel_run_once is exact."""
     findings = {}
     now = time.time()
+
+    findings.update(_sentinel_posture())
+
+    for t in _load_monitor_targets():
+        ok, detail = _probe_target(t)
+        if ok is None:
+            findings["monitor_refused:" + t["name"]] = ("warning", f"monitoring target '{t['name']}' refused — {detail}")
+        elif not ok:
+            findings["monitor_down:" + t["name"]] = ("error", f"{t['name']} is not responding ({detail})")
 
     with _login_lock:
         locked = [src for src, until in _login_lockouts.items() if until > now]
@@ -3094,6 +3224,11 @@ def _sentinel_checks():
             if c["state"] != "running":
                 findings["container_down:" + c["name"]] = (
                     "warning", f"container {c['name']} is not running ({c['status'] or 'no status'})")
+            elif "(unhealthy)" in (c["status"] or "").lower():
+                # The service's own Docker healthcheck (Pi-hole, Jellyfin,
+                # autoheal...) says it is up but not working.
+                findings["container_unhealthy:" + c["name"]] = (
+                    "error", f"container {c['name']} reports unhealthy ({c['status']})")
 
     for image, entry in list(_cve_scan_cache.items()):
         critical = ((entry.get("data") or {}).get("by_severity") or {}).get("critical", 0)
@@ -3322,12 +3457,234 @@ def _situational_context(user_message):
 
 
 # --------------------------------------------------------------------------
+# Agent governance (owner-requested 2026-09-16) -- one registry of who does
+# what with which tools, and one task ledger with the owner's lifecycle:
+#   created -> assigned -> acknowledged -> in_progress
+#            -> blocked | awaiting_review | completed | failed | cancelled
+# The registry is descriptive AND enforced: an LLM agent's tools are the
+# set run_ultron_chat offers (deny by default at dispatch), Sentinel and
+# the learner have no tools at all, Scout is one tool. Tasks are created
+# and moved by the admin (dashboard/API) -- chat can only read them, the
+# same principle as evolution ideas: Ultron proposes and reports, a human
+# decides. "completed" needs evidence; a high-risk task needs approval
+# before it may start; every transition is an activity-log entry.
+# --------------------------------------------------------------------------
+AGENT_REGISTRY = {
+    "ultron": {
+        "role": "Conversational core (Claude): answers, reads the host, proposes; never acts on the host",
+        "kind": "llm", "models": "ULTRON_LLM_MODEL / LITE / DEEP",
+        "tools": "built-in read tools (role- and mode-filtered) + approved MCP tools; writes: remember_note, propose_idea only",
+        "forbidden": "any host mutation, trades, deploys, backups, approving its own ideas or tasks",
+        "scope": "this PC's backend and its data; beta testers: trade data only",
+    },
+    "sentinel": {
+        "role": "Security watchdog + monitoring (zero tokens)",
+        "kind": "scheduler", "models": None,
+        "tools": "docker_ps, login-lockout state, CVE cache, local posture review, allowlisted read-only probes",
+        "forbidden": "any remote command, config change, scan start, probe of a non-private host",
+        "scope": "this PC's containers and backend; targets in monitoring-targets.json (private hosts only)",
+    },
+    "scout": {
+        "role": "Web research through the private SearXNG (minimal tokens)",
+        "kind": "tool", "models": None,
+        "tools": "web_search (admin-only, results wrapped as untrusted)",
+        "forbidden": "storing web content without the owner saying so; any non-search request",
+        "scope": "ultron-searxng on the compose network",
+    },
+    "learner": {
+        "role": "Memory extraction after admin turns (opt-in, lite model)",
+        "kind": "llm", "models": "LITE_MODEL",
+        "tools": "remember_note only",
+        "forbidden": "recording live numbers, web content, beta-tester turns",
+        "scope": "the owner's own conversation text",
+    },
+    "engineering": {
+        "role": "Build, test, debug, document and maintain Ultron",
+        "kind": "external", "models": "Claude Code session (owner-operated)",
+        "tools": "repository, dev-tools tests, docker compose on this PC, Chrome for verification",
+        "forbidden": "external deployment, paid services, credential changes, destructive DB changes without the owner",
+        "scope": "the Ultron repository and its containers on this PC; tracked here as tasks + evolution ideas",
+    },
+}
+TASK_STATUSES = ("created", "assigned", "acknowledged", "in_progress", "blocked", "awaiting_review",
+                 "completed", "failed", "cancelled")
+TASK_TRANSITIONS = {
+    "created": {"assigned", "cancelled"},
+    "assigned": {"acknowledged", "cancelled"},
+    "acknowledged": {"in_progress", "blocked", "cancelled"},
+    "in_progress": {"blocked", "awaiting_review", "completed", "failed", "cancelled"},
+    "blocked": {"in_progress", "failed", "cancelled"},
+    "awaiting_review": {"completed", "in_progress", "failed"},
+    "completed": set(), "failed": set(), "cancelled": set(),
+}
+TASK_RISK_LEVELS = ("low", "medium", "high")
+
+
+def _task_row(r):
+    d = dict(r)
+    for k in ("allowed_tools",):
+        try:
+            d[k] = json.loads(d[k]) if d.get(k) else []
+        except ValueError:
+            d[k] = []
+    return d
+
+
+def create_agent_task(body):
+    agent = (body.get("agent") or "").strip().lower()
+    if agent not in AGENT_REGISTRY:
+        return {"error": f"agent must be one of: {', '.join(AGENT_REGISTRY)}"}
+    objective = (body.get("objective") or "").strip()[:1000]
+    if not objective:
+        return {"error": "objective is required"}
+    risk = (body.get("risk_level") or "low").strip().lower()
+    if risk not in TASK_RISK_LEVELS:
+        return {"error": f"risk_level must be one of: {', '.join(TASK_RISK_LEVELS)}"}
+    tools = body.get("allowed_tools") or []
+    if not isinstance(tools, list):
+        return {"error": "allowed_tools must be a list"}
+    approval = "pending" if risk == "high" else "not_required"
+    now = time.strftime("%Y-%m-%dT%H:%M:%S")
+    try:
+        conn = _get_db_connection()
+        try:
+            dup = conn.execute(
+                "SELECT task_uid FROM agent_tasks WHERE agent = ? AND objective = ? "
+                "AND status NOT IN ('completed', 'failed', 'cancelled')", (agent, objective)).fetchone()
+            if dup:
+                return {"error": f"an open task with this objective already exists for {agent}: {dup['task_uid']}", "duplicate_of": dup["task_uid"]}
+            uid = "T-" + uuid.uuid4().hex[:8]
+            conn.execute(
+                "INSERT INTO agent_tasks (task_uid, created_at, updated_at, agent, objective, acceptance_criteria, "
+                "authorized_scope, allowed_tools, risk_level, approval_status, status) VALUES (?,?,?,?,?,?,?,?,?,?,'created')",
+                (uid, now, now, agent, objective, (body.get("acceptance_criteria") or "").strip()[:2000] or None,
+                 (body.get("authorized_scope") or "").strip()[:1000] or None, json.dumps([str(t)[:80] for t in tools][:30]),
+                 risk, approval))
+            conn.commit()
+            row = conn.execute("SELECT * FROM agent_tasks WHERE task_uid = ?", (uid,)).fetchone()
+        finally:
+            conn.close()
+    except Exception as e:
+        return {"error": f"could not create task: {e}"}
+    log_activity("agent_task", f"Task {uid} created for {agent}: {objective[:100]}", detail=uid)
+    return _task_row(row)
+
+
+def update_agent_task(task_uid, body):
+    """Admin-driven transition. Enforces the lifecycle, evidence on
+    completion, approval before a high-risk task starts, and records
+    progress/blocker/review. Every accepted change is an activity entry."""
+    try:
+        conn = _get_db_connection()
+        try:
+            row = conn.execute("SELECT * FROM agent_tasks WHERE task_uid = ?", (task_uid,)).fetchone()
+            if not row:
+                return {"error": f"no task {task_uid}"}
+            fields, values, notes = [], [], []
+            new_status = (body.get("status") or "").strip().lower() or None
+            if body.get("approval_status") in ("approved", "rejected"):
+                fields.append("approval_status = ?"); values.append(body["approval_status"]); notes.append(body["approval_status"])
+            current_approval = body.get("approval_status") if body.get("approval_status") in ("approved", "rejected") else row["approval_status"]
+            if new_status:
+                if new_status not in TASK_STATUSES:
+                    return {"error": f"status must be one of: {', '.join(TASK_STATUSES)}"}
+                if new_status not in TASK_TRANSITIONS[row["status"]]:
+                    return {"error": f"cannot move {task_uid} from {row['status']} to {new_status}"}
+                if new_status == "in_progress" and row["risk_level"] == "high" and current_approval != "approved":
+                    return {"error": f"{task_uid} is high-risk and needs approval_status=approved before it can start"}
+                if new_status == "completed" and not ((body.get("evidence") or "").strip() or row["evidence"]):
+                    return {"error": "completed requires evidence (changed files, test output, build status, summary)"}
+                fields.append("status = ?"); values.append(new_status); notes.append(new_status)
+            for key in ("progress", "evidence", "blocker"):
+                if key in body:
+                    fields.append(f"{key} = ?"); values.append((body.get(key) or "").strip()[:4000] or None)
+            if body.get("review_status") in ("pending", "accepted", "rejected"):
+                fields.append("review_status = ?"); values.append(body["review_status"]); notes.append("review " + body["review_status"])
+            if not fields:
+                return {"error": "nothing to update"}
+            fields.append("updated_at = ?"); values.append(time.strftime("%Y-%m-%dT%H:%M:%S"))
+            values.append(task_uid)
+            conn.execute(f"UPDATE agent_tasks SET {', '.join(fields)} WHERE task_uid = ?", values)
+            conn.commit()
+            row = conn.execute("SELECT * FROM agent_tasks WHERE task_uid = ?", (task_uid,)).fetchone()
+        finally:
+            conn.close()
+    except Exception as e:
+        return {"error": f"could not update task: {e}"}
+    status_flag = "error" if row["status"] == "failed" else "warning" if row["status"] == "blocked" else "success"
+    log_activity("agent_task", f"Task {task_uid} ({row['agent']}): {', '.join(notes) or 'updated'}", detail=task_uid, status=status_flag)
+    return _task_row(row)
+
+
+def get_agent_tasks(agent=None, status=None, limit=50, **_ignored):
+    try:
+        limit = max(1, min(int(limit), 200))
+    except (TypeError, ValueError):
+        limit = 50
+    clauses, params = [], []
+    if agent:
+        clauses.append("agent = ?"); params.append(str(agent).strip().lower())
+    if status:
+        clauses.append("status = ?"); params.append(str(status).strip().lower())
+    where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+    try:
+        conn = _get_db_connection()
+        try:
+            rows = conn.execute(f"SELECT * FROM agent_tasks {where} ORDER BY id DESC LIMIT ?", (*params, limit)).fetchall()
+        finally:
+            conn.close()
+        return {"tasks": [_task_row(r) for r in rows]}
+    except Exception as e:
+        return {"error": f"could not read tasks: {e}"}
+
+
+def get_agent_status(**_ignored):
+    """Every agent: role, permissions, health, last update, current task,
+    today's spend against its cap. The dashboard's Agents card and Ultron's
+    own get_agent_status tool share this."""
+    tasks = get_agent_tasks(limit=200).get("tasks", [])
+    open_by_agent = {}
+    for t in tasks:
+        if t["status"] not in ("completed", "failed", "cancelled"):
+            open_by_agent.setdefault(t["agent"], t)  # newest first, so first hit = current
+    threats = get_threat_summary()
+    brain_ok = _load_brain_graph()[0] is not None
+    usage = {r["agent"]: r for r in get_llm_usage().get("by_agent", [])}
+    agents = []
+    for name, meta in AGENT_REGISTRY.items():
+        if name == "sentinel":
+            health = "watching" if threats["enabled"] else "disabled"
+            last = threats.get("last_run")
+            detail = f"{threats['active_count']} active finding(s)"
+        elif name == "scout":
+            health = "ready" if SEARXNG_URL else "not configured"
+            last, detail = None, ("ULTRON_SEARXNG_URL set" if SEARXNG_URL else "set ULTRON_SEARXNG_URL")
+        elif name == "learner":
+            health = "available (opt-in per conversation)"
+            last, detail = None, f"model {LEARN_MODEL}"
+        elif name == "ultron":
+            health = "online" if anthropic_client is not None else "no API key"
+            last, detail = None, ("brain graph loaded" if brain_ok else "brain graph not built yet")
+        else:
+            health, last, detail = "external (Claude Code session)", None, "tracked via tasks + evolution ideas"
+        u = usage.get(name, {})
+        agents.append({
+            "agent": name, **meta, "health": health, "last_update": last, "detail": detail,
+            "current_task": open_by_agent.get(name),
+            "spend_today_usd": u.get("spend_usd", 0.0), "requests_today": u.get("requests", 0),
+            "daily_cap_usd": AGENT_DAILY_USD.get(name),
+        })
+    return {"agents": agents, "open_tasks": sum(1 for t in tasks if t["status"] not in ("completed", "failed", "cancelled")),
+            "lifecycle": list(TASK_STATUSES)}
+
+
+# --------------------------------------------------------------------------
 # LLM usage tracking — real token counts from the API's own response,
 # logged per call, so the daily budget (if configured) is enforced against
 # actual spend rather than a guess, and so /api/chat/usage can show you
 # exactly what's been used.
 # --------------------------------------------------------------------------
-def _log_llm_usage(usage, beta_name=None, model=None):
+def _log_llm_usage(usage, beta_name=None, model=None, agent="ultron"):
     """Best-effort — never raises. A logging failure must not break the
     chat response it's recording usage for. cost_usd is computed and stored
     at write time (not derived later from tokens) so the beta spend cap is a
@@ -3346,8 +3703,8 @@ def _log_llm_usage(usage, beta_name=None, model=None):
         try:
             conn.execute(
                 "INSERT INTO llm_usage (timestamp, input_tokens, output_tokens, "
-                "cache_read_input_tokens, cache_creation_input_tokens, beta_name, cost_usd) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "cache_read_input_tokens, cache_creation_input_tokens, beta_name, cost_usd, agent) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     time.strftime("%Y-%m-%dT%H:%M:%S"),
                     input_tokens,
@@ -3356,6 +3713,7 @@ def _log_llm_usage(usage, beta_name=None, model=None):
                     cache_write,
                     beta_name,
                     cost_usd,
+                    agent,
                 ),
             )
             conn.commit()
@@ -3469,6 +3827,52 @@ def _beta_tester_spend_usd(beta_name):
         return 0.0
 
 
+# Per-agent daily spend caps (governance, 2026-09-16): ULTRON_AGENT_DAILY_USD
+# = "ultron=5.00,learner=0.25". Unset = no cap for that agent (the global
+# token budget and beta cap still apply). Checked before the call, like the
+# other budgets -- a real refusal, not a displayed number.
+def _parse_agent_caps(raw):
+    caps = {}
+    for part in (raw or "").split(","):
+        if "=" not in part:
+            continue
+        name, value = part.split("=", 1)
+        try:
+            caps[name.strip()] = max(0.0, float(value))
+        except ValueError:
+            continue
+    return caps
+
+
+AGENT_DAILY_USD = _parse_agent_caps(os.environ.get("ULTRON_AGENT_DAILY_USD"))
+
+
+def _agent_spend_today(agent):
+    """Today's real dollars for one agent; 0.0 on any read failure."""
+    try:
+        conn = _get_db_connection()
+        try:
+            row = conn.execute(
+                "SELECT COALESCE(SUM(cost_usd), 0) as spend FROM llm_usage "
+                "WHERE timestamp LIKE ? AND COALESCE(agent, 'ultron') = ?",
+                (time.strftime("%Y-%m-%d") + "%", agent),
+            ).fetchone()
+        finally:
+            conn.close()
+        return float(row["spend"] or 0.0)
+    except Exception:
+        return 0.0
+
+
+def _agent_over_cap(agent):
+    """(over, spent, cap) -- over is False when the agent has no cap."""
+    cap = AGENT_DAILY_USD.get(agent)
+    if cap is None:
+        return False, 0.0, None
+    spent = _agent_spend_today(agent)
+    return spent >= cap, spent, cap
+
+
 def _todays_token_usage():
     """Sums input+output tokens (real spend) for calls logged today (local
     date, matching the host's clock — same convention as trade_date and
@@ -3552,6 +3956,28 @@ def get_llm_usage(**_ignored):
         ]
     except Exception:
         result["beta_testers"] = []
+
+    # Per-agent view (governance): who spent what today, against any
+    # per-agent daily cap from ULTRON_AGENT_DAILY_USD.
+    try:
+        conn = _get_db_connection()
+        try:
+            agent_rows = conn.execute(
+                "SELECT COALESCE(agent, 'ultron') as agent, COUNT(*) as n, COALESCE(SUM(cost_usd), 0) as spend "
+                "FROM llm_usage WHERE timestamp LIKE ? GROUP BY COALESCE(agent, 'ultron')",
+                (today_prefix + "%",),
+            ).fetchall()
+        finally:
+            conn.close()
+        result["by_agent"] = [
+            {
+                "agent": r["agent"], "requests": r["n"], "spend_usd": round(r["spend"] or 0.0, 4),
+                "daily_cap_usd": AGENT_DAILY_USD.get(r["agent"]),
+            }
+            for r in agent_rows
+        ]
+    except Exception:
+        result["by_agent"] = []
 
     return result
 
@@ -4083,6 +4509,15 @@ TOOLS = [
         "input_schema": {"type": "object", "properties": {}},
     },
     {
+        "name": "get_agent_status",
+        "description": (
+            "Your team: every agent (you, Sentinel, Scout, the learner, engineering) with its role, "
+            "permissions, health, last update, current task and today's spend against its cap, plus "
+            "open task count. Read-only — tasks are created and moved by the owner, never by chat."
+        ),
+        "input_schema": {"type": "object", "properties": {}},
+    },
+    {
         "name": "recall_from_brain",
         "description": (
             "Search your own Brain vault — past conversations (dashboard and Discord, by day) and your "
@@ -4419,6 +4854,7 @@ TOOL_DISPATCH = {
     "get_threat_summary": get_threat_summary,
     "get_briefing": get_briefing,
     "recall_from_brain": recall_from_brain,
+    "get_agent_status": get_agent_status,
     "web_search": web_search,
     "get_recent_activity": get_recent_activity,
     "get_chat_history": get_chat_history,
@@ -4583,6 +5019,7 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
         lite = False
     if lite:
         effective_tools = [t for t in effective_tools if t["name"] in LITE_ALLOWED_TOOLS]
+    offered_tool_names = {t["name"] for t in effective_tools}
     if deep:
         model, max_tokens, max_rounds = DEEP_MODEL, DEEP_MAX_TOKENS, DEEP_MAX_TOOL_ITERATIONS
     elif lite:
@@ -4622,8 +5059,13 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
             if block.type != "tool_use":
                 continue
             tools_used.append(block.name)
-            if (role == "beta" and block.name not in BETA_ALLOWED_TOOLS) or (lite and block.name not in LITE_ALLOWED_TOOLS):
+            # Deny by default: only a tool that was actually offered on this
+            # call may run. This is the single enforcement point for every
+            # narrowing above (beta allowlist, Economy set, no-MCP-for-beta)
+            # and for a model naming a tool it was never given.
+            if block.name not in offered_tool_names:
                 result = {"error": "forbidden"}
+                log_activity("agent_permission", f"Chat tried tool '{block.name}' it was not offered", detail=role, status="warning")
             else:
                 handler = TOOL_DISPATCH.get(block.name) or mcp_dispatch.get(block.name)
                 if handler is None:
@@ -4687,6 +5129,11 @@ def _learn_from_turn(user_message, reply_text):
     Saves it via remember_note unless the notebook already has it. Returns
     the saved note text, or None. Best-effort -- never raises."""
     try:
+        over, spent, cap = _agent_over_cap("learner")
+        if over:
+            log_activity("agent_budget", f"Learner paused: daily cap reached (${spent:.2f}/${cap:.2f})",
+                         detail="learner", status="warning")
+            return None
         response = anthropic_client.messages.create(
             model=LEARN_MODEL,
             max_tokens=LEARN_MAX_TOKENS,
@@ -4694,7 +5141,7 @@ def _learn_from_turn(user_message, reply_text):
             messages=[{"role": "user", "content": f"Person: {user_message[:1500]}\n\nAssistant: {reply_text[:1500]}"}],
         )
         if hasattr(response, "usage"):
-            _log_llm_usage(response.usage, model=LEARN_MODEL)
+            _log_llm_usage(response.usage, model=LEARN_MODEL, agent="learner")
         text = "".join(b.text for b in response.content if getattr(b, "type", "") == "text").strip()
         if not text or text.upper().startswith("NONE") or len(text) > 240 or "\n" in text:
             return None
@@ -4820,6 +5267,13 @@ def chat():
                 "error": f"daily token budget reached ({used_today}/{LLM_DAILY_TOKEN_BUDGET} tokens today) — "
                          "resets at midnight, or raise ULTRON_LLM_DAILY_TOKEN_BUDGET"
             }), 429
+
+    over, spent, cap = _agent_over_cap("ultron")
+    if over:
+        return jsonify({
+            "error": f"Ultron's daily spend cap reached (${spent:.2f}/${cap:.2f} today) — "
+                     "resets at midnight, or raise ULTRON_AGENT_DAILY_USD"
+        }), 429
 
     body = request.get_json(silent=True) or {}
     user_message = (body.get("message") or "").strip()

@@ -102,6 +102,9 @@ New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol T
 | `GET /api/security/auth-log` | Recent login attempts (fast)                    |
 | `GET /api/security/cve-scan` | CVE scan of running containers' images (slow — see below) |
 | `GET /api/security/threats` | **Admin-only.** Sentinel's live watchdog view — active findings, last check — see below |
+| `GET /api/briefing` | **Admin-only.** Ultron's deterministic read of the host (the Home "Ultron's read" card) |
+| `GET /api/agents` | **Admin-only.** Every agent's role, permissions, health, current task, spend vs cap — see `AGENT_CAPABILITIES_AND_GOVERNANCE.md` |
+| `GET/POST /api/agents/tasks`, `PATCH /api/agents/tasks/<uid>` | **Admin-only.** The agent task ledger and its lifecycle (evidence required to complete, approval required for high-risk) |
 | `GET /manifest.webmanifest`, `GET /sw.js` | Installable-app manifest and service worker (no auth; the worker never caches `/api/*`) |
 | `GET /fonts/<file>`, `GET /pixel-assets/<file>` | Static dashboard assets (no auth; self-hosted typefaces, sprites, app icons) |
 | `POST /api/actions/backup` | **Mutates the host.** Two-step confirm — see below    |

@@ -12,6 +12,7 @@ Vault root. Read this first, then only the folder `_index.md` you need, then onl
 
 - [[README|README]] — architecture and design principles: Flask backend + dashboard + Discord bot, one shared implementation. Has a "Contributors" section (Core: owner + Claude Code; Beta testers; Other contributors) with room to grow.
 - [[PROJECT-SUMMARY-FOR-CLAUDE-CODE|PROJECT-SUMMARY-FOR-CLAUDE-CODE]] — the history/why behind the build, for judgment calls not covered in README.
+- [[AGENT_CAPABILITIES_AND_GOVERNANCE|AGENT_CAPABILITIES_AND_GOVERNANCE]] — the single source of truth for Ultron's agents: audit, roles (engineering = Claude Code; security + monitoring = Sentinel), capability matrix, approved scope (this PC only), task lifecycle, budgets, controls, status.
 - [[ROADMAP-FINDINGS-2026-09-16|ROADMAP-FINDINGS-2026-09-16]] — findings for roadmap items 2–5 (offline mode: fixed reconnect + self-hosted fonts; API-lite and PWA scoped as yes/no proposals; tool survey). Item 6 blocked on the owner naming the two missing subagents.
 - [[fonts/README|fonts]] — self-hosted OFL typefaces served at `/fonts/`, sources and licence table. Single note, no sub-index.
 - [[ULTRON-DASHBOARD-DESIGN-SPEC|ULTRON-DASHBOARD-DESIGN-SPEC]] — pixel-sampled design analysis of the dashboard against the reference image. Recovered (2026-09-13) from an untracked backup zip after going missing pre-repo; mostly historical, its one open recommendation is now applied.

@@ -1,0 +1,169 @@
+"""Self-check for agent governance: the registry/status view, the task
+lifecycle, deny-by-default tool dispatch, per-agent spend caps, Sentinel's
+posture review, and the monitoring allowlist's private-host rule.
+
+Run standalone from anywhere:
+    python dev-tools/test_agents.py
+"""
+import json
+import os
+import sys
+import tempfile
+import urllib.error
+
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
+sys.path.insert(0, FAKE_PKGS_DIR)
+sys.path.insert(0, BACKEND_DIR)
+
+DATA_DIR = tempfile.mkdtemp()
+os.environ["ULTRON_API_TOKEN"] = "admin-test-token-with-32-characters!!"
+os.environ["ULTRON_BETA_TOKENS"] = "tester:beta-test-token"
+os.environ["ANTHROPIC_API_KEY"] = "fake-key-for-test"
+os.environ["ULTRON_DB_PATH"] = os.path.join(DATA_DIR, "ultron.db")
+os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ULTRON_SENTINEL_INTERVAL_SECONDS"] = "0"
+os.environ["ULTRON_LEARN_INLINE"] = "1"
+os.environ["ULTRON_AGENT_DAILY_USD"] = "learner=0.000001,ultron=100"
+os.environ["ULTRON_ALLOWED_ORIGIN"] = "*"
+os.environ.pop("ULTRON_TLS_CERT", None)
+os.environ.pop("ULTRON_TLS_KEY", None)
+os.environ["ULTRON_MONITOR_TARGETS"] = os.path.join(DATA_DIR, "monitoring-targets.json")
+json.dump({"targets": [
+    {"name": "local ok", "type": "http", "target": "http://host.docker.internal:8096/health"},
+    {"name": "local down", "type": "http", "target": "http://127.0.0.1:9/nothing"},
+    {"name": "public", "type": "http", "target": "https://example.com/"},
+]}, open(os.environ["ULTRON_MONITOR_TARGETS"], "w"))
+
+import anthropic  # noqa: E402
+import app  # noqa: E402
+
+client = app.app.test_client()
+ADMIN = {"Authorization": "Bearer admin-test-token-with-32-characters!!"}
+BETA = {"Authorization": "Bearer beta-test-token"}
+calls = app.anthropic_client.messages.calls
+script = app.anthropic_client.messages.script
+
+
+def _text(text="ok", out=5):
+    return anthropic.Message(content=[anthropic.ContentBlock(type="text", text=text)],
+                             stop_reason="end_turn", usage=anthropic.Usage(input_tokens=5, output_tokens=out))
+
+
+def demo():
+    # Registry + status: every agent has a role, tools and forbidden list; admin-only.
+    res = client.get("/api/agents", headers=ADMIN)
+    assert res.status_code == 200, res.get_json()
+    agents = {a["agent"]: a for a in res.get_json()["agents"]}
+    assert set(agents) == {"ultron", "sentinel", "scout", "learner", "engineering"}, set(agents)
+    for a in agents.values():
+        assert a["role"] and a["tools"] and a["forbidden"] and a["scope"], a
+    assert agents["sentinel"]["health"] == "disabled"  # interval 0 in tests
+    assert agents["learner"]["daily_cap_usd"] == 0.000001
+    assert client.get("/api/agents", headers=BETA).status_code == 403
+    assert "get_agent_status" in app.TOOL_DISPATCH
+
+    # Task lifecycle.
+    r = client.post("/api/agents/tasks", json={"agent": "nobody", "objective": "x"}, headers=ADMIN)
+    assert r.status_code == 400
+    r = client.post("/api/agents/tasks", json={
+        "agent": "engineering", "objective": "Add a test for the agents card", "risk_level": "low",
+        "acceptance_criteria": "test passes", "authorized_scope": "this repo", "allowed_tools": ["dev-tools tests"],
+    }, headers=ADMIN)
+    assert r.status_code == 201, r.get_json()
+    task = r.get_json()
+    uid = task["task_uid"]
+    assert task["status"] == "created" and task["approval_status"] == "not_required" and task["allowed_tools"] == ["dev-tools tests"]
+    # Duplicate open objective -> 409.
+    r = client.post("/api/agents/tasks", json={"agent": "engineering", "objective": "Add a test for the agents card"}, headers=ADMIN)
+    assert r.status_code == 409 and r.get_json()["duplicate_of"] == uid, r.get_json()
+    # Illegal jump.
+    r = client.patch(f"/api/agents/tasks/{uid}", json={"status": "completed", "evidence": "x"}, headers=ADMIN)
+    assert r.status_code == 400 and "cannot move" in r.get_json()["error"]
+    for s in ("assigned", "acknowledged", "in_progress"):
+        assert client.patch(f"/api/agents/tasks/{uid}", json={"status": s}, headers=ADMIN).status_code == 200, s
+    # Completion needs evidence.
+    r = client.patch(f"/api/agents/tasks/{uid}", json={"status": "completed"}, headers=ADMIN)
+    assert r.status_code == 400 and "evidence" in r.get_json()["error"]
+    r = client.patch(f"/api/agents/tasks/{uid}", json={"status": "completed", "evidence": "test_agents.py OK; 1 file"}, headers=ADMIN)
+    assert r.status_code == 200 and r.get_json()["status"] == "completed"
+    # Terminal state is terminal.
+    assert client.patch(f"/api/agents/tasks/{uid}", json={"status": "in_progress"}, headers=ADMIN).status_code == 400
+    # High risk needs approval before it starts.
+    r = client.post("/api/agents/tasks", json={"agent": "sentinel", "objective": "probe a new host", "risk_level": "high"}, headers=ADMIN)
+    hi = r.get_json()["task_uid"]
+    assert r.get_json()["approval_status"] == "pending"
+    for s in ("assigned", "acknowledged"):
+        client.patch(f"/api/agents/tasks/{hi}", json={"status": s}, headers=ADMIN)
+    r = client.patch(f"/api/agents/tasks/{hi}", json={"status": "in_progress"}, headers=ADMIN)
+    assert r.status_code == 400 and "approval" in r.get_json()["error"]
+    r = client.patch(f"/api/agents/tasks/{hi}", json={"status": "in_progress", "approval_status": "approved"}, headers=ADMIN)
+    assert r.status_code == 200 and r.get_json()["status"] == "in_progress"
+    # Current task shows on the agent, and beta can't touch tasks.
+    sent = {a["agent"]: a for a in client.get("/api/agents", headers=ADMIN).get_json()["agents"]}["sentinel"]
+    assert sent["current_task"]["task_uid"] == hi
+    assert client.get("/api/agents/tasks", headers=BETA).status_code == 403
+    audit = [e for e in app.get_recent_activity(limit=50)["events"] if e["event_type"] == "agent_task"]
+    assert len(audit) >= 7, len(audit)
+
+    # Deny by default at dispatch: a normal admin call is offered every tool,
+    # but a model naming a tool it was NOT offered (here: Economy mode asks
+    # for get_repo_diff) is refused and logged as a permission event.
+    script.append(anthropic.Message(
+        content=[anthropic.ContentBlock(type="tool_use", id="t1", name="get_repo_diff", input={"repo": "x"})],
+        stop_reason="tool_use", usage=anthropic.Usage(input_tokens=5, output_tokens=5)))
+    script.append(_text())
+    r = client.post("/api/chat", json={"message": "diff", "history": [], "lite": True}, headers=ADMIN)
+    assert r.status_code == 200
+    assert "forbidden" in calls[-1]["messages"][-1]["content"][0]["content"]
+    assert any(e["event_type"] == "agent_permission" for e in app.get_recent_activity(limit=20)["events"])
+
+    # Per-agent cap: the learner's cap is microscopic, so one logged call
+    # trips it and the next learn is refused with a budget event, while chat
+    # (cap $100) still works.
+    script.append(_text()); script.append(_text("The owner likes tests.", out=1000))
+    client.post("/api/chat", json={"message": "I like tests", "history": [], "learn": True}, headers=ADMIN)
+    assert app._agent_spend_today("learner") > 0
+    before = len(calls)
+    script.append(_text())
+    client.post("/api/chat", json={"message": "again", "history": [], "learn": True}, headers=ADMIN)
+    assert len(calls) - before == 1, "learner must not be called once over its cap"
+    assert any(e["event_type"] == "agent_budget" for e in app.get_recent_activity(limit=20)["events"])
+    by_agent = {r["agent"]: r for r in app.get_llm_usage()["by_agent"]}
+    assert "learner" in by_agent and "ultron" in by_agent, by_agent
+
+    # Sentinel posture + monitoring allowlist. Probes are faked: the
+    # "local ok" target answers, "local down" refuses, "public" must be
+    # refused BEFORE any request is made.
+    probed = []
+
+    def fake_urlopen(req, timeout=None):
+        probed.append(req.full_url)
+        if "8096" in req.full_url:
+            class R:
+                status = 200
+                def __enter__(self): return self
+                def __exit__(self, *a): return False
+            return R()
+        raise urllib.error.URLError("connection refused")
+    real = app.urllib.request.urlopen
+    app.urllib.request.urlopen = fake_urlopen
+    try:
+        findings = app._sentinel_checks()
+    finally:
+        app.urllib.request.urlopen = real
+    assert "posture:cors_any_origin" in findings and "posture:no_tls" in findings, findings.keys()
+    assert "posture:weak_admin_token" not in findings
+    assert "monitor_down:local down" in findings and findings["monitor_down:local down"][0] == "error"
+    assert "monitor_refused:public" in findings, findings.keys()
+    assert not any("example.com" in u for u in probed), "a public host must never be probed: " + str(probed)
+    assert "monitor_down:local ok" not in findings
+
+    print("OK: agent registry/status (admin-only), task lifecycle (transitions, evidence, high-risk approval, "
+          "dedup, audit), deny-by-default tool dispatch with a permission event, per-agent daily caps with a "
+          "budget event, Sentinel posture findings, and a monitoring allowlist that never probes a public host.")
+
+
+if __name__ == "__main__":
+    demo()

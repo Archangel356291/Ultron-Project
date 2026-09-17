@@ -1251,6 +1251,19 @@
               <div class="vitals-row"><span class="vr-k">Uptime</span><span class="bar-track" style="visibility:hidden"></span><span class="vr-v" id="vitals-uptime-v">—</span></div>
             </div>
           </div>
+
+          <div class="panel-label" style="margin-top:28px;">Agents</div>
+          <div class="card" style="padding:0; overflow:hidden;">
+            <div style="overflow-x:auto;">
+              <table id="agents-table">
+                <thead><tr><th>Agent</th><th>Role</th><th>Health</th><th>Current task</th><th>Today</th><th>Permissions</th></tr></thead>
+                <tbody><tr><td colspan="6" style="color:var(--text-faint);">Loading…</td></tr></tbody>
+              </table>
+            </div>
+            <div style="padding:12px 18px; border-top:1px solid var(--line); font-size:11.5px; color:var(--text-faint); line-height:1.5;">
+              Tasks move <span style="font-family:var(--font-mono);">created → assigned → acknowledged → in progress → blocked | awaiting review | completed | failed | cancelled</span>. Completion needs evidence; high-risk tasks need your approval before they start; chat can read this but never create or move a task. Full policy: <span style="font-family:var(--font-mono);">AGENT_CAPABILITIES_AND_GOVERNANCE.md</span>.
+            </div>
+          </div>
         </div>
       </section>
 
@@ -2445,6 +2458,7 @@
           fetchActivity(),
           fetchThreats(),
           fetchBriefing(),
+          fetchAgents(),
           fetchMemory(),
           fetchDevRepos(),
           fetchTrades(),
@@ -2924,6 +2938,33 @@
         }).join('')
       : '<div style="color:var(--text-faint);">Nothing to report yet.</div>';
     if (stamp) stamp.textContent = 'checked ' + ((data.generated_at || '').split('T')[1] || '').slice(0, 5) + ' · local data only, no tokens';
+  }
+
+  async function fetchAgents() {
+    let data;
+    try {
+      data = await apiGet('/api/agents');
+    } catch (err) {
+      return;
+    }
+    const tbody = document.querySelector('#agents-table tbody');
+    if (!tbody) return;
+    tbody.innerHTML = (data.agents || []).map(function (a) {
+      const task = a.current_task
+        ? '<span class="pill on"><span class="dot"></span>' + escapeHtml(a.current_task.task_uid) + ' · ' + escapeHtml(a.current_task.status.replace('_', ' ')) + '</span><div style="font-size:11px; color:var(--text-faint); margin-top:3px;">' + escapeHtml((a.current_task.objective || '').slice(0, 80)) + '</div>'
+        : '<span style="color:var(--text-faint);">none</span>';
+      const spend = a.requests_today ? ('$' + (a.spend_today_usd || 0).toFixed(3) + ' · ' + a.requests_today + ' call' + (a.requests_today === 1 ? '' : 's')) : (a.kind === 'llm' ? '$0.000' : '—');
+      const cap = a.daily_cap_usd != null ? ' / $' + a.daily_cap_usd.toFixed(2) : '';
+      const last = a.last_update ? ((a.last_update.split('T')[1] || '').slice(0, 5)) : '';
+      return '<tr>' +
+        '<td><b style="font-family:var(--font-display); text-transform:uppercase; letter-spacing:0.04em;">' + escapeHtml(a.agent) + '</b><div style="font-size:10.5px; color:var(--text-faint); font-family:var(--font-mono);">' + escapeHtml(a.kind) + '</div></td>' +
+        '<td style="max-width:260px; font-size:12px;">' + escapeHtml(a.role) + '</td>' +
+        '<td><span style="color:' + (/watching|online|ready|available|external/.test(a.health) ? 'var(--signal)' : 'var(--amber)') + ';">' + escapeHtml(a.health) + '</span><div style="font-size:10.5px; color:var(--text-faint);">' + escapeHtml(a.detail || '') + (last ? ' · ' + last : '') + '</div></td>' +
+        '<td>' + task + '</td>' +
+        '<td style="font-family:var(--font-mono); font-size:11.5px;">' + escapeHtml(spend + cap) + '</td>' +
+        '<td style="max-width:280px; font-size:11px; color:var(--text-dim);"><div>' + escapeHtml(a.tools) + '</div><div style="color:var(--red-bright); opacity:0.8; margin-top:3px;">never: ' + escapeHtml(a.forbidden) + '</div></td>' +
+        '</tr>';
+    }).join('');
   }
 
   async function fetchThreats() {

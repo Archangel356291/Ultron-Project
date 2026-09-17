@@ -21,17 +21,22 @@ FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_p
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
+os.environ["ULTRON_API_TOKEN"] = "admin-test-token-with-32-characters!!"
 os.environ["ULTRON_BETA_TOKENS"] = "tester:beta-test-token"
 os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
 os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
 os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
 os.environ["ULTRON_SENTINEL_INTERVAL_SECONDS"] = "0"
+# A clean posture, so this test's finding sets stay about lockouts,
+# containers and CVEs (posture itself is covered by test_agents.py).
+os.environ["ULTRON_ALLOWED_ORIGIN"] = "https://dashboard.test"
+os.environ["ULTRON_TLS_CERT"] = "/tmp/fake.crt"
+os.environ["ULTRON_TLS_KEY"] = "/tmp/fake.key"
 
 import app  # noqa: E402
 
 client = app.app.test_client()
-ADMIN = {"Authorization": "Bearer admin-test-token"}
+ADMIN = {"Authorization": "Bearer admin-test-token-with-32-characters!!"}
 BETA = {"Authorization": "Bearer beta-test-token"}
 
 
