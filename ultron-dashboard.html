@@ -569,7 +569,7 @@
        up exactly if the canvas fills this wrap edge to edge with nothing
        else offsetting it. The room's own border/frame look comes from
        this wrap's border below, not inset padding. */
-    position:relative; margin-top:14px; width:100%; max-width:1280px;
+    position:relative; margin-top:14px; width:100%; max-width:none;
     background:var(--void); border:1px solid var(--line); border-radius:4px;
     overflow:hidden;
   }
@@ -591,6 +591,29 @@
     content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
     border:5px solid transparent; border-top-color:var(--red);
   }
+
+  /* Ultron's foundry -- the idle-game panel under his corner. */
+  .foundry{ max-width:1280px; }
+  .foundry-bal{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-mono); }
+  .foundry-coin{ color:#e6a41e; font-size:20px; line-height:1; text-shadow:0 0 10px rgba(230,164,30,0.5); }
+  .foundry-bits{ font-family:var(--font-display); font-size:30px; font-weight:700; color:var(--text); transition:color .12s; }
+  .foundry-bits.pop{ color:#ffd24b; }
+  .foundry-unit{ font-size:12px; color:var(--text-dim); }
+  .foundry-rate{ font-size:11px; color:var(--text-faint); margin-left:6px; }
+  .foundry-upgrades{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:10px; margin:12px 0; }
+  .foundry-up{ text-align:left; background:var(--panel-raised); border:1px solid var(--line); border-radius:8px; padding:10px 12px; cursor:pointer; color:var(--text); transition:border-color .15s, background .15s, transform .05s; }
+  .foundry-up:hover:not(:disabled){ border-color:var(--gold, #e6a41e); }
+  .foundry-up:active:not(:disabled){ transform:translateY(1px); }
+  .foundry-up:disabled{ opacity:0.55; cursor:not-allowed; }
+  .foundry-up.affordable{ border-color:rgba(230,164,30,0.5); }
+  .foundry-up .fu-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .foundry-up .fu-name{ font-family:var(--font-display); font-weight:700; font-size:14px; }
+  .foundry-up .fu-lvl{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); }
+  .foundry-up .fu-desc{ font-size:11.5px; color:var(--text-dim); margin:3px 0 6px; }
+  .foundry-up .fu-cost{ font-family:var(--font-mono); font-size:12px; color:#e6a41e; }
+  .foundry-up .fu-cost.short{ color:var(--text-faint); }
+  .foundry-offline{ margin:8px 0 2px; padding:7px 11px; border:1px solid rgba(230,164,30,0.45); border-radius:6px; background:rgba(230,164,30,0.08); color:#ffd88a; font-size:12px; }
+  .foundry-note{ font-size:11.5px; color:var(--text-faint); max-width:60ch; }
 
   /* "What Ultron knows": the Brain vault graph under his corner. Same frame
      as the room above it, so the two read as one place. */
@@ -1163,15 +1186,15 @@
 
   <aside class="sidebar">
     <nav id="nav">
-      <div class="nav-item" data-section="ultron-core" data-role="admin">
+      <div class="nav-item active" data-section="ultron-core" data-role="admin">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><polygon points="12,2.5 21,7.5 21,16.5 12,21.5 3,16.5 3,7.5"/><circle cx="12" cy="12" r="3.2"/></svg>
-        <span class="nav-text"><span class="label">Ultron</span><span class="nav-sub">The Core, Up Close</span></span>
+        <span class="nav-text"><span class="label">Ultron</span><span class="nav-sub">His Corner</span></span>
       </div>
       <div class="nav-item" data-section="ultron-designs" data-role="admin">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M4 21V10l8-6 8 6v11"/><path d="M9 21v-7h6v7"/><path d="M9 10h.01M15 10h.01"/></svg>
         <span class="nav-text"><span class="label">Ultron's Designs</span><span class="nav-sub">Memory &amp; Body Concepts</span></span>
       </div>
-      <div class="nav-item active" data-section="home" data-role="admin">
+      <div class="nav-item" data-section="home" data-role="admin">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
         <span class="nav-text"><span class="label">Home</span><span class="nav-sub">Overview &amp; Quick Actions</span></span>
       </div>
@@ -1222,35 +1245,29 @@
 
       <!-- ULTRON (hero orb, copied from Home and enlarged, recolored red/
            reactive; pixel companion scene below it) -->
-      <section class="section" id="sec-ultron-core">
+      <section class="section active" id="sec-ultron-core">
         <div class="hero-panel">
           <div class="hero-head">
-            <div class="eyebrow"><span class="bolt"></span><span>ULTRON</span><span class="bolt r"></span></div>
-            <div class="sub">The core, up close.</div>
+            <div class="eyebrow"><span class="bolt"></span><span>ULTRON'S CORNER</span><span class="bolt r"></span></div>
+            <div class="sub">His office up top, his agents below, and the line in the basement that builds more.</div>
           </div>
 
-          <div class="sphere-row" style="margin-top:8px;">
-            <div class="sphere-wrap sphere-wrap-xl offline" id="sphere-wrap-xl">
-              <div class="sphere-glow"></div>
-              <svg class="core-rings" viewBox="0 0 320 320" aria-hidden="true">
-                <ellipse class="r1" cx="160" cy="160" rx="150" ry="38" stroke-width="1"/>
-                <ellipse class="r2" cx="160" cy="160" rx="128" ry="30" stroke-width="0.7"/>
-                <ellipse class="r3" cx="160" cy="160" rx="105" ry="24" stroke-width="1.2" stroke-dasharray="3 7"/>
-                <ellipse class="r4" cx="160" cy="160" rx="138" ry="70" stroke-width="0.6"/>
-                <ellipse class="r5" cx="160" cy="160" rx="95" ry="95" stroke-width="0.5" stroke-dasharray="2 5"/>
-              </svg>
-              <canvas id="hero-canvas-xl" aria-label="Ultron's animated AI core, enlarged"></canvas>
-              <div class="core-badge">
-                <div class="core-pct" id="core-pct-xl">—</div>
-                <div class="core-tag" id="core-tag-xl">cpu</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="panel-label" style="margin-top:28px;">Ultron's corner</div>
-          <div class="pixel-room-wrap">
+          <div class="pixel-room-wrap" style="margin-top:16px;">
             <canvas id="pixel-room-canvas" aria-label="Ultron's corner: a cutaway tower with Ultron's office on the top floor, his agents at their desks on the storeys below, and a basement production line where pixel robots are built, salute, and march up the stairs and out — joined by a conveyor and lift"></canvas>
             <div class="pixel-bubble" id="pixel-bubble" hidden></div>
+          </div>
+
+          <div class="panel-label" style="margin-top:28px;">Ultron's foundry</div>
+          <div class="foundry" id="foundry">
+            <div class="foundry-bal">
+              <span class="foundry-coin" aria-hidden="true">◉</span>
+              <span class="foundry-bits" id="foundry-bits">0</span>
+              <span class="foundry-unit">data-bits</span>
+              <span class="foundry-rate" id="foundry-rate"></span>
+            </div>
+            <div class="foundry-offline" id="foundry-offline" hidden></div>
+            <div class="foundry-upgrades" id="foundry-upgrades"></div>
+            <div class="foundry-note">Every package shipped out and every squad that marches out mints data-bits — and it keeps minting while you're away. Spend them on upgrades to run the line faster.</div>
           </div>
 
           <div class="panel-label" style="margin-top:28px;">What Ultron knows</div>
@@ -1350,7 +1367,7 @@
       </section>
 
       <!-- HOME -->
-      <section class="section active" id="sec-home">
+      <section class="section" id="sec-home">
 
         <div class="home-top-grid">
           <div class="home-main">
@@ -1367,7 +1384,7 @@
               </div>
 
               <div class="sphere-row">
-                <div class="sphere-wrap offline" id="sphere-wrap">
+                <div class="sphere-wrap sphere-wrap-xl offline" id="sphere-wrap">
                   <div class="sphere-glow"></div>
                   <svg class="core-rings" viewBox="0 0 320 320" aria-hidden="true">
                     <ellipse class="r1" cx="160" cy="160" rx="150" ry="38" stroke-width="1"/>
@@ -2625,6 +2642,10 @@
     // particle-system script below -- a no-op if that script hasn't
     // loaded yet.
     if (window.__heroSetCpu) window.__heroSetCpu(pct);
+    if (window.__setRoomStats) window.__setRoomStats({
+      mem: memPct,
+      health: !state.connected ? 'OFFLINE' : (data.cpu_temp_c != null && data.cpu_temp_c > 85) ? 'HOT' : 'OK',
+    });
 
     const coreCpuEl = document.getElementById('core-cpu-mini');
     if (coreCpuEl) coreCpuEl.textContent = pct + '%';
@@ -3220,6 +3241,9 @@
         '<td style="text-align:right; font-family:var(--font-mono)">' + price + '</td>' +
         '<td style="text-align:right; font-family:var(--font-mono); color:' + chgColor + '">' + chgText + '</td></tr>';
     }).join('');
+    // Feed the room's wall monitor with BTC.
+    const btc = coins.find(function (c) { return (c.symbol || '').toUpperCase() === 'BTC'; });
+    if (btc && window.__setRoomStats) window.__setRoomStats({ btc: btc.price_usd });
   }
 
   async function fetchTrades() {
@@ -4875,10 +4899,13 @@
   };
 
   var coreInstances = [];
-  var homeCore = initAiCore('sphere-wrap', 'hero-canvas', HOME_STATE_PROFILE);
+  // The red "up close" core now lives on the Home screen (owner request
+  // 2026-09-16), where the orange one used to be; the Ultron tab dropped its
+  // core block and opens straight on Ultron's corner. So the Home core uses
+  // the red profile; HOME_STATE_PROFILE (amber) is kept for reference.
+  var homeCore = initAiCore('sphere-wrap', 'hero-canvas', ULTRON_TAB_STATE_PROFILE);
   if (homeCore) coreInstances.push(homeCore);
-  var ultronTabCore = initAiCore('sphere-wrap-xl', 'hero-canvas-xl', ULTRON_TAB_STATE_PROFILE);
-  if (ultronTabCore) coreInstances.push(ultronTabCore);
+  void HOME_STATE_PROFILE;
 
   // Broadcast to every live instance -- callers elsewhere in this file
   // (mic toggle, chat send/reply, connection loss) don't need to know
@@ -4957,8 +4984,21 @@ function toggleReducedVisuals(el) {
   // fall in, salute "for a Better World", form up, and march up the stairs and
   // out through the same OUT the package belt exits by -- forever. Ultron moved
   // to the TOP office; agents fill the storeys between.
-  var BASEMENT_H = 300, BASEMENT_WALL = 214;   // strip height + its floor line
-  var MARCH_FORMATION = 4;                       // robots that fall in before a squad marches out
+  var BAY_H = 220, BAY_WALL = 164;               // each production bay's strip height + floor line
+  var MAX_BAYS = 10, MAX_PER_BAY = 10;           // unlockable floors, and robots per floor -- both capped
+  // Per-bay robot styling: body / plate (head) / eye+core / weapon. One per floor.
+  var BAY_STYLES = [
+    { body: '#30353f', plate: '#9c9a90', eye: '#ff3b3b', weapon: 'blaster' },
+    { body: '#1e3542', plate: '#7fd0ff', eye: '#3dd6ff', weapon: 'rifle' },
+    { body: '#1f3a2b', plate: '#8fe6ad', eye: '#33d17a', weapon: 'cannon' },
+    { body: '#3a3016', plate: '#ffcf6a', eye: '#ffc24b', weapon: 'twin' },
+    { body: '#2e2440', plate: '#c9a6ff', eye: '#b084f0', weapon: 'spear' },
+    { body: '#3a1c26', plate: '#ff9db0', eye: '#ff5a7a', weapon: 'scythe' },
+    { body: '#14312f', plate: '#8fe0d8', eye: '#00beb4', weapon: 'saw' },
+    { body: '#3a2712', plate: '#ffbf8a', eye: '#ff8a1e', weapon: 'laser' },
+    { body: '#20233a', plate: '#a3a8ff', eye: '#6e6eff', weapon: 'hammer' },
+    { body: '#331f38', plate: '#f0a0e0', eye: '#e650c8', weapon: 'bow' },
+  ];
 
   var ASSET_BASE = '/pixel-assets/';
   var ASSET_VER = '?v=2';   // bump when sprite geometry changes, so an installed app never pairs new layout maths with cached old art
@@ -5044,6 +5084,11 @@ function toggleReducedVisuals(el) {
     fontFamily = (getComputedStyle(document.documentElement).getPropertyValue('--font-mono') || '').trim() || 'monospace';
   } catch (e) { /* keep the fallback */ }
 
+  // Live readouts for the wall monitor in Ultron's office (BTC / memory /
+  // health). Fed by the main script's status and crypto fetches.
+  var roomStats = { btc: null, mem: null, health: null };
+  window.__setRoomStats = function (o) { if (o) { for (var k in o) roomStats[k] = o[k]; requestStatic(); } };
+
   function layout() {
     var cssW = wrap.clientWidth;
     if (!cssW) return false;   // tab not shown yet
@@ -5052,7 +5097,7 @@ function toggleReducedVisuals(el) {
     var pitch = (W - LEFT - LIFT_W - 28) / cols;
     storeys = Math.ceil(SUBAGENTS.length / cols);
     // Top-to-bottom: office (Ultron) · agent storeys · basement (production).
-    H = ROOF_H + GROUND_H + storeys * STOREY_H + BASEMENT_H;
+    H = ROOF_H + GROUND_H + storeys * STOREY_H + bayCount() * BAY_H;
     scale = cssW / W;
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(cssW * dpr);
@@ -5072,14 +5117,16 @@ function toggleReducedVisuals(el) {
       a.floorY = storeyBaseY + f * STOREY_H + STOREY_WALL;
     });
     basementTop = storeyBaseY + storeys * STOREY_H;
-    basementFloorY = basementTop + BASEMENT_WALL;     // the production-line floor
-    outY = basementTop + 96;                          // the OUT opening (top-left of the basement)
+    basementFloorY = basementTop + BAY_WALL;          // bay 0's floor -- where the package belt runs
+    outY = basementTop + 84;                          // bay 0's OUT (packages leave here)
     uTubeX = liftX - 24 - U_TUBE_W;
     uDeskX = uTubeX - 14 - U_DESK_W;
     // Wide rooms: he paces between the server rack and his desk. Narrow ones
     // have no spare floor, so he keeps to a short beat in front of the rack.
     walkMinX = W >= 1000 ? 190 : 72;
-    walkMaxX = Math.max(walkMinX + 30, uDeskX - 196);
+    // Leave a display area beside the desk for the relic pedestals on wide
+    // screens; on narrow ones he keeps a short beat and the relics are skipped.
+    walkMaxX = Math.max(walkMinX + 30, uDeskX - (W >= 1000 ? 320 : 196));
     walkX = Math.max(walkMinX, Math.min(walkMaxX, walkX));
     return true;
   }
@@ -5134,29 +5181,36 @@ function toggleReducedVisuals(el) {
   var parcels = [];
   var lastAmbientSpawn = 0, hatchFlashUntil = 0, deskFlashUntil = 0;
   function beltY(floorY) { return floorY + BELT_DY; }
+  // Each agent's parcels carry a glyph for what they do; Oracle ships bitcoins.
+  var PKG_KIND = {
+    cyan: 'code', green: 'bulb', amber: 'shield', violet: 'globe', blue: 'containers',
+    mint: 'block', copper: 'hammer', sky: 'magnifier', teal: 'brush', indigo: 'network',
+    lime: 'check', rose: 'eye', steel: 'lines', lavender: 'folder', peach: 'book',
+    magenta: 'megaphone', olive: 'chat', gold: 'chart', bitcoin: 'bitcoin', crimson: 'target',
+  };
   function spawnParcel(a) {
     if (parcels.length > 40) return;
-    parcels.push({ phase: 'belt', x: a.x + DESK_DX + DESK_W / 2, y: beltY(a.floorY), hex: a.hex });
+    parcels.push({ phase: 'belt', x: a.x + DESK_DX + DESK_W / 2, y: beltY(a.floorY), hex: a.hex, kind: PKG_KIND[a.color] || 'box' });
   }
   function updateParcels(t, dt) {
-    if (t - lastAmbientSpawn > 3.2 + Math.random() * 2.4) {
+    if (t - lastAmbientSpawn > (3.2 + Math.random() * 2.4) / (foundryCfg().prodMult || 1)) {
       lastAmbientSpawn = t;
       var i = Math.floor(Math.random() * (SUBAGENTS.length + 1));
       if (i < SUBAGENTS.length) spawnParcel(SUBAGENTS[i]);
-      else parcels.push({ phase: 'belt', x: uDeskX - 40, y: beltY(officeFloorY), hex: RED });  // one from Ultron's office
+      else parcels.push({ phase: 'belt', x: uDeskX - 40, y: beltY(officeFloorY), hex: RED, kind: 'core' });  // one from Ultron's office
     }
-    var liftCx = liftX + LIFT_W / 2, exitX = hatchX + hatchW - 14;
+    var liftCx = liftX + LIFT_W / 2, exitX = hatchX + hatchW - 14, bm = foundryCfg().beltMult || 1;
     for (var i2 = parcels.length - 1; i2 >= 0; i2--) {
       var p = parcels[i2];
       if (p.phase === 'belt') {
-        p.x += dt * 78;                                   // ride right to the lift
+        p.x += dt * 78 * bm;                               // ride right to the lift
         if (p.x >= liftCx) { p.x = liftCx; p.phase = 'lift'; }
       } else if (p.phase === 'lift') {
         p.y += dt * 150;                                  // ride the lift DOWN to the basement
         if (p.y >= beltY(basementFloorY)) { p.y = beltY(basementFloorY); p.phase = 'basement'; }
       } else {
-        p.x -= dt * 78;                                   // ride left along the basement to OUT
-        if (p.x <= exitX) { parcels.splice(i2, 1); hatchFlashUntil = t + 0.4; }
+        p.x -= dt * 78 * bm;                               // ride left along the basement to OUT
+        if (p.x <= exitX) { parcels.splice(i2, 1); hatchFlashUntil = t + 0.4; mintBotCoin(exitX + 8, beltY(basementFloorY) - 12); }
       }
     }
   }
@@ -5177,17 +5231,79 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = '#15171a';                              // legs
     for (var lx = x0 + 30; lx < x1 - 10; lx += 150) ctx.fillRect(lx, y + BELT_H + 2, 5, STOREY_H - STOREY_WALL - BELT_DY - BELT_H - 6);
   }
+  function drawBitcoin(cx, cy, r) {
+    var g = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.3, 1, cx, cy, r);
+    g.addColorStop(0, '#ffcf6a'); g.addColorStop(1, '#e07d0a');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#a5620a'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, r * 0.72, -2.4, -0.5); ctx.stroke();
+    ctx.fillStyle = '#fff8ec'; setFont(r * 1.5, true); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('B', cx + 0.2, cy + 0.4);
+    ctx.fillRect(cx - 1.7, cy - r * 0.9, 1, r * 1.8); ctx.fillRect(cx + 1, cy - r * 0.9, 1, r * 1.8);   // ₿ stems
+  }
+  function drawPkgGlyph(kind, cx, cy, r, color) {
+    ctx.save();
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 1.3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    function L(pts) { ctx.beginPath(); pts.forEach(function (p, i) { var X = cx + p[0] * r, Y = cy + p[1] * r; i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }); ctx.stroke(); }
+    function C(a, b, rad, fill) { ctx.beginPath(); ctx.arc(cx + a * r, cy + b * r, rad * r, 0, Math.PI * 2); fill ? ctx.fill() : ctx.stroke(); }
+    function box(a, b, w2, h2) { ctx.strokeRect(cx + a * r, cy + b * r, w2 * r, h2 * r); }
+    switch (kind) {
+      case 'code': L([[-.3, -.6], [-.8, 0], [-.3, .6]]); L([[.3, -.6], [.8, 0], [.3, .6]]); L([[.2, -.75], [-.2, .75]]); break;
+      case 'bulb': C(0, -.2, .55); L([[-.25, .5], [.25, .5]]); L([[-.16, .8], [.16, .8]]); break;
+      case 'shield': ctx.beginPath(); ctx.moveTo(cx - .7 * r, cy - .7 * r); ctx.lineTo(cx + .7 * r, cy - .7 * r); ctx.lineTo(cx + .7 * r, cy); ctx.lineTo(cx, cy + .85 * r); ctx.lineTo(cx - .7 * r, cy); ctx.closePath(); ctx.fill(); break;
+      case 'globe': C(0, 0, .8); L([[-.8, 0], [.8, 0]]); ctx.beginPath(); ctx.ellipse(cx, cy, .35 * r, .8 * r, 0, 0, Math.PI * 2); ctx.stroke(); break;
+      case 'containers': box(-.8, -.1, .7, .7); box(.1, -.1, .7, .7); box(-.35, -.8, .7, .7); break;
+      case 'block': C(0, 0, .8); L([[-.55, -.55], [.55, .55]]); break;
+      case 'hammer': ctx.fillRect(cx - .8 * r, cy - .8 * r, 1.5 * r, .5 * r); L([[0, -.3], [0, .85]]); break;
+      case 'magnifier': C(-.2, -.2, .5); L([[.2, .2], [.8, .8]]); break;
+      case 'brush': L([[.8, -.8], [0, 0]]); C(-.4, .4, .32, true); break;
+      case 'network': C(0, -.6, .2, true); C(-.6, .5, .2, true); C(.6, .5, .2, true); L([[0, -.6], [-.6, .5], [.6, .5], [0, -.6]]); break;
+      case 'check': L([[-.7, 0], [-.2, .55], [.75, -.6]]); break;
+      case 'eye': ctx.beginPath(); ctx.moveTo(cx - .85 * r, cy); ctx.quadraticCurveTo(cx, cy - .7 * r, cx + .85 * r, cy); ctx.quadraticCurveTo(cx, cy + .7 * r, cx - .85 * r, cy); ctx.fill(); ctx.fillStyle = '#12151b'; C(0, 0, .28, true); break;
+      case 'lines': L([[-.7, -.5], [.7, -.5]]); L([[-.7, 0], [.5, 0]]); L([[-.7, .5], [.6, .5]]); break;
+      case 'folder': ctx.beginPath(); ctx.moveTo(cx - .8 * r, cy - .5 * r); ctx.lineTo(cx - .2 * r, cy - .5 * r); ctx.lineTo(cx, cy - .25 * r); ctx.lineTo(cx + .8 * r, cy - .25 * r); ctx.lineTo(cx + .8 * r, cy + .6 * r); ctx.lineTo(cx - .8 * r, cy + .6 * r); ctx.closePath(); ctx.fill(); break;
+      case 'book': L([[0, -.6], [0, .65]]); ctx.beginPath(); ctx.moveTo(cx, cy - .6 * r); ctx.quadraticCurveTo(cx - .85 * r, cy - .75 * r, cx - .85 * r, cy - .35 * r); ctx.lineTo(cx - .85 * r, cy + .6 * r); ctx.quadraticCurveTo(cx - .85 * r, cy + .45 * r, cx, cy + .65 * r); ctx.moveTo(cx, cy - .6 * r); ctx.quadraticCurveTo(cx + .85 * r, cy - .75 * r, cx + .85 * r, cy - .35 * r); ctx.lineTo(cx + .85 * r, cy + .6 * r); ctx.quadraticCurveTo(cx + .85 * r, cy + .45 * r, cx, cy + .65 * r); ctx.stroke(); break;
+      case 'megaphone': ctx.beginPath(); ctx.moveTo(cx - .7 * r, cy - .3 * r); ctx.lineTo(cx + .7 * r, cy - .7 * r); ctx.lineTo(cx + .7 * r, cy + .7 * r); ctx.lineTo(cx - .7 * r, cy + .3 * r); ctx.closePath(); ctx.fill(); break;
+      case 'chat': ctx.fillRect(cx - .8 * r, cy - .7 * r, 1.6 * r, 1.1 * r); ctx.beginPath(); ctx.moveTo(cx - .4 * r, cy + .35 * r); ctx.lineTo(cx - .05 * r, cy + .35 * r); ctx.lineTo(cx - .5 * r, cy + .85 * r); ctx.closePath(); ctx.fill(); break;
+      case 'chart': ctx.fillRect(cx - .7 * r, cy + .1 * r, .35 * r, .5 * r); ctx.fillRect(cx - .18 * r, cy - .35 * r, .35 * r, .95 * r); ctx.fillRect(cx + .34 * r, cy - .1 * r, .35 * r, .7 * r); break;
+      case 'target': C(0, 0, .8); C(0, 0, .26, true); L([[-1, 0], [-.5, 0]]); L([[1, 0], [.5, 0]]); L([[0, -1], [0, -.5]]); L([[0, 1], [0, .5]]); break;
+      case 'core': C(0, 0, .82); C(0, 0, .42, true); break;
+      default: L([[-.7, 0], [.7, 0]]); L([[0, -.7], [0, .7]]);
+    }
+    ctx.restore();
+  }
   function drawParcel(p) {
-    var w = 20, h = 16, x = p.x - w / 2, y = p.y - h;
-    ctx.fillStyle = p.hex;
-    ctx.fillRect(x, y, w, h);
-    ctx.fillStyle = 'rgba(0,0,0,0.35)';
-    ctx.fillRect(x, y + h - 4, w, 4);
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.fillRect(x + w / 2 - 1.5, y, 3, h - 4);             // tape
-    ctx.strokeStyle = '#0a0b0c';
-    ctx.lineWidth = 1.2;
-    ctx.strokeRect(x, y, w, h);
+    if (p.kind === 'bitcoin') { drawBitcoin(p.x, p.y - 9, 9); return; }
+    var w = 21, h = 17, x = p.x - w / 2, y = p.y - h;
+    ctx.fillStyle = '#2c313a'; ctx.fillRect(x, y, w, h);                    // dark metal crate
+    ctx.fillStyle = '#3a414b'; ctx.fillRect(x, y, w, 2.5);
+    ctx.globalAlpha = 0.22; ctx.fillStyle = p.hex; ctx.fillRect(x, y + 2.5, w, h - 5.5); ctx.globalAlpha = 1;  // agent tint
+    ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(x, y + h - 3, w, 3);
+    ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.2; ctx.strokeRect(x, y, w, h);
+    drawPkgGlyph(p.kind || 'box', p.x, p.y - 8.5, 5, p.hex);               // what it carries
+  }
+
+  // ---- idle-game coins: minted when a package ships out or a squad marches
+  // out. They rise, fade, and add to the foundry's data-bit balance (the
+  // panel below the room spends them on upgrades). ----
+  var coins = [];
+  function foundryCfg() { return window.__foundry || {}; }
+  function updateCoins(dt) {
+    for (var i = coins.length - 1; i >= 0; i--) {
+      var c = coins[i]; c.life += dt; c.x += c.vx * dt; c.y += c.vy * dt; c.vy += 30 * dt;
+      if (c.life >= c.ttl) coins.splice(i, 1);
+    }
+  }
+  function drawCoin(c) {
+    var a = Math.max(0, 1 - c.life / c.ttl), r = c.big ? 9 : 6.5;
+    ctx.globalAlpha = a;
+    var g = ctx.createRadialGradient(c.x - r * 0.3, c.y - r * 0.3, 1, c.x, c.y, r);
+    g.addColorStop(0, '#ffe08a'); g.addColorStop(1, '#e6a41e');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#a5620a'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = 'rgba(60,32,0,0.85)'; setFont(r * 0.66, true); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('101', c.x, c.y - r * 0.3); ctx.fillText('010', c.x, c.y + r * 0.34);
+    ctx.globalAlpha = 1;
   }
   function drawLiftBack(t) {
     var top = ROOF_H + 30, bottom = beltY(basementFloorY) + BELT_H + 2;
@@ -5235,153 +5351,199 @@ function toggleReducedVisuals(el) {
   // ---- basement: a production line that stamps out pixel robots which fall
   // in, salute "for a Better World", and march up the stairs and out the same
   // OUT the packages leave by -- on a permanent loop. ----
-  var marchers = [], squadState = 'forming', lastBorn = 0, holdUntil = 0, sayUntil = 0, stampFlash = 0;
-  function machineX() { return liftX - 172; }
-  function stairBaseX() { return 176; }
-  function stairTopX() { return hatchX + hatchW; }
-  function musterX() { return stairBaseX() + 40; }
-
-  function updateMarchers(t, dt) {
-    if (squadState === 'forming' && marchers.length < MARCH_FORMATION && t - lastBorn > 1.5) {
-      lastBorn = t; stampFlash = t + 0.35;
-      marchers.push({ x: machineX() - 8, y: basementFloorY, slot: marchers.length, phase: 'walk', wp: Math.random() * 6, saluteT: 0 });
-    }
-    var stx = stairBaseX(), spX = musterX(), outX = stairTopX(), rise = basementFloorY - outY;
-    for (var i = marchers.length - 1; i >= 0; i--) {
-      var m = marchers[i];
-      m.wp += dt * 7;
-      if (m.phase === 'walk') {
-        var slotX = spX + m.slot * 24;
-        m.x += (slotX - m.x) * Math.min(1, dt * 3);
-        if (Math.abs(m.x - slotX) < 1.5) { m.x = slotX; m.phase = 'form'; m.saluteT = t + 1.1; }
-      } else if (m.phase === 'march') {
-        if (m.x > stx) { m.x -= dt * 48; if (m.x < stx) m.x = stx; }
-        else {
-          m.x -= dt * 34;
-          m.y = basementFloorY - Math.min(rise, (stx - m.x) * (rise / Math.max(1, stx - outX)));
-          if (m.x <= outX) marchers.splice(i, 1);
-        }
-      }
-    }
-    if (squadState === 'forming' && marchers.length >= MARCH_FORMATION &&
-        marchers.every(function (m) { return m.phase === 'form'; })) {
-      squadState = 'saluting'; holdUntil = t + 1.5; sayUntil = t + 3.6;
-      marchers.forEach(function (m) { m.saluteT = t + 1.5; });
-    }
-    if (squadState === 'saluting' && t >= holdUntil) squadState = 'marching';
-    if (squadState === 'marching') marchers.forEach(function (m) { if (m.phase === 'form') m.phase = 'march'; });
-    if (squadState === 'marching' && marchers.length === 0) squadState = 'forming';
-  }
-
-  // Metallic palette shared with the sprite generator (gunmetal/platinum/
-  // titanium) so the canvas-drawn metal matches the baked art.
+  // ---- multi-bay production floors: 1 open by default, up to MAX_BAYS
+  // unlockable via the foundry. Each bay has its own colour/look/weapon of
+  // robot, its own assembler + stairs + OUT, caps at MAX_PER_BAY robots, and
+  // its robots walk (slowly) into formation, salute, then march up and out --
+  // minting the fake currency per bot. ----
+  // Metallic palette shared with the sprite generator so canvas metal matches.
   var M_GUN = '#30353f', M_PLAT = '#626a76', M_TITAN = '#9c9a90', M_STEEL = '#aeb6c2', M_LINE = '#3a404a', M_DARK = '#22262c';
 
-  function drawMarcher(m, t) {
-    var x = m.x, footY = m.y, s = 1.75;
+  var baysState = [];
+  function bayCount() { return Math.max(1, Math.min(MAX_BAYS, (foundryCfg().bays || 1) | 0)); }
+  function perBayCap() { return Math.max(1, Math.min(MAX_PER_BAY, (foundryCfg().perBay || 2) | 0)); }
+  function ensureBays() {
+    while (baysState.length < bayCount()) baysState.push({ marchers: [], squadState: 'forming', lastBorn: 0, holdUntil: 0, sayUntil: 0, stampFlash: 0 });
+  }
+  function bayTopY(i) { return basementTop + i * BAY_H; }
+  function bayFloorY(i) { return bayTopY(i) + BAY_WALL; }
+  function bayOutY(i) { return bayTopY(i) + 84; }
+  function bayMachineX() { return liftX - 172; }
+  function bayStairBaseX() { return 176; }
+  function bayOutX() { return hatchX + hatchW; }
+  function bayMusterX() { return bayStairBaseX() + 40; }
+
+  function mintBotCoin(x, y) {
+    if (coins.length < 42) coins.push({ x: x + 6, y: y, vx: (Math.random() - 0.5) * 8, vy: -24 - Math.random() * 10, life: 0, ttl: 1.15, big: false });
+    if (window.__foundryEarn) window.__foundryEarn(foundryCfg().botYield || 0.1);
+  }
+
+  function updateBays(t, dt) {
+    ensureBays();
+    var n = bayCount(), cap = perBayCap();
+    var stx = bayStairBaseX(), spX = bayMusterX(), outX = bayOutX();
+    for (var b = 0; b < n; b++) {
+      var bay = baysState[b], fY = bayFloorY(b), oY = bayOutY(b), rise = fY - oY, ms = bay.marchers;
+      var buildTime = Math.max(0.9, 1.9 / (foundryCfg().prodMult || 1));   // floored: never instant
+      if (bay.squadState === 'forming' && ms.length < cap) {
+        bay.build = (bay.build || 0) + dt / buildTime;
+        if (bay.build >= 1) {
+          bay.build = 0; bay.stampFlash = t + 0.3;
+          ms.push({ x: bayMachineX() - 8, y: fY, slot: ms.length, phase: 'walk', wp: Math.random() * 6, saluteT: 0 });
+        }
+      } else { bay.build = 0; }
+      for (var i = ms.length - 1; i >= 0; i--) {
+        var m = ms[i]; m.wp += dt * 6;
+        var mm = foundryCfg().marchMult || 1;
+        if (m.phase === 'walk') {
+          var slotX = spX + m.slot * 46;
+          m.x = Math.max(slotX, m.x - dt * 26 * mm);            // walk slowly left into formation
+          if (m.x <= slotX + 0.5) { m.x = slotX; m.phase = 'form'; m.saluteT = t + 1.1; }
+        } else if (m.phase === 'march') {
+          if (m.x > stx) { m.x -= dt * 40 * mm; if (m.x < stx) m.x = stx; }
+          else {
+            m.x -= dt * 30 * mm;
+            m.y = fY - Math.min(rise, (stx - m.x) * (rise / Math.max(1, stx - outX)));
+            if (m.x <= outX) { ms.splice(i, 1); mintBotCoin(outX, oY - 4); }
+          }
+        }
+      }
+      if (bay.squadState === 'forming' && ms.length >= cap && ms.every(function (m) { return m.phase === 'form'; })) {
+        bay.squadState = 'saluting'; bay.holdUntil = t + 1.3; bay.sayUntil = t + 3.4;
+        ms.forEach(function (m) { m.saluteT = t + 1.3; });
+      }
+      if (bay.squadState === 'saluting' && t >= bay.holdUntil) bay.squadState = 'marching';
+      if (bay.squadState === 'marching') ms.forEach(function (m) { if (m.phase === 'form') m.phase = 'march'; });
+      if (bay.squadState === 'marching' && ms.length === 0) bay.squadState = 'forming';
+    }
+  }
+
+  function drawWeapon(kind, x, footY, s, plate) {
+    ctx.fillStyle = M_GUN; ctx.fillRect(x - 6 * s, footY - 11 * s, 3 * s, 2 * s);          // shared forearm
+    ctx.fillStyle = plate;
+    switch (kind) {
+      case 'rifle': ctx.fillRect(x - 12 * s, footY - 11.3 * s, 6.5 * s, 2.4 * s); ctx.fillStyle = '#d7dbe2'; ctx.fillRect(x - 12 * s, footY - 11.3 * s, 6.5 * s, 0.7 * s); break;
+      case 'cannon': ctx.fillRect(x - 12.5 * s, footY - 12.2 * s, 6 * s, 4.2 * s); ctx.fillStyle = '#3a4049'; ctx.fillRect(x - 13.3 * s, footY - 11.6 * s, 1.4 * s, 3 * s); break;
+      case 'twin': ctx.fillRect(x - 11 * s, footY - 12.2 * s, 5 * s, 1.6 * s); ctx.fillRect(x - 11 * s, footY - 10 * s, 5 * s, 1.6 * s); break;
+      case 'spear': ctx.fillRect(x - 14 * s, footY - 10.6 * s, 8 * s, 1.1 * s); ctx.beginPath(); ctx.moveTo(x - 14 * s, footY - 11.6 * s); ctx.lineTo(x - 16.5 * s, footY - 10 * s); ctx.lineTo(x - 14 * s, footY - 8.6 * s); ctx.closePath(); ctx.fill(); break;
+      case 'scythe': ctx.fillRect(x - 10 * s, footY - 13 * s, 1.4 * s, 6 * s); ctx.beginPath(); ctx.arc(x - 12.5 * s, footY - 12.5 * s, 3.2 * s, -0.4, 1.9); ctx.lineWidth = 1.4 * s; ctx.strokeStyle = plate; ctx.stroke(); break;
+      case 'saw': ctx.fillRect(x - 10 * s, footY - 10.6 * s, 3 * s, 1.4 * s); ctx.beginPath(); ctx.arc(x - 12 * s, footY - 10 * s, 3 * s, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#12151b'; ctx.beginPath(); ctx.arc(x - 12 * s, footY - 10 * s, 1.1 * s, 0, Math.PI * 2); ctx.fill(); break;
+      case 'laser': ctx.fillRect(x - 11 * s, footY - 11.2 * s, 4 * s, 2.4 * s); ctx.fillStyle = 'rgba(120,220,255,0.7)'; ctx.fillRect(x - 18 * s, footY - 10.4 * s, 7 * s, 0.9 * s); break;
+      case 'hammer': ctx.fillRect(x - 11 * s, footY - 10.8 * s, 4 * s, 1.4 * s); ctx.fillRect(x - 13.5 * s, footY - 13 * s, 3 * s, 5.5 * s); break;
+      case 'bow': ctx.beginPath(); ctx.arc(x - 11 * s, footY - 10 * s, 4 * s, -1.2, 1.2); ctx.lineWidth = 1.4 * s; ctx.strokeStyle = plate; ctx.stroke(); ctx.beginPath(); ctx.moveTo(x - 8.6 * s, footY - 13.2 * s); ctx.lineTo(x - 8.6 * s, footY - 6.8 * s); ctx.strokeStyle = '#d7dbe2'; ctx.lineWidth = 0.8 * s; ctx.stroke(); break;
+      default:  // blaster
+        ctx.fillRect(x - 9 * s, footY - 11.2 * s, 3.4 * s, 2.6 * s); ctx.fillStyle = '#d7dbe2'; ctx.fillRect(x - 9 * s, footY - 11.2 * s, 3.4 * s, 0.7 * s);
+        ctx.fillStyle = '#5a616c'; ctx.fillRect(x - 9.8 * s, footY - 10.8 * s, 1.2 * s, 1.8 * s);
+    }
+  }
+
+  function drawMarcher(m, t, style, s) {
+    var x = m.x, footY = m.y;
+    var body = style.body, plate = style.plate, eye = style.eye;
     var saluting = t < m.saluteT;
     var moving = m.phase === 'walk' || m.phase === 'march';
     var step = moving ? Math.sin(m.wp) : 0;
     ctx.fillStyle = 'rgba(0,0,0,0.32)';
     ctx.beginPath(); ctx.ellipse(x, footY + 1, 7 * s, 2.2 * s, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = M_DARK;                                     // legs
+    ctx.fillStyle = M_DARK;                                     // legs + feet
     ctx.fillRect(x - 3 * s + step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
     ctx.fillRect(x + 0.8 * s - step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
-    ctx.fillStyle = M_DARK; ctx.fillRect(x - 3.4 * s + step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);  // feet
+    ctx.fillRect(x - 3.4 * s + step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);
     ctx.fillRect(x + 0.4 * s - step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);
-    ctx.fillStyle = M_GUN;                                      // torso
-    ctx.fillRect(x - 4 * s, footY - 13 * s, 8 * s, 8 * s);
-    ctx.fillStyle = M_PLAT; ctx.fillRect(x - 4 * s, footY - 13 * s, 2.6 * s, 8 * s);     // lit edge
-    ctx.fillStyle = M_LINE; ctx.fillRect(x - 4 * s, footY - 9.4 * s, 8 * s, 0.7 * s);    // waist seam
-    ctx.fillStyle = M_DARK; ctx.fillRect(x - 2.1 * s, footY - 11.6 * s, 4.2 * s, 3.4 * s);  // chest recess
-    ctx.fillStyle = RED; ctx.fillRect(x - 1.2 * s, footY - 11 * s, 2.4 * s, 2.4 * s);    // red core
-    ctx.fillStyle = '#ffb4a6'; ctx.fillRect(x - 0.5 * s, footY - 10.4 * s, 1 * s, 1.1 * s);
-    ctx.fillStyle = M_TITAN;                                    // titanium head (like Ultron)
-    ctx.fillRect(x - 3.2 * s, footY - 19 * s, 6.4 * s, 6 * s);
-    ctx.fillStyle = M_STEEL; ctx.fillRect(x - 3.2 * s, footY - 19 * s, 6.4 * s, 1 * s);  // brow highlight
-    ctx.fillStyle = M_DARK; ctx.fillRect(x - 2.9 * s, footY - 17.4 * s, 5.8 * s, 2.4 * s);  // visor band
-    ctx.fillStyle = RED; ctx.fillRect(x - 2.6 * s, footY - 16.9 * s, 2.3 * s, 1.5 * s);  // red eye (facing left)
-    ctx.fillStyle = '#ff9a8a'; ctx.fillRect(x - 2.4 * s, footY - 16.7 * s, 0.9 * s, 0.7 * s);
-    ctx.fillStyle = M_STEEL; ctx.fillRect(x - 0.3 * s, footY - 22 * s, 0.8 * s, 3 * s);  // antenna
-    ctx.fillStyle = RED; ctx.fillRect(x - 0.5 * s, footY - 22.6 * s, 1.2 * s, 1 * s);
-    if (saluting) {                                             // arm up to the brow -- salute
-      ctx.fillStyle = M_GUN; ctx.fillRect(x - 4.6 * s, footY - 18.5 * s, 1.9 * s, 5.5 * s);
-      ctx.fillStyle = M_STEEL; ctx.fillRect(x - 5.2 * s, footY - 20 * s, 3 * s, 1.8 * s);   // blaster by the head
+    ctx.fillStyle = body; ctx.fillRect(x - 4 * s, footY - 13 * s, 8 * s, 8 * s);           // torso
+    ctx.fillStyle = plate; ctx.globalAlpha = 0.5; ctx.fillRect(x - 4 * s, footY - 13 * s, 2.4 * s, 8 * s); ctx.globalAlpha = 1;
+    ctx.fillStyle = M_LINE; ctx.fillRect(x - 4 * s, footY - 9.4 * s, 8 * s, 0.7 * s);
+    ctx.fillStyle = M_DARK; ctx.fillRect(x - 2.1 * s, footY - 11.6 * s, 4.2 * s, 3.4 * s);
+    ctx.fillStyle = eye; ctx.fillRect(x - 1.2 * s, footY - 11 * s, 2.4 * s, 2.4 * s);      // core (bay colour)
+    ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fillRect(x - 0.5 * s, footY - 10.4 * s, 1 * s, 1.1 * s);
+    ctx.fillStyle = plate; ctx.fillRect(x - 3.2 * s, footY - 19 * s, 6.4 * s, 6 * s);      // head (bay plate)
+    ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fillRect(x - 3.2 * s, footY - 19 * s, 6.4 * s, 1 * s);
+    ctx.fillStyle = M_DARK; ctx.fillRect(x - 2.9 * s, footY - 17.4 * s, 5.8 * s, 2.4 * s); // visor band
+    ctx.fillStyle = eye; ctx.fillRect(x - 2.6 * s, footY - 16.9 * s, 2.3 * s, 1.5 * s);    // eye (bay colour)
+    ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fillRect(x - 2.4 * s, footY - 16.7 * s, 0.9 * s, 0.7 * s);
+    // crest tuft varies by bay
+    ctx.fillStyle = plate; ctx.fillRect(x - 0.3 * s, footY - 22 * s, 0.8 * s, 3 * s);
+    ctx.fillStyle = eye; ctx.fillRect(x - 0.5 * s, footY - 22.6 * s, 1.2 * s, 1 * s);
+    if (saluting) {                                             // salute
+      ctx.fillStyle = body; ctx.fillRect(x - 4.6 * s, footY - 18.5 * s, 1.9 * s, 5.5 * s);
+      ctx.fillStyle = M_STEEL; ctx.fillRect(x - 5.2 * s, footY - 20 * s, 3 * s, 1.8 * s);
       ctx.fillStyle = '#d7dbe2'; ctx.fillRect(x - 5.2 * s, footY - 20 * s, 3 * s, 0.6 * s);
-    } else {                                                    // arm forward with a little blaster, pointing left
-      ctx.fillStyle = M_GUN; ctx.fillRect(x - 6 * s, footY - 11 * s, 3 * s, 2 * s);
-      ctx.fillStyle = M_STEEL; ctx.fillRect(x - 9 * s, footY - 11.2 * s, 3.4 * s, 2.6 * s);
-      ctx.fillStyle = '#d7dbe2'; ctx.fillRect(x - 9 * s, footY - 11.2 * s, 3.4 * s, 0.7 * s);
-      ctx.fillStyle = '#5a616c'; ctx.fillRect(x - 9.8 * s, footY - 10.8 * s, 1.2 * s, 1.8 * s); // muzzle
-      ctx.fillStyle = 'rgba(255,120,90,0.5)'; ctx.fillRect(x - 10.6 * s, footY - 10.4 * s, 1 * s, 1 * s); // charge glow
+    } else {
+      drawWeapon(style.weapon, x, footY, s, plate);
     }
   }
 
-  function drawBasement(t) {
-    var top = basementTop, floor = basementFloorY, bottom = basementTop + BASEMENT_H;
-    ctx.fillStyle = '#101318'; ctx.fillRect(0, top, W, BASEMENT_H);                   // metallic basement wall
-    ctx.fillStyle = '#0a0c0f'; ctx.fillRect(0, top, W, 6);
-    for (var pv = 0; pv < W; pv += 88) { ctx.fillStyle = '#181c22'; ctx.fillRect(pv, top, 1.5, floor - top); ctx.fillStyle = '#0b0d10'; ctx.fillRect(pv + 1.5, top, 1, floor - top); } // wall panel seams
-    for (var hx = 0; hx < W; hx += 30) { ctx.fillStyle = ((hx / 30) & 1) ? '#8a7326' : '#2c2914'; ctx.fillRect(hx, top + 7, 15, 5); }   // hazard stripe
-    // ceiling pipe run with hangers + bolts (industrial texture)
-    ctx.fillStyle = M_LINE; ctx.fillRect(0, top + 20, W, 6); ctx.fillStyle = '#4a515c'; ctx.fillRect(0, top + 20, W, 1.4);
-    ctx.fillStyle = '#20252c'; ctx.fillRect(0, top + 29, W, 3);
-    for (var bxp = 34; bxp < W; bxp += 120) { ctx.fillStyle = M_LINE; ctx.fillRect(bxp, top + 16, 4, 12); ctx.fillStyle = M_STEEL; ctx.fillRect(bxp + 0.6, top + 22, 2.8, 1.4); }
-    ctx.fillStyle = '#15181c'; ctx.fillRect(0, floor, W, bottom - floor);             // floor
-    ctx.fillStyle = '#2b313a'; ctx.fillRect(0, floor, W, 2.4);
-    ctx.fillStyle = M_LINE; ctx.fillRect(0, floor + 2.4, W, 1);
-    for (var gx = 0; gx < W; gx += 20) { ctx.fillStyle = '#20252c'; ctx.fillRect(gx + 3, floor + 7, 11, 1.4); ctx.fillStyle = '#0f1216'; ctx.fillRect(gx + 14, floor + 6, 3, 3); }  // tread grating
-    caption('production', W * 0.52, top + 42);
-
-    // Production machine (right, under the lift): a housing with a stamping
-    // press that flashes when a new robot drops out.
-    var mx = machineX(), mw = 154, mtop = floor - 156;
-    ctx.fillStyle = M_GUN; ctx.fillRect(mx, mtop, mw, floor - mtop);
-    ctx.fillStyle = M_PLAT; ctx.fillRect(mx, mtop, mw, 12);                            // lit top cowl
-    ctx.fillStyle = M_DARK; ctx.fillRect(mx, mtop + 12, mw, 2);
-    ctx.strokeStyle = M_LINE; ctx.lineWidth = 1.5; ctx.strokeRect(mx, mtop, mw, floor - mtop);
-    ctx.fillStyle = M_LINE; ctx.fillRect(mx, mtop + 58, mw, 2); ctx.fillRect(mx + mw * 0.5, mtop + 60, 2, floor - mtop - 60); // panel seams
-    for (var rvy = mtop + 6; rvy < floor - 6; rvy += 26) { for (var rvx = mx + 8; rvx < mx + mw - 4; rvx += 34) { ctx.fillStyle = '#565d68'; ctx.beginPath(); ctx.arc(rvx, rvy, 1.5, 0, Math.PI * 2); ctx.fill(); } } // rivets
-    ctx.fillStyle = '#3dd6ff'; ctx.globalAlpha = 0.5 + 0.5 * (Math.sin(t * 3) > 0 ? 1 : 0);
-    ctx.fillRect(mx + 12, mtop + 22, 10, 6); ctx.globalAlpha = 1;
-    ctx.fillStyle = '#33d17a'; ctx.fillRect(mx + 28, mtop + 22, 10, 6);
-    ctx.fillStyle = '#ffc24b'; ctx.fillRect(mx + 44, mtop + 22, 10, 6);
-    var press = 8 + (t < stampFlash ? 18 : 6 + 4 * Math.sin(t * 4));                  // the press head bobs; slams on a stamp
-    ctx.fillStyle = M_STEEL; ctx.fillRect(mx + mw * 0.5 - 4, mtop + 30, 8, press);    // piston rod
-    ctx.fillStyle = M_PLAT; ctx.fillRect(mx + mw * 0.5 - 26, mtop + 30 + press, 52, 14);
-    ctx.fillStyle = t < stampFlash ? '#ffd24b' : '#6b7480'; ctx.fillRect(mx + mw * 0.5 - 30, mtop + 44 + press, 60, 5);
-    ctx.fillStyle = '#07090b'; ctx.fillRect(mx + 6, floor - 22, mw - 12, 22);         // outlet chute
-    ctx.fillStyle = M_LINE; ctx.fillRect(mx + 6, floor - 22, mw - 12, 2);
-    caption('assembly', mx + mw / 2, mtop - 10);
-
-    // Stairs (left) rising from the floor up to the OUT opening, with a rail.
-    var stx = stairBaseX(), outX = stairTopX(), steps = 7;
-    for (var i = 0; i < steps; i++) {
-      var sx = stx - (stx - outX) * (i / steps), sy = floor - (floor - outY) * (i / steps);
-      var swStep = (stx - outX) / steps + 2, shStep = (floor - outY) / steps + 2;
-      ctx.fillStyle = i % 2 ? '#272d35' : '#2f3640';
-      ctx.fillRect(sx - swStep, sy - shStep, swStep + 2, shStep + 2);
-      ctx.fillStyle = M_STEEL; ctx.fillRect(sx - swStep, sy - shStep, swStep + 2, 1.6);   // lit tread nose
-      ctx.fillStyle = '#141820'; ctx.fillRect(sx - swStep, sy - shStep + 2, swStep + 2, 1);
+  function drawBuild(mx, mw, mtop, floor, prog, style, t) {
+    var bw = mw * 0.72, bx = mx + (mw - bw) / 2, by = mtop - 16;                 // progress bar
+    ctx.fillStyle = '#0c0e11'; ctx.fillRect(bx, by, bw, 6);
+    ctx.fillStyle = style.eye; ctx.fillRect(bx + 1, by + 1, (bw - 2) * Math.max(0, Math.min(1, prog)), 4);
+    ctx.strokeStyle = M_LINE; ctx.lineWidth = 1; ctx.strokeRect(bx, by, bw, 6);
+    var cx = mx + mw * 0.5, fy = floor - 22, s = 2.4;                            // robot on the build platform
+    ctx.fillStyle = '#0a0c0f'; ctx.fillRect(cx - 5 * s, fy + 1, 10 * s, 2.4);
+    ctx.fillStyle = M_LINE; ctx.fillRect(cx - 5 * s, fy + 1, 10 * s, 1);
+    if (prog > 0.15) { ctx.fillStyle = M_DARK; ctx.fillRect(cx - 3 * s, fy - 6 * s, 2.2 * s, 6 * s); ctx.fillRect(cx + 0.8 * s, fy - 6 * s, 2.2 * s, 6 * s); }
+    if (prog > 0.4) { ctx.fillStyle = style.body; ctx.fillRect(cx - 4 * s, fy - 13 * s, 8 * s, 8 * s); ctx.fillStyle = style.eye; ctx.fillRect(cx - 1.2 * s, fy - 11 * s, 2.4 * s, 2.4 * s); }
+    if (prog > 0.7) { ctx.fillStyle = style.plate; ctx.fillRect(cx - 3.2 * s, fy - 19 * s, 6.4 * s, 6 * s); ctx.fillStyle = M_DARK; ctx.fillRect(cx - 2.9 * s, fy - 17.4 * s, 5.8 * s, 2.2 * s); ctx.fillStyle = style.eye; ctx.fillRect(cx - 2.6 * s, fy - 16.9 * s, 2.3 * s, 1.5 * s); }
+    if (prog > 0.88) { ctx.fillStyle = M_STEEL; ctx.fillRect(cx - 0.3 * s, fy - 22 * s, 0.8 * s, 3 * s); }
+    if (prog < 0.98) {                                                           // welding spark riding up
+      var wy = fy - prog * 19 * s;
+      ctx.fillStyle = 'rgba(255,224,130,' + (0.5 + 0.5 * Math.abs(Math.sin(t * 28))) + ')';
+      ctx.fillRect(cx - 5 * s + Math.sin(t * 22) * 3, wy, 2.4, 2.4);
+      ctx.fillRect(cx + 4 * s + Math.cos(t * 19) * 2, wy + 3, 1.8, 1.8);
     }
-    ctx.strokeStyle = M_PLAT; ctx.lineWidth = 2;                                       // handrail
-    ctx.beginPath(); ctx.moveTo(stx + 2, floor - 20); ctx.lineTo(outX + 4, outY - 16); ctx.stroke();
-    // OUT opening in the left wall (packages and robots both leave here).
-    ctx.fillStyle = '#050506'; ctx.fillRect(0, outY - 30, outX + 6, (floor - outY) + 30);
-    ctx.strokeStyle = '#565c66'; ctx.lineWidth = 1.5; ctx.strokeRect(0, outY - 30, outX + 6, (floor - outY) + 30);
-    ctx.fillStyle = t < hatchFlashUntil ? RED : '#5a1414';
-    ctx.beginPath(); ctx.arc(outX - 8, outY - 18, 5, 0, Math.PI * 2); ctx.fill();
-    caption('out', outX - 2, outY - 40);
+  }
 
-    marchers.forEach(function (m) { drawMarcher(m, t); });
+  function drawBay(b, t) {
+    var top = bayTopY(b), floor = bayFloorY(b), bottom = top + BAY_H, oY = bayOutY(b);
+    var style = BAY_STYLES[b % BAY_STYLES.length], bay = baysState[b];
+    ctx.fillStyle = '#101318'; ctx.fillRect(0, top, W, BAY_H);                             // wall
+    ctx.fillStyle = '#0a0c0f'; ctx.fillRect(0, top, W, 6);
+    for (var pv = 0; pv < W; pv += 88) { ctx.fillStyle = '#181c22'; ctx.fillRect(pv, top, 1.5, floor - top); ctx.fillStyle = '#0b0d10'; ctx.fillRect(pv + 1.5, top, 1, floor - top); }
+    for (var hx = 0; hx < W; hx += 30) { ctx.fillStyle = ((hx / 30) & 1) ? '#8a7326' : '#2c2914'; ctx.fillRect(hx, top + 7, 15, 5); }
+    ctx.fillStyle = M_LINE; ctx.fillRect(0, top + 20, W, 6); ctx.fillStyle = '#4a515c'; ctx.fillRect(0, top + 20, W, 1.4);
+    for (var bxp = 34; bxp < W; bxp += 120) { ctx.fillStyle = M_LINE; ctx.fillRect(bxp, top + 16, 4, 12); ctx.fillStyle = M_STEEL; ctx.fillRect(bxp + 0.6, top + 22, 2.8, 1.4); }
+    ctx.fillStyle = '#15181c'; ctx.fillRect(0, floor, W, bottom - floor);                  // floor
+    ctx.fillStyle = '#2b313a'; ctx.fillRect(0, floor, W, 2.4); ctx.fillStyle = M_LINE; ctx.fillRect(0, floor + 2.4, W, 1);
+    for (var gx = 0; gx < W; gx += 20) { ctx.fillStyle = '#20252c'; ctx.fillRect(gx + 3, floor + 7, 11, 1.4); ctx.fillStyle = '#0f1216'; ctx.fillRect(gx + 14, floor + 6, 3, 3); }
+    caption('bay ' + (b + 1), W * 0.52, top + 34);
 
-    if (t < sayUntil && marchers.length) {                                            // "for a Better World"
-      var bx = musterX() + (MARCH_FORMATION - 1) * 12, by = floor - 44 * 1.7 - 8;
-      setFont(fontPx * 0.92, true); var txt = 'for a Better World';
+    var mx = bayMachineX(), mw = 154, mtop = floor - 150;                                  // assembler (bay-tinted)
+    ctx.fillStyle = M_GUN; ctx.fillRect(mx, mtop, mw, floor - mtop);
+    ctx.fillStyle = style.plate; ctx.globalAlpha = 0.55; ctx.fillRect(mx, mtop, mw, 12); ctx.globalAlpha = 1;
+    ctx.strokeStyle = M_LINE; ctx.lineWidth = 1.5; ctx.strokeRect(mx, mtop, mw, floor - mtop);
+    ctx.fillStyle = M_LINE; ctx.fillRect(mx, mtop + 58, mw, 2); ctx.fillRect(mx + mw * 0.5, mtop + 60, 2, floor - mtop - 60);
+    for (var rvy = mtop + 6; rvy < floor - 6; rvy += 26) { for (var rvx = mx + 8; rvx < mx + mw - 4; rvx += 34) { ctx.fillStyle = '#565d68'; ctx.beginPath(); ctx.arc(rvx, rvy, 1.5, 0, Math.PI * 2); ctx.fill(); } }
+    ctx.fillStyle = style.eye; ctx.globalAlpha = 0.5 + 0.5 * (Math.sin(t * 3 + b) > 0 ? 1 : 0); ctx.fillRect(mx + 12, mtop + 22, 10, 6); ctx.globalAlpha = 1;
+    ctx.fillStyle = '#33d17a'; ctx.fillRect(mx + 28, mtop + 22, 10, 6);
+    var press = 8 + (t < bay.stampFlash ? 18 : 6 + 4 * Math.sin(t * 4 + b));
+    ctx.fillStyle = M_STEEL; ctx.fillRect(mx + mw * 0.5 - 4, mtop + 30, 8, press);
+    ctx.fillStyle = M_PLAT; ctx.fillRect(mx + mw * 0.5 - 26, mtop + 30 + press, 52, 14);
+    ctx.fillStyle = t < bay.stampFlash ? style.eye : '#6b7480'; ctx.fillRect(mx + mw * 0.5 - 30, mtop + 44 + press, 60, 5);
+    ctx.fillStyle = '#07090b'; ctx.fillRect(mx + 6, floor - 22, mw - 12, 22);
+    caption('assembler ' + (b + 1), mx + mw / 2, mtop - 10);
+    drawBuild(mx, mw, mtop, floor, bay.build || 0, style, t);
+
+    var stx = bayStairBaseX(), outX = bayOutX(), steps = 6;                                // stairs -> OUT
+    for (var i = 0; i < steps; i++) {
+      var sx = stx - (stx - outX) * (i / steps), sy = floor - (floor - oY) * (i / steps);
+      var swStep = (stx - outX) / steps + 2, shStep = (floor - oY) / steps + 2;
+      ctx.fillStyle = i % 2 ? '#272d35' : '#2f3640'; ctx.fillRect(sx - swStep, sy - shStep, swStep + 2, shStep + 2);
+      ctx.fillStyle = M_STEEL; ctx.fillRect(sx - swStep, sy - shStep, swStep + 2, 1.6);
+    }
+    ctx.fillStyle = '#050506'; ctx.fillRect(0, oY - 26, outX + 6, (floor - oY) + 26);
+    ctx.strokeStyle = '#565c66'; ctx.lineWidth = 1.5; ctx.strokeRect(0, oY - 26, outX + 6, (floor - oY) + 26);
+    ctx.fillStyle = (b === 0 && t < hatchFlashUntil) ? RED : style.eye; ctx.beginPath(); ctx.arc(outX - 8, oY - 15, 5, 0, Math.PI * 2); ctx.fill();
+    caption('out', outX - 2, oY - 36);
+
+    bay.marchers.forEach(function (m) { drawMarcher(m, t, style, 3.2); });
+
+    if (t < bay.sayUntil && bay.marchers.length) {
+      var bx = bayMusterX() + (perBayCap() - 1) * 23, by = floor - 22 * 3.2 - 16;
+      setFont(fontPx * 0.9, true); var txt = 'for a Better World';
       var tw = ctx.measureText(txt).width + 16;
-      ctx.fillStyle = 'rgba(16,18,22,0.92)'; ctx.strokeStyle = RED; ctx.lineWidth = 1.4;
+      ctx.fillStyle = 'rgba(16,18,22,0.92)'; ctx.strokeStyle = style.eye; ctx.lineWidth = 1.4;
       roundRectPath(bx - tw / 2, by - fontPx - 4, tw, fontPx + 10, 5); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#ff8a7a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(txt, bx, by - fontPx / 2 + 1);
     }
   }
@@ -5395,13 +5557,17 @@ function toggleReducedVisuals(el) {
   // The six Infinity Stones, socketed in a bar on Ultron's workstation (MCU
   // colours). Each glows and pulses on its own phase.
   var STONES = [
-    { c: '#ff2e2e', g: 'rgba(255,46,46,' },    // Reality  -- red
-    { c: '#ff8a1e', g: 'rgba(255,138,30,' },   // Soul     -- orange
-    { c: '#ffd21e', g: 'rgba(255,210,30,' },   // Mind     -- yellow
-    { c: '#33d17a', g: 'rgba(51,209,122,' },   // Time     -- green
-    { c: '#3d9bff', g: 'rgba(61,155,255,' },   // Space    -- blue
-    { c: '#a24bff', g: 'rgba(162,75,255,' },   // Power    -- purple
+    { c: '#ff2e2e', g: 'rgba(255,46,46,', n: 'Reality Stone' },   // red
+    { c: '#ff8a1e', g: 'rgba(255,138,30,', n: 'Soul Stone' },     // orange
+    { c: '#ffd21e', g: 'rgba(255,210,30,', n: 'Mind Stone' },     // yellow
+    { c: '#33d17a', g: 'rgba(51,209,122,', n: 'Time Stone' },     // green
+    { c: '#3d9bff', g: 'rgba(61,155,255,', n: 'Space Stone' },    // blue
+    { c: '#a24bff', g: 'rgba(162,75,255,', n: 'Power Stone' },    // purple
   ];
+  // Hoverables registered each frame (room units): {name, x, y, r}. The
+  // pointer handler below maps the cursor into room units and shows a tooltip.
+  var hoverables = [];
+  function hover(name, x, y, r) { hoverables.push({ name: name, x: x, y: y, r: r }); }
   function drawStones(cx, cy, t) {
     var n = STONES.length, gap = 15, x0 = cx - (n - 1) * gap / 2;
     ctx.fillStyle = M_GUN; roundRectPath(x0 - 11, cy - 1, (n - 1) * gap + 22, 9, 3); ctx.fill();   // mount bar
@@ -5415,18 +5581,133 @@ function toggleReducedVisuals(el) {
       ctx.fillStyle = M_LINE; ctx.beginPath(); ctx.arc(x, cy - 2, 5.4, 0, Math.PI * 2); ctx.stroke();
       ctx.fillStyle = STONES[i].c; ctx.beginPath(); ctx.ellipse(x, cy - 3, 3.4, 4.3, 0, 0, Math.PI * 2); ctx.fill(); // gem
       ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.beginPath(); ctx.ellipse(x - 1, cy - 4.3, 1.1, 1.5, 0, 0, Math.PI * 2); ctx.fill(); // sparkle
+      hover(STONES[i].n, x, cy - 3, 8);
     }
+  }
+
+  // The Infinity Stones' original MCU forms, displayed around Ultron's office:
+  // the Tesseract (Space), the Orb (Power) and the Eye of Agamotto (Time) on
+  // pedestals, and the Aether (Reality) as red fluid in a tube on his desk.
+  function relicGlow(cx, cy, r, rgb, a) {
+    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    g.addColorStop(0, 'rgba(' + rgb + ',' + a + ')'); g.addColorStop(1, 'rgba(' + rgb + ',0)');
+    ctx.fillStyle = g; ctx.fillRect(cx - r, cy - r, 2 * r, 2 * r);
+  }
+  function pedestal(px, footY, w) {
+    ctx.fillStyle = M_GUN; ctx.fillRect(px - w / 2, footY - 15, w, 15);
+    ctx.fillStyle = M_PLAT; ctx.fillRect(px - w / 2, footY - 15, w, 3);
+    ctx.fillStyle = M_STEEL; ctx.fillRect(px - w / 2, footY - 15, w, 1);
+    ctx.fillStyle = M_DARK; ctx.fillRect(px - w / 2, footY - 4, w, 4);
+    ctx.fillStyle = M_LINE; ctx.fillRect(px - w / 2 + 3, footY - 12, w - 6, 1);
+  }
+  function tesseract(cx, cy, t) {   // Space -- a glowing blue cube
+    var p = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(t * 1.7));
+    relicGlow(cx, cy, 22, '70,170,255', 0.5 * p);
+    var s = 10, d = 5;
+    ctx.fillStyle = 'rgba(90,165,225,0.95)';                                    // top face
+    ctx.beginPath(); ctx.moveTo(cx - s, cy - s); ctx.lineTo(cx - s + d, cy - s - d); ctx.lineTo(cx + s + d, cy - s - d); ctx.lineTo(cx + s, cy - s); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(28,70,120,0.95)';                                     // side face
+    ctx.beginPath(); ctx.moveTo(cx + s, cy - s); ctx.lineTo(cx + s + d, cy - s - d); ctx.lineTo(cx + s + d, cy + s - d); ctx.lineTo(cx + s, cy + s); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(44,96,150,0.95)'; ctx.fillRect(cx - s, cy - s, 2 * s, 2 * s);  // front face
+    ctx.fillStyle = 'rgba(210,238,255,' + (0.85 * p) + ')'; ctx.beginPath(); ctx.ellipse(cx, cy, 2.6, 3.6, 0, 0, Math.PI * 2); ctx.fill();  // stone within
+    ctx.strokeStyle = '#bfe4ff'; ctx.lineWidth = 1.3; ctx.strokeRect(cx - s, cy - s, 2 * s, 2 * s);
+    caption('tesseract', cx, cy + 26); hover('Tesseract — the Space Stone within', cx, cy, 16);
+  }
+  function orb(cx, cy, t) {         // Power -- a metallic patterned sphere
+    var p = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(t * 1.5 + 1));
+    relicGlow(cx, cy, 20, '162,75,255', 0.45 * p);
+    var g = ctx.createRadialGradient(cx - 4, cy - 4, 1, cx, cy, 13);
+    g.addColorStop(0, '#9aa2ae'); g.addColorStop(1, '#33383f');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#23272d'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.ellipse(cx, cy, 12, 5, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(cx, cy, 5, 12, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = 'rgba(190,100,255,' + (0.9 * p) + ')'; ctx.fillRect(cx - 1.6, cy - 10, 3.2, 20);  // core seam glow
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.arc(cx - 4, cy - 4, 2, 0, Math.PI * 2); ctx.fill();
+    caption('orb', cx, cy + 26); hover('the Orb — the Power Stone within', cx, cy, 15);
+  }
+  function eyeOfAgamotto(cx, cy, t) {  // Time -- a gold amulet with an eye lid
+    var p = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(t * 1.4 + 2));
+    relicGlow(cx, cy, 20, '51,209,122', 0.45 * p);
+    ctx.fillStyle = '#c39a34'; ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#e6c766'; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = '#0e1512'; ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(51,209,122,' + (0.95 * p) + ')'; ctx.beginPath(); ctx.ellipse(cx, cy, 2.3, 6, 0, 0, Math.PI * 2); ctx.fill();  // green eye
+    ctx.fillStyle = '#7c8590';                                                   // metal lids, part open
+    ctx.beginPath(); ctx.moveTo(cx - 8, cy - 1.5); ctx.quadraticCurveTo(cx, cy - 10, cx + 8, cy - 1.5); ctx.quadraticCurveTo(cx, cy - 5.5, cx - 8, cy - 1.5); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx - 8, cy + 1.5); ctx.quadraticCurveTo(cx, cy + 10, cx + 8, cy + 1.5); ctx.quadraticCurveTo(cx, cy + 5.5, cx - 8, cy + 1.5); ctx.fill();
+    caption('eye of agamotto', cx, cy + 26); hover('Eye of Agamotto — the Time Stone within', cx, cy, 15);
+  }
+  function aetherTube(cx, footY, t) {  // Reality -- red fluid in a tube on the desk
+    var w = 13, h = 40, x = cx - w / 2, y = footY - h;
+    relicGlow(cx, footY - h / 2, 15, '200,30,40', 0.4);
+    ctx.fillStyle = M_STEEL; ctx.fillRect(x - 2, y - 4, w + 4, 5);              // cap
+    ctx.fillStyle = M_GUN; ctx.fillRect(x - 3, footY - 4, w + 6, 5);           // base
+    ctx.fillStyle = M_STEEL; ctx.fillRect(x - 3, footY - 4, w + 6, 1);
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    ctx.fillStyle = '#160a0d'; ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = 'rgba(150,20,30,0.9)'; ctx.fillRect(x, y + 2, w, h - 2);   // dark-red fluid
+    for (var i = 0; i < 4; i++) {                                              // swirling globs
+      var bx = x + w * 0.5 + w * 0.32 * Math.sin(t * 1.3 + i * 1.7);
+      var by = y + 6 + (h - 12) * (0.5 + 0.5 * Math.sin(t * 0.9 + i * 2.1));
+      ctx.fillStyle = 'rgba(255,74,60,0.7)'; ctx.beginPath(); ctx.arc(bx, by, 2.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.14)'; ctx.fillRect(x + 1.5, y, 2, h);  // glass sheen
+    ctx.restore();
+    ctx.strokeStyle = M_STEEL; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h);
+    caption('aether', cx, footY + 10); hover('the Aether — the Reality Stone, in fluid form', cx, footY - h / 2, 12);
+  }
+  function drawRelics(t) {
+    var fy = officeFloorY;
+    aetherTube(uDeskX + 30, fy - U_DESK_H + 4, t);                             // on Ultron's desk
+    var gapL = walkMaxX + 34, gapR = uDeskX - 26;
+    if (gapR - gapL < 150) return;                                            // no room on a narrow screen
+    var span = gapR - gapL;
+    tesseract(gapL + span * 0.16, fy - 27, t); pedestal(gapL + span * 0.16, fy, 40);
+    orb(gapL + span * 0.5, fy - 25, t); pedestal(gapL + span * 0.5, fy, 40);
+    eyeOfAgamotto(gapL + span * 0.84, fy - 25, t); pedestal(gapL + span * 0.84, fy, 40);
+  }
+
+  // A wall monitor over Ultron's desk: live BTC / memory / health (owner
+  // request). Reads roomStats, fed by the main script's status/crypto fetches.
+  function drawWallMonitor(t) {
+    var w = 172, h = 106, x = uDeskX + U_DESK_W / 2 - w / 2, y = ROOF_H + 40;
+    if (x < 8) return;
+    ctx.fillStyle = M_DARK; roundRectPath(x - 5, y - 5, w + 10, h + 10, 6); ctx.fill();
+    ctx.fillStyle = M_GUN; roundRectPath(x - 2, y - 2, w + 4, h + 4, 5); ctx.fill();
+    ctx.fillStyle = M_STEEL; ctx.fillRect(x + w / 2 - 10, y + h + 3, 20, 3);            // wall bracket
+    ctx.fillStyle = '#0a1016'; ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = M_LINE; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h);
+    ctx.globalAlpha = 0.06; ctx.fillStyle = '#7fd0ff';
+    for (var sy = y + 3; sy < y + h; sy += 4) ctx.fillRect(x, sy, w, 1);
+    ctx.globalAlpha = 1;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    setFont(fontPx * 0.74, true); ctx.fillStyle = '#7fd0ff'; ctx.fillText('ULTRON MONITOR', x + 9, y + 12);
+    ctx.strokeStyle = 'rgba(127,208,255,0.25)'; ctx.beginPath(); ctx.moveTo(x + 9, y + 21); ctx.lineTo(x + w - 9, y + 21); ctx.stroke();
+    ctx.fillStyle = Math.sin(t * 3) > 0 ? '#33d17a' : '#1a3a24'; ctx.beginPath(); ctx.arc(x + w - 11, y + 12, 2.6, 0, Math.PI * 2); ctx.fill();
+    var rowY = y + 38, rh = (h - 30) / 3;
+    function row(label, val, color) {
+      setFont(fontPx * 0.74, false); ctx.fillStyle = '#8b93a0'; ctx.textAlign = 'left'; ctx.fillText(label, x + 9, rowY);
+      setFont(fontPx * 0.98, true); ctx.fillStyle = color; ctx.textAlign = 'right'; ctx.fillText(val, x + w - 9, rowY);
+      rowY += rh;
+    }
+    var btc = roomStats.btc, mem = roomStats.mem, health = roomStats.health;
+    row('BTC', btc != null ? '$' + Math.round(btc).toLocaleString() : '—', '#f7931a');
+    row('MEM', mem != null ? mem + '%' : '—', (mem != null && mem > 85) ? '#ff6b6b' : '#4fa6e0');
+    row('HEALTH', health || '—', health === 'OK' ? '#33d17a' : health === 'OFFLINE' ? '#8b93a0' : health ? '#ff6b6b' : '#8b93a0');
+    hover('Wall monitor — live BTC price, memory use, and system health', x + w / 2, y + h / 2, w / 2);
   }
 
   function drawScene(t) {
     ctx.clearRect(0, 0, W, H);
+    hoverables.length = 0;
     var s, srcW = W * ASSET_RES;
     // office (Ultron) at the TOP, agent storeys below it, basement at the bottom
     if (IMG.ground.complete && IMG.ground.naturalWidth) ctx.drawImage(IMG.ground, 0, 0, srcW, GROUND_H * ASSET_RES, 0, ROOF_H, W, GROUND_H);
     for (s = 0; s < storeys; s++) {
       if (IMG.storey.complete && IMG.storey.naturalWidth) ctx.drawImage(IMG.storey, 0, 0, srcW, STOREY_H * ASSET_RES, 0, storeyBaseY + s * STOREY_H, W, STOREY_H);
     }
-    drawBasement(t);
+    for (var _b = 0; _b < bayCount(); _b++) drawBay(_b, t);
     // roof: a parapet, and a beacon over the lift head
     ctx.fillStyle = '#16181b'; ctx.fillRect(0, ROOF_H - 12, W, 12);
     ctx.fillStyle = '#474c52'; ctx.fillRect(0, ROOF_H - 12, W, 1.5);
@@ -5453,6 +5734,7 @@ function toggleReducedVisuals(el) {
 
     // Ultron's office at the top: recharge pod, desk, and the man himself.
     var working = charMode === 'sit';
+    drawWallMonitor(t);                                   // BTC / memory / health, on the wall
     wallGlow(uDeskX + 85, officeFloorY - 180, 220, RED, working ? 0.24 : 0.1);
     drawSprite(IMG.tubeRed, uTubeX, officeFloorY);
     if (working) lastCharBox = drawSprite(IMG.ultronWork, uDeskX + 85 - 100, officeFloorY, -U_ROBOT_SINK);
@@ -5461,13 +5743,15 @@ function toggleReducedVisuals(el) {
       plate('Ultron', heroState, uDeskX + 9, officeFloorY - U_DESK_H + 34, U_DESK_W - 18, U_DESK_H - 44, '#ff6b6b', '#e8e6e0');
       drawStones(uDeskX + U_DESK_W * 0.42, officeFloorY - U_DESK_H + 10, t);   // Infinity Stones on the desktop
     }
+    drawRelics(t);   // Tesseract / Orb / Eye on pedestals + the Aether tube on the desk
     if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, officeFloorY + 4);
 
     drawBelt(LEFT, liftX, officeFloorY, t, 1);                     // Ultron's office belt -> lift
     SUBAGENTS.forEach(function (a, i) { if (i % cols === 0) drawBelt(LEFT, liftX, a.floorY, t, 1); });
-    drawBelt(stairTopX() + 4, liftX, basementFloorY, t, -1);       // basement belt: lift -> OUT
+    drawBelt(bayOutX() + 4, liftX, basementFloorY, t, -1);         // bay 0 belt: lift -> OUT
     parcels.forEach(function (p) { if (p.phase !== 'lift') drawParcel(p); });
     drawLiftFront();
+    coins.forEach(drawCoin);
   }
 
   function positionBubble() {
@@ -5555,11 +5839,42 @@ function toggleReducedVisuals(el) {
     if (!laidOut && !(laidOut = layout())) return;
     stepWalk(t);
     updateParcels(t, dt);
-    updateMarchers(t, dt);
+    updateBays(t, dt);
+    updateCoins(dt);
     drawScene(t);
     if (charMode === 'sit' && bubble && bubble.classList.contains('show')) positionBubble();
   }
 
+  // Hover tooltips for the display items (relics, stones, wall monitor). Maps
+  // the cursor into room units and shows the name of whatever it is over.
+  var roomTip = document.createElement('div');
+  roomTip.style.cssText = 'position:absolute; z-index:6; pointer-events:none; display:none; background:var(--panel-raised,#16191c); ' +
+    'border:1px solid var(--line,#2c2f33); color:var(--text,#e9edf7); font:11px/1.3 ' + fontFamily + '; padding:4px 8px; ' +
+    'border-radius:5px; white-space:nowrap; box-shadow:0 6px 18px -6px rgba(0,0,0,0.7); transform:translate(-50%,-125%);';
+  wrap.appendChild(roomTip);
+  canvas.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'touch') return;
+    var rect = canvas.getBoundingClientRect();
+    if (!rect.width) return;
+    var sc = rect.width / W, rx = (e.clientX - rect.left) / sc, ry = (e.clientY - rect.top) / sc;
+    var hit = null, best = 1e18;
+    for (var i = 0; i < hoverables.length; i++) {
+      var hb = hoverables[i], dx = hb.x - rx, dy = hb.y - ry, d = dx * dx + dy * dy;
+      if (d < hb.r * hb.r && d < best) { best = d; hit = hb; }
+    }
+    if (hit) {
+      roomTip.textContent = hit.name;
+      roomTip.style.left = (e.clientX - rect.left) + 'px';
+      roomTip.style.top = (e.clientY - rect.top) + 'px';
+      roomTip.style.display = 'block';
+      canvas.style.cursor = 'help';
+    } else if (roomTip.style.display !== 'none') {
+      roomTip.style.display = 'none'; canvas.style.cursor = 'default';
+    }
+  });
+  canvas.addEventListener('pointerleave', function () { roomTip.style.display = 'none'; canvas.style.cursor = 'default'; });
+
+  window.__roomRelayout = function () { laidOut = layout(); requestStatic(); };
   if (window.ResizeObserver) {
     new ResizeObserver(function () { laidOut = layout(); requestStatic(); }).observe(wrap);
   } else {
@@ -5575,6 +5890,168 @@ function toggleReducedVisuals(el) {
   } else {
     frame();
   }
+})();
+</script>
+
+<!-- Ultron's foundry: the idle-game layer. The room mints "data-bits" when a
+     package ships out or a squad marches out (window.__foundryEarn), plus a
+     passive trickle; this module tracks the balance, renders the upgrade
+     panel, and publishes window.__foundry -- the multipliers the room reads
+     each frame (belt speed, production rate, squad size). Per-viewer only
+     (localStorage), so it never claims to be shared or server state. -->
+<script>
+(function () {
+  'use strict';
+  var KEY = 'ultron_foundry_v1';
+  // Each bot is worth 0.1 data-bits; the Yield upgrade takes that to 1.0 on the
+  // first buy (+0.9) then +1.0 each after. Floors and robots-per-floor both
+  // cap at 10.
+  var UPGRADES = [
+    { id: 'yield', name: 'Bit Yield', base: 2, grow: 1.85, max: 30, desc: function (l) { return (l === 0 ? '0.1' : l.toFixed(1)) + ' data-bits per robot' + (l < 30 ? ' → ' + (l === 0 ? '1.0' : (l + 1).toFixed(1)) : ''); } },
+    { id: 'perbay', name: 'Robots / Bay', base: 5, grow: 1.8, max: 8, desc: function (l) { return (2 + l) + ' robots per bay (cap 10)'; } },
+    { id: 'bays', name: 'Open Bay', base: 25, grow: 2.35, max: 9, desc: function (l) { return (1 + l) + ' production bays open (cap 10)'; } },
+    { id: 'assembler', name: 'Assembler', base: 8, grow: 1.6, max: 20, desc: function (l) { return '+25% production speed (x' + (1 + 0.25 * l).toFixed(2) + ')'; } },
+    { id: 'belt', name: 'Conveyor', base: 10, grow: 1.6, max: 20, desc: function (l) { return '+20% belt speed (x' + (1 + 0.2 * l).toFixed(1) + ')'; } },
+    { id: 'collector', name: 'Auto-Collector', base: 14, grow: 1.7, max: 20, desc: function (l) { return '+0.5 data-bits / sec while idle (' + (0.5 * l).toFixed(1) + '/s)'; } },
+    { id: 'march', name: 'March Drums', base: 12, grow: 1.6, max: 8, desc: function (l) { return '+15% march & walk speed (x' + (1 + 0.15 * l).toFixed(2) + ')'; } },
+    { id: 'offline', name: 'Offline Storage', base: 250, grow: 1.8, max: 10, desc: function (l) { return (1.5 + l) + 'h of offline accrual (+1h)'; } },
+  ];
+
+  var state = { bits: 0, up: {} };
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) { var j = JSON.parse(raw); if (j && typeof j.bits === 'number') { state.bits = j.bits; state.up = j.up || {}; } }
+  } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
+  UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
+
+  var saveTimer = null;
+  function save() {
+    if (saveTimer) return;
+    saveTimer = setTimeout(function () {
+      saveTimer = null;
+      state.seen = Date.now();
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+    }, 600);
+  }
+
+  function lvl(id) { return state.up[id] || 0; }
+  function cost(u) { return Math.ceil(u.base * Math.pow(u.grow, lvl(u.id))); }
+  function publish() {
+    window.__foundry = {
+      prodMult: 1 + 0.25 * lvl('assembler'),
+      beltMult: 1 + 0.2 * lvl('belt'),
+      perBay: 2 + lvl('perbay'),
+      bays: 1 + lvl('bays'),
+      botYield: lvl('yield') === 0 ? 0.1 : lvl('yield'),
+      passive: 0.5 * lvl('collector'),
+      marchMult: 1 + 0.15 * lvl('march'),
+      offlineHours: 1.5 + lvl('offline'),
+    };
+  }
+  publish();
+
+  // Offline accrual: while the tab is closed, the line keeps earning at its
+  // estimated production rate, up to the offline-storage cap (1.5h + upgrades).
+  function prodRate() {
+    var f = window.__foundry, buildTime = Math.max(0.9, 1.9 / (f.prodMult || 1));
+    return (f.bays || 1) * (1 / buildTime) * (f.botYield || 0.1) * 0.6 + (f.passive || 0);
+  }
+  function humanDur(sec) {
+    var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+    return (h ? h + 'h ' : '') + m + 'm';
+  }
+  var offlineEarned = 0, offlineCapped = false;
+  if (state.seen) {
+    var away = Math.max(0, (Date.now() - state.seen) / 1000);
+    var capSec = (window.__foundry.offlineHours || 1.5) * 3600;
+    offlineCapped = away > capSec;
+    var eff = Math.min(away, capSec);
+    offlineEarned = prodRate() * eff;
+    if (offlineEarned > 0.05) { state.bits += offlineEarned; }
+  }
+  // flush last-seen when the tab is hidden/closed so offline time is accurate
+  function flush() { state.seen = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } }
+  window.addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) flush(); });
+
+  window.__foundryEarn = function (n) {
+    state.bits += (n || 0);
+    dirty = true; save();
+  };
+
+  function fmt(n) {
+    if (n < 100) return (Math.round(n * 10) / 10).toFixed(1);
+    if (n < 10000) return Math.floor(n).toLocaleString();
+    var u = ['', 'K', 'M', 'B', 'T'], i = 0;
+    while (n >= 1000 && i < u.length - 1) { n /= 1000; i++; }
+    return (n < 10 ? n.toFixed(2) : n < 100 ? n.toFixed(1) : Math.floor(n)) + u[i];
+  }
+
+  var bitsEl = document.getElementById('foundry-bits');
+  var rateEl = document.getElementById('foundry-rate');
+  var upsEl = document.getElementById('foundry-upgrades');
+  var dirty = true, lastShown = -1;
+
+  function renderUpgrades() {
+    if (!upsEl) return;
+    upsEl.innerHTML = UPGRADES.map(function (u) {
+      var l = lvl(u.id), maxed = l >= u.max, c = cost(u), can = state.bits >= c && !maxed;
+      return '<button type="button" class="foundry-up' + (can ? ' affordable' : '') + '" data-up="' + u.id + '"' + (maxed ? ' disabled' : '') + '>' +
+        '<div class="fu-top"><span class="fu-name">' + u.name + '</span><span class="fu-lvl">Lv ' + l + (maxed ? ' (max)' : '') + '</span></div>' +
+        '<div class="fu-desc">' + u.desc(l) + '</div>' +
+        '<div class="fu-cost' + (can || maxed ? '' : ' short') + '">' + (maxed ? '—' : '◉ ' + fmt(c)) + '</div>' +
+        '</button>';
+    }).join('');
+    upsEl.querySelectorAll('[data-up]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var u = UPGRADES.find(function (x) { return x.id === btn.dataset.up; });
+        if (!u || lvl(u.id) >= u.max) return;
+        var c = cost(u);
+        if (state.bits < c) return;
+        state.bits -= c; state.up[u.id] = lvl(u.id) + 1;
+        publish();
+        if (u.id === 'bays' && window.__roomRelayout) window.__roomRelayout();
+        dirty = true; save(); renderUpgrades();
+      });
+    });
+  }
+
+  function renderBalance() {
+    if (bitsEl) {
+      bitsEl.textContent = fmt(state.bits);
+      bitsEl.classList.add('pop');
+      setTimeout(function () { bitsEl.classList.remove('pop'); }, 130);
+    }
+    if (rateEl) {
+      var p = window.__foundry.passive || 0;
+      rateEl.textContent = p ? '· +' + p.toFixed(1) + '/s idle' : '';
+    }
+  }
+
+  // passive income + refresh loop
+  var last = Date.now();
+  setInterval(function () {
+    var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
+    var p = window.__foundry.passive || 0;
+    if (p > 0) { state.bits += p * dt; dirty = true; save(); }
+    var shown = Math.round(state.bits * 10);
+    if (dirty && shown !== lastShown) {
+      lastShown = shown;
+      renderBalance(); renderUpgrades();
+      dirty = false;
+    }
+  }, 500);
+
+  var offEl = document.getElementById('foundry-offline');
+  if (offEl && offlineEarned > 0.05) {
+    offEl.textContent = 'Welcome back — the line minted ' + fmt(offlineEarned) + ' data-bits over ' +
+      humanDur(Math.min((Date.now() - (state.seen || Date.now())) / 1000, (window.__foundry.offlineHours || 1.5) * 3600)) +
+      ' offline' + (offlineCapped ? ' (storage was full — upgrade Offline Storage)' : '') + '.';
+    offEl.hidden = false;
+  }
+
+  renderBalance();
+  renderUpgrades();
 })();
 </script>
 
