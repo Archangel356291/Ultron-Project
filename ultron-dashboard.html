@@ -1044,6 +1044,11 @@
   .py-line b{ font-weight:700; }
   .py-grid{ display:flex; flex-wrap:wrap; gap:5px; padding:0 10px 8px; }
   .py-chip{ font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); background:var(--panel-raised); border:1px solid var(--line); border-radius:5px; padding:2px 7px; }
+  .xpcore-btn{ display:block; width:100%; margin:6px 0; font-family:var(--font-display); font-weight:700; font-size:12px; padding:9px; border-radius:7px; border:1px solid rgba(143,230,75,.4); background:linear-gradient(180deg,rgba(143,230,75,.10),transparent); color:#aef07a; cursor:default; }
+  .xpcore-btn.can{ cursor:pointer; border-color:#8fe64b; box-shadow:0 0 14px -4px rgba(143,230,75,.6); }
+  .xpcore-btn.can:hover{ background:rgba(143,230,75,.16); }
+  .xpcore-btn:disabled{ opacity:.6; }
+  .xpcore-on{ margin:6px 0; font-family:var(--font-mono); font-size:11px; color:#aef07a; background:rgba(143,230,75,.08); border:1px solid rgba(143,230,75,.3); border-radius:7px; padding:8px 11px; }
   .exp-battle{ margin-top:10px; padding:9px 12px; border-radius:8px; border:1px solid var(--line); background:var(--panel-raised); font-size:12.5px; border-left-width:3px; }
   .exp-battle.win{ border-left-color:#33d17a; } .exp-battle.win b{ color:#5fe39a; }
   .exp-battle.loss{ border-left-color:#ff5a7a; } .exp-battle.loss b{ color:#ff8098; }
@@ -5604,6 +5609,8 @@ function toggleReducedVisuals(el) {
   // out through the same OUT the package belt exits by -- forever. Ultron moved
   // to the TOP office; agents fill the storeys between.
   var BAY_H = 385, BAY_WALL = 287;               // each production bay's strip height + floor line (0.75x larger to fit the robots)
+  var XPCRYSTAL_H = 320;                          // the XP Crystal chamber floor (between agents + basement, when unlocked)
+  function xpFloorOn() { return !!(window.__foundry && window.__foundry.xpcore); }
   var MAX_BAYS = 20, MAX_PER_BAY = 20;           // unlockable floors, and robots per floor -- both capped
   // Per-bay robot styling: body / plate (head) / eye+core / weapon. One per floor.
   // Each bay is a named unit of a distinct robot archetype: its own colour,
@@ -5756,7 +5763,7 @@ function toggleReducedVisuals(el) {
 
   // ---- layout: recomputed whenever the panel's width changes ----
   var W = 1280, H = 1216, cols = 6, storeys = 3, scale = 1, fontPx = 13;
-  var officeFloorY, storeyBaseY, basementTop, basementFloorY, outY;
+  var officeFloorY, storeyBaseY, basementTop, basementFloorY, outY, xpCrystalTop;
   var liftX, uDeskX, uTubeX, hatchX = 12, hatchW = 58, walkMinX, walkMaxX;
   var fontFamily = 'monospace';
   try {
@@ -5775,8 +5782,9 @@ function toggleReducedVisuals(el) {
     W = Math.max(760, LEFT + cols * 193 + LIFT_W + 28);
     var pitch = (W - LEFT - LIFT_W - 28) / cols;
     storeys = Math.ceil(SUBAGENTS.length / cols);
-    // Top-to-bottom: office (Ultron) · agent storeys · basement (production).
-    H = ROOF_H + GROUND_H + storeys * STOREY_H + bayCount() * BAY_H;
+    // Top-to-bottom: office (Ultron) · agent storeys · [XP Crystal chamber] · basement (production).
+    var xpH = xpFloorOn() ? XPCRYSTAL_H : 0;
+    H = ROOF_H + GROUND_H + storeys * STOREY_H + xpH + bayCount() * BAY_H;
     scale = cssW / W;
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(cssW * dpr);
@@ -5795,7 +5803,8 @@ function toggleReducedVisuals(el) {
       a.x = LEFT + c * pitch + (pitch - STATION_W) / 2;
       a.floorY = storeyBaseY + f * STOREY_H + STOREY_WALL;
     });
-    basementTop = storeyBaseY + storeys * STOREY_H;
+    xpCrystalTop = storeyBaseY + storeys * STOREY_H;  // top of the XP Crystal chamber (0-height when locked)
+    basementTop = xpCrystalTop + (xpFloorOn() ? XPCRYSTAL_H : 0);
     basementFloorY = basementTop + BAY_WALL;          // bay 0's floor -- where the package belt runs
     outY = basementTop + 84;                          // bay 0's OUT (packages leave here)
     uTubeX = liftX - 24 - U_TUBE_W;
@@ -6958,6 +6967,86 @@ function toggleReducedVisuals(el) {
       '<b style="color:#a88bff">Vibranium Power Core</b> — the six Infinity Stones feed Ultron’s frame from an arc reactor.<br><span class="rt-enl">Charge ' + Math.round(charge * 100) + '% · ' + cores + ' Nanite Core' + (cores === 1 ? '' : 's') + ' banked</span>');
   }
 
+  // ---- XP Crystal chamber: a hidden floor where 10 red drones laser-mine a
+  // radioactive-green crystal; the chipped slivers ride a conveyor up to Ultron
+  // as his secret XP resource. Purely visual (time-driven, no particle state);
+  // the actual XP trickle is minted by the foundry while unlocked. ----
+  function drawCrystalGem(cx, baseY, t) {
+    var pulse = 0.6 + 0.4 * Math.sin(t * 2.2), cy = baseY - 74, R = 46;
+    ctx.save(); ctx.shadowColor = '#8fe64b'; ctx.shadowBlur = 22 + 10 * pulse;
+    // faceted gem: upper pyramid + lower point
+    var g = ctx.createLinearGradient(cx, cy - R, cx, cy + R);
+    g.addColorStop(0, '#d6ff9e'); g.addColorStop(0.45, '#7ce23c'); g.addColorStop(1, '#2f7a15');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.moveTo(cx, cy - R); ctx.lineTo(cx + R * 0.62, cy - R * 0.25); ctx.lineTo(cx + R * 0.42, cy + R * 0.55);
+    ctx.lineTo(cx, cy + R); ctx.lineTo(cx - R * 0.42, cy + R * 0.55); ctx.lineTo(cx - R * 0.62, cy - R * 0.25); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    // facet lines
+    ctx.strokeStyle = 'rgba(230,255,200,0.5)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R); ctx.moveTo(cx - R * 0.62, cy - R * 0.25); ctx.lineTo(cx + R * 0.62, cy - R * 0.25); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.35 + 0.3 * pulse) + ')';
+    ctx.beginPath(); ctx.moveTo(cx - 6, cy - R * 0.5); ctx.lineTo(cx + 2, cy - R * 0.2); ctx.lineTo(cx - 4, cy + 4); ctx.closePath(); ctx.fill();
+    // pedestal
+    ctx.fillStyle = '#16241a'; ctx.fillRect(cx - 30, baseY - 28, 60, 28);
+    ctx.fillStyle = '#25402a'; ctx.fillRect(cx - 30, baseY - 28, 60, 3);
+  }
+  function drawMinerBot(bx, floorY, tx, ty, t, i) {
+    var fire = ((t * 1.6 + i * 0.5) % 1.6) < 0.5;   // staggered laser bursts
+    var feet = floorY, x = bx, left = bx < tx;
+    ctx.fillStyle = '#2a1414'; ctx.fillRect(x - 6, feet - 10, 4, 10); ctx.fillRect(x + 2, feet - 10, 4, 10);   // legs
+    var g = ctx.createLinearGradient(x - 9, 0, x + 9, 0); g.addColorStop(0, '#e0392b'); g.addColorStop(1, '#7a1a14');
+    ctx.fillStyle = g; ctx.fillRect(x - 9, feet - 26, 18, 16);                                                 // torso
+    ctx.fillStyle = '#120a0a'; ctx.fillRect(x - 4, feet - 22, 8, 7);
+    ctx.fillStyle = '#ff5a3c'; ctx.beginPath(); ctx.arc(x, feet - 18.5, 2.6, 0, 6.28); ctx.fill();             // core
+    ctx.fillStyle = '#8b93a0'; ctx.fillRect(x - 6, feet - 38, 12, 12);                                         // head
+    ctx.fillStyle = '#ff3b2e'; ctx.fillRect(x - 4, feet - 34, 3, 2.4); ctx.fillRect(x + 1, feet - 34, 3, 2.4); // eyes
+    // mining arm + laser toward the crystal
+    var ax = left ? x + 8 : x - 8, ay = feet - 20;
+    ctx.fillStyle = '#4a2020'; ctx.fillRect(Math.min(ax, x), ay - 2, Math.abs(ax - x) + 3, 4);
+    if (fire) {
+      ctx.save(); ctx.strokeStyle = '#aaff5a'; ctx.lineWidth = 2; ctx.shadowColor = '#8fe64b'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(tx, ty); ctx.stroke();
+      ctx.fillStyle = '#eaffce'; for (var s = 0; s < 3; s++) ctx.fillRect(tx - 3 + Math.random() * 6, ty - 3 + Math.random() * 6, 2, 2);   // chips
+      ctx.restore();
+    }
+  }
+  function drawXpConveyor(cx, top, floorY, t) {
+    // a lit pipe rising from the crystal up the left wall toward the office;
+    // green XP slivers stream up it continuously.
+    var x1 = cx, y1 = floorY - 80, x2 = LEFT + 30, y2 = top + 4;
+    ctx.strokeStyle = '#1c2c1e'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo((x1 + x2) / 2, y1 - 40, x2, y2); ctx.stroke();
+    ctx.strokeStyle = 'rgba(140,230,75,0.35)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo((x1 + x2) / 2, y1 - 40, x2, y2); ctx.stroke();
+    for (var i = 0; i < 7; i++) {
+      var u = ((t * 0.4 + i / 7) % 1), v = 1 - u;
+      var px = v * v * x1 + 2 * v * u * ((x1 + x2) / 2) + u * u * x2;
+      var py = v * v * y1 + 2 * v * u * (y1 - 40) + u * u * y2;
+      ctx.fillStyle = 'rgba(190,255,120,0.9)'; ctx.beginPath(); ctx.arc(px, py, 2.4, 0, 6.28); ctx.fill();
+    }
+    ctx.lineCap = 'butt';
+  }
+  function drawXpCrystal(t) {
+    var top = xpCrystalTop, h = XPCRYSTAL_H, floorY = top + h - 26, cx = W * 0.5;
+    var bg = ctx.createLinearGradient(0, top, 0, top + h);
+    bg.addColorStop(0, '#0b140d'); bg.addColorStop(1, '#060a07');
+    ctx.fillStyle = bg; ctx.fillRect(0, top, W, h);
+    var glow = ctx.createRadialGradient(cx, floorY - 80, 20, cx, floorY - 80, 240);
+    glow.addColorStop(0, 'rgba(120,255,80,' + (0.15 + 0.06 * Math.sin(t * 2)) + ')'); glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0, top, W, h);
+    ctx.strokeStyle = 'rgba(90,180,90,0.05)'; ctx.lineWidth = 1;
+    for (var gx = 40; gx < W; gx += 80) { ctx.beginPath(); ctx.moveTo(gx, top + 6); ctx.lineTo(gx, floorY); ctx.stroke(); }
+    ctx.fillStyle = '#0d1710'; ctx.fillRect(0, floorY, W, h - (floorY - top));
+    ctx.fillStyle = '#1a2a1c'; ctx.fillRect(0, floorY, W, 2);
+    drawXpConveyor(cx, top, floorY, t);
+    drawCrystalGem(cx, floorY, t);
+    var n = 10, span = Math.min(W - 140, 780), x0 = cx - span / 2, step = span / (n - 1);
+    for (var i = 0; i < n; i++) { var bx = x0 + step * i; if (Math.abs(bx - cx) < 52) continue; drawMinerBot(bx, floorY, cx, floorY - 70, t, i); }
+    ctx.fillStyle = '#5a6270'; setFont(fontPx * 0.8, false); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText("XP CRYSTAL CHAMBER — Ultron's secret resource", cx, top + 16);
+    hover('XP Crystal Chamber', cx, floorY - 80, 100,
+      '<b style="color:#8fe64b">XP Crystal Chamber</b> — ten drones laser-mine a radioactive crystal; the slivers ride the conveyor up to Ultron as a steady stream of XP.');
+  }
+
   function drawScene(t) {
     ctx.clearRect(0, 0, W, H);
     hoverables.length = 0;
@@ -6967,6 +7056,7 @@ function toggleReducedVisuals(el) {
     for (s = 0; s < storeys; s++) {
       if (IMG.storey.complete && IMG.storey.naturalWidth) ctx.drawImage(IMG.storey, 0, 0, srcW, STOREY_H * ASSET_RES, 0, storeyBaseY + s * STOREY_H, W, STOREY_H);
     }
+    if (xpFloorOn()) drawXpCrystal(t);   // XP Crystal chamber between the agents and the basement
     for (var _b = 0; _b < bayCount(); _b++) drawBay(_b, t);
     // roof: a parapet, and a beacon over the lift head
     ctx.fillStyle = '#16181b'; ctx.fillRect(0, ROOF_H - 12, W, 12);
@@ -7689,7 +7779,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -7702,6 +7792,7 @@ window.__sfx = (function () {
   if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;   // round baseline for point payouts
   if (!state.comp) state.comp = { chip: 0, cpu: 0, gpu: 0, ram: 0 };   // universe-weapon components from loot salvage
   if (!state.genesis) state.genesis = { built: {}, fired: 0 };          // Genesis Cannon build progress
+  if (!state.xpcore) state.xpcore = { unlocked: false };               // XP Crystal chamber floor
   if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
@@ -7742,6 +7833,7 @@ window.__sfx = (function () {
       tier: 1 + Math.min(3, Math.floor((lvl('yield') + lvl('perbay') + (state.up.asm0 || 0)) / 3)),
       cores: (state.prestige && state.prestige.cores) || 0,   // banked defeats -> permanent buffs
       charge: prestigeChargePct(),                             // 0..1 power-core fill toward next reboot
+      xpcore: !!(state.xpcore && state.xpcore.unlocked),       // XP Crystal chamber floor is built
     };
     window.__refinery = refConfig();
   }
@@ -8272,9 +8364,23 @@ window.__sfx = (function () {
           '<div class="py-line">📦 Package <b style="color:' + fmtColor(pkg) + '">◉' + fmt(pkg) + '</b> each · 🤖 per bot (×globalMult):</div>' +
           '<div class="py-grid">' + chips + '</div></details>';
       })() +
+      (function () {   // XP Crystal Chamber: a deep-game floor that mines XP
+        if (xpcoreUnlocked()) return '<div class="xpcore-on">🟢 XP Crystal Chamber online — <b>+' + fmt(xpcoreRate()) + ' XP/s</b> mined by the drones below Ultron’s agents</div>';
+        var can = state.bits >= XPCORE_COST;
+        return '<button type="button" class="xpcore-btn' + (can ? ' can' : '') + '" data-xpcore="1"' + (can ? '' : ' disabled') + '>💎 Unlock the XP Crystal Chamber — <span style="color:' + fmtColor(XPCORE_COST) + '">◉' + fmt(XPCORE_COST) + '</span></button>';
+      })() +
       '<div class="xplog"><div class="xplog-h">XP log <span class="xplog-live">live</span></div><div class="xplog-feed" id="xplog-feed"></div></div>' +
       cats;
     renderXpLog();
+    var xcb = progEl.querySelector('[data-xpcore]');
+    if (xcb) xcb.addEventListener('click', function () {
+      if (state.bits < XPCORE_COST || xpcoreUnlocked()) return;
+      state.bits -= XPCORE_COST; state.xpcore = { unlocked: true };
+      if (window.__sfx) window.__sfx('unlock'); gamePop('💎 XP Crystal Chamber online', '#8fe64b');
+      addXp(500, 'Discovery: XP Crystal Chamber');
+      publish(); dirty = true; save(); renderProgression(); renderBalance();
+      if (window.__roomRelayout) window.__roomRelayout();   // grow the room for the new floor
+    });
     progEl.querySelectorAll('[data-skill]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var sk = SKILLS.filter(function (x) { return x.id === btn.dataset.skill; })[0];
@@ -8323,7 +8429,10 @@ window.__sfx = (function () {
   }
 
   // passive income + refresh loop
-  var last = Date.now(), idleXpAcc = 0, heavyTick = 0;
+  var last = Date.now(), idleXpAcc = 0, heavyTick = 0, crystalXpAcc = 0;
+  var XPCORE_COST = 2.5e8;   // the XP Crystal chamber is a deep-game unlock
+  function xpcoreUnlocked() { return !!(state.xpcore && state.xpcore.unlocked); }
+  function xpcoreRate() { return (5 + playerLevel() * 1.5) * (1 + 0.5 * ((state.prestige && state.prestige.cores) || 0)); }   // XP/sec, grows with level + cores
   setInterval(function () {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
     syncPresence();                    // catch in-app section switches while the tab is visible
@@ -8332,6 +8441,7 @@ window.__sfx = (function () {
       var p = ((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus();
       if (p > 0) { state.bits += p * dt; state.lifetime = (state.lifetime || 0) + p * dt; dirty = true; save(); }
       idleXpAcc += dt * 0.6; if (idleXpAcc >= 1) { var whole = Math.floor(idleXpAcc); idleXpAcc -= whole; addXp(whole, 'Idle ops'); }   // "do to learn": a small XP trickle while running the line
+      if (xpcoreUnlocked()) { crystalXpAcc += xpcoreRate() * dt; if (crystalXpAcc >= 1) { var cw = Math.floor(crystalXpAcc); crystalXpAcc -= cw; addXp(cw, 'XP Crystal'); } }   // the secret crystal mine feeds XP
     }
     advTick();                         // expeditions run on wall-clock time -> progress in the background regardless
     currencyHud(((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus());   // keep the one fixed currency tracker live on EVERY tab
@@ -8920,6 +9030,7 @@ window.__sfx = (function () {
       if (j.gen) state.gen = j.gen;
       if (j.comp) state.comp = j.comp;
       if (j.genesis) state.genesis = j.genesis;
+      if (j.xpcore) state.xpcore = j.xpcore;
       if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
@@ -8931,6 +9042,7 @@ window.__sfx = (function () {
       if (!state.prestige.up) state.prestige.up = {};
       if (!state.comp) state.comp = { chip: 0, cpu: 0, gpu: 0, ram: 0 };
       if (!state.genesis) state.genesis = { built: {}, fired: 0 };
+      if (!state.xpcore) state.xpcore = { unlocked: false };
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
