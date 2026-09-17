@@ -713,6 +713,13 @@
   #codex{ padding:11px; display:grid; gap:12px; }
   .cx-h{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; }
   .cx-chips{ display:flex; flex-wrap:wrap; gap:6px; }
+  /* unlock guide */
+  .cx-unlocks{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:4px 12px; }
+  .cx-urow{ display:flex; justify-content:space-between; gap:8px; font-family:var(--font-mono); font-size:10.5px; padding:2px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+  .cx-un{ color:var(--text-dim); }
+  .cx-ur{ color:var(--text-faint); white-space:nowrap; }
+  .cx-urow.met .cx-un{ color:var(--text); }
+  .cx-urow.met .cx-ur{ color:#5fe39a; }
   .cx-chip{ font-family:var(--font-mono); font-size:10.5px; padding:3px 8px; border-radius:5px; background:var(--void); border:1px solid var(--line); color:var(--text-dim); }
   .cx-enemies{ display:grid; gap:4px; }
   .cx-row{ display:flex; gap:10px; font-size:11px; align-items:baseline; flex-wrap:wrap; }
@@ -7381,7 +7388,18 @@ window.__sfx = (function () {
     var items = Object.keys(byType).map(function (k) { return '<span class="cx-chip">' + k + ' \u00d7' + byType[k] + '</span>'; }).join('') + '<span class="cx-chip">' + LE.BASES.length + ' bases \u00b7 21 stats \u00b7 16 affixes</span>';
     var bays = ['Vanguard \u00b7 Assault', 'Recon \u00b7 Scout', 'Bombard \u00b7 Bomber', 'Bulwark \u00b7 Tank', 'Cipher \u00b7 Hacker', 'Aegis \u00b7 Medic', 'Titan \u00b7 Muscle Head', 'Havoc \u00b7 Heavy', 'Colossus \u00b7 Juggernaut', 'Omega \u00b7 World Ender'].map(function (b) { return '<span class="cx-chip">' + b + '</span>'; }).join('');
     var en = CB ? CB.ENEMIES.map(function (e) { return '<div class="cx-row"><b>' + e.name + '</b><span>' + e.kind + '</span><span>hp ' + e.hp + '</span><span>dmg ' + e.dmg + '</span><span>armor ' + e.armor + '</span></div>'; }).join('') : '<div class="cx-h">combat module not loaded</div>';
+    // Unlock guide: every major gate, its requirement, and whether it's met.
+    var ug = [], pl = playerLevel(), dUnl = (state.adv && state.adv.dungeons) || 0;
+    function ugRow(name, req, met) { return '<div class="cx-urow' + (met ? ' met' : '') + '"><span class="cx-un">' + esc(name) + '</span><span class="cx-ur">' + esc(req) + (met ? ' \u2713' : '') + '</span></div>'; }
+    REGIONS.forEach(function (r, i) { if (i > 0) ug.push(ugRow('Region \u00b7 ' + r.name, 'Reach Lv ' + r.unlock, pl >= r.unlock)); });
+    BOSSES.forEach(function (b, i) { ug.push(ugRow('Boss \u00b7 ' + b.name, 'Reach Lv ' + bossUnlockLevel(i), pl >= bossUnlockLevel(i))); });
+    DUNGEONS.forEach(function (d, i) { ug.push(ugRow('Vault \u00b7 ' + d.name, 'Prestige \u00d7' + (i + 1), dUnl >= i + 1)); });
+    REF_UNLOCKS.forEach(function (u) { var nd = u.need ? (REF_UNLOCKS.filter(function (x) { return x.id === u.need; })[0] || {}).name : null; ug.push(ugRow(u.name, (nd ? nd + ' + ' : '') + fmt(u.cost), refUnlocked(u.id))); });
+    GENERATORS.forEach(function (g, i) { ug.push(ugRow('Reactor \u00b7 ' + g.name, (i ? GENERATORS[i - 1].name + ' + ' : '') + fmt(g.unlock), genUnlocked(g.id))); });
+    ug.push(ugRow('Auto-Vendor', 'Build any extractor', vendorUnlocked()));
+    ug.push(ugRow('Prestige (Nanite Core)', 'Charge the power core to 100%', prestigeChargePct() >= 0.999));
     codexEl.innerHTML =
+      sec('Unlock requirements \u2014 what unlocks what', '<div class="cx-unlocks">' + ug.join('') + '</div>') +
       sec('Currency (\u00d71000 each tier)', '<div class="cx-chips">' + cur + '</div>') +
       sec('Loot rarity', '<div class="cx-chips">' + rar + '</div>') +
       sec('Item archetypes', '<div class="cx-chips">' + items + '</div>') +
