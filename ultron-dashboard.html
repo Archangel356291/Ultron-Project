@@ -560,24 +560,20 @@
   @media(max-width:420px){ .sphere-wrap.sphere-wrap-xl{ width:220px; height:220px; } }
   @media(max-width:760px){ .sphere-wrap.sphere-wrap-xl{ width:260px; height:260px; } }
 
-  /* Ultron tab: pixel-art companion scene below the core. Rendered at a
-     small native resolution and scaled up via CSS with image-rendering
-     set to keep hard pixel edges (no smoothing/blur) at any container
-     width -- the actual chunky-retro look, not just a small smooth image. */
+  /* Ultron tab: Ultron's corner, below the core. The canvas is sized to the
+     screen's own pixels by the pixel-room script (so its text and art stay
+     sharp at any width); CSS only gives it the full panel width. */
   .pixel-room-wrap{
     /* No padding, deliberately -- the bubble overlay is positioned by
        percentage-of-canvas (see the pixel-room script), which only lines
        up exactly if the canvas fills this wrap edge to edge with nothing
        else offsetting it. The room's own border/frame look comes from
        this wrap's border below, not inset padding. */
-    position:relative; margin-top:14px; width:100%; max-width:960px;
+    position:relative; margin-top:14px; width:100%; max-width:1280px;
     background:var(--void); border:1px solid var(--line); border-radius:4px;
     overflow:hidden;
   }
-  .pixel-room-wrap canvas{
-    display:block; width:100%; height:auto;
-    image-rendering:pixelated; image-rendering:crisp-edges;
-  }
+  .pixel-room-wrap canvas{ display:block; width:100%; height:auto; }
   /* Speech/thought bubble -- an HTML overlay rather than canvas-drawn
      text, positioned by percentage (see pixel-room script) so it tracks
      the character correctly at any rendered size despite the canvas
@@ -595,6 +591,34 @@
     content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
     border:5px solid transparent; border-top-color:var(--red);
   }
+
+  /* "What Ultron knows": the Brain vault graph under his corner. Same frame
+     as the room above it, so the two read as one place. */
+  .vault-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; max-width:1280px; }
+  .vault-headline{ font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--text); letter-spacing:0.01em; }
+  .vault-updated{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
+  .vault-wrap{
+    position:relative; width:100%; max-width:1280px; min-height:120px;
+    background:var(--void); border:1px solid var(--line); border-radius:4px; overflow:hidden;
+  }
+  .vault-wrap canvas{ display:block; width:100%; touch-action:pan-y; }
+  .vault-empty{ display:none; padding:34px 22px; font-size:13px; color:var(--text-dim); max-width:56ch; }
+  .vault-wrap.empty canvas{ display:none; }
+  .vault-wrap.empty .vault-empty{ display:block; }
+  .vault-tip{
+    position:absolute; z-index:3; width:240px; pointer-events:none;
+    background:var(--panel-raised); border:1px solid var(--line); border-radius:6px; padding:9px 11px;
+    font-size:12px; line-height:1.4; color:var(--text); box-shadow:0 8px 24px -8px rgba(0,0,0,0.7);
+  }
+  .vault-tip b{ display:block; font-family:var(--font-mono); font-size:10.5px; font-weight:500; margin-bottom:3px; }
+  .vault-tip .src{ display:block; margin-top:5px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); word-break:break-word; }
+  .vault-days{ max-width:1280px; margin-top:12px; }
+  .vault-days-label{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); margin-bottom:6px; }
+  .vault-days-label span{ color:var(--text-faint); margin-left:8px; }
+  .vault-days-bars{ display:flex; align-items:flex-end; gap:3px; height:48px; border-bottom:1px solid var(--line); }
+  .vault-day{ display:flex; flex-direction:column; justify-content:flex-end; width:14px; flex:0 1 14px; }
+  .vault-day i{ display:block; width:100%; min-height:0; }
+  .vault-day i + i{ margin-top:1px; }
 
   /* ---------- Ultron's Designs tab ---------- */
   /* Same corner-bracket frame as .hero-panel, recolored red to match the
@@ -1225,9 +1249,22 @@
 
           <div class="panel-label" style="margin-top:28px;">Ultron's corner</div>
           <div class="pixel-room-wrap">
-            <canvas id="pixel-room-canvas" aria-label="A small pixel-art room where Ultron walks around when idle and sits at his terminal when working"></canvas>
+            <canvas id="pixel-room-canvas" aria-label="Ultron's corner: a cutaway tower with Ultron's office on the ground floor and his agents at their desks on the storeys above, joined by a conveyor and lift"></canvas>
             <div class="pixel-bubble" id="pixel-bubble" hidden></div>
           </div>
+
+          <div class="panel-label" style="margin-top:28px;">What Ultron knows</div>
+          <div class="vault-head">
+            <div class="vault-headline" id="vault-headline">Sign in to see his Brain vault</div>
+            <div class="vault-updated" id="vault-updated"></div>
+          </div>
+          <div class="brain-filters" id="vault-kinds"></div>
+          <div class="vault-wrap">
+            <canvas id="vault-canvas" role="img" aria-label="Graph of Ultron's Brain vault"></canvas>
+            <div class="vault-tip" id="vault-tip" hidden></div>
+            <div class="vault-empty">His Brain vault has not been graphed yet. Once it has, every conversation, memory and knowledge page appears here, joined to what it relates to.</div>
+          </div>
+          <div class="vault-days" id="vault-days"></div>
 
           <div class="panel-label" style="margin-top:28px;">Vitals</div>
           <div class="vitals-panel">
@@ -2340,6 +2377,7 @@
       // fires here -- this call is what actually renders the graph on
       // first connect.
       if (window.__kgRefresh) window.__kgRefresh();
+      if (window.__vaultRefresh) window.__vaultRefresh();
     });
   }
 
@@ -2493,6 +2531,7 @@
         // doesn't change within a session, and re-laying-out a force graph
         // on every poll would jump around distractingly for no benefit.
         if (window.__kgRefresh) window.__kgRefresh();
+        if (window.__vaultRefresh) window.__vaultRefresh();
       }
       setConnStatus(failed.length
         ? 'connected · ' + failed.length + ' of ' + calls.length + ' feeds failed: ' + failed[0].reason.message
@@ -4830,286 +4869,377 @@ function toggleReducedVisuals(el) {
 }
 </script>
 
-<!-- Ultron tab: pixel-art companion scene (owner-requested 2026-09-16) --
-     walks the floor when idle, sits at the desk/monitor when actively
-     doing something, with a speech bubble reusing the same state names
-     the AI core above already broadcasts. Two smaller silhouettes at
-     their own workstations represent subagents -- decorative company in
-     the room, not a live status readout: this project's whole ethos is
-     never faking activity/telemetry (see README's "read-only by
-     default"), and there's no real per-subagent signal from the backend
-     to wire them to honestly, so they sit at their desks as scenery,
-     the same honest register as the server rack, not a claim about
-     what's actually running.
+<!-- Ultron tab: Ultron's corner (owner-requested 2026-09-16, rebuilt the same
+     day at about double the size). A cutaway tower: Ultron's office on the
+     ground floor, one storey of desks per row of agents above it -- six
+     desks to a storey on a wide screen, three on a phone, so the characters
+     stay large at any width. Every desk stands on a conveyor that feeds the
+     lift on the right; the lift drops parcels to the ground belt, which
+     carries them past Ultron's desk and out through the hatch. The parcels
+     themselves are ambient, but the things that carry meaning are real:
+     a desk's screen and name plate light only while that agent has a task in
+     progress (/api/agents) or just did something, Sentinel's plate turns red
+     on a recent warning, and Ultron sits down and his plate names his state
+     whenever the core says he is thinking, replying or alarmed.
 
-     Sprites/backdrop are real PNGs (dev-tools/gen_pixel_assets.py,
-     served from /pixel-assets/) generated with Pillow, not hand-typed
-     ASCII grids -- built from an owner-supplied reference pair (a red/
-     gunmetal armored-robot portrait, a teal-lit sci-fi control room).
-     The character reference is itself styled on Marvel's copyrighted
-     Ultron design, so this draws an ORIGINAL silhouette matching its
-     palette/mood (angular armor, glowing red core and crest) rather
-     than tracing or reproducing that artwork -- the same principle this
-     project's own Module 13 already applied to the 3D hero head. The
-     room reference was isometric; this stays a straight-on 2D scene --
-     redoing the character-movement/layout math for a true isometric
-     camera was out of scope for this pass, flagged rather than
-     half-attempted.
+     Art is dev-tools/gen_pixel_assets.py (Pillow, original silhouettes --
+     see that file on why nothing here copies an existing character design).
+     The canvas is sized to the screen's own pixels and the text is real
+     text, so plates stay readable instead of being scaled-up 6px glyphs.
 
-     Independent module: it hooks window.__heroSetState by wrapping it
-     (call the previous handler, then this one) rather than editing the
-     core module, so the two stay decoupled -- this can be removed
-     without touching that script, and vice versa. -->
+     Independent module: it hooks window.__heroSetState by wrapping it (call
+     the previous handler, then this one) rather than editing the core
+     module, so either can be removed without touching the other. -->
 <script>
 (function () {
   'use strict';
   var canvas = document.getElementById('pixel-room-canvas');
   var bubble = document.getElementById('pixel-bubble');
   if (!canvas || !canvas.getContext) return;
+  var wrap = canvas.parentNode;
   var ctx = canvas.getContext('2d');
   if (!ctx) return;
-  ctx.imageSmoothingEnabled = false;
 
-  // Native size of room_bg.png -- see dev-tools/gen_pixel_assets.py.
-  var W = 1280, H = 560;
-  canvas.width = W;
-  canvas.height = H;
-  var FLOOR_Y = 440;
+  // Geometry, in room units. These mirror gen_pixel_assets.py (RES, PAD, the
+  // STOREY_*/GROUND_* strip sizes and the sprite sizes in main()) -- keep the
+  // two in step.
+  var ASSET_RES = 2, SPRITE_PAD = 6;
+  var STOREY_H = 264, STOREY_WALL = 224, GROUND_H = 424, GROUND_WALL = 384;
+  var STATION_W = 188, DESK_DX = 38, DESK_W = 150, DESK_H = 68, ROBOT_SINK = 52;
+  var U_DESK_W = 280, U_DESK_H = 96, U_TUBE_W = 64, U_ROBOT_SINK = 70;
+  var LEFT = 10, LIFT_W = 84, BELT_DY = 8, BELT_H = 13, ROOF_H = 34;
 
   var ASSET_BASE = '/pixel-assets/';
-  function loadImg(name) { var img = new Image(); img.src = ASSET_BASE + name; return img; }
+  var ASSET_VER = '?v=2';   // bump when sprite geometry changes, so an installed app never pairs new layout maths with cached old art
+  function loadImg(name) { var img = new Image(); img.src = ASSET_BASE + name + ASSET_VER; return img; }
   var IMG = {
-    room: loadImg('room_bg.png'),
+    storey: loadImg('room_storey.png'),
+    ground: loadImg('room_ground.png'),
     ultronWalkA: loadImg('ultron_walk_a.png'),
     ultronWalkB: loadImg('ultron_walk_b.png'),
-    ultronSit: loadImg('ultron_sit.png'),
+    ultronWork: loadImg('ultron_work.png'),
     deskUltronIdle: loadImg('desk_ultron_idle.png'),
     deskUltronActive: loadImg('desk_ultron_active.png'),
     tubeRed: loadImg('tube_red.png'),
   };
-  ['cyan', 'green', 'amber', 'violet', 'blue', 'indigo', 'mint', 'lime', 'rose', 'steel', 'lavender', 'peach', 'magenta', 'olive', 'copper', 'sky', 'teal'].forEach(function (c) {
-    IMG['agent_' + c] = loadImg('agent_' + c + '_sit.png');
-    IMG['desk_' + c + '_idle'] = loadImg('desk_' + c + '_idle.png');
-    IMG['desk_' + c + '_active'] = loadImg('desk_' + c + '_active.png');
-    IMG['tube_' + c] = loadImg('tube_' + c + '.png');
-  });
 
-  // AGENT_SCALE/SUBAGENT_TUBE_SCALE bumped up from the desk/Ultron-tube
-  // scale's earlier, smaller values -- owner feedback was that the
-  // subagents and their own recharge tubes read as a throwaway accent
-  // next to Ultron's, when each is meant to be its own clearly-present
-  // bot with its own tube, not a miniature afterthought.
-  var CHAR_SCALE = 0.9, AGENT_SCALE = 1.0, DESK_SCALE = 1.15, TUBE_SCALE = 1.1, SUBAGENT_TUBE_SCALE = 1.35;
-  // Walk range ends where the first subagent desk begins (sprite is ~108px
-  // wide at CHAR_SCALE), now that four desks share the right half.
-  var WALK_MIN_X = 470, WALK_MAX_X = 580;
-
-  // Draws an image anchored to the floor line, scaled by `scale` --
-  // returns the box drawn (or a zero box while the image is still
-  // loading, so callers can skip depending on it that frame rather than
-  // throw on a 0x0 drawImage).
-  function drawFloored(img, x, scale, floorY) {
-    floorY = floorY == null ? FLOOR_Y : floorY;
-    if (!img.complete || !img.naturalWidth) return { x: x, y: floorY, w: 0, h: 0 };
-    var w = img.naturalWidth * scale, h = img.naturalHeight * scale;
-    var y = floorY - h;
-    ctx.drawImage(img, x, y, w, h);
-    return { x: x, y: y, w: w, h: h };
-  }
-  // The mezzanine's top edge in room_bg.png (gen_pixel_assets.py: floor_y*0.68).
-  var MEZZ_Y = Math.round(FLOOR_Y * 0.68);
-
-  // The owner's four subagents. Sentinel (security watchdog) and Scout
-  // (web research) were named 2026-09-16; the cyan and green pair predate
-  // that and have no recorded role yet, so no plate. Sentinel is the one
-  // desk with a live input: its screen stays lit and its plate turns red
-  // while the activity log holds a warning/error from the last hour (see
-  // window.__sentinelAlert, fed by fetchActivity) -- the first real cue
-  // in a room that was otherwise pure scenery.
-  // One desk per agent in the registry (see the Agents card / /api/agents):
-  // Engineer (cyan) = the Claude Code sessions that build Ultron, lit while
-  // an engineering task is in progress; Learner (green), lit for a while
-  // after a "learned" event; Sentinel (amber, the heavyweight build),
-  // lit + red plate while the activity log holds a recent warning/error;
-  // Scout (violet), lit after a reply that used web_search. Ultron himself
-  // has the big red desk.
-  // Three rows. Floor, right: the original crew beside Ultron. Floor, left
-  // (by the server rack): the two infrastructure specialists. Mezzanine
-  // (rear catwalk in room_bg.png, drawn smaller for depth): the eight
-  // Claude Code specialists. `agent` is the AGENT_REGISTRY key, so a task
-  // in progress for that agent (via /api/agents) lights its desk.
+  // One desk per agent in the registry (the Agents card / /api/agents), in
+  // reading order from the storey nearest Ultron upward: his runtime crew
+  // first, then the Claude Code specialists. `agent` is the AGENT_REGISTRY
+  // key, so a task in progress for that agent lights its desk. Colours match
+  // AGENT_COLORS in gen_pixel_assets.py.
   var SUBAGENTS = [
-    { color: 'cyan', deskX: 696, label: 'ENGINEER', agent: 'engineering', busyPlate: 'BUILDING' },
-    { color: 'green', deskX: 786, label: 'LEARNER', agent: 'learner', busyPlate: 'LEARNING' },
-    { color: 'amber', deskX: 876, label: 'SENTINEL', agent: 'sentinel', alertable: true, scale: 1.2 },
-    { color: 'violet', deskX: 966, label: 'SCOUT', agent: 'scout', busyPlate: 'SEARCHING' },
-    { color: 'blue', deskX: 110, label: 'DOCKHAND', agent: 'docker_orchestrator', busyPlate: 'DEPLOYING' },
-    { color: 'mint', deskX: 230, label: 'GATEKEEPER', agent: 'pihole_guard', busyPlate: 'CHECKING' },
-    { color: 'copper', deskX: 350, label: 'FORGE', agent: 'developer', busyPlate: 'CODING' },
-    { color: 'sky', deskX: 514, label: 'SEEKER', agent: 'research', busyPlate: 'RESEARCHING', row: 'rear' },
-    { color: 'teal', deskX: 582, label: 'MUSE', agent: 'frontend_designer', busyPlate: 'DESIGNING', row: 'rear' },
-    { color: 'indigo', deskX: 650, label: 'RELAY', agent: 'tailscale_topology', busyPlate: 'ROUTING', row: 'rear' },
-    { color: 'lime', deskX: 718, label: 'PROOF', agent: 'test_automation', busyPlate: 'TESTING', row: 'rear' },
-    { color: 'rose', deskX: 786, label: 'AUDITOR', agent: 'security_auditor', busyPlate: 'AUDITING', row: 'rear' },
-    { color: 'steel', deskX: 854, label: 'SCRIBE', agent: 'log_coordinator', busyPlate: 'READING', row: 'rear' },
-    { color: 'lavender', deskX: 922, label: 'ARCHIVIST', agent: 'context_manager', busyPlate: 'FILING', row: 'rear' },
-    { color: 'peach', deskX: 990, label: 'LIBRARIAN', agent: 'knowledge_synthesizer', busyPlate: 'LOOKING UP', row: 'rear' },
-    { color: 'magenta', deskX: 1058, label: 'HERALD', agent: 'slack_communicator', busyPlate: 'DRAFTING', row: 'rear' },
-    { color: 'olive', deskX: 1126, label: 'ENVOY', agent: 'discord_gateway', busyPlate: 'RELAYING', row: 'rear' },
+    { color: 'cyan', hex: '#3dd6ff', label: 'Engineer', agent: 'engineering', busyPlate: 'building' },
+    { color: 'green', hex: '#33d17a', label: 'Learner', agent: 'learner', busyPlate: 'learning' },
+    { color: 'amber', hex: '#ffc24b', label: 'Sentinel', agent: 'sentinel', alertable: true },
+    { color: 'violet', hex: '#b084f0', label: 'Scout', agent: 'scout', busyPlate: 'searching' },
+    { color: 'copper', hex: '#cd7d3c', label: 'Forge', agent: 'developer', busyPlate: 'coding' },
+    { color: 'sky', hex: '#78c8ff', label: 'Seeker', agent: 'research', busyPlate: 'researching' },
+    { color: 'blue', hex: '#4fa6e0', label: 'Dockhand', agent: 'docker_orchestrator', busyPlate: 'deploying' },
+    { color: 'mint', hex: '#78ffc8', label: 'Gatekeeper', agent: 'pihole_guard', busyPlate: 'checking' },
+    { color: 'indigo', hex: '#6e6eff', label: 'Relay', agent: 'tailscale_topology', busyPlate: 'routing' },
+    { color: 'lime', hex: '#aae63c', label: 'Proof', agent: 'test_automation', busyPlate: 'testing' },
+    { color: 'rose', hex: '#ff7896', label: 'Auditor', agent: 'security_auditor', busyPlate: 'auditing' },
+    { color: 'teal', hex: '#00beb4', label: 'Muse', agent: 'frontend_designer', busyPlate: 'designing' },
+    { color: 'steel', hex: '#aab4c8', label: 'Scribe', agent: 'log_coordinator', busyPlate: 'reading logs' },
+    { color: 'lavender', hex: '#c8a0ff', label: 'Archivist', agent: 'context_manager', busyPlate: 'filing' },
+    { color: 'peach', hex: '#ffaa78', label: 'Librarian', agent: 'knowledge_synthesizer', busyPlate: 'looking up' },
+    { color: 'magenta', hex: '#e650c8', label: 'Herald', agent: 'slack_communicator', busyPlate: 'drafting' },
+    { color: 'olive', hex: '#a0aa3c', label: 'Envoy', agent: 'discord_gateway', busyPlate: 'relaying' },
   ];
-  var REAR_K = 0.72;  // mezzanine depth scale
   SUBAGENTS.forEach(function (a) {
-    a.k = a.row === 'rear' ? REAR_K : 1;
-    a.floorY = a.row === 'rear' ? MEZZ_Y : FLOOR_Y;
-    a.tubeX = a.deskX + Math.round(60 * a.k);
+    IMG['agent_' + a.color] = loadImg('agent_' + a.color + '.png');
+    IMG['desk_' + a.color + '_idle'] = loadImg('desk_' + a.color + '_idle.png');
+    IMG['desk_' + a.color + '_active'] = loadImg('desk_' + a.color + '_active.png');
+    IMG['tube_' + a.color] = loadImg('tube_' + a.color + '.png');
   });
-  var AGENT_COLOR = {};
-  SUBAGENTS.forEach(function (a) { AGENT_COLOR[a.agent] = a.color; });
+  function lift(hex, k) {   // mix a colour toward white
+    var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    function m(c) { return Math.round(c + (255 - c) * k); }
+    return 'rgb(' + m(r) + ',' + m(g) + ',' + m(b) + ')';
+  }
+  SUBAGENTS.forEach(function (a) { a.plateHex = lift(a.hex, 0.38); });
+  var AGENT_COLOR = {}, BY_COLOR = {};
+  SUBAGENTS.forEach(function (a) { AGENT_COLOR[a.agent] = a.color; BY_COLOR[a.color] = a; });
   window.__agentColor = function (agent) { return AGENT_COLOR[agent]; };
-  var LABEL_COLORS = {
-    cyan: '#2f8fb0', green: '#2f9a5c', amber: '#c9973a', violet: '#8c6bc0', blue: '#3f7fa8', mint: '#5fb894',
-    indigo: '#6b6bc0', lime: '#8fae3a', rose: '#c06a80', steel: '#8f98a8', lavender: '#9a80c8', peach: '#c08a68',
-    magenta: '#b04d9a', olive: '#8c9440', copper: '#a8683a', sky: '#6aa8d8', teal: '#2a9a92',
-  };
-  var BUSY_COLORS = {
-    cyan: '#3dd6ff', green: '#33d17a', violet: '#b084f0', blue: '#4fa6e0', mint: '#78ffc8', indigo: '#6e6eff',
-    lime: '#aae63c', rose: '#ff7896', steel: '#aab4c8', lavender: '#c8a0ff', peach: '#ffaa78', magenta: '#e650c8', olive: '#a0aa3c',
-    copper: '#cd7d3c', sky: '#78c8ff', teal: '#00beb4',
-  };
+  var GOLD = '#ffb238', RED = '#ff3b3b', STEEL = '#8b93a0';
+
+  var startTime = (window.performance && performance.now) ? performance.now() : Date.now();
+  function now() { return (((window.performance && performance.now) ? performance.now() : Date.now()) - startTime) / 1000; }
+
   var sentinelAlert = false;
-  window.__sentinelAlert = function (on) { sentinelAlert = !!on; };
+  window.__sentinelAlert = function (on) { sentinelAlert = !!on; requestStatic(); };
   // A desk lights up for a while after its agent did something real --
-  // callers elsewhere (fetchAgents, fetchActivity, sendChatMessage) say which.
+  // callers elsewhere (fetchAgents, fetchActivity, sendChatMessage) say
+  // which. It also sends a parcel down the line from that desk.
   var busyUntil = {};
-  window.__agentBusy = function (color, ms) { busyUntil[color] = now() + (ms || 20000) / 1000; };
+  window.__agentBusy = function (color, ms) {
+    var wasBusy = now() < (busyUntil[color] || 0);
+    busyUntil[color] = now() + (ms || 20000) / 1000;
+    if (!wasBusy && BY_COLOR[color]) spawnParcel(BY_COLOR[color]);
+    requestStatic();
+  };
   window.__scoutBusy = function (ms) { window.__agentBusy('violet', ms); };
-  var ULTRON_DESK_X = 1050, ULTRON_TUBE_X = 1195;
 
-  // Conveyor belt: carries little pixel packages from the workstations to
-  // an output hatch mounted in the wall at the belt's end -- decorative,
-  // like the rest of the room (see this module's top comment), just a
-  // second ambient motion cue alongside the subagent desk flicker.
-  var BELT_Y = FLOOR_Y - 10;
-  var BELT_X0 = 696, BELT_X1 = 1242;
-  var OUTPUT_X = 1244, OUTPUT_W = 30;
-  var PACKAGE_SOURCES = SUBAGENTS.map(function (a) { return a.deskX; }).concat([ULTRON_DESK_X]);
-  var packages = [];
-  var lastPackageSpawn = 0;
-  var outputFlashUntil = 0;
+  // ---- layout: recomputed whenever the panel's width changes ----
+  var W = 1280, H = 1216, cols = 6, storeys = 3, scale = 1, fontPx = 13;
+  var groundY, liftX, uDeskX, uTubeX, hatchX = 12, hatchW = 58, walkMinX, walkMaxX;
+  var fontFamily = 'monospace';
+  try {
+    fontFamily = (getComputedStyle(document.documentElement).getPropertyValue('--font-mono') || '').trim() || 'monospace';
+  } catch (e) { /* keep the fallback */ }
 
-  function drawConveyor(t) {
-    ctx.fillStyle = '#1b1d20';
-    ctx.fillRect(BELT_X0, BELT_Y, BELT_X1 - BELT_X0, 9);
-    ctx.strokeStyle = '#0a0b0c';
-    ctx.strokeRect(BELT_X0, BELT_Y, BELT_X1 - BELT_X0, 9);
-    var offset = (t * 26) % 16;
-    ctx.fillStyle = '#34373c';
-    for (var x = BELT_X0 - 16 + offset; x < BELT_X1; x += 16) {
-      var segX = Math.max(x, BELT_X0);
-      ctx.fillRect(segX, BELT_Y + 2, Math.min(8, BELT_X1 - segX), 5);
-    }
-    // Output hatch, mounted in the wall at the belt's far end.
-    ctx.fillStyle = '#141519';
-    ctx.fillRect(OUTPUT_X, FLOOR_Y - 96, OUTPUT_W, 96);
-    ctx.strokeStyle = '#565c66';
-    ctx.strokeRect(OUTPUT_X, FLOOR_Y - 96, OUTPUT_W, 96);
-    ctx.fillStyle = '#050506';
-    ctx.fillRect(OUTPUT_X + 5, BELT_Y - 16, OUTPUT_W - 10, 16);
-    ctx.fillStyle = t < outputFlashUntil ? '#ff3b3b' : '#5a1414';
-    ctx.fillRect(OUTPUT_X + OUTPUT_W / 2 - 3, FLOOR_Y - 84, 6, 6);
-    // Small "OUT" plate so this reads as a real exit node rather than an
-    // unlabeled wall slot -- cheap (native canvas text, no new asset).
-    ctx.fillStyle = '#8b93a0';
-    ctx.font = '7px monospace';
+  function layout() {
+    var cssW = wrap.clientWidth;
+    if (!cssW) return false;   // tab not shown yet
+    cols = cssW >= 900 ? 6 : cssW >= 700 ? 5 : cssW >= 540 ? 4 : 3;
+    W = Math.max(760, LEFT + cols * 193 + LIFT_W + 28);
+    var pitch = (W - LEFT - LIFT_W - 28) / cols;
+    storeys = Math.ceil(SUBAGENTS.length / cols);
+    H = ROOF_H + storeys * STOREY_H + GROUND_H;
+    scale = cssW / W;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(H * scale * dpr);
+    ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    // Plates aim for ~10.5 CSS px whatever the room is scaled to.
+    fontPx = Math.max(13, Math.min(24, 10.5 / scale));
+
+    liftX = W - LIFT_W - 14;
+    groundY = ROOF_H + storeys * STOREY_H + GROUND_WALL;
+    SUBAGENTS.forEach(function (a, i) {
+      var f = Math.floor(i / cols), c = i % cols;   // f = 0 is the storey right above Ultron
+      a.x = LEFT + c * pitch + (pitch - STATION_W) / 2;
+      a.floorY = ROOF_H + (storeys - 1 - f) * STOREY_H + STOREY_WALL;
+    });
+    uTubeX = liftX - 24 - U_TUBE_W;
+    uDeskX = uTubeX - 14 - U_DESK_W;
+    // Wide rooms: he paces between the server rack and his desk. Narrow ones
+    // have no spare floor, so he keeps to a short beat in front of the rack
+    // rather than walking across his own name plate.
+    walkMinX = W >= 1000 ? 190 : 72;
+    walkMaxX = Math.max(walkMinX + 30, uDeskX - 196);
+    walkX = Math.max(walkMinX, Math.min(walkMaxX, walkX));
+    return true;
+  }
+
+  // Draws a sprite with its artwork's left edge at x and its base `sink`
+  // units below floorY's line (sprites carry SPRITE_PAD of margin all round).
+  // Returns the artwork's box, or a zero box while the image is loading.
+  function drawSprite(img, x, floorY, sink) {
+    if (!img || !img.complete || !img.naturalWidth) return { x: x, y: floorY, w: 0, h: 0 };
+    var w = img.naturalWidth / ASSET_RES, h = img.naturalHeight / ASSET_RES;
+    var y = floorY + (sink || 0) - h + SPRITE_PAD;
+    ctx.drawImage(img, x - SPRITE_PAD, y, w, h);
+    return { x: x, y: y + SPRITE_PAD, w: w - 2 * SPRITE_PAD, h: h - 2 * SPRITE_PAD };
+  }
+
+  function setFont(px, bold) { ctx.font = (bold ? '600 ' : '') + px.toFixed(1) + 'px ' + fontFamily; }
+  // Text centred in a plate, shrunk if it would not fit.
+  function plateText(text, cx, cy, maxW, px, bold, color) {
+    setFont(px, bold);
+    var w = ctx.measureText(text).width;
+    if (w > maxW) setFont(px * maxW / w, bold);
+    ctx.fillStyle = color;
     ctx.textAlign = 'center';
-    ctx.fillText('OUT', OUTPUT_X + OUTPUT_W / 2, FLOOR_Y - 100);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, cx, cy);
   }
-
-  function updatePackages(t, dt) {
-    if (t - lastPackageSpawn > 3.5 + Math.random() * 2.5) {
-      var srcX = PACKAGE_SOURCES[Math.floor(Math.random() * PACKAGE_SOURCES.length)];
-      packages.push({ x: srcX + 24 });
-      lastPackageSpawn = t;
-    }
-    for (var i = packages.length - 1; i >= 0; i--) {
-      packages[i].x += dt * 42;
-      if (packages[i].x >= OUTPUT_X) {
-        packages.splice(i, 1);
-        outputFlashUntil = t + 0.4;
-      }
+  function plate(name, status, x, top, w, h, nameColor, statusColor) {
+    var cx = x + w / 2, cy = top + h / 2;
+    if (status) {
+      plateText(name, cx, cy - fontPx * 0.52, w - 10, fontPx, true, nameColor);
+      plateText(status, cx, cy + fontPx * 0.62, w - 10, fontPx * 0.82, false, statusColor);
+    } else {
+      plateText(name, cx, cy, w - 10, fontPx, true, nameColor);
     }
   }
-
-  function drawPackages() {
-    packages.forEach(function (p) {
-      ctx.fillStyle = '#c98b3a';
-      ctx.fillRect(p.x, BELT_Y - 8, 10, 8);
-      ctx.strokeStyle = '#5a3c15';
-      ctx.strokeRect(p.x + 0.5, BELT_Y - 7.5, 9, 7);
-    });
+  function caption(text, cx, y) {
+    plateText(text, cx, y, 200, fontPx * 0.8, false, STEEL);
   }
 
-  function drawRoom(active, t) {
-    ctx.clearRect(0, 0, W, H);
-    if (IMG.room.complete) ctx.drawImage(IMG.room, 0, 0, W, H);
+  function wallGlow(cx, cy, r, hex, alpha) {
+    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    g.addColorStop(0, hex);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = g;
+    ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+    ctx.globalAlpha = 1;
+  }
 
-    // Subagent workstations -- a slow shared flicker, never in lockstep
-    // with Ultron's own real active/idle state (see this module's top
-    // comment on why these are scenery, not a live status readout).
-    var flicker = Math.sin(t * 0.8) > -0.2;
-    // Rear row first, so the floor crew always draws in front of it.
-    SUBAGENTS.slice().sort(function (p, q) { return (p.row === 'rear' ? 0 : 1) - (q.row === 'rear' ? 0 : 1); }).forEach(function (a) {
-      var alarmed = a.alertable && sentinelAlert;
-      var busy = !!a.busyPlate && t < (busyUntil[a.color] || 0);
-      // Each desk flickers on its own rhythm; the rear row a touch dimmer.
-      var lit = alarmed || busy || Math.sin(t * 0.8 + a.deskX * 0.013) > -0.2;
-      drawFloored(IMG['tube_' + a.color], a.tubeX, SUBAGENT_TUBE_SCALE * a.k, a.floorY);
-      var desk = drawFloored(IMG['desk_' + a.color + (lit ? '_active' : '_idle')], a.deskX, DESK_SCALE * a.k, a.floorY);
-      if (desk.w) {
-        var agentScale = AGENT_SCALE * (a.scale || 1) * a.k;
-        // Keep the sprite's feet on the same spot whatever its scale.
-        drawFloored(IMG['agent_' + a.color], a.deskX + desk.w * 0.18 - (agentScale - AGENT_SCALE * a.k) * 10, agentScale, a.floorY);
+  // ---- the delivery line: a belt on every storey -> the lift -> the ground
+  // belt -> past Ultron's desk -> the hatch. Every desk stands on it. ----
+  var parcels = [];
+  var lastAmbientSpawn = 0, hatchFlashUntil = 0, deskFlashUntil = 0;
+  function beltY(floorY) { return floorY + BELT_DY; }
+  function spawnParcel(a) {
+    if (parcels.length > 40) return;
+    parcels.push({ phase: 'belt', x: a.x + DESK_DX + DESK_W / 2, y: beltY(a.floorY), hex: a.hex });
+  }
+  function updateParcels(t, dt) {
+    if (t - lastAmbientSpawn > 3.2 + Math.random() * 2.4) {
+      lastAmbientSpawn = t;
+      var i = Math.floor(Math.random() * (SUBAGENTS.length + 1));
+      if (i < SUBAGENTS.length) spawnParcel(SUBAGENTS[i]);
+      else parcels.push({ phase: 'ground', x: uDeskX + 60, y: beltY(groundY), hex: GOLD, stamped: true });
+    }
+    var liftCx = liftX + LIFT_W / 2, inboxX = uDeskX + U_DESK_W / 2;
+    for (var i2 = parcels.length - 1; i2 >= 0; i2--) {
+      var p = parcels[i2];
+      if (p.phase === 'belt') {
+        p.x += dt * 78;
+        if (p.x >= liftCx) { p.x = liftCx; p.phase = 'lift'; }
+      } else if (p.phase === 'lift') {
+        p.y += dt * 120;
+        if (p.y >= beltY(groundY)) { p.y = beltY(groundY); p.phase = 'ground'; }
+      } else {
+        p.x -= dt * 78;
+        if (!p.stamped && p.x <= inboxX) { p.stamped = true; p.hex = GOLD; deskFlashUntil = t + 0.5; }
+        if (p.x <= hatchX + hatchW - 14) { parcels.splice(i2, 1); hatchFlashUntil = t + 0.4; }
       }
-      if (a.label && desk.w) {
-        ctx.fillStyle = alarmed ? '#ff3b3b' : busy ? BUSY_COLORS[a.color] : LABEL_COLORS[a.color];
-        ctx.font = (a.row === 'rear' ? '6px' : '7px') + ' monospace';
-        ctx.textAlign = 'center';
-        var plate = alarmed ? a.label + ' · ALERT' : busy ? a.label + ' · ' + a.busyPlate : a.label;
-        ctx.fillText(plate, a.deskX + desk.w / 2, a.floorY + (a.row === 'rear' ? 18 : 22));
-      }
-    });
-
-    // Ultron's own recharge tube + desk/monitor -- bigger, red, front
-    // and center. Desk swaps to the "active" (brighter, warmer) image
-    // while actually working -- the one state-reactive piece of the
-    // room itself, separate from the sprite/bubble.
-    drawFloored(IMG.tubeRed, ULTRON_TUBE_X, TUBE_SCALE);
-    drawFloored(IMG[active ? 'deskUltronActive' : 'deskUltronIdle'], ULTRON_DESK_X, DESK_SCALE);
+    }
+  }
+  function drawBelt(x0, x1, floorY, t, dir) {
+    var y = beltY(floorY);
+    ctx.fillStyle = '#0c0d0f';
+    ctx.fillRect(x0, y - 2, x1 - x0, BELT_H + 4);          // side rail
+    ctx.fillStyle = '#23262b';
+    ctx.fillRect(x0, y, x1 - x0, BELT_H);
+    ctx.fillStyle = '#3a3e45';                              // moving slats
+    var step = 22, off = ((t * 78 * dir) % step + step) % step;
+    for (var x = x0 - step + off; x < x1; x += step) {
+      var sx = Math.max(x, x0), ex = Math.min(x + 9, x1);
+      if (ex > sx) ctx.fillRect(sx, y + 2.5, ex - sx, BELT_H - 5);
+    }
+    ctx.fillStyle = '#565c66';
+    ctx.fillRect(x0, y - 2, x1 - x0, 1.2);
+    ctx.fillStyle = '#15171a';                              // legs
+    for (var lx = x0 + 30; lx < x1 - 10; lx += 150) ctx.fillRect(lx, y + BELT_H + 2, 5, STOREY_H - STOREY_WALL - BELT_DY - BELT_H - 6);
+  }
+  function drawParcel(p) {
+    var w = 20, h = 16, x = p.x - w / 2, y = p.y - h;
+    ctx.fillStyle = p.hex;
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(x, y + h - 4, w, 4);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillRect(x + w / 2 - 1.5, y, 3, h - 4);             // tape
+    ctx.strokeStyle = '#0a0b0c';
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(x, y, w, h);
+  }
+  function drawLiftBack(t) {
+    var top = ROOF_H + 30, bottom = beltY(groundY) + BELT_H + 2;
+    ctx.fillStyle = '#07080a';
+    ctx.fillRect(liftX, top, LIFT_W, bottom - top);
+    ctx.fillStyle = '#1d2024';                              // rungs riding down
+    var step = 34, off = (t * 120) % step;
+    for (var y = top - step + off; y < bottom; y += step) {
+      if (y <= top) continue;
+      ctx.fillStyle = '#262a2f';
+      ctx.fillRect(liftX + 12, y, LIFT_W - 24, 4);
+      ctx.fillStyle = '#3a3f46';                            // chevron: this way down
+      ctx.beginPath();
+      ctx.moveTo(liftX + LIFT_W / 2 - 9, y + 10); ctx.lineTo(liftX + LIFT_W / 2, y + 18); ctx.lineTo(liftX + LIFT_W / 2 + 9, y + 10);
+      ctx.lineTo(liftX + LIFT_W / 2 + 9, y + 14); ctx.lineTo(liftX + LIFT_W / 2, y + 22); ctx.lineTo(liftX + LIFT_W / 2 - 9, y + 14);
+      ctx.fill();
+    }
+  }
+  function drawLiftFront() {
+    var top = ROOF_H + 30, bottom = beltY(groundY) + BELT_H + 2;
+    ctx.fillStyle = '#2c2f33';
+    ctx.fillRect(liftX, top, 7, bottom - top);
+    ctx.fillRect(liftX + LIFT_W - 7, top, 7, bottom - top);
+    ctx.fillStyle = '#474c52';
+    ctx.fillRect(liftX, top, 2, bottom - top);
+    ctx.fillRect(liftX + LIFT_W - 7, top, 2, bottom - top);
+    ctx.fillStyle = '#2c2f33';
+  }
+  function drawHatch(t) {
+    var y0 = groundY - 120;
+    ctx.fillStyle = '#141519';
+    ctx.fillRect(hatchX, y0, hatchW, 120 + BELT_DY + BELT_H);
+    ctx.strokeStyle = '#565c66';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(hatchX, y0, hatchW, 120 + BELT_DY + BELT_H);
+    ctx.fillStyle = '#050506';
+    ctx.fillRect(hatchX + 8, beltY(groundY) - 26, hatchW - 8, 26 + BELT_H);   // the opening the belt runs into
+    ctx.fillStyle = t < hatchFlashUntil ? RED : '#5a1414';
+    ctx.beginPath();
+    ctx.arc(hatchX + hatchW / 2, y0 + 20, 5, 0, Math.PI * 2);
+    ctx.fill();
+    caption('out', hatchX + hatchW / 2, y0 - 12);
   }
 
   // ---- character state: 'walk' (idle/listening) or 'sit' (thinking/
-  // responding/alert) -- see the window.__heroSetState hook below for
-  // the real mapping. ----
-  var charMode = 'walk';
-  var walkX = WALK_MIN_X, walkDir = 1;
-  var walkFrameToggle = false;
-  var lastWalkStep = 0;
-  var lastCharBox = { x: WALK_MIN_X, y: FLOOR_Y, w: 0, h: 0 };
-
-  function drawCharacter() {
-    var img = charMode === 'sit' ? IMG.ultronSit : (walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA);
-    var x = charMode === 'sit' ? ULTRON_DESK_X + 10 : walkX;
-    lastCharBox = drawFloored(img, x, CHAR_SCALE);
-  }
+  // responding/alert) -- see the window.__heroSetState hook below. ----
+  var charMode = 'walk', heroState = 'idle';
+  var walkX = 300, walkDir = 1, walkFrameToggle = false, lastWalkStep = 0;
+  var lastCharBox = { x: 300, y: 0, w: 0, h: 0 };
 
   function stepWalk(t) {
-    if (charMode !== 'walk') return;
-    if (t - lastWalkStep < 0.35) return;
+    if (charMode !== 'walk' || t - lastWalkStep < 0.35) return;
     lastWalkStep = t;
     walkFrameToggle = !walkFrameToggle;
-    walkX += walkDir * 14;
-    if (walkX >= WALK_MAX_X) { walkX = WALK_MAX_X; walkDir = -1; }
-    if (walkX <= WALK_MIN_X) { walkX = WALK_MIN_X; walkDir = 1; }
+    walkX += walkDir * 24;
+    if (walkX >= walkMaxX) { walkX = walkMaxX; walkDir = -1; }
+    if (walkX <= walkMinX) { walkX = walkMinX; walkDir = 1; }
+  }
+
+  function drawScene(t) {
+    ctx.clearRect(0, 0, W, H);
+    var s, srcW = W * ASSET_RES;
+    for (s = 0; s < storeys; s++) {
+      if (IMG.storey.complete && IMG.storey.naturalWidth) ctx.drawImage(IMG.storey, 0, 0, srcW, STOREY_H * ASSET_RES, 0, ROOF_H + s * STOREY_H, W, STOREY_H);
+    }
+    if (IMG.ground.complete && IMG.ground.naturalWidth) ctx.drawImage(IMG.ground, 0, 0, srcW, GROUND_H * ASSET_RES, 0, ROOF_H + storeys * STOREY_H, W, GROUND_H);
+    // roof: a parapet, and a beacon over the lift head
+    ctx.fillStyle = '#16181b';
+    ctx.fillRect(0, ROOF_H - 12, W, 12);
+    ctx.fillStyle = '#474c52';
+    ctx.fillRect(0, ROOF_H - 12, W, 1.5);
+    ctx.fillStyle = '#2c2f33';
+    ctx.fillRect(liftX - 6, ROOF_H - 26, LIFT_W + 12, 14);
+    ctx.fillStyle = Math.sin(t * 2.2) > 0 ? RED : '#5a1414';
+    ctx.fillRect(liftX + LIFT_W / 2 - 3, ROOF_H - 32, 6, 6);
+    caption('servers', 130, groundY - 250);
+    drawLiftBack(t);
+    parcels.forEach(function (p) { if (p.phase === 'lift') drawParcel(p); });
+
+    SUBAGENTS.forEach(function (a) {
+      var alarmed = a.alertable && sentinelAlert;
+      var busy = t < (busyUntil[a.color] || 0);
+      var lit = alarmed || busy;
+      wallGlow(a.x + DESK_DX + 55, a.floorY - 112, 130, alarmed ? RED : a.hex, lit ? 0.26 : 0.1);
+      drawSprite(IMG['tube_' + a.color], a.x, a.floorY);
+      drawSprite(IMG['agent_' + a.color], a.x + DESK_DX + 55 - 60, a.floorY, -ROBOT_SINK);
+      var desk = drawSprite(IMG['desk_' + a.color + (lit ? '_active' : '_idle')], a.x + DESK_DX, a.floorY);
+      if (desk.w) {
+        var status = alarmed ? 'alert' : (busy && a.busyPlate) ? a.busyPlate : '';
+        plate(a.label, status, a.x + DESK_DX + 9, a.floorY - DESK_H + 15, DESK_W - 18, DESK_H - 24, alarmed ? '#ff6b6b' : a.plateHex, alarmed ? '#ff6b6b' : '#e8e6e0');
+      }
+    });
+
+    // Ultron's office: recharge pod, desk, and the man himself -- seated
+    // behind the desk while working, pacing the floor otherwise.
+    var working = charMode === 'sit';
+    wallGlow(uDeskX + 85, groundY - 180, 220, RED, working ? 0.24 : 0.1);
+    drawSprite(IMG.tubeRed, uTubeX, groundY);
+    if (working) lastCharBox = drawSprite(IMG.ultronWork, uDeskX + 85 - 100, groundY, -U_ROBOT_SINK);
+    var uDesk = drawSprite(IMG[(working || t < deskFlashUntil) ? 'deskUltronActive' : 'deskUltronIdle'], uDeskX, groundY);
+    if (uDesk.w) plate('Ultron', heroState, uDeskX + 9, groundY - U_DESK_H + 15, U_DESK_W - 18, U_DESK_H - 24, '#ff6b6b', '#e8e6e0');
+    if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, groundY + 4);
+
+    SUBAGENTS.forEach(function (a, i) {   // one belt per storey, from its first desk to the lift
+      if (i % cols === 0) drawBelt(LEFT, liftX, a.floorY, t, 1);
+    });
+    drawBelt(hatchX + hatchW - 4, liftX, groundY, t, -1);
+    parcels.forEach(function (p) { if (p.phase !== 'lift') drawParcel(p); });
+    drawLiftFront();
+    drawHatch(t);
   }
 
   function positionBubble() {
@@ -5155,6 +5285,7 @@ function toggleReducedVisuals(el) {
   window.__heroSetState = function (name) {
     if (prevHeroSetState) prevHeroSetState(name);
     var wasSit = charMode === 'sit';
+    heroState = name || 'idle';
     if (name === 'thinking' || name === 'responding' || name === 'speaking' || name === 'alert') {
       charMode = 'sit';
       if (!wasSit || name === 'alert') {
@@ -5164,48 +5295,303 @@ function toggleReducedVisuals(el) {
     } else {
       charMode = 'walk';
     }
+    requestStatic();
   };
 
-  var startTime = (window.performance && performance.now) ? performance.now() : Date.now();
-  function now() { return (((window.performance && performance.now) ? performance.now() : Date.now()) - startTime) / 1000; }
-
+  // ---- run loop ----
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var lastFrameT = 0;
+  var laidOut = false, onScreen = true, lastFrameT = 0, staticQueued = false;
+
+  // Reduced motion: no loop, just a redraw whenever something real changes.
+  function requestStatic() {
+    if (!prefersReducedMotion || staticQueued) return;
+    staticQueued = true;
+    requestAnimationFrame(function () {
+      staticQueued = false;
+      if (laidOut || (laidOut = layout())) drawScene(now());
+    });
+  }
+
   function frame() {
+    requestAnimationFrame(frame);
+    // Deliberately NOT gated on document.hidden -- it reads true with no
+    // visibilitychange ever firing in some embedding contexts (confirmed of
+    // the Chrome automation this was tested in), which would freeze the room
+    // on a blank frame. Being scrolled off screen or on another tab of the
+    // dashboard is a safe reason to idle, since both come back with an event.
+    if (!onScreen) return;
     var t = now();
+    if (t - lastFrameT < 1 / 31) return;   // ~30fps is plenty for this
     var dt = Math.min(t - lastFrameT, 0.25);
     lastFrameT = t;
+    if (!laidOut && !(laidOut = layout())) return;
     stepWalk(t);
-    drawRoom(charMode === 'sit', t);
-    updatePackages(t, dt);
-    drawConveyor(t);
-    drawPackages();
-    drawCharacter();
+    updateParcels(t, dt);
+    drawScene(t);
     if (charMode === 'sit' && bubble && bubble.classList.contains('show')) positionBubble();
-    // Deliberately NOT gated on document.hidden -- see the AI-core
-    // module's own comment on why: it reads true with no
-    // visibilitychange ever firing in some embedding contexts
-    // (confirmed of the Chrome automation this was tested in), which
-    // would permanently freeze this on a blank/stale frame instead of
-    // just not animating while backgrounded.
-    if (!prefersReducedMotion) requestAnimationFrame(frame);
   }
+
+  if (window.ResizeObserver) {
+    new ResizeObserver(function () { laidOut = layout(); requestStatic(); }).observe(wrap);
+  } else {
+    window.addEventListener('resize', function () { laidOut = layout(); requestStatic(); });
+  }
+  if (window.IntersectionObserver) {
+    new IntersectionObserver(function (entries) { onScreen = entries[entries.length - 1].isIntersecting; }).observe(wrap);
+  }
+
   if (prefersReducedMotion) {
-    drawRoom(false, 0);
-    drawConveyor(0);
-    drawCharacter();
-    // No loop in this branch, so without this an image that hadn't
-    // finished loading yet at the single static draw above would stay
-    // blank forever instead of appearing once it's actually ready.
-    var pending = Object.keys(IMG).length;
-    Object.keys(IMG).forEach(function (k) {
-      IMG[k].addEventListener('load', function () {
-        if (--pending <= 0) { drawRoom(false, 0); drawCharacter(); }
-      }, { once: true });
-    });
+    Object.keys(IMG).forEach(function (k) { IMG[k].addEventListener('load', requestStatic, { once: true }); });
+    requestStatic();
   } else {
     frame();
   }
+})();
+</script>
+
+<!-- Ultron tab: "What Ultron knows" -- the Brain vault (the Obsidian folder
+     next to ultron.db, graphed hourly by graphify) drawn under his corner,
+     so what he has learned is something you can look at and watch grow.
+     Real data only: GET /api/brain-graph, the same graph recall_from_brain
+     searches. A plain 2D canvas rather than a second copy of the Home tab's
+     3D graph on purpose: it sits in the middle of a scrolling page, and a 3D
+     orbit control would swallow the swipe that scrolls past it on a phone.
+     Laid out once per load (a short force simulation), then still. -->
+<script>
+(function () {
+  'use strict';
+  var canvas = document.getElementById('vault-canvas');
+  if (!canvas || !canvas.getContext) return;
+  var wrap = canvas.parentNode;
+  var ctx = canvas.getContext('2d');
+  var tipEl = document.getElementById('vault-tip');
+  var headlineEl = document.getElementById('vault-headline');
+  var updatedEl = document.getElementById('vault-updated');
+  var kindsEl = document.getElementById('vault-kinds');
+  var daysEl = document.getElementById('vault-days');
+
+  var KINDS = {
+    conversation: { label: 'conversations', one: 'conversation', color: '#3dd6ff' },
+    memory: { label: 'memories', one: 'memory', color: '#ffc24b' },
+    knowledge: { label: 'knowledge pages', one: 'knowledge page', color: '#b084f0' },
+  };
+  var nodes = [], links = [], neighbours = {}, filter = null, hover = null, pinned = null;
+  var cssW = 0, cssH = 0;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  // A short force simulation, run to rest before the first draw: links pull,
+  // everything repels, and a light pull to the centre keeps islands on the
+  // canvas. Positions are in a unit square and scaled at draw time, so a
+  // resize never re-runs it.
+  function settle() {
+    var n = nodes.length, i, j, k;
+    nodes.forEach(function (nd, idx) {
+      var a = idx * 2.399963, r = 0.08 + 0.4 * Math.sqrt(idx / Math.max(1, n));   // golden-angle spiral start
+      nd.x = 0.5 + r * Math.cos(a); nd.y = 0.5 + r * Math.sin(a); nd.vx = 0; nd.vy = 0;
+    });
+    var ideal = 0.62 / Math.sqrt(Math.max(4, n));
+    for (k = 0; k < 260; k++) {
+      var cool = 1 - k / 260;
+      for (i = 0; i < n; i++) {
+        var a1 = nodes[i];
+        for (j = i + 1; j < n; j++) {
+          var b1 = nodes[j], dx = a1.x - b1.x, dy = a1.y - b1.y, d2 = dx * dx + dy * dy + 1e-6;
+          var f = ideal * ideal / d2 * ((a1.page || b1.page) ? 0.14 : 0.05), d = Math.sqrt(d2);   // pages carry labels, so they claim more room
+          dx /= d; dy /= d;
+          a1.vx += dx * f; a1.vy += dy * f; b1.vx -= dx * f; b1.vy -= dy * f;
+        }
+        a1.vx += (0.5 - a1.x) * 0.012; a1.vy += (0.5 - a1.y) * 0.012;
+      }
+      links.forEach(function (l) {
+        var dx = l.t.x - l.s.x, dy = l.t.y - l.s.y, d = Math.sqrt(dx * dx + dy * dy) + 1e-6;
+        var f = (d - ideal) * 0.09;
+        dx /= d; dy /= d;
+        l.s.vx += dx * f; l.s.vy += dy * f; l.t.vx -= dx * f; l.t.vy -= dy * f;
+      });
+      nodes.forEach(function (nd) {
+        nd.x += Math.max(-0.04, Math.min(0.04, nd.vx)) * cool; nd.y += Math.max(-0.04, Math.min(0.04, nd.vy)) * cool;
+        nd.vx *= 0.55; nd.vy *= 0.55;
+      });
+    }
+    // fit to the unit square with a margin
+    var x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+    nodes.forEach(function (nd) { x0 = Math.min(x0, nd.x); x1 = Math.max(x1, nd.x); y0 = Math.min(y0, nd.y); y1 = Math.max(y1, nd.y); });
+    nodes.forEach(function (nd) { nd.x = (nd.x - x0) / Math.max(1e-6, x1 - x0); nd.y = (nd.y - y0) / Math.max(1e-6, y1 - y0); });
+  }
+
+  function size() {
+    cssW = wrap.clientWidth;
+    if (!cssW) return false;
+    cssH = cssW < 500 ? 360 : Math.round(Math.min(520, cssW * 0.52));
+    PADX = cssW < 500 ? 20 : 56;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssH * dpr);
+    canvas.style.height = cssH + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return true;
+  }
+  var PADX = 56, PADY = 30;
+  function sx(nd) { return PADX + nd.x * (cssW - 2 * PADX); }
+  function sy(nd) { return PADY + nd.y * (cssH - 2 * PADY); }
+  function radius(nd) { return nd.page ? Math.min(9, 4.5 + Math.sqrt(nd.degree)) : 3; }
+
+  function draw() {
+    if (!cssW && !size()) return;
+    ctx.clearRect(0, 0, cssW, cssH);
+    var focus = pinned || hover, near = focus ? neighbours[focus.id] : null;
+    function dim(nd) { return (filter && nd.kind !== filter) || (focus && nd !== focus && !near[nd.id]); }
+    ctx.lineWidth = 1;
+    links.forEach(function (l) {
+      var on = focus && (l.s === focus || l.t === focus);
+      ctx.strokeStyle = on ? 'rgba(233,237,247,0.55)' : (dim(l.s) || dim(l.t)) ? 'rgba(141,155,189,0.05)' : 'rgba(141,155,189,0.17)';
+      ctx.beginPath(); ctx.moveTo(sx(l.s), sy(l.s)); ctx.lineTo(sx(l.t), sy(l.t)); ctx.stroke();
+    });
+    nodes.forEach(function (nd) {
+      var r = radius(nd), x = sx(nd), y = sy(nd);
+      ctx.globalAlpha = dim(nd) ? 0.16 : 1;
+      if (nd.page) {   // pages glow; the things said inside them are plain dots
+        var g = ctx.createRadialGradient(x, y, 0, x, y, r * 3.2);
+        g.addColorStop(0, KINDS[nd.kind].color); g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.globalAlpha *= 0.28; ctx.fillStyle = g; ctx.fillRect(x - r * 3.2, y - r * 3.2, r * 6.4, r * 6.4);
+        ctx.globalAlpha = dim(nd) ? 0.16 : 1;
+      }
+      ctx.fillStyle = KINDS[nd.kind].color;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      if (nd === focus) { ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.lineWidth = 1; }
+    });
+    ctx.globalAlpha = 1;
+    // Labels: every page when there is room, otherwise only around the focus.
+    ctx.font = '10.5px ' + ((getComputedStyle(document.documentElement).getPropertyValue('--font-mono') || '').trim() || 'monospace');
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    // Names are whole sentences now, so only the best-connected pages get one
+    // at rest (as many as the width has room for); the rest answer to hover.
+    // The best-connected page of each kind goes first, and two pages that
+    // start with the same words only get the name once.
+    var named = {}, seenKind = {}, seenText = {}, room = Math.max(3, Math.floor(cssW / 170));
+    var ranked = nodes.filter(function (nd) { return nd.page && !dim(nd); }).sort(function (p, q) { return q.degree - p.degree; });
+    ranked.filter(function (nd) { if (seenKind[nd.kind]) return false; seenKind[nd.kind] = true; return true; }).concat(ranked).forEach(function (nd) {
+      var key = nd.label.slice(0, 18);
+      if (room <= 0 || named[nd.id] || seenText[key]) return;
+      named[nd.id] = seenText[key] = true; room--;
+    });
+    nodes.forEach(function (nd) {
+      var show = nd === focus || (!focus && named[nd.id]);
+      if (!show) return;
+      var text = nd.label.length > 30 ? nd.label.slice(0, 29) + '…' : nd.label;
+      ctx.fillStyle = nd === focus ? '#fff' : 'rgba(233,237,247,0.78)';
+      var half = Math.min(96, ctx.measureText(text).width / 2 + 4);   // keep the whole name on the canvas
+      ctx.fillText(text, Math.max(half, Math.min(cssW - half, sx(nd))), sy(nd) + radius(nd) + 3);
+    });
+  }
+
+  function nodeAt(px, py) {
+    var best = null, bestD = 16 * 16;
+    nodes.forEach(function (nd) {
+      if (filter && nd.kind !== filter) return;
+      var dx = sx(nd) - px, dy = sy(nd) - py, d = dx * dx + dy * dy;
+      if (d < bestD) { bestD = d; best = nd; }
+    });
+    return best;
+  }
+  function showTip(nd, px, py) {
+    if (!nd) { tipEl.hidden = true; return; }
+    tipEl.innerHTML = '<b style="color:' + KINDS[nd.kind].color + '">' + esc(KINDS[nd.kind].one) + '</b>' + esc(nd.label) +
+      '<span class="src">' + esc(nd.source) + ' · ' + nd.degree + (nd.degree === 1 ? ' link' : ' links') + '</span>';
+    tipEl.hidden = false;
+    tipEl.style.left = Math.max(6, Math.min(cssW - 246, px + 14)) + 'px';
+    tipEl.style.top = Math.max(6, Math.min(cssH - 70, py + 12)) + 'px';
+  }
+  canvas.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'touch') return;   // touch selects on tap, below; a swipe just scrolls the page
+    var r = canvas.getBoundingClientRect(), nd = nodeAt(e.clientX - r.left, e.clientY - r.top);
+    canvas.style.cursor = nd ? 'pointer' : 'default';
+    if (nd !== hover) { hover = nd; draw(); }
+    showTip(nd || pinned, e.clientX - r.left, e.clientY - r.top);
+  });
+  canvas.addEventListener('pointerleave', function () { hover = null; draw(); if (pinned) showTip(pinned, sx(pinned), sy(pinned)); else tipEl.hidden = true; });
+  canvas.addEventListener('click', function (e) {
+    var r = canvas.getBoundingClientRect(), nd = nodeAt(e.clientX - r.left, e.clientY - r.top);
+    pinned = (nd && nd !== pinned) ? nd : null;
+    draw();
+    showTip(pinned, pinned ? sx(pinned) : 0, pinned ? sy(pinned) : 0);
+  });
+
+  function renderKinds(stats) {
+    var counts = { conversation: stats.conversations, memory: stats.memories, knowledge: stats.knowledge };
+    kindsEl.innerHTML = Object.keys(KINDS).map(function (k) {
+      return '<button type="button" class="mode-pill' + (filter === k ? ' active' : '') + '" data-kind="' + k + '" aria-pressed="' + (filter === k) + '">' +
+        '<span class="swatch" style="color:' + KINDS[k].color + '"></span>' + counts[k] + ' ' + (counts[k] === 1 ? KINDS[k].one : KINDS[k].label) + '</button>';
+    }).join('');
+    kindsEl.querySelectorAll('[data-kind]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        filter = filter === b.dataset.kind ? null : b.dataset.kind;
+        pinned = null; tipEl.hidden = true;
+        renderKinds(stats); draw();
+      });
+    });
+  }
+
+  function renderDays(days) {
+    if (!days.length) { daysEl.innerHTML = ''; return; }
+    var max = Math.max.apply(null, days.map(function (d) { return d.conversations + d.memories; })) || 1;
+    function nice(iso) { var p = iso.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); }
+    var bars = days.map(function (d) {
+      var title = nice(d.date) + ': ' + d.conversations + ' said, ' + d.memories + ' remembered';
+      return '<div class="vault-day" title="' + esc(title) + '">' +
+        '<i style="height:' + Math.round(d.memories / max * 44) + 'px; background:' + KINDS.memory.color + '"></i>' +
+        '<i style="height:' + Math.round(d.conversations / max * 44) + 'px; background:' + KINDS.conversation.color + '"></i></div>';
+    }).join('');
+    var span = days.length === 1 ? 'all on ' + nice(days[0].date) + ', his first day of notes' : nice(days[0].date) + ' to ' + nice(days[days.length - 1].date);
+    daysEl.innerHTML = '<div class="vault-days-label">Learned per day <span>' + esc(span) + '</span></div><div class="vault-days-bars">' + bars + '</div>';
+  }
+
+  window.__vaultRefresh = async function () {
+    // state/authHeaders are top-level bindings in the main script (see the
+    // same note in __kgRefresh below).
+    if (typeof authHeaders !== 'function' || !state.connected || state.role === 'beta') return;
+    try {
+      var res = await fetch(state.baseUrl + '/api/brain-graph', { headers: authHeaders() });
+      if (!res.ok) throw new Error('http ' + res.status);
+      var data = await res.json();
+      var s = data.stats;
+      if (!data.available || !data.nodes.length) {
+        wrap.classList.add('empty');
+        headlineEl.textContent = 'Nothing graphed yet';
+        updatedEl.textContent = data.hint || 'the Brain vault has not been graphed';
+        kindsEl.innerHTML = ''; daysEl.innerHTML = '';
+        return;
+      }
+      wrap.classList.remove('empty');
+      var byId = {};
+      nodes = data.nodes.map(function (n) { var nd = { id: n.id, label: n.label, kind: KINDS[n.kind] ? n.kind : 'knowledge', page: !!n.page, source: n.source, degree: 0 }; byId[n.id] = nd; return nd; });
+      neighbours = {};
+      nodes.forEach(function (nd) { neighbours[nd.id] = {}; });
+      links = [];
+      data.links.forEach(function (l) {
+        var a = byId[l.source], b = byId[l.target];
+        if (!a || !b || a === b) return;
+        links.push({ s: a, t: b }); a.degree++; b.degree++;
+        neighbours[a.id][b.id] = true; neighbours[b.id][a.id] = true;
+      });
+      hover = pinned = null; tipEl.hidden = true;
+      settle();
+      headlineEl.textContent = s.nodes + ' things known, ' + s.links + ' connections between them' + (s.shown < s.nodes ? ' (the ' + s.shown + ' best-connected shown)' : '');
+      updatedEl.textContent = s.updated_at ? 'graphed ' + new Date(s.updated_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
+      canvas.setAttribute('aria-label', 'Graph of Ultron\'s Brain vault: ' + s.conversations + ' conversation exchanges, ' + s.memories + ' memories and ' + s.knowledge + ' knowledge pages, with ' + s.links + ' connections');
+      renderKinds(s);
+      renderDays(data.by_day || []);
+      size(); draw();
+    } catch (err) {
+      headlineEl.textContent = 'Could not load the Brain vault';
+      updatedEl.textContent = 'it will retry with the next refresh';
+    }
+  };
+
+  if (window.ResizeObserver) new ResizeObserver(function () { if (size()) draw(); }).observe(wrap);
+  else window.addEventListener('resize', function () { if (size()) draw(); });
+  // graphify re-graphs the vault hourly; a quarter-hourly look keeps this current.
+  setInterval(function () { if (!document.hidden) window.__vaultRefresh(); }, 15 * 60 * 1000);
 })();
 </script>
 

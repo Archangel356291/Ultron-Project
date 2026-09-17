@@ -92,6 +92,7 @@ New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol T
 | `GET /api/systems`       | Pending updates, temp, uptime, load average        |
 | `GET /api/activity`       | Persistent log of real events — backups, deploys, CVE scans |
 | `GET /api/memory`         | Ultron's saved memory notes (most recent first, or `?query=` to search) |
+| `GET /api/brain-graph`    | The Brain vault's graph for the dashboard's "What Ultron knows" panel: nodes by kind, links, counts, learned-per-day (admin only) |
 | `GET /api/dev/repos`       | Git status (branch, dirty/clean, last commit) for configured repos |
 | `GET /api/dev/repos/<repo>/diff` | Uncommitted diff for one configured repo             |
 | `GET/POST /api/trades`     | Your manually-recorded trade ledger — list or add    |

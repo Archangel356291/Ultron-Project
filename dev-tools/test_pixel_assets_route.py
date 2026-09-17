@@ -7,6 +7,7 @@ Run standalone from anywhere:
     python dev-tools/test_pixel_assets_route.py
 """
 import os
+import re
 import sys
 import tempfile
 
@@ -25,15 +26,24 @@ import app  # noqa: E402
 def demo():
     client = app.app.test_client()
 
-    # Real generated assets the dashboard actually loads must be
-    # reachable, unauthenticated -- same reasoning as /three-pipeline.
-    for name in ("room_bg.png", "ultron_walk_a.png", "ultron_sit.png",
-                 "agent_cyan_sit.png", "desk_ultron_active.png", "tube_red.png"):
+    # Every sprite the room script asks for must exist and be served,
+    # unauthenticated -- same reasoning as /three-pipeline. The per-agent
+    # names are read out of the dashboard's own SUBAGENTS table, so adding an
+    # agent there without generating its art fails here rather than showing
+    # up as a missing desk.
+    dashboard = open(os.path.join(BACKEND_DIR, "..", "ultron-dashboard.html"), encoding="utf-8").read()
+    table = dashboard[dashboard.index("var SUBAGENTS = ["):dashboard.index("];", dashboard.index("var SUBAGENTS = ["))]
+    colors = re.findall(r"color: '(\w+)'", table)
+    assert len(colors) >= 17 and len(set(colors)) == len(colors), colors
+    names = ["room_storey.png", "room_ground.png", "ultron_walk_a.png", "ultron_walk_b.png", "ultron_work.png",
+             "desk_ultron_idle.png", "desk_ultron_active.png", "tube_red.png"]
+    for c in colors:
+        names += [f"agent_{c}.png", f"desk_{c}_idle.png", f"desk_{c}_active.png", f"tube_{c}.png"]
+    for name in names:
         res = client.get("/pixel-assets/" + name)
         assert res.status_code == 200, (name, res.status_code)
-        assert res.data[:8] == b"\x89PNG\r\n\x1a\n", (name, "doesn't start with the PNG magic bytes")
+        assert res.data[:8] == bytes([0x89]) + b"PNG" + bytes([13, 10, 26, 10]), name
 
-    # A file that doesn't exist 404s, not a 500 or a silent empty-body 200.
     res = client.get("/pixel-assets/does-not-exist.png")
     assert res.status_code == 404, res.status_code
 

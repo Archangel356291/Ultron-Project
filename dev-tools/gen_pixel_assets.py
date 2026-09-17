@@ -111,512 +111,486 @@ def shade(color, factor):
     return (r, g, b, color[3] if len(color) > 3 else 255)
 
 
-def draw_ultron(scale, accent, pose):
-    """pose: 'walk_a' | 'walk_b' | 'sit'. Layered polygons for an angular
-    armored silhouette, multi-tone shaded (light from upper-left) with a
-    dark contact shadow at the feet so the sprite reads as grounded rather
-    than pasted-on."""
-    W, H = 20 * scale, 28 * scale
-    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
+# ---- drawing surface -------------------------------------------------------
+# Room pass (2026-09-16, owner: "double the size, and let us tell what we are
+# looking at, even if the pixel edges get rounded slightly"). Everything below
+# is drawn in *room units* -- the same coordinate space the dashboard's
+# pixel-room script lays the scene out in -- onto a supersampled sheet that is
+# then downsampled, which is what rounds the stair-stepped edges off. Assets
+# are saved at RES pixels per room unit so they stay sharp on high-DPI phones.
+RES = 2   # saved pixels per room unit
+SS = 3    # supersample factor while drawing
+PAD = 6   # transparent margin (room units) on every sprite, so the outline and
+          # glow never clip. The dashboard subtracts it when placing sprites
+          # (SPRITE_PAD in ultron-dashboard.html) -- keep the two in step.
 
-    def px(x, y):
-        return (x * scale, y * scale)
 
-    def rect(x0, y0, x1, y1, color):
-        d.rectangle([px(x0, y0), px(x1 - 0.01, y1 - 0.01)], fill=color)
+class Sheet:
+    def __init__(self, w, h, pad=PAD):
+        self.w, self.h, self.pad, self.k = w, h, pad, RES * SS
+        size = (int(round((w + 2 * pad) * self.k)), int(round((h + 2 * pad) * self.k)))
+        self.img = Image.new("RGBA", size, (0, 0, 0, 0))
+        self.d = ImageDraw.Draw(self.img)
 
-    def poly(points, color):
-        d.polygon([px(x, y) for x, y in points], fill=color)
+    def pt(self, x, y):
+        return ((x + self.pad) * self.k, (y + self.pad) * self.k)
 
-    def hline(x0, x1, y, color, w=0.5):
-        rect(x0, y, x1, y + w, color)
+    def rect(self, x0, y0, x1, y1, fill=None, r=0.0, outline=None, width=0.0):
+        box = [self.pt(x0, y0), self.pt(x1, y1)]
+        w = max(1, int(round(width * self.k))) if outline else 0
+        if r:
+            self.d.rounded_rectangle(box, radius=r * self.k, fill=fill, outline=outline, width=w)
+        else:
+            self.d.rectangle(box, fill=fill, outline=outline, width=w)
 
-    # Crested head, pushed much closer to the owner's pixel-Ultron
-    # reference's proportions/palette placement (full glowing red faceplate
-    # with dark eye cutouts and a mouth grille, a fuller jagged crown) while
-    # still an independently-drawn silhouette, not a traced copy.
-    poly([(5.5, 5.5), (5.8, 2.2), (7, -1), (10, -2.3), (13, -1), (14.2, 2.2), (14.5, 5.5)], BODY_MID)
-    poly([(5.5, 5.5), (5.8, 2.2), (7, -1), (10, -2.3), (10, 5.5)], shade(BODY_MID, 1.25))  # left-face highlight
-    rect(5.5, 5.5, 14.5, 8.4, BODY_LIGHT)
-    # Full glowing faceplate (not just a brow band) -- covers eyes through
-    # jaw, per the reference's mostly-red lit face.
-    poly([(6.0, 5.9), (14.0, 5.9), (13.6, 8.2), (6.4, 8.2)], accent)
-    poly([(6.0, 5.9), (14.0, 5.9), (13.7, 6.5), (6.3, 6.5)], shade(accent, 1.3))  # top-edge highlight
-    poly([(6.4, 8.2), (13.6, 8.2), (13.3, 8.6), (6.7, 8.6)], shade(accent, 0.55))  # jaw undershade
-    # Dark almond eye cutouts within the glow (negative space, not glowing
-    # dots) -- the reference's eyes read as dark slits inside the red mask.
-    for ex in (8.1, 11.9):
-        d.ellipse([px(ex - 1.15, 6.25), px(ex + 1.15, 7.35)], fill=(8, 6, 6, 255))
-        d.ellipse([px(ex - 0.7, 6.5), px(ex + 0.7, 7.1)], fill=shade(accent, 0.7))  # faint inner glow rim
-    # Mouth grille -- vertical dark slats across the lower faceplate.
-    for gx in (7.3, 8.5, 9.7, 10.9, 12.1):
-        rect(gx, 7.6, gx + 0.5, 8.5, (8, 6, 6, 255))
-    # Fuller jagged crown -- five uneven spikes instead of a smooth
-    # three-point ridge, matching the reference's spikier crest silhouette.
-    # y=0 is the actual canvas top at this scale (negative y clips flat,
-    # confirmed by render) -- tips kept just above 0 so the points stay
-    # sharp instead of getting cut into a flat bar.
-    tips = ((6.3, 0.7), (7.9, 0.25), (10.0, 0.05), (12.1, 0.25), (13.7, 0.7))
-    bases = (6.0, 7.1, 8.5, 11.5, 12.9, 14.0)
-    for i in range(5):
-        poly([(bases[i], 1.4), tips[i], (bases[i + 1], 1.4)], accent)
-        poly([(bases[i], 1.4), tips[i], ((bases[i] + tips[i][0]) / 2, 0.2)], shade(accent, 1.3))
+    def poly(self, points, fill):
+        self.d.polygon([self.pt(x, y) for x, y in points], fill=fill)
 
-    # Neck + shoulders -- wide, armored.
-    rect(8, 8, 12, 9.5, BODY_MID)
-    poly([(3, 9.5), (17, 9.5), (16, 13), (4, 13)], BODY_LIGHT)
-    poly([(3, 9.5), (10, 9.5), (9, 13), (4, 13)], shade(BODY_LIGHT, 1.2))
-    rect(4, 13, 16, 14, BODY_MID)
-    # shoulder rivets, echoing body_design.png's joint accents
-    d.ellipse([px(4.3, 10.3), px(5.5, 11.5)], fill=shade(accent, 0.85))
-    d.ellipse([px(14.5, 10.3), px(15.7, 11.5)], fill=shade(accent, 0.85))
+    def ellipse(self, x0, y0, x1, y1, fill=None, outline=None, width=0.0):
+        w = max(1, int(round(width * self.k))) if outline else 0
+        self.d.ellipse([self.pt(x0, y0), self.pt(x1, y1)], fill=fill, outline=outline, width=w)
 
-    # Chest core -- the glowing centerpiece, echoing the reference's lit
-    # chest panel.
-    rect(7.5, 10.5, 12.5, 16, PANEL)
-    rect(7.5, 10.5, 9, 16, shade(PANEL, 1.4))  # left panel bevel
-    d.ellipse([px(8.3, 11.3), px(11.7, 14.7)], fill=accent)
-    d.ellipse([px(8.6, 11.6), px(11.4, 14.4)], outline=shade(accent, 0.5), width=1)
-    d.ellipse([px(9, 12), px(11, 14)], fill=(255, 255, 255, 230))
+    def line(self, points, fill, width=1.0):
+        w = max(1, int(round(width * self.k)))
+        pts = [self.pt(x, y) for x, y in points]
+        self.d.line(pts, fill=fill, width=w, joint="curve")
+        for px, py in pts:  # round caps and joints
+            self.d.ellipse([px - w / 2, py - w / 2, px + w / 2, py + w / 2], fill=fill)
 
-    # Torso.
-    rect(4, 14, 16, 19, BODY_MID)
-    rect(4, 14, 5.5, 19, BODY_DARK)
-    rect(14.5, 14, 16, 19, BODY_DARK)
-    rect(5.5, 14, 8, 14.6, shade(BODY_MID, 1.18))  # top-edge highlight catch-light
-    for gy in (15, 17):
-        rect(6, gy, 14, gy + 0.6, accent)  # armor seam glow lines
-        rect(6, gy + 0.6, 14, gy + 0.8, shade(accent, 0.4))
+    def overlay(self):
+        """A transparent sheet in the same coordinates. ImageDraw overwrites
+        alpha rather than blending, so anything translucent is drawn on an
+        overlay and merged."""
+        s = Sheet.__new__(Sheet)
+        s.w, s.h, s.pad, s.k = self.w, self.h, self.pad, self.k
+        s.img = Image.new("RGBA", self.img.size, (0, 0, 0, 0))
+        s.d = ImageDraw.Draw(s.img)
+        return s
 
-    if pose == "sit":
-        # Bent forward slightly, arms toward a keyboard, legs folded
-        # under -- drawn as one wide seated base rather than distinct legs.
-        poly([(3, 19), (17, 19), (18, 20), (2, 20)], BODY_LIGHT)
-        rect(2, 20, 18, 25, BODY_DARK)
-        rect(2, 20, 18, 21, STEEL)
-        rect(2, 20, 10, 20.8, shade(STEEL, 1.15))
-        # one arm forward
-        rect(11, 15, 17, 17, BODY_MID)
-        rect(15, 15.5, 18, 17.5, BODY_LIGHT)
-        d.ellipse([px(16.5, 15.5), px(18.5, 17.5)], fill=accent)
-        d.ellipse([px(16.9, 15.9), px(18.1, 17.1)], fill=shade(accent, 1.3))
-        # contact shadow (feet bottom at y=25, canvas is 28 tall -- room below)
-        shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        sd = ImageDraw.Draw(shadow)
-        sd.ellipse([px(3, 25.6), px(17, 27.3)], fill=(0, 0, 0, 130))
-        shadow = shadow.filter(ImageFilter.GaussianBlur(scale * 0.4))
-        base = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        base.alpha_composite(shadow)
-        base.alpha_composite(img)
-        img = base
+    def merge(self, other, blur=0.0):
+        self.img.alpha_composite(other.img.filter(ImageFilter.GaussianBlur(blur * self.k)) if blur else other.img)
+
+    def finish(self, rim=1.0, glow_color=None, glow_blur=3.0):
+        size = (int(round((self.w + 2 * self.pad) * RES)), int(round((self.h + 2 * self.pad) * RES)))
+        img = self.img.resize(size, Image.LANCZOS)
+        if rim:
+            img = outline(img, size=2 * int(round(rim * RES)) + 1)
+        if glow_color:
+            img = glow(img, glow_color, blur=glow_blur * RES)
+        return img
+
+
+# ---- characters ------------------------------------------------------------
+# One robot, drawn on a 20-wide grid of `u` room units per cell. Ultron and
+# every agent share the armoured vocabulary (so they read as one family); what
+# tells them apart is colour, the crest on the helmet, the build, and the
+# emblem on the monitor beside them. Original silhouette -- see the module
+# docstring on why this is not a copy of any existing character design.
+HEAD_TOP = 3.5  # grid rows of headroom above the helmet for crests/antennae
+CRESTS = ("crown", "plates", "antenna", "visor", "dome", "fin", "horns")
+
+
+def draw_robot(u, accent, pose, crest="crown", heavy=False):
+    """pose: 'walk_a' | 'walk_b' (full body) or 'work' (seated at a desk, cut
+    off below the chest -- the desk sprite covers the rest)."""
+    rows = (26 if pose != "work" else 20) + HEAD_TOP
+    s = Sheet(20 * u, rows * u)
+    dark = (8, 6, 6, 255)
+
+    def R(x0, y0, x1, y1, c, r=0.0):
+        s.rect(x0 * u, (y0 + HEAD_TOP) * u, x1 * u, (y1 + HEAD_TOP) * u, fill=c, r=r * u)
+
+    def P(points, c):
+        s.poly([(x * u, (y + HEAD_TOP) * u) for x, y in points], c)
+
+    def E(x0, y0, x1, y1, c):
+        s.ellipse(x0 * u, (y0 + HEAD_TOP) * u, x1 * u, (y1 + HEAD_TOP) * u, fill=c)
+
+    # contact shadow first, under everything
+    if pose != "work":
+        sh = s.overlay()
+        sh.ellipse(3.5 * u, (25.2 + HEAD_TOP) * u, 16.5 * u, (26.4 + HEAD_TOP) * u, fill=(0, 0, 0, 150))
+        s.merge(sh, blur=0.06 * u)
+
+    # helmet
+    if heavy:
+        P([(6.0, 5.6), (6.2, 2.4), (7.4, 0.6), (10, 0.0), (12.6, 0.6), (13.8, 2.4), (14.0, 5.6)], BODY_MID)
+        P([(6.0, 5.6), (6.2, 2.4), (7.4, 0.6), (10, 0.0), (10, 5.6)], shade(BODY_MID, 1.25))
     else:
-        # Arms at sides.
-        rect(2, 14.5, 4, 19.5, BODY_MID)
-        rect(16, 14.5, 18, 19.5, BODY_MID)
-        rect(2, 14.5, 2.8, 19.5, shade(BODY_MID, 1.2))
-        rect(16, 14.5, 16.8, 19.5, shade(BODY_MID, 1.2))
-        d.ellipse([px(2, 19), px(4, 21)], fill=RED_DIM if accent == RED_BRIGHT else BODY_DARK)
-        d.ellipse([px(16, 19), px(18, 21)], fill=RED_DIM if accent == RED_BRIGHT else BODY_DARK)
-        # Legs -- walk_a/walk_b alternate stance, clearly separated.
+        P([(5.5, 5.5), (5.8, 2.2), (7, -0.4), (10, -1.3), (13, -0.4), (14.2, 2.2), (14.5, 5.5)], BODY_MID)
+        P([(5.5, 5.5), (5.8, 2.2), (7, -0.4), (10, -1.3), (10, 5.5)], shade(BODY_MID, 1.25))
+    R(5.6, 3.9, 14.4, 8.6, BODY_LIGHT, r=0.5)
+    # lit faceplate with dark eye slits and a mouth grille -- the face is the
+    # thing that has to read at a glance, so it is the biggest bright shape
+    P([(6.1, 4.3), (13.9, 4.3), (13.4, 8.3), (6.6, 8.3)], accent)
+    P([(6.1, 4.3), (13.9, 4.3), (13.8, 5.0), (6.2, 5.0)], shade(accent, 1.3))
+    for ex in (8.1, 11.9):
+        if heavy:
+            R(ex - 1.25, 5.5, ex + 1.25, 6.35, dark, r=0.15)
+        else:
+            E(ex - 1.3, 5.1, ex + 1.3, 6.6, dark)
+            E(ex - 0.5, 5.5, ex + 0.5, 6.2, shade(accent, 1.4))
+    for gx in (7.4, 8.6, 9.8, 11.0, 12.2):
+        R(gx, 7.2, gx + 0.5, 8.1, dark)
+
+    # crest -- the silhouette cue
+    if crest == "crown":
+        tips = ((6.3, -1.6), (7.9, -2.4), (10.0, -3.1), (12.1, -2.4), (13.7, -1.6))
+        bases = (6.0, 7.1, 8.5, 11.5, 12.9, 14.0)
+        for i in range(5):
+            P([(bases[i], 0.6), tips[i], (bases[i + 1], 0.6)], accent)
+            P([(bases[i], 0.6), tips[i], ((bases[i] + tips[i][0]) / 2, -0.4)], shade(accent, 1.3))
+    elif crest == "plates":
+        for x0 in (6.8, 9.0, 11.2):
+            P([(x0, 0.9), (x0 + 1.0, -1.0), (x0 + 2.0, 0.9)], accent)
+    elif crest == "antenna":
+        R(9.7, -2.6, 10.3, -0.9, STEEL)
+        E(9.2, -3.4, 10.8, -1.8, accent)
+        E(9.6, -3.1, 10.2, -2.5, (255, 255, 255, 220))
+    elif crest == "visor":   # hard-hat brim: the builders
+        P([(5.0, 1.6), (15.0, 1.6), (14.2, 0.4), (5.8, 0.4)], accent)
+        R(4.6, 1.5, 15.4, 2.3, shade(accent, 0.75), r=0.3)
+    elif crest == "dome":    # a band across a smooth dome: the knowledge crew
+        R(6.1, 1.1, 13.9, 2.0, accent, r=0.3)
+        E(9.3, -1.6, 10.7, -0.3, accent)
+    elif crest == "fin":     # one tall fin: the communicators
+        P([(9.2, -0.6), (10.0, -3.2), (12.4, 0.2)], accent)
+        P([(9.2, -0.6), (10.0, -3.2), (10.4, -0.4)], shade(accent, 1.3))
+    elif crest == "horns":   # two swept horns: the guards
+        P([(6.2, 1.4), (5.0, -2.2), (7.8, 0.2)], accent)
+        P([(13.8, 1.4), (15.0, -2.2), (12.2, 0.2)], accent)
+
+    # neck, shoulders, chest
+    x0, x1 = (1.0, 19.0) if heavy else (3.0, 17.0)
+    R(7.6 if heavy else 8.0, 8.2, 12.4 if heavy else 12.0, 9.7, BODY_MID)
+    P([(x0, 11.6), (x1, 11.6), (x1 - 1.4, 9.4), (x0 + 1.4, 9.4)], BODY_LIGHT)
+    P([(x0, 11.6), (10, 11.6), (10, 9.4), (x0 + 1.4, 9.4)], shade(BODY_LIGHT, 1.2))
+    R(x0 + 0.6, 11.6, x1 - 0.6, 13.0, BODY_MID)
+    for sx in (x0 + 0.9, x1 - 2.1):
+        E(sx, 10.0, sx + 1.2, 11.2, shade(accent, 0.9))
+    R(x0 + 1.0, 13.0, x1 - 1.0, 19.0, BODY_MID, r=0.4)
+    R(x0 + 1.0, 13.0, x0 + 2.6, 19.0, BODY_DARK)
+    R(x1 - 2.6, 13.0, x1 - 1.0, 19.0, BODY_DARK)
+    for gy in (15.6, 17.4):
+        R(6, gy, 14, gy + 0.55, accent)
+    if heavy:   # shield on the chest
+        P([(7.4, 11.0), (12.6, 11.0), (12.6, 13.8), (10, 15.4), (7.4, 13.8)], PANEL)
+        P([(8.0, 11.6), (12.0, 11.6), (12.0, 13.5), (10, 14.7), (8.0, 13.5)], shade(accent, 0.6))
+        E(9.0, 12.0, 11.0, 13.8, accent)
+    else:       # glowing core
+        R(7.5, 10.4, 12.5, 15.2, PANEL, r=0.5)
+        E(8.2, 11.0, 11.8, 14.6, accent)
+        E(9.1, 11.9, 10.9, 13.7, (255, 255, 255, 235))
+
+    # arms
+    aw = 3.2 if heavy else 2.2
+    for ax in (x0 - 0.6, x1 + 0.6 - aw):
+        R(ax, 12.2, ax + aw, 19.4, BODY_LIGHT if heavy else BODY_MID, r=0.6)
+        R(ax, 12.2, ax + 0.7, 19.4, shade(BODY_LIGHT, 1.15))
+        R(ax - 0.1, 15.0, ax + aw + 0.1, 15.6, shade(accent, 0.8))
+        if pose != "work":
+            E(ax + aw / 2 - 1.1, 18.9, ax + aw / 2 + 1.1, 21.1, shade(accent, 0.6))
+
+    if pose != "work":
         lead = pose == "walk_b"
-        left_x = 5.5 if lead else 6.5
-        right_x = 11.5 if lead else 10.5
-        rect(left_x, 19, left_x + 2.4, 24, BODY_MID)
-        rect(right_x, 19, right_x + 2.4, 24, BODY_LIGHT)
-        rect(left_x, 19, left_x + 0.7, 24, shade(BODY_MID, 1.25))
-        rect(right_x, 19, right_x + 0.7, 24, shade(BODY_LIGHT, 1.2))
-        rect(left_x - 0.5, 24, left_x + 2.9, 25.5, BODY_DARK)
-        rect(right_x - 0.5, 24, right_x + 2.9, 25.5, BODY_DARK)
-        # contact shadow, both feet -- shifts slightly with stride for a
-        # believable ground-plane read as the character walks.
-        shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        sd = ImageDraw.Draw(shadow)
-        cx = (left_x + right_x) / 2 + 1.2
-        sd.ellipse([px(cx - 6, 25.7), px(cx + 6, 27.2)], fill=(0, 0, 0, 120))
-        shadow = shadow.filter(ImageFilter.GaussianBlur(scale * 0.4))
-        base = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        base.alpha_composite(shadow)
-        base.alpha_composite(img)
-        img = base
+        lx, rx = (5.5, 11.6) if lead else (6.6, 10.6)
+        ly, ry = (24.6, 24.0) if lead else (24.0, 24.6)   # one foot lifts
+        R(lx, 19, lx + 2.6, ly, BODY_MID)
+        R(rx, 19, rx + 2.6, ry, BODY_LIGHT)
+        R(lx, 19, lx + 0.7, ly, shade(BODY_MID, 1.25))
+        R(lx, 21.2, lx + 2.6, 21.8, shade(accent, 0.7))
+        R(rx, 21.2, rx + 2.6, 21.8, shade(accent, 0.7))
+        R(lx - 0.6, ly, lx + 3.2, ly + 1.4, BODY_DARK, r=0.4)
+        R(rx - 0.6, ry, rx + 3.2, ry + 1.4, BODY_DARK, r=0.4)
 
-    return glow(outline(img, size=max(3, scale // 2 * 2 + 1)), accent, blur=max(2, scale // 2))
+    return s.finish(rim=1.0, glow_color=accent, glow_blur=max(2.0, u * 0.45))
 
 
-def draw_sentinel(scale, accent):
-    """Sentinel, the security watchdog (owner-requested 2026-09-16: "a more
-    muscular, stronger version of the other subagents"). Same drawing
-    vocabulary as draw_ultron's seated pose on the same 20x28 grid, but a
-    heavyweight build: a wider, sloped shoulder yoke, a thick neck, a
-    barrel torso with layered armour plates, both arms forward and thick,
-    fists on the desk, and a shield emblem on the chest -- the one desk
-    you can tell apart at a glance."""
-    W, H = 20 * scale, 28 * scale
-    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-
-    def px(x, y):
-        return (x * scale, y * scale)
-
-    def rect(x0, y0, x1, y1, color):
-        d.rectangle([px(x0, y0), px(x1 - 0.01, y1 - 0.01)], fill=color)
-
-    def poly(points, color):
-        d.polygon([px(x, y) for x, y in points], fill=color)
-
-    # Head: squarer and set low into the shoulders (thick neck, no gap).
-    poly([(6.2, 6.0), (6.4, 3.0), (7.6, 1.2), (10, 0.6), (12.4, 1.2), (13.6, 3.0), (13.8, 6.0)], BODY_MID)
-    poly([(6.2, 6.0), (6.4, 3.0), (7.6, 1.2), (10, 0.6), (10, 6.0)], shade(BODY_MID, 1.25))
-    rect(6.2, 6.0, 13.8, 8.6, BODY_LIGHT)
-    poly([(6.7, 6.3), (13.3, 6.3), (13.0, 8.4), (7.0, 8.4)], accent)          # visor
-    poly([(6.7, 6.3), (13.3, 6.3), (13.1, 6.9), (6.9, 6.9)], shade(accent, 1.3))
-    for ex in (8.2, 11.8):  # narrow, hard eye slits
-        rect(ex - 1.0, 6.9, ex + 1.0, 7.5, (8, 6, 6, 255))
-    for gx in (7.6, 8.8, 10.0, 11.2):  # mouth grille
-        rect(gx, 7.8, gx + 0.5, 8.5, (8, 6, 6, 255))
-    # Low crest: three heavy plates instead of Ultron's sharp spikes.
-    for x0 in (7.0, 9.0, 11.0):
-        poly([(x0, 1.6), (x0 + 1.0, 0.3), (x0 + 2.0, 1.6)], accent)
-
-    # Neck + yoke: the shoulders are the widest thing on the sprite.
-    rect(7.5, 8.4, 12.5, 10.0, BODY_MID)
-    poly([(1.0, 11.5), (19.0, 11.5), (17.6, 9.4), (2.4, 9.4)], BODY_LIGHT)      # sloped yoke
-    poly([(1.0, 11.5), (10, 11.5), (10, 9.4), (2.4, 9.4)], shade(BODY_LIGHT, 1.2))
-    rect(1.6, 11.5, 18.4, 12.6, BODY_MID)
-    for sx in (2.0, 16.4):  # shoulder plates with a lit rivet each
-        rect(sx, 9.8, sx + 1.6, 12.4, shade(BODY_LIGHT, 0.85))
-        d.ellipse([px(sx + 0.35, 10.3), px(sx + 1.25, 11.2)], fill=shade(accent, 0.9))
-
-    # Barrel torso with two plate bands and a shield emblem.
-    rect(3.0, 12.6, 17.0, 20.0, BODY_MID)
-    rect(3.0, 12.6, 4.8, 20.0, BODY_DARK)
-    rect(15.2, 12.6, 17.0, 20.0, BODY_DARK)
-    rect(4.8, 12.6, 8.0, 13.2, shade(BODY_MID, 1.18))
-    for gy in (14.6, 17.4):
-        rect(5.0, gy, 15.0, gy + 0.6, accent)
-        rect(5.0, gy + 0.6, 15.0, gy + 0.8, shade(accent, 0.4))
-    # Shield: a heater shape on the chest plate, lit core in its centre.
-    poly([(7.6, 13.4), (12.4, 13.4), (12.4, 16.0), (10, 17.6), (7.6, 16.0)], PANEL)
-    poly([(8.1, 13.9), (11.9, 13.9), (11.9, 15.8), (10, 17.0), (8.1, 15.8)], shade(accent, 0.55))
-    d.ellipse([px(9.0, 14.4), px(11.0, 16.2)], fill=accent)
-    d.ellipse([px(9.5, 14.9), px(10.5, 15.7)], fill=(255, 255, 255, 230))
-
-    # Both arms forward and thick, fists planted on the desk.
-    for (ax0, ax1, fx) in ((1.4, 4.6, 0.6), (15.4, 18.6, 17.0)):
-        rect(ax0, 12.8, ax1, 19.2, BODY_LIGHT)
-        rect(ax0, 12.8, ax0 + 0.8, 19.2, shade(BODY_LIGHT, 1.2))
-        rect(ax0 - 0.2, 15.4, ax1 + 0.2, 16.0, shade(accent, 0.8))            # bicep band
-        rect(fx, 19.0, fx + 3.4, 21.6, BODY_MID)                               # fist
-        rect(fx + 0.3, 19.3, fx + 3.1, 19.9, shade(BODY_MID, 1.25))
-        d.ellipse([px(fx + 1.0, 20.0), px(fx + 2.4, 21.2)], fill=shade(accent, 0.85))
-
-    # Seated base, wider than Ultron's.
-    poly([(2.0, 20.0), (18.0, 20.0), (19.2, 21.2), (0.8, 21.2)], BODY_LIGHT)
-    rect(0.8, 21.2, 19.2, 25.4, BODY_DARK)
-    rect(0.8, 21.2, 19.2, 22.2, STEEL)
-    rect(0.8, 21.2, 10, 22.0, shade(STEEL, 1.15))
-
-    shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(shadow).ellipse([px(1.5, 25.8), px(18.5, 27.4)], fill=(0, 0, 0, 140))
-    shadow = shadow.filter(ImageFilter.GaussianBlur(scale * 0.4))
-    base = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    base.alpha_composite(shadow)
-    base.alpha_composite(img)
-    return glow(outline(base, size=max(3, scale // 2 * 2 + 1)), accent, blur=max(2, scale // 2))
+# ---- role emblems ----------------------------------------------------------
+# What each monitor shows: one plain symbol per job, drawn in a -1..1 box.
+EMBLEMS = ("core", "code", "bulb", "shield", "globe", "containers", "block", "hammer", "magnifier",
+           "brush", "network", "check", "eye", "lines", "folder", "book", "megaphone", "chat")
 
 
-def draw_desk_monitor(scale, w_units, h_units, mon_w, mon_h, accent, active, label_alpha):
-    W, H = int(w_units * scale), int((h_units + mon_h + 10) * scale)
-    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    top_desk = H - h_units * scale
+def draw_emblem(s, kind, cx, cy, r, color, bg):
+    def X(v):
+        return cx + v * r
 
-    # Desk body with a lit top edge (catches the monitor glow) and a
-    # darker recessed front kick-panel instead of one flat slab.
-    d.rectangle([0, top_desk, W, H], fill=PANEL_RAISED)
-    d.rectangle([0, top_desk, W, top_desk + 2 * scale], fill=BODY_LIGHT)
-    d.rectangle([0, top_desk + 2 * scale, W, top_desk + 2.4 * scale], fill=shade(BODY_LIGHT, 0.6))
-    kick_y0 = top_desk + (h_units * scale) * 0.55
-    d.rectangle([scale * 0.6, kick_y0, W - scale * 0.6, H - scale * 0.4], fill=shade(PANEL_RAISED, 0.7))
+    def Y(v):
+        return cy + v * r
 
-    mx0 = (W - mon_w * scale) / 2
-    my0 = top_desk - mon_h * scale - 6 * scale
+    lw = r * 0.2
 
-    # Monitor stand + a cable running down into the desk (small material
-    # detail that a bare stand-rectangle skips).
-    d.rectangle([mx0 - scale, my0 + mon_h * scale, mx0 + scale, top_desk], fill=BODY_DARK)
-    d.line([mx0 + scale * 1.5, top_desk, mx0 + scale * 1.5, top_desk + h_units * scale * 0.4],
-           fill=shade(BODY_DARK, 1.6), width=max(1, scale // 5))
+    def L(pts, w=lw, c=color):
+        s.line([(X(a), Y(b)) for a, b in pts], c, w)
 
-    # Screen: bezel, glow, scanlines, and (only above a small size, so the
-    # tiny subagent screens don't get illegibly cramped detail) a couple of
-    # corner accent rivets.
-    screen_color = accent if active else tuple(int(c * 0.35) for c in accent[:3]) + (255,)
-    screen = Image.new("RGBA", (int(mon_w * scale), int(mon_h * scale)), screen_color)
-    sd = ImageDraw.Draw(screen)
-    for ly in range(2, int(mon_h * scale) - 2, max(3, scale)):
-        sd.rectangle([2, ly, int(mon_w * scale) - 2, ly + 1], fill=(255, 255, 255, label_alpha))
-    sd.rectangle([0, 0, int(mon_w * scale) - 1, int(mon_h * scale) * 0.35], fill=(255, 255, 255, 22))
-    img.alpha_composite(glow(screen, screen_color, blur=scale), (int(mx0), int(my0)))
-    d.rectangle([mx0 - 1, my0 - 1, mx0 + mon_w * scale + 1, my0 + mon_h * scale + 1], outline=BODY_LIGHT, width=1)
-    if mon_w >= 4:
-        for cx, cy in ((mx0 + 2, my0 + 2), (mx0 + mon_w * scale - 2, my0 + 2)):
-            d.ellipse([cx - 1, cy - 1, cx + 1, cy + 1], fill=STEEL)
+    def C(a, b, rad, fill=None, w=lw, c=color):
+        s.ellipse(X(a - rad), Y(b - rad), X(a + rad), Y(b + rad), fill=fill, outline=None if fill else c, width=w)
 
-    # Keyboard tray + a small status LED, sitting on the desk in front of
-    # the stand -- the detail that most reads as "a desk" vs. "a box."
-    kb_w, kb_h = mon_w * scale * 0.8, max(2, scale * 0.5)
-    kb_x, kb_y = mx0 + (mon_w * scale - kb_w) / 2, top_desk - kb_h - scale * 0.15
-    d.rectangle([kb_x, kb_y, kb_x + kb_w, kb_y + kb_h], fill=shade(BODY_LIGHT, 0.85), outline=BODY_DARK)
-    for kx in range(int(kb_x + 2), int(kb_x + kb_w - 2), max(2, int(scale * 0.28))):
-        d.rectangle([kx, kb_y + 1, kx + 1, kb_y + kb_h - 1], fill=shade(BODY_LIGHT, 0.55))
-    led_color = accent if active else shade(accent, 0.4)
-    d.ellipse([W - scale * 1.1, top_desk + scale * 0.3, W - scale * 0.5, top_desk + scale * 0.9], fill=led_color)
-
-    return glow(outline(img, size=3), accent, blur=1) if active else outline(img, size=3)
-
-
-def draw_tube(scale, w_units, h_units, accent):
-    W, H = int(w_units * scale), int(h_units * scale)
-    cap = max(2, scale // 2)
-    total_h = H + cap * 2
-    img = Image.new("RGBA", (W + 4, total_h + int(scale * 0.8)), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    ox = 2  # small horizontal margin so the outline pass has room to breathe
-
-    # Glass cylinder: rim highlight ellipses top/bottom instead of a flat
-    # rectangle, so it reads as round glass rather than a painted strip.
-    d.rectangle([ox, cap, ox + W, cap + H], fill=(255, 255, 255, 6))
-    fill = Image.new("RGBA", (W - 2, H - 2), accent[:3] + (150,))
-    img.alpha_composite(glow(fill, accent, blur=max(2, scale // 3)), (ox + 1, cap + 1))
-    core = Image.new("RGBA", (max(1, int((W - 2) * 0.4)), H - 2), shade(accent, 1.15)[:3] + (120,))
-    img.alpha_composite(core, (int(ox + 1 + (W - 2) * 0.3), cap + 1))
-
-    random.seed(int(accent[0]) + int(w_units * 10))
-    for _ in range(max(3, int(h_units / 3))):
-        bx = ox + random.uniform(2, W - 4)
-        by = cap + random.uniform(4, H - 4)
-        br = random.uniform(1, 2.2)
-        d.ellipse([bx, by, bx + br, by + br * 1.4], fill=(255, 255, 255, random.randint(40, 90)))
-    for sy in range(cap + 6, H, max(6, H // 5)):
-        d.line([(ox + 1, sy), (ox + W - 1, sy)], fill=(255, 255, 255, 40), width=1)
-
-    d.ellipse([ox, cap - cap * 0.6, ox + W, cap + cap * 0.6], fill=(255, 255, 255, 60))
-    d.ellipse([ox, cap + H - cap * 0.6, ox + W, cap + H + cap * 0.6], fill=(0, 0, 0, 70))
-    d.rectangle([ox, cap, ox + W, cap + H], outline=BODY_LIGHT, width=1)
-
-    # Cap (with vent lines) and plinth (with bolts), replacing the plain
-    # end-cap rectangles.
-    d.rectangle([ox - 2, 0, ox + W + 2, cap], fill=LINE)
-    for vx in range(int(ox), int(ox + W), max(3, int(scale * 0.3))):
-        d.line([(vx, 1), (vx, cap - 1)], fill=shade(LINE, 0.5), width=1)
-    plinth_h = int(scale * 0.7)
-    d.rectangle([ox - 4, cap + H, ox + W + 4, cap + H + plinth_h], fill=shade(LINE, 1.3))
-    d.rectangle([ox - 4, cap + H + plinth_h, ox + W + 4, cap + H + plinth_h + int(scale * 0.35)], fill=LINE)
-    for bx in (ox - 2, ox + W + 2):
-        d.ellipse([bx - 1, cap + H + 2, bx + 1, cap + H + 4], fill=STEEL)
-
-    return outline(img, size=3)
+    if kind == "core":
+        C(0, 0, 0.85)
+        C(0, 0, 0.5, w=lw * 0.6)
+        C(0, 0, 0.22, fill=color)
+    elif kind == "code":
+        L([(-0.3, -0.55), (-0.85, 0), (-0.3, 0.55)])
+        L([(0.3, -0.55), (0.85, 0), (0.3, 0.55)])
+        L([(0.14, -0.75), (-0.14, 0.75)])
+    elif kind == "bulb":
+        C(0, -0.25, 0.6)
+        L([(-0.22, 0.5), (0.22, 0.5)])
+        L([(-0.16, 0.8), (0.16, 0.8)])
+        L([(0, -0.25), (0, 0.3)], w=lw * 0.7)
+    elif kind == "shield":
+        s.poly([(X(-0.72), Y(-0.75)), (X(0.72), Y(-0.75)), (X(0.72), Y(0.05)), (X(0), Y(0.88)), (X(-0.72), Y(0.05))], color)
+        s.poly([(X(-0.4), Y(-0.45)), (X(0.4), Y(-0.45)), (X(0.4), Y(0.0)), (X(0), Y(0.48)), (X(-0.4), Y(0.0))], bg)
+    elif kind == "globe":
+        C(0, 0, 0.82)
+        L([(-0.82, 0), (0.82, 0)], w=lw * 0.7)
+        s.ellipse(X(-0.36), Y(-0.82), X(0.36), Y(0.82), outline=color, width=lw * 0.7)
+    elif kind == "containers":
+        for bx0, by0, bx1, by1 in ((-0.88, 0.08, -0.06, 0.8), (0.06, 0.08, 0.88, 0.8), (-0.41, -0.8, 0.41, -0.08)):
+            s.rect(X(bx0), Y(by0), X(bx1), Y(by1), outline=color, width=lw * 0.8, r=r * 0.08)
+            for i in (0.33, 0.66):
+                L([(bx0 + (bx1 - bx0) * i, by0 + 0.2), (bx0 + (bx1 - bx0) * i, by1 - 0.2)], w=lw * 0.5)
+    elif kind == "block":
+        C(0, 0, 0.8)
+        L([(-0.55, -0.55), (0.55, 0.55)])
+    elif kind == "hammer":
+        s.rect(X(-0.78), Y(-0.85), X(0.6), Y(-0.3), fill=color, r=r * 0.1)
+        L([(0, -0.3), (0, 0.85)], w=lw * 1.3)
+    elif kind == "magnifier":
+        C(-0.18, -0.18, 0.55)
+        L([(0.24, 0.24), (0.8, 0.8)], w=lw * 1.4)
+    elif kind == "brush":
+        L([(0.8, -0.8), (-0.05, 0.05)], w=lw * 1.1)
+        C(-0.42, 0.42, 0.36, fill=color)
+    elif kind == "network":
+        nodes = ((0, -0.62), (-0.68, 0.52), (0.68, 0.52))
+        L([nodes[0], nodes[1], nodes[2], nodes[0]], w=lw * 0.7)
+        for a, b in nodes:
+            C(a, b, 0.24, fill=color)
+    elif kind == "check":
+        L([(-0.75, 0.05), (-0.22, 0.58), (0.78, -0.58)], w=lw * 1.4)
+    elif kind == "eye":
+        s.poly([(X(-0.9), Y(0)), (X(-0.4), Y(-0.48)), (X(0.4), Y(-0.48)), (X(0.9), Y(0)), (X(0.4), Y(0.48)), (X(-0.4), Y(0.48))], color)
+        C(0, 0, 0.34, fill=bg)
+        C(0, 0, 0.14, fill=color)
+    elif kind == "lines":
+        for i, ln in enumerate((0.8, 0.45, 0.7, 0.3)):
+            y = -0.66 + i * 0.44
+            C(-0.78, y, 0.09, fill=color)
+            L([(-0.5, y), (-0.5 + ln * 1.3, y)], w=lw * 0.8)
+    elif kind == "folder":
+        s.poly([(X(-0.85), Y(-0.6)), (X(-0.2), Y(-0.6)), (X(0.0), Y(-0.35)), (X(0.85), Y(-0.35)), (X(0.85), Y(0.7)), (X(-0.85), Y(0.7))], color)
+        s.rect(X(-0.62), Y(-0.08), X(0.62), Y(0.06), fill=bg)
+    elif kind == "book":
+        s.poly([(X(-0.9), Y(-0.55)), (X(0), Y(-0.35)), (X(0), Y(0.75)), (X(-0.9), Y(0.55))], color)
+        s.poly([(X(0.9), Y(-0.55)), (X(0), Y(-0.35)), (X(0), Y(0.75)), (X(0.9), Y(0.55))], shade(color, 0.72))
+        L([(0, -0.35), (0, 0.75)], w=lw * 0.6, c=bg)
+    elif kind == "megaphone":
+        s.poly([(X(-0.35), Y(-0.28)), (X(0.72), Y(-0.8)), (X(0.72), Y(0.8)), (X(-0.35), Y(0.28))], color)
+        s.rect(X(-0.85), Y(-0.28), X(-0.42), Y(0.28), fill=color, r=r * 0.06)
+    elif kind == "chat":
+        s.rect(X(-0.85), Y(-0.7), X(0.85), Y(0.35), fill=color, r=r * 0.22)
+        s.poly([(X(-0.45), Y(0.3)), (X(-0.05), Y(0.3)), (X(-0.55), Y(0.85))], color)
+        for a in (-0.4, 0.0, 0.4):
+            C(a, -0.18, 0.11, fill=bg)
 
 
-def draw_skyline(w, h):
-    img = Image.new("RGBA", (w, h), VOID)
-    d = ImageDraw.Draw(img)
+# ---- furniture -------------------------------------------------------------
+def draw_desk(w, desk_h, mon_w, mon_h, accent, emblem, active):
+    """A desk seen from the front with its monitor standing on the right-hand
+    side, showing the role emblem. The robot is drawn behind it, so the front
+    panel is left plain: the dashboard writes the name plate there as real
+    text, which stays readable at any size."""
+    gap = 6
+    h = desk_h + mon_h + gap
+    s = Sheet(w, h)
+    top = mon_h + gap
+    trim = accent if active else shade(accent, 0.45)
+
+    # monitor: stand, bezel, screen, emblem
+    mx0 = w - mon_w - 4
+    s.rect(mx0 + mon_w / 2 - 4, mon_h - 1, mx0 + mon_w / 2 + 4, top + 1, fill=BODY_DARK)
+    s.rect(mx0 + mon_w / 2 - 14, top - 2.5, mx0 + mon_w / 2 + 14, top + 0.5, fill=BODY_LIGHT, r=1)
+    s.rect(mx0, 0, mx0 + mon_w, mon_h, fill=BODY_DARK, r=3)
+    s.rect(mx0, 0, mx0 + mon_w, mon_h, outline=BODY_LIGHT, width=0.8, r=3)
+    screen_bg = shade(accent, 0.2 if active else 0.13)
+    s.rect(mx0 + 3, 3, mx0 + mon_w - 3, mon_h - 3, fill=screen_bg, r=1.5)
+    if active:
+        halo = s.overlay()
+        draw_emblem(halo, emblem, mx0 + mon_w / 2, mon_h / 2, mon_h * 0.3, accent[:3] + (190,), screen_bg)
+        s.merge(halo, blur=1.4)
+    draw_emblem(s, emblem, mx0 + mon_w / 2, mon_h / 2, mon_h * 0.3, shade(accent, 1.15) if active else shade(accent, 0.85), screen_bg)
+    sheen = s.overlay()
+    sheen.poly([(mx0 + 3, 3), (mx0 + mon_w * 0.55, 3), (mx0 + mon_w * 0.3, mon_h - 3), (mx0 + 3, mon_h - 3)], (255, 255, 255, 16))
+    s.merge(sheen)
+
+    # keyboard edge on the desk top, in front of where the robot sits
+    s.rect(w * 0.12, top - 3, w * 0.5, top, fill=shade(BODY_LIGHT, 0.85), r=1)
+
+    # desk: slab, lit trim, recessed front panel (the name plate), feet
+    s.rect(0, top, w, top + 8, fill=BODY_LIGHT, r=2)
+    s.rect(0, top, w, top + 2.5, fill=shade(BODY_LIGHT, 1.3), r=1.2)
+    s.rect(3, top + 8, w - 3, h - 3, fill=PANEL_RAISED)
+    s.rect(3, top + 8, w - 3, top + 10.5, fill=trim)
+    s.rect(9, top + 15, w - 9, h - 9, fill=shade(PANEL, 0.8), r=2)
+    s.rect(9, top + 15, w - 9, h - 9, outline=shade(LINE, 1.2), width=0.6, r=2)
+    s.ellipse(w - 9, top + 2.5, w - 5, top + 6.5, fill=trim)
+    for fx in (5, w - 17):
+        s.rect(fx, h - 3, fx + 12, h, fill=BODY_DARK)
+    return s.finish(rim=1.0, glow_color=accent if active else None, glow_blur=2.0)
+
+
+def draw_tube(w, h, accent):
+    """Recharge pod: a glass cylinder of coolant on a plinth, with a bolt on
+    the plinth so it reads as a charger rather than a lamp."""
+    s = Sheet(w, h)
+    cap, plinth = h * 0.06, h * 0.12
+    gx0, gx1, gy0, gy1 = w * 0.12, w * 0.88, cap, h - plinth
+    glass = s.overlay()
+    glass.rect(gx0, gy0, gx1, gy1, fill=accent[:3] + (120,), r=w * 0.1)
+    glass.rect(gx0 + (gx1 - gx0) * 0.32, gy0, gx0 + (gx1 - gx0) * 0.68, gy1, fill=shade(accent, 1.2)[:3] + (110,))
+    s.merge(glass)
+    fx = s.overlay()
+    fx.rect(gx0 + 2, gy0 + 3, gx0 + (gx1 - gx0) * 0.22, gy1 - 3, fill=(255, 255, 255, 70), r=1)   # glass highlight
+    random.seed(sum(accent[:3]) + int(h))
+    for _ in range(max(4, int(h / 28))):
+        bx, by, br = random.uniform(gx0 + 4, gx1 - 6), random.uniform(gy0 + 8, gy1 - 8), random.uniform(1.0, 2.4)
+        fx.ellipse(bx, by, bx + br, by + br, fill=(255, 255, 255, 120))
+    s.merge(fx)
+    s.rect(gx0, gy0, gx1, gy1, outline=BODY_LIGHT, width=0.8, r=w * 0.1)
+    s.rect(w * 0.04, 0, w * 0.96, cap, fill=shade(LINE, 1.5), r=2)
+    s.rect(0, gy1, w, h, fill=shade(LINE, 1.35), r=2)
+    s.rect(0, gy1, w, gy1 + 2, fill=shade(STEEL, 0.8), r=1)
+    bx, by, bs = w / 2, gy1 + plinth * 0.55, plinth * 0.36
+    s.poly([(bx + bs * 0.35, by - bs), (bx - bs * 0.6, by + bs * 0.15), (bx - bs * 0.05, by + bs * 0.15),
+            (bx - bs * 0.35, by + bs), (bx + bs * 0.6, by - bs * 0.15), (bx + bs * 0.05, by - bs * 0.15)], accent)
+    return s.finish(rim=1.0, glow_color=accent, glow_blur=2.5)
+
+
+# ---- the building ----------------------------------------------------------
+# The room is a cutaway tower: a ground floor (Ultron's office) and as many
+# agent storeys as the screen width needs. Each is one 1280-unit-wide strip
+# the dashboard crops to its layout width, so nothing here may depend on the
+# right-hand end being visible. Walls stay quiet on purpose -- the colour in
+# the scene belongs to the agents.
+STOREY_W, STOREY_H, STOREY_WALL = 1280, 264, 224     # strip size, and the floor line within it
+GROUND_H, GROUND_WALL = 424, 384
+
+
+def _wall(w, h, wall_h):
+    s = Sheet(w, h, pad=0)
+    s.rect(0, 0, w, wall_h, fill=PANEL)
+    for px_ in range(0, w, 96):                       # panel seams
+        s.rect(px_, 0, px_ + 1, wall_h, fill=shade(PANEL, 1.5))
+        s.rect(px_ + 1, 0, px_ + 2, wall_h, fill=shade(PANEL, 0.6))
+    grid = s.overlay()
+    for gx in range(0, w, 32):
+        grid.rect(gx, 0, gx + 0.5, wall_h, fill=(61, 214, 255, 9))
+    for gy in range(0, wall_h, 32):
+        grid.rect(0, gy, w, gy + 0.5, fill=(61, 214, 255, 9))
+    s.merge(grid)
+    wash = s.overlay()                                # ceiling light falling down the wall
+    wash.rect(0, 9, w, 14, fill=(200, 235, 255, 105))
+    s.merge(wash, blur=9)
+    s.rect(0, 0, w, 8, fill=shade(LINE, 0.7))         # underside of the slab above
+    s.rect(0, 8, w, 10, fill=(128, 164, 180, 255))    # light strip
+    s.rect(0, 30, w, 35, fill=shade(LINE, 1.15))      # conduit run
+    s.rect(0, 30, w, 31, fill=shade(LINE, 1.7))
+    for hx in range(40, w, 128):
+        s.rect(hx, 27, hx + 4, 38, fill=LINE)
+    return s
+
+
+def _slab(s, w, h, wall_h, base):
+    """The floor the desks stand on. The conveyor is drawn over its front
+    edge by the dashboard, so it stays plain."""
+    s.rect(0, wall_h, w, h, fill=VOID if base else shade(LINE, 0.62))
+    s.rect(0, wall_h, w, wall_h + 2.5, fill=shade(STEEL, 0.5))
+    if base:
+        for gx in range(0, w, 24):
+            s.rect(gx, wall_h + 3, gx + 1, h, fill=(24, 26, 30, 255))
+    else:
+        s.rect(0, h - 5, w, h, fill=shade(LINE, 0.35))
+        for gx in range(16, w, 64):
+            s.ellipse(gx, h - 16, gx + 3, h - 13, fill=shade(LINE, 1.4))
+
+
+def draw_storey():
+    s = _wall(STOREY_W, STOREY_H, STOREY_WALL)
+    _slab(s, STOREY_W, STOREY_H, STOREY_WALL, False)
+    return s.finish(rim=0)
+
+
+def draw_skyline(s, x0, y0, w, h):
+    """The window: night sky, a moon, lit towers, then a frame with mullions
+    so it reads as glass in a wall rather than a poster."""
+    s.rect(x0, y0, x0 + w, y0 + h, fill=(10, 14, 24, 255))
+    sky = s.overlay()
+    sky.rect(x0, y0 + h * 0.45, x0 + w, y0 + h, fill=(40, 70, 110, 70))
+    s.merge(sky, blur=10)
+    s.ellipse(x0 + w * 0.74, y0 + h * 0.12, x0 + w * 0.74 + 22, y0 + h * 0.12 + 22, fill=(235, 240, 250, 255))
     random.seed(7)
-    x = 0
-    while x < w:
-        bw = random.randint(w // 14, w // 8)
-        bh = random.randint(h // 3, h - 6)
-        building = shade((18, 21, 26, 255), random.uniform(0.85, 1.25))
-        d.rectangle([x, h - bh, x + bw, h], fill=building)
-        d.line([(x, h - bh), (x + bw, h - bh)], fill=shade(building, 1.6), width=1)
-        win_color = CYAN if random.random() < 0.25 else RED_BRIGHT
-        for wy in range(h - bh + 4, h - 3, 7):
-            for wx in range(x + 3, x + bw - 3, 6):
-                if random.random() < 0.35:
-                    d.rectangle([wx, wy, wx + 2, wy + 2], fill=win_color)
-        x += bw + random.randint(2, 6)
-    # a lone blinking antenna light on the tallest silhouette for a touch of life
-    d.ellipse([w * 0.42, 0, w * 0.42 + 3, 3], fill=(255, 255, 255, 200))
-    d.rectangle([0, 0, w - 1, h - 1], outline=LINE, width=2)
-    return img
+    x = x0 + 2
+    while x < x0 + w - 8:
+        bw = min(random.randint(18, 40), int(x0 + w - x - 2))
+        bh = random.randint(int(h * 0.3), int(h * 0.85))
+        tower = shade((26, 31, 40, 255), random.uniform(0.85, 1.3))
+        s.rect(x, y0 + h - bh, x + bw, y0 + h, fill=tower)
+        win = CYAN if random.random() < 0.3 else (255, 196, 110, 255)
+        for wy in range(int(y0 + h - bh + 6), int(y0 + h - 5), 9):
+            for wx in range(int(x + 4), int(x + bw - 5), 8):
+                if random.random() < 0.45:
+                    s.rect(wx, wy, wx + 3.5, wy + 4, fill=win)
+        x += bw + random.randint(2, 5)
+    frame = shade(LINE, 1.7)
+    s.rect(x0 - 5, y0 - 5, x0 + w + 5, y0 + h + 5, outline=frame, width=5)
+    s.rect(x0 + w / 3 - 1.5, y0, x0 + w / 3 + 1.5, y0 + h, fill=frame)
+    s.rect(x0 + 2 * w / 3 - 1.5, y0, x0 + 2 * w / 3 + 1.5, y0 + h, fill=frame)
+    s.rect(x0 - 9, y0 + h + 5, x0 + w + 9, y0 + h + 11, fill=shade(LINE, 2.0), r=1)   # sill
 
 
-def draw_console_panel(d, img, x, y, w, h, seed):
-    """A wall-mounted control console -- small screen, a button grid, and
-    a couple of slider readouts -- per the owner's workstation-room
-    reference (dense wall consoles are most of what makes that room read
-    as lived-in rather than an empty box). Cheap: a handful of rects per
-    panel, no per-frame cost since this bakes into the static backdrop."""
-    random.seed(seed)
-    d.rectangle([x, y, x + w, y + h], fill=PANEL_RAISED, outline=LINE, width=1)
-    d.rectangle([x, y, x + w, y + 2], fill=shade(PANEL_RAISED, 1.5))
-
-    screen_w, screen_h = w * 0.85, h * 0.4
-    screen_x, screen_y = x + (w - screen_w) / 2, y + h * 0.08
-    screen = Image.new("RGBA", (int(screen_w), int(screen_h)), (30, 60, 70, 255))
-    sd = ImageDraw.Draw(screen)
-    for ly in range(1, int(screen_h) - 1, 3):
-        sd.line([(1, ly), (int(screen_w) - 1, ly)], fill=CYAN[:3] + (random.randint(60, 140),), width=1)
-    img.alpha_composite(glow(screen, CYAN, blur=2), (int(screen_x), int(screen_y)))
-    d.rectangle([screen_x, screen_y, screen_x + screen_w, screen_y + screen_h], outline=shade(LINE, 1.6), width=1)
-
-    btn_y = screen_y + screen_h + h * 0.12
-    btn_colors = [CYAN, GREEN, RED_BRIGHT, CYAN, GREEN, CYAN]
-    bw = w * 0.1
-    for i, c in enumerate(btn_colors):
-        bx = x + w * 0.08 + i * (bw + w * 0.03)
-        if bx + bw > x + w * 0.95:
-            break
-        lit = random.random() < 0.7
-        d.rectangle([bx, btn_y, bx + bw, btn_y + bw], fill=c if lit else shade(c, 0.35))
-
-    slider_y = btn_y + bw + h * 0.1
-    for i in range(2):
-        sy = slider_y + i * h * 0.1
-        d.line([(x + w * 0.08, sy), (x + w * 0.92, sy)], fill=shade(LINE, 1.5), width=1)
-        knob_x = x + w * (0.15 + random.uniform(0, 0.7))
-        d.ellipse([knob_x - 2, sy - 2, knob_x + 2, sy + 2], fill=CYAN)
+def draw_server_rack(s, x0, y0, w, h):
+    """Rack units with drive bays, status LEDs and a vent, so it reads as a
+    server cabinet and not a locker."""
+    s.rect(x0, y0, x0 + w, y0 + h, fill=PANEL_RAISED, r=3)
+    s.rect(x0, y0, x0 + w, y0 + h, outline=shade(LINE, 1.6), width=1.5, r=3)
+    random.seed(3)
+    units = 9
+    uh = (h - 34) / units
+    for i in range(units):
+        uy = y0 + 8 + i * uh
+        s.rect(x0 + 6, uy, x0 + w - 6, uy + uh - 3, fill=shade(PANEL, 0.75), r=1)
+        for b in range(4):                                          # drive bays
+            s.rect(x0 + 24 + b * 9, uy + 2.5, x0 + 30 + b * 9, uy + uh - 5.5, fill=shade(LINE, 1.25))
+        for l, c in enumerate((GREEN, CYAN if random.random() < 0.7 else RED_BRIGHT)):
+            s.ellipse(x0 + 9 + l * 6, uy + uh / 2 - 3.2, x0 + 13 + l * 6, uy + uh / 2 + 0.8, fill=c)
+    for vy in range(int(y0 + h - 22), int(y0 + h - 6), 4):           # vent
+        s.rect(x0 + 10, vy, x0 + w - 10, vy + 1.5, fill=shade(LINE, 0.6))
 
 
-def draw_room_background(w, h, floor_y):
-    """Static backdrop: wall, floor, server rack, skyline window, cable
-    clutter. Per the owner's reference (teal-lit control-room mood; kept
-    as a straight-on 2D scene rather than true isometric -- redoing the
-    whole scene's perspective/movement math for an isometric camera was
-    out of scope for this pass, flagged rather than silently attempted
-    and half-done). This pass adds wall paneling, a ceiling light strip,
-    a floor reflection gradient, a wall conduit, and a vignette on top of
-    the previous flat grid, for a lit-room feel instead of a lit-grid feel."""
-    img = Image.new("RGBA", (w, h), PANEL)
-    d = ImageDraw.Draw(img)
-    d.rectangle([0, 0, w, floor_y], fill=PANEL)
-
-    # Wall paneling: vertical seams with a highlight/shadow pair, reading
-    # as material rather than a bare flat-colored plane.
-    for px_ in range(0, w, 64):
-        d.line([(px_, 0), (px_, floor_y)], fill=shade(PANEL, 1.4), width=1)
-        d.line([(px_ + 1, 0), (px_ + 1, floor_y)], fill=shade(PANEL, 0.7), width=1)
-
-    # Ceiling light strip: a bright core line with a soft glow gradient
-    # falling down the wall beneath it.
-    strip_y = int(floor_y * 0.03)
-    ceiling_glow = Image.new("RGBA", (w, int(floor_y * 0.22)), (0, 0, 0, 0))
-    cg = ImageDraw.Draw(ceiling_glow)
-    cg.rectangle([0, 0, w, 2], fill=(210, 240, 255, 230))
-    ceiling_glow = ceiling_glow.filter(ImageFilter.GaussianBlur(6))
-    img.alpha_composite(ceiling_glow, (0, strip_y))
-    d.rectangle([0, strip_y, w, strip_y + 2], fill=(230, 250, 255, 255))
-
-    grid = Image.new("RGBA", (w, floor_y), (0, 0, 0, 0))
-    gd = ImageDraw.Draw(grid)
-    for gx in range(0, w, 28):
-        gd.line([(gx, 0), (gx, floor_y)], fill=(61, 214, 255, 12))
-    for gy in range(0, floor_y, 28):
-        gd.line([(0, gy), (w, gy)], fill=(61, 214, 255, 12))
-    img.alpha_composite(grid)
-
-    # Wall conduit: a horizontal pipe run with hangers, high on the wall
-    # (above the mezzanine added below), for the kind of mechanical clutter
-    # a real server room actually has.
-    pipe_y = int(floor_y * 0.40)
-    d.rectangle([0, pipe_y, w, pipe_y + 6], fill=shade(LINE, 1.3))
-    d.line([(0, pipe_y), (w, pipe_y)], fill=shade(LINE, 1.8), width=1)
-    for hx in range(20, w, 90):
-        d.rectangle([hx, pipe_y - 3, hx + 4, pipe_y + 9], fill=LINE)
-
-    sky_w, sky_h = int(w * 0.24), int(floor_y * 0.55)
-    sky = draw_skyline(sky_w, sky_h)
-    img.alpha_composite(sky, (int(w * 0.06), int(floor_y * 0.08)))
-
-    # Wall consoles across the whole back wall (not just one cluster) --
-    # quality pass per the owner's second workstation-room reference,
-    # whose room reads as densely instrumented floor-to-ceiling on every
-    # wall segment, not just near the window. Live desks/tubes still get
-    # drawn on top each frame further right (see SUBAGENTS/ULTRON_DESK_X
-    # in the dashboard's own pixel-room script); these are just the static
-    # backdrop filling what would otherwise be bare wall between/behind them.
-    # Consoles sit high on the wall now, clear of the mezzanine row below.
-    draw_console_panel(d, img, int(w * 0.34), int(floor_y * 0.07), int(w * 0.09), int(floor_y * 0.30), seed=11)
-    draw_console_panel(d, img, int(w * 0.46), int(floor_y * 0.09), int(w * 0.07), int(floor_y * 0.27), seed=23)
-    for i, wx in enumerate((0.58, 0.68, 0.78, 0.88)):
-        draw_console_panel(d, img, int(w * wx), int(floor_y * (0.07 + 0.03 * (i % 2))),
-                            int(w * 0.055), int(floor_y * (0.28 - 0.03 * (i % 2))), seed=31 + i * 7)
-
-    # Mezzanine (2026-09-16): a steel catwalk across the back wall's right
-    # half where the specialist desks stand, one row behind the floor crew.
-    # Deck plate, a lit front edge, railing posts and a top rail, two struts
-    # to the floor. Its top edge is the rear row's floor line (the dashboard's
-    # MEZZ_Y) -- keep the two in step if either changes.
-    mezz_y = int(floor_y * 0.68)
-    mx0, mx1 = int(w * 0.39), int(w * 0.98)
-    d.rectangle([mx0, mezz_y, mx1, mezz_y + 10], fill=shade(LINE, 1.2))
-    d.rectangle([mx0, mezz_y, mx1, mezz_y + 2], fill=shade(STEEL, 0.9))
-    d.rectangle([mx0, mezz_y + 10, mx1, mezz_y + 13], fill=shade(LINE, 0.6))
-    for gx in range(mx0 + 12, mx1, 22):
-        d.line([(gx, mezz_y + 3), (gx + 6, mezz_y + 9)], fill=shade(LINE, 0.7), width=1)
-    rail_y = mezz_y - 24
-    for px_ in range(mx0 + 8, mx1, 60):
-        d.rectangle([px_, rail_y, px_ + 2, mezz_y], fill=shade(STEEL, 0.75))
-    d.rectangle([mx0, rail_y, mx1, rail_y + 2], fill=STEEL)
-    d.rectangle([mx0, rail_y + 12, mx1, rail_y + 13], fill=shade(STEEL, 0.6))
-    for sx in (mx0 + 6, mx1 - 8):
-        d.rectangle([sx, mezz_y + 13, sx + 4, floor_y], fill=shade(LINE, 0.9))
-    # Soft light spill under the deck so it reads as a real overhang.
-    spill = Image.new("RGBA", (mx1 - mx0, floor_y - mezz_y - 13), (0, 0, 0, 0))
-    ImageDraw.Draw(spill).rectangle([0, 0, mx1 - mx0, 18], fill=(0, 0, 0, 90))
-    img.alpha_composite(spill.filter(ImageFilter.GaussianBlur(6)), (mx0, mezz_y + 13))
-
-    # Floor: reflection gradient (brighter near the wall, fading to void)
-    # under the existing tile grid, plus the tile seams themselves.
-    floor_grad = Image.new("L", (1, h - floor_y), 0)
-    for gy in range(h - floor_y):
-        t = gy / max(1, h - floor_y - 1)
-        floor_grad.putpixel((0, gy), int(38 * (1 - t)))
-    floor_grad = floor_grad.resize((w, h - floor_y))
-    floor_tint = Image.new("RGBA", (w, h - floor_y), (61, 214, 255, 255))
-    floor_tint.putalpha(floor_grad)
-    d.rectangle([0, floor_y, w, h], fill=VOID)
-    img.alpha_composite(floor_tint, (0, floor_y))
-    for gx in range(0, w, 18):
-        d.line([(gx, floor_y), (gx, h)], fill=(20, 22, 25, 255))
-    # Catwalk grating: short cross-hatch ticks between the tile seams, per
-    # the reference's metal-grate floor -- cheap (one short line per
-    # cell), baked into the static backdrop so it costs nothing per frame.
-    for gy in range(floor_y + 6, h, 10):
-        for gx in range(0, w, 18):
-            d.line([(gx + 3, gy), (gx + 15, gy)], fill=(30, 33, 37, 200), width=1)
-    d.line([(0, floor_y), (w, floor_y)], fill=LINE, width=2)
-
-    rack_x, rack_y, rack_w, rack_h = int(w * 0.02), int(floor_y * 0.35), int(w * 0.045), int(floor_y * 0.6)
-    d.rectangle([rack_x, rack_y, rack_x + rack_w, rack_y + rack_h], fill=PANEL_RAISED, outline=LINE, width=2)
-    d.rectangle([rack_x, rack_y, rack_x + rack_w, rack_y + int(rack_h * 0.04)], fill=shade(PANEL_RAISED, 1.5))
-    lights = [CYAN, GREEN, CYAN, RED_BRIGHT, GREEN]
-    for i, c in enumerate(lights):
-        ly = rack_y + 10 + i * (rack_h - 20) // len(lights)
-        d.rectangle([rack_x + 6, ly, rack_x + 6 + 8, ly + 8], fill=c)
-        d.rectangle([rack_x + 6, ly, rack_x + 6 + 8, ly + 2], fill=(255, 255, 255, 90))
-
-    # Ambient teal wash across the whole wall -- the owner's reference room
-    # reads as bathed in teal light throughout, not just near individual
-    # screens; a flat low-alpha tint over the wall area is the cheap way to
-    # push the room's overall cast without re-tinting every element above.
-    ambient = Image.new("RGBA", (w, floor_y), (61, 214, 255, 20))
-    img.alpha_composite(ambient)
-
-    # Vignette: darken the corners a touch so the room reads as lit from
-    # the ceiling strip/tubes rather than uniformly flat-lit -- lighter
-    # than before so the newly-added consoles across the back wall stay
-    # visible instead of falling into the darkened edges.
-    vignette = Image.new("L", (w, h), 0)
-    vd = ImageDraw.Draw(vignette)
-    vd.ellipse([-w * 0.25, -h * 0.4, w * 1.25, h * 1.25], fill=60)
-    vignette = vignette.filter(ImageFilter.GaussianBlur(70))
-    dark = Image.new("RGBA", (w, h), (0, 0, 0, 255))
-    dark.putalpha(ImageChops.invert(vignette))
-    img.alpha_composite(dark)
-
-    return img
+def draw_ground():
+    s = _wall(STOREY_W, GROUND_H, GROUND_WALL)
+    draw_skyline(s, 214, 70, 300, 190)
+    # two wall consoles between the window and Ultron's desk
+    for cx, cw, ch, seed in ((566, 96, 118, 11), (684, 78, 100, 23)):
+        random.seed(seed)
+        s.rect(cx, 66, cx + cw, 66 + ch, fill=PANEL_RAISED, r=3)
+        s.rect(cx, 66, cx + cw, 66 + ch, outline=shade(LINE, 1.4), width=1, r=3)
+        s.rect(cx + 7, 74, cx + cw - 7, 66 + ch * 0.5, fill=(20, 44, 52, 255), r=2)
+        for ly in range(80, int(66 + ch * 0.5) - 4, 7):
+            s.rect(cx + 11, ly, cx + 11 + random.uniform(0.3, 0.8) * (cw - 24), ly + 2, fill=shade(CYAN, 0.75))
+        for i, c in enumerate((CYAN, GREEN, RED_BRIGHT, CYAN, GREEN)):
+            bx = cx + 8 + i * ((cw - 16) / 5)
+            s.rect(bx, 66 + ch * 0.62, bx + (cw - 16) / 5 - 4, 66 + ch * 0.62 + 9, fill=c if random.random() < 0.7 else shade(c, 0.3), r=1)
+        s.rect(cx + 8, 66 + ch * 0.86, cx + cw - 8, 66 + ch * 0.86 + 1.5, fill=shade(LINE, 1.6))
+    _slab(s, STOREY_W, GROUND_H, GROUND_WALL, True)
+    draw_server_rack(s, 84, GROUND_WALL - 236, 92, 236)
+    reflect = s.overlay()                              # the room's light on the floor
+    reflect.rect(0, GROUND_WALL + 3, STOREY_W, GROUND_WALL + 16, fill=(61, 214, 255, 26))
+    s.merge(reflect, blur=5)
+    return s.finish(rim=0)
 
 
 def draw_app_icon(size, maskable=False):
@@ -653,24 +627,47 @@ def save(img, name):
     print("wrote", path, img.size)
 
 
+# Who is who: colour -> (helmet crest, monitor emblem). Mirrors the SUBAGENTS
+# table in ultron-dashboard.html.
+AGENT_LOOKS = {
+    "cyan": ("visor", "code"),            # Engineer
+    "green": ("dome", "bulb"),            # Learner
+    "amber": ("plates", "shield"),        # Sentinel (heavy build)
+    "violet": ("antenna", "globe"),       # Scout
+    "blue": ("visor", "containers"),      # Dockhand
+    "mint": ("horns", "block"),           # Gatekeeper
+    "copper": ("visor", "hammer"),        # Forge
+    "sky": ("antenna", "magnifier"),      # Seeker
+    "teal": ("fin", "brush"),             # Muse
+    "indigo": ("antenna", "network"),     # Relay
+    "lime": ("dome", "check"),            # Proof
+    "rose": ("horns", "eye"),             # Auditor
+    "steel": ("dome", "lines"),           # Scribe
+    "lavender": ("dome", "folder"),       # Archivist
+    "peach": ("dome", "book"),            # Librarian
+    "magenta": ("fin", "megaphone"),      # Herald
+    "olive": ("fin", "chat"),             # Envoy
+}
+
+
 def main():
-    SCALE = 6  # character sprite pixel-cell size
-    for pose in ("walk_a", "walk_b", "sit"):
-        save(draw_ultron(SCALE, RED_BRIGHT, pose), f"ultron_{pose}.png")
-    save(draw_desk_monitor(10, 11, 3.6, 4.6, 4.4, RED_BRIGHT, False, 60), "desk_ultron_idle.png")
-    save(draw_desk_monitor(10, 11, 3.6, 4.6, 4.4, RED_BRIGHT, True, 90), "desk_ultron_active.png")
-    save(draw_tube(10, 3, 14, RED_BRIGHT), "tube_red.png")
+    # Ultron: 10 room units per grid cell (200 wide), the agents 6 (120 wide)
+    # -- both about double the previous pass.
+    for pose in ("walk_a", "walk_b", "work"):
+        save(draw_robot(10, RED_BRIGHT, pose, "crown"), f"ultron_{pose}.png")
+    for active in (False, True):
+        save(draw_desk(280, 96, 124, 88, RED_BRIGHT, "core", active), f"desk_ultron_{'active' if active else 'idle'}.png")
+    save(draw_tube(64, 280, RED_BRIGHT), "tube_red.png")
 
-    # One sprite/desk/tube set per subagent, all from the same drawing code
-    # so the four read as one team in four colours.
     for name, color in AGENT_COLORS.items():
-        sprite = draw_sentinel(int(SCALE * 0.6), color) if name == "amber" else draw_ultron(int(SCALE * 0.6), color, "sit")
-        save(sprite, f"agent_{name}_sit.png")
-        save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, color, False, 50), f"desk_{name}_idle.png")
-        save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, color, True, 80), f"desk_{name}_active.png")
-        save(draw_tube(6, 2, 9, color), f"tube_{name}.png")
+        crest, emblem = AGENT_LOOKS[name]
+        save(draw_robot(6, color, "work", crest, heavy=(name == "amber")), f"agent_{name}.png")
+        for active in (False, True):
+            save(draw_desk(150, 68, 62, 48, color, emblem, active), f"desk_{name}_{'active' if active else 'idle'}.png")
+        save(draw_tube(40, 176, color), f"tube_{name}.png")
 
-    save(draw_room_background(1280, 560, 440), "room_bg.png")
+    save(draw_storey(), "room_storey.png")
+    save(draw_ground(), "room_ground.png")
 
     # Installable-app icons, referenced by /manifest.webmanifest in app.py.
     save(draw_app_icon(192), "app-icon-192.png")

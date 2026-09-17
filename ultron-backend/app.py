@@ -798,6 +798,112 @@ def recall_from_brain(query=None, min_nodes=6, **_ignored):
             "source": "Ultron's Brain vault (Obsidian) indexed by graphify"}
 
 
+_CHAT_LOG_DATE_RE = re.compile(r"(\d{4}-\d{2}-\d{2})\.md$")
+BRAIN_GRAPH_MAX_NODES = 400
+
+
+def get_brain_graph(**_ignored):
+    """The Brain vault as a picture: the same graphify graph recall_from_brain
+    searches, shaped for the dashboard's "Ultron's brain" panel under his
+    corner. Every node is tagged with what it is -- a conversation (chat
+    logs/), a memory he chose to keep (knowledge/notes/), or other knowledge
+    -- and `by_day` counts what was added each day, so the panel can show how
+    much he has learned and when, not just the shape of it."""
+    graph, _tags = _load_brain_graph()
+    if graph is None:
+        return {"available": False, "nodes": [], "links": [], "by_day": [],
+                "stats": {"nodes": 0, "links": 0, "conversations": 0, "memories": 0, "knowledge": 0},
+                "hint": "no brain graph yet — dev-tools/brain-graph-refresh.ps1 builds it (hourly once scheduled)"}
+
+    def kind_of(src):
+        if src.startswith("chat logs/"):
+            return "conversation"
+        if src.startswith("knowledge/notes/"):
+            return "memory"
+        return "knowledge"
+
+    # A file name says nothing ("note-16.md"), so pages are named by what is
+    # in them. A memory note is one page holding one heading -- the note's own
+    # words -- so the pair is folded into a single node carrying those words.
+    by_id = {n["id"]: n for n in graph["nodes"]}
+    folded = {}   # heading id -> the memory page it was folded into
+    page_label = {}
+    for e in graph["links"]:
+        page, head = by_id.get(e["source"]), by_id.get(e["target"])
+        if (e.get("relation") == "contains" and page and head and head.get("node_kind") == "heading"
+                and kind_of(page["source_file"]) == "memory" and page["id"] not in page_label):
+            page_label[page["id"]] = head["label"]
+            folded[head["id"]] = page["id"]
+
+    def name_of(n, kind, is_page):
+        if n["id"] in page_label:
+            return page_label[n["id"]]
+        if is_page and kind == "conversation":
+            parts = n["source_file"].split("/")   # chat logs/<where>/<date>.md
+            if len(parts) >= 3:
+                return f"{parts[1].capitalize()} chat, {parts[-1][:-3]}"
+        label = n["label"] or n["source_file"].rsplit("/", 1)[-1]
+        return label[:-3] if is_page and label.endswith(".md") else label
+
+    nodes, days = [], {}
+    counts = {"conversation": 0, "memory": 0, "knowledge": 0}
+    for n in graph["nodes"]:
+        if n["id"] in folded:
+            continue
+        kind = kind_of(n["source_file"])
+        is_page = n.get("node_kind") != "heading"
+        nodes.append({"id": n["id"], "label": name_of(n, kind, is_page)[:160],
+                      "kind": kind, "page": is_page, "source": n["source_file"]})
+        if kind == "conversation" and not is_page:       # one heading per exchange
+            counts["conversation"] += 1
+            m = _CHAT_LOG_DATE_RE.search(n["source_file"])
+            if m:
+                days.setdefault(m.group(1), {"conversations": 0, "memories": 0})["conversations"] += 1
+        elif kind == "memory" and is_page:                # one page per memory note
+            counts["memory"] += 1
+        elif kind == "knowledge" and is_page:
+            counts["knowledge"] += 1
+    try:   # memories are dated in the DB, not in the graph
+        conn = _get_db_connection()
+        try:
+            for r in conn.execute("SELECT substr(created_at, 1, 10) AS d, COUNT(*) AS n FROM memory_notes GROUP BY d"):
+                if r["d"]:
+                    days.setdefault(r["d"], {"conversations": 0, "memories": 0})["memories"] += r["n"]
+        finally:
+            conn.close()
+    except Exception:
+        pass  # the picture still stands without the dated half
+    try:
+        updated = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(os.path.getmtime(BRAIN_GRAPH_PATH)))
+    except OSError:
+        updated = None
+    # Every exchange ever logged becomes a node, so this grows without bound;
+    # the panel lays the graph out in the browser, so past BRAIN_GRAPH_MAX_NODES
+    # it gets every page plus the best-connected headings. The counts above
+    # stay whole -- only the picture is thinned.
+    links = []
+    for e in graph["links"]:
+        s, t = folded.get(e["source"], e["source"]), folded.get(e["target"], e["target"])
+        if s != t:
+            links.append({"source": s, "target": t, "relation": e.get("relation")})
+    total, total_links = len(nodes), len(links)
+    if total > BRAIN_GRAPH_MAX_NODES:
+        degree = {}
+        for e in links:
+            degree[e["source"]] = degree.get(e["source"], 0) + 1
+            degree[e["target"]] = degree.get(e["target"], 0) + 1
+        nodes.sort(key=lambda n: (n["page"], degree.get(n["id"], 0)), reverse=True)
+        nodes = nodes[:BRAIN_GRAPH_MAX_NODES]
+        keep = {n["id"] for n in nodes}
+        links = [e for e in links if e["source"] in keep and e["target"] in keep]
+    return {
+        "available": True, "nodes": nodes, "links": links,
+        "by_day": [dict(date=d, **v) for d, v in sorted(days.items())][-60:],
+        "stats": {"nodes": total, "shown": len(nodes), "links": total_links, "conversations": counts["conversation"],
+                  "memories": counts["memory"], "knowledge": counts["knowledge"], "updated_at": updated},
+    }
+
+
 _write_knowledge_mirror()  # so the file exists from the first start, not only after the next save
 
 
@@ -2878,6 +2984,14 @@ def knowledge_graph():
     # project structure (code/doc/decision nodes), not something the beta
     # role's narrow read-only trading scope should reach.
     return _json_result(get_knowledge_graph(limit=request.args.get("limit")))
+
+
+@app.route("/api/brain-graph")
+@require_token
+def brain_graph():
+    # Admin-only: the headings in this graph carry the owner's own words from
+    # past conversations.
+    return _json_result(get_brain_graph())
 
 
 @app.route("/api/dev/repos")

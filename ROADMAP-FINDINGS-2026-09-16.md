@@ -95,8 +95,12 @@ lite swaps the model, caps tool rounds at 2, trims the tool list, and
 caps `max_tokens`. Usage logging already records real dollars per call,
 so the saving would be visible on the Data & analytics tab, not asserted.
 
-**Not built yet** — the task said to scope before building. It is a
-yes/no.
+**Built (owner approved 2026-09-16, commit `434cb3e`):** the "Economy
+mode" switch in Settings → AI sends `"lite": true`; the server then uses
+`ULTRON_LITE_MODEL` (default `claude-haiku-4-5`), `max_tokens` 400, two
+tool rounds, and the read-only tools in `LITE_ALLOWED_TOOLS` (eight now:
+`get_briefing` and `recall_from_brain` joined the original six).
+`dev-tools/test_economy_mode.py` covers it.
 
 ## 4. Installable app for phones
 
@@ -277,6 +281,54 @@ SAST baseline: one real Bandit item (SHA-1 used as a cache fingerprint →
 `usedforsecurity=False`); the rest triaged as intended behaviour
 (parameterised SQL with code-controlled column names, validated
 `urlopen` schemes, `0.0.0.0` bind inside the container).
+
+## 12. Ultron's corner rebuilt, and "What Ultron knows" (owner-requested 2026-09-16)
+
+- **Why.** The conveyor only ran under four of the seventeen desks, the
+  robots sat in front of their own monitors, name plates were 6px glyphs
+  scaled down further, and half the room was empty wall. On a phone a desk
+  was about 15px wide.
+- **The room is now a cutaway tower** at about double the size: Ultron's
+  office on the ground floor, a storey of desks per row of agents above it,
+  six to a storey on a wide screen and three on a phone (the layout is
+  computed from the panel width, so the characters stay large). A belt on
+  every storey feeds a lift; the lift drops parcels to the ground belt, past
+  Ultron's desk (they turn gold there) and out through the hatch. Every desk
+  stands on it. Parcels are ambient, plus one from a desk the moment its
+  agent becomes busy.
+- **Readable art.** `gen_pixel_assets.py` now draws in room units on a
+  supersampled sheet and downsamples, which rounds the stair-stepped edges
+  off, and saves at two pixels per unit for high-DPI screens. Robots sit
+  behind their desks facing out, with a bigger lit face; the monitor stands
+  beside them and shows a role emblem (code, bulb, shield, globe,
+  containers, no-entry, hammer, magnifier, brush, network, check, eye, log
+  lines, folder, book, megaphone, chat); seven helmet crests group the
+  families; recharge pods carry a bolt; the window has a frame and a moon;
+  the rack has drive bays. Walls were quietened so the colour belongs to
+  the agents. The canvas is sized to the screen's own pixels and plates are
+  real text, so "Gatekeeper" is readable instead of a smudge.
+- **What carries meaning is still real.** The old random desk flicker is
+  gone: a screen and plate light only while that agent has a task in
+  progress or just acted, with the verb under the name ("Proof / testing");
+  Sentinel's plate goes red on a recent warning; Ultron sits and his plate
+  names his state.
+- **"What Ultron knows"**, directly under the room: `GET /api/brain-graph`
+  (admin-only, the same graphify graph `recall_from_brain` searches) drawn
+  as a still 2D graph -- conversations, memories and knowledge pages, with a
+  headline count, per-kind filter pills, hover/tap detail, and a
+  learned-per-day strip (exchanges from the chat-log dates, memories from
+  the DB). A memory note's page and heading fold into one node named by the
+  note's own words rather than "note-16.md". Past 400 nodes the picture is
+  thinned (pages first, then the best connected) while the counts stay
+  whole. 2D on purpose: a 3D orbit control in the middle of a scrolling page
+  swallows the swipe that scrolls past it on a phone.
+- **Checks.** `dev-tools/test_brain_graph.py` (new) and
+  `test_pixel_assets_route.py` (now reads the sprite list out of the
+  dashboard's own agent table). 31/31 pass. Verified against the rebuilt
+  container: served bytes match the repo, no failed asset requests, no
+  console errors, at 1400px and 400px.
+- **Launch readiness** was assessed the same day: see
+  `LAUNCH-READINESS-2026-09-16.md`.
 
 ## Also fixed on the way
 
