@@ -1277,6 +1277,12 @@ def add_security_headers(response):
         "style-src 'self' 'unsafe-inline'; "
         "font-src 'self'; "
         "img-src 'self' data:; "
+        # Voice replies play from a blob:/MediaSource URL built in the page
+        # (the token has to travel in a header, so <audio src=/api/tts> is
+        # not an option). Without this, media-src falls back to
+        # default-src 'self' and Chrome refuses the blob -- which is what
+        # silently muted Ultron for the day this header went in without it.
+        "media-src 'self' blob:; "
         "connect-src *; "
         "object-src 'none'; "
         "frame-ancestors 'none'; "

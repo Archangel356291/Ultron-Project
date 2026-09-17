@@ -50,6 +50,10 @@ def demo():
     assert "font-src 'self'" in csp, csp
     assert "googleapis" not in csp and "gstatic" not in csp, csp
     assert "connect-src *" in csp, csp  # Settings -> Connection points at an arbitrary backend origin
+    # Voice replies play from a blob:/MediaSource URL; omitting this made
+    # media-src inherit default-src 'self' and Chrome refused the audio
+    # ("Media load rejected by URL safety check") -- Ultron went silent.
+    assert "media-src 'self' blob:" in csp, csp
 
     # The self-hosted fonts actually serve (a real woff2, not a 404), and
     # path traversal out of fonts/ is refused.
