@@ -383,6 +383,63 @@
     margin-top:10px; line-height:1.5; border-top:1px dotted var(--line); padding-top:10px;
   }
 
+  /* ---------- Lab Activity vault (Home tab): PIN-gated, chained blast-door ---------- */
+  .lab-vault{ margin-top:18px; }
+  .lab-vault-head{ display:flex; align-items:center; gap:9px; font-family:var(--font-hud); font-size:13px; font-weight:700; letter-spacing:.04em; color:var(--text); margin-bottom:9px; }
+  .lab-vault-head .lv-led{ width:9px; height:9px; border-radius:50%; background:#ff4d5e; box-shadow:0 0 8px #ff4d5e; }
+  .lab-vault.unlocked .lab-vault-head .lv-led{ background:#33d17a; box-shadow:0 0 8px #33d17a; }
+  .lv-cls{ margin-left:auto; font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--text-faint); }
+  .lab-vault.unlocked .lv-cls{ color:#33d17a; }
+  .lab-vault-box{ position:relative; height:300px; border-radius:10px; overflow:hidden; background:#0c0e12; border:1px solid var(--line); box-shadow:inset 0 0 40px rgba(0,0,0,.6); }
+  /* revealed data */
+  .lv-data{ position:absolute; inset:0; padding:12px 13px; overflow-y:auto; opacity:0; transition:opacity .5s .35s; font-family:var(--font-mono); font-size:11px; }
+  .lab-vault.unlocked .lv-data{ opacity:1; }
+  .lv-empty{ color:var(--text-faint); }
+  .lv-row{ display:flex; gap:9px; padding:4px 0; border-bottom:1px solid rgba(255,255,255,.04); line-height:1.4; }
+  .lv-row .t{ color:#5fb0ff; white-space:nowrap; }
+  .lv-row .f{ color:#8a93a3; white-space:nowrap; }
+  .lv-row .m{ color:var(--text-dim); word-break:break-word; }
+  /* blast doors */
+  .lv-door{ position:absolute; top:0; bottom:0; width:50%; z-index:3; transition:transform .7s cubic-bezier(.7,0,.3,1);
+    background:repeating-linear-gradient(90deg,#3a3f47 0 8px,#33383f 8px 16px),linear-gradient(180deg,#4a5058,#23272d);
+    background-blend-mode:overlay; box-shadow:inset 0 0 30px rgba(0,0,0,.5); }
+  .lv-door-l{ left:0; border-right:2px solid #14161a; }
+  .lv-door-r{ right:0; border-left:2px solid #14161a; }
+  .lv-door::before{ content:""; position:absolute; top:12px; bottom:12px; width:5px; background:linear-gradient(180deg,#5a616b,#2a2e34); box-shadow:0 0 3px #000; }
+  .lv-door-l::before{ right:10px; } .lv-door-r::before{ left:10px; }
+  .lv-door::after{ content:""; position:absolute; top:50%; width:14px; height:14px; margin-top:-7px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#7b828c,#2b2f35); box-shadow:0 0 4px #000; }
+  .lv-door-l::after{ right:22px; } .lv-door-r::after{ left:22px; }
+  .lab-vault.unlocked .lv-door-l{ transform:translateX(-100%); }
+  .lab-vault.unlocked .lv-door-r{ transform:translateX(100%); }
+  /* chains */
+  .lv-chains{ position:absolute; inset:0; width:100%; height:100%; z-index:4; transition:opacity .5s; pointer-events:none; }
+  .lv-chain{ stroke:url(#lv-chain-grad); stroke:#9aa1ab; stroke-width:6; stroke-dasharray:5 3; filter:drop-shadow(0 1px 1px rgba(0,0,0,.7)); }
+  .lab-vault.unlocked .lv-chains{ opacity:0; }
+  /* lock + keypad */
+  .lv-lockwrap{ position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; transition:opacity .45s, transform .45s; }
+  .lab-vault.unlocked .lv-lockwrap{ opacity:0; transform:scale(.9); pointer-events:none; }
+  .lv-lock{ position:relative; width:52px; height:62px; }
+  .lv-shackle{ position:absolute; top:0; left:50%; width:30px; height:30px; margin-left:-15px; border:6px solid #c2c8d0; border-bottom:none; border-radius:15px 15px 0 0;
+    background:transparent; transition:transform .5s, top .5s; box-shadow:0 1px 0 #6a707a; }
+  .lab-vault.unlocked .lv-shackle{ transform:rotate(28deg) translateY(-6px); top:-4px; }
+  .lv-lockbody{ position:absolute; bottom:0; left:50%; width:52px; height:40px; margin-left:-26px; border-radius:8px;
+    background:linear-gradient(160deg,#e4e8ee 0%,#aeb6c2 40%,#7d858f 100%); box-shadow:inset 0 2px 3px rgba(255,255,255,.6),inset 0 -3px 5px rgba(0,0,0,.35),0 3px 8px rgba(0,0,0,.5); }
+  .lv-keyhole{ position:absolute; top:12px; left:50%; width:8px; height:8px; margin-left:-4px; border-radius:50%; background:#2a2e34; box-shadow:0 8px 0 -2px #2a2e34, inset 0 1px 2px #000; }
+  .lv-keyhole::after{ content:""; position:absolute; top:6px; left:2px; width:4px; height:9px; background:#2a2e34; }
+  .lv-pad{ display:flex; flex-direction:column; align-items:center; gap:7px; }
+  .lv-pin{ height:16px; display:flex; gap:7px; align-items:center; }
+  .lv-pin i{ width:9px; height:9px; border-radius:50%; background:#3a3f47; box-shadow:inset 0 1px 2px #000; }
+  .lv-pin i.on{ background:#5fb0ff; box-shadow:0 0 6px #5fb0ff; }
+  .lv-keys{ display:grid; grid-template-columns:repeat(3,44px); gap:6px; }
+  .lv-key{ height:36px; border-radius:7px; border:1px solid #3a3f47; background:linear-gradient(180deg,#2a2e34,#1c1f24); color:#cfd6e0;
+    font-family:var(--font-mono); font-size:15px; cursor:pointer; transition:background .1s,transform .05s; }
+  .lv-key:hover{ background:linear-gradient(180deg,#343943,#22262c); }
+  .lv-key:active{ transform:translateY(1px); }
+  .lv-key.act{ color:#5fb0ff; } .lv-key.ent{ color:#33d17a; }
+  .lv-msg{ min-height:13px; font-family:var(--font-mono); font-size:10px; color:#ff6b6b; }
+  .lab-vault-box.shake{ animation:lv-shake .35s; }
+  @keyframes lv-shake{ 0%,100%{ transform:translateX(0); } 20%,60%{ transform:translateX(-6px); } 40%,80%{ transform:translateX(6px); } }
+
   /* ---------- knowledge graph (Home tab) ----------
      Real data: graphify-out/graph.json (the vault graph -- code/doc/
      decision nodes about this project, already privacy-redacted) merged
@@ -1671,6 +1728,29 @@
                 </div>
               </div>
             </div>
+
+            <div class="lab-vault" id="lab-vault" data-role="admin">
+              <div class="lab-vault-head"><span class="lv-led"></span>Lab Activity — Classified<span class="lv-cls">ADMIN · PIN REQUIRED</span></div>
+              <div class="lab-vault-box" id="lab-vault-box">
+                <div class="lv-data" id="lv-data"><div class="lv-empty">Sealed. Enter the admin PIN to reveal ethical-hacking lab activity.</div></div>
+                <div class="lv-door lv-door-l" aria-hidden="true"></div>
+                <div class="lv-door lv-door-r" aria-hidden="true"></div>
+                <svg class="lv-chains" id="lv-chains" viewBox="0 0 300 200" preserveAspectRatio="none" aria-hidden="true">
+                  <line class="lv-chain" x1="150" y1="86" x2="8" y2="8"/>
+                  <line class="lv-chain" x1="150" y1="86" x2="292" y2="8"/>
+                  <line class="lv-chain" x1="150" y1="118" x2="8" y2="192"/>
+                  <line class="lv-chain" x1="150" y1="118" x2="292" y2="192"/>
+                </svg>
+                <div class="lv-lockwrap" id="lv-lockwrap">
+                  <div class="lv-lock" id="lv-lock" aria-hidden="true"><span class="lv-shackle"></span><span class="lv-lockbody"><span class="lv-keyhole"></span></span></div>
+                  <div class="lv-pad">
+                    <div class="lv-pin" id="lv-pin" aria-label="PIN entry"></div>
+                    <div class="lv-keys" id="lv-keys"></div>
+                    <div class="lv-msg" id="lv-msg"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="home-rail">
@@ -2761,6 +2841,52 @@
     if (!res.ok) throw new Error((data && data.error) ? data.error : (path + ' failed: ' + res.status));
     return data;
   }
+
+  // Lab Activity vault (Home tab): a chained, blast-door box over the lab's
+  // ethical-hacking activity log. The number pad posts the PIN to the admin-only
+  // /api/lab/hacklog (verified server-side against ULTRON_LAB_PIN); a correct PIN
+  // fades the chains, opens the lock and slides the blast doors apart.
+  (function setupLabVault() {
+    var box = document.getElementById('lab-vault-box'); if (!box) return;
+    var vault = document.getElementById('lab-vault'), keys = document.getElementById('lv-keys');
+    var pinEl = document.getElementById('lv-pin'), msg = document.getElementById('lv-msg'), dataEl = document.getElementById('lv-data');
+    var pin = '', MAXLEN = 10;
+    function lvEsc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function renderPin() { pinEl.innerHTML = ''; var n = Math.max(4, pin.length); for (var i = 0; i < n; i++) { var d = document.createElement('i'); if (i < pin.length) d.className = 'on'; pinEl.appendChild(d); } }
+    function renderEntries(entries, source) {
+      if (!entries || !entries.length) { dataEl.innerHTML = '<div class="lv-empty">Vault open. No lab activity recorded yet' + (source ? ' at <span style="color:#8a93a3">' + lvEsc(source) + '</span>' : '') + '.</div>'; return; }
+      dataEl.innerHTML = entries.map(function (e) {
+        var when = e.mtime ? new Date(e.mtime * 1000).toLocaleString() : '';
+        return '<div class="lv-row"><span class="t">' + lvEsc(when) + '</span><span class="f">' + lvEsc(e.file) + '</span><span class="m">' + lvEsc(e.line) + '</span></div>';
+      }).join('');
+    }
+    function fail(text, color) { msg.style.color = color || '#ff6b6b'; msg.textContent = text; box.classList.add('shake'); setTimeout(function () { box.classList.remove('shake'); }, 400); pin = ''; renderPin(); }
+    async function submit() {
+      if (!pin) return;
+      msg.style.color = '#8a93a3'; msg.textContent = 'Verifying…';
+      try {
+        var res = await fetch(state.baseUrl + '/api/lab/hacklog', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()), body: JSON.stringify({ pin: pin }) });
+        var d = null; try { d = await res.json(); } catch (e) { }
+        if (res.ok && d && d.ok) { msg.textContent = ''; vault.classList.add('unlocked'); renderEntries(d.entries, d.source); }
+        else if (res.status === 503) fail('No PIN configured — set ULTRON_LAB_PIN in .env.', '#ffb238');
+        else if (res.status === 429) fail('Too many attempts — locked ' + ((d && d.retryAfter) || 60) + 's.');
+        else if (res.status === 401) fail('Sign in as admin first.');
+        else fail('Access denied.');
+      } catch (e) { fail('Vault offline.'); }
+    }
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', '#'].forEach(function (k) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'lv-key' + (k === 'C' ? ' act' : k === '#' ? ' ent' : '');
+      b.textContent = k === 'C' ? '⌫' : k === '#' ? '▶' : k;
+      b.setAttribute('aria-label', k === 'C' ? 'delete' : k === '#' ? 'enter' : k);
+      b.addEventListener('click', function () {
+        if (k === 'C') { pin = pin.slice(0, -1); msg.textContent = ''; renderPin(); }
+        else if (k === '#') submit();
+        else if (pin.length < MAXLEN) { pin += k; msg.textContent = ''; renderPin(); }
+      });
+      keys.appendChild(b);
+    });
+    renderPin();
+  })();
 
   // ---- Cross-device game save sync. The foundry (a separate script) keeps the
   // game in localStorage and exposes __foundryExport/__foundryImport/__foundrySavedAt.

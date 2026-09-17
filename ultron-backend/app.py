@@ -3003,6 +3003,76 @@ def game_save_put():
     return jsonify({"ok": True, "stored": True, "savedAt": saved_at})
 
 
+# --------------------------------------------------------------------------
+# Ethical-hacking lab activity log (admin-only, PIN-gated).
+# The dashboard's Home tab has a locked "Lab activity" vault; the correct
+# numeric PIN (ULTRON_LAB_PIN in .env, set by the owner) opens it. Data is read
+# READ-ONLY from the lab's own log directory (the lab lives on D:, mounted
+# read-only at /host/d) -- never written or executed. No PIN configured, wrong
+# PIN, or a non-admin caller -> nothing is returned. The PIN is a second factor
+# ON TOP OF admin auth (require_token), with a short lockout to slow guessing.
+# --------------------------------------------------------------------------
+LAB_PIN = (os.environ.get("ULTRON_LAB_PIN", "") or "").strip()
+LAB_LOG_DIR = os.environ.get("ULTRON_LAB_LOG_DIR", "/host/d/Ethical Hacking Lab/logs")
+_LAB_ATTEMPTS = {"fails": 0, "until": 0.0}
+_LAB_LOCK = threading.Lock()
+
+
+def _read_lab_log(limit=120):
+    """Recent lines from the lab's log files, newest first. Read-only, size- and
+    length-capped; returns [] if the directory is absent (lab not running)."""
+    entries = []
+    base = LAB_LOG_DIR
+    if not base or not os.path.isdir(base):
+        return entries
+    try:
+        names = sorted(os.listdir(base))
+    except OSError:
+        return entries
+    for name in names:
+        if not name.lower().endswith((".log", ".jsonl", ".txt")):
+            continue
+        path = os.path.join(base, name)
+        try:
+            if not os.path.isfile(path) or os.path.getsize(path) > 5_000_000:
+                continue
+            mtime = os.path.getmtime(path)
+            with open(path, "r", encoding="utf-8", errors="replace") as fh:
+                lines = fh.readlines()[-limit:]
+        except OSError:
+            continue
+        for ln in lines:
+            ln = ln.strip()
+            if ln:
+                entries.append({"file": name, "line": ln[:400], "mtime": int(mtime)})
+    entries.sort(key=lambda e: e["mtime"], reverse=True)
+    return entries[:limit]
+
+
+@app.route("/api/lab/hacklog", methods=["POST"])
+@require_token
+def lab_hacklog():
+    if not LAB_PIN:
+        return jsonify({"ok": False, "reason": "not_configured"}), 503
+    now = time.time()
+    with _LAB_LOCK:
+        if _LAB_ATTEMPTS["until"] > now:
+            return jsonify({"ok": False, "reason": "locked", "retryAfter": int(_LAB_ATTEMPTS["until"] - now)}), 429
+    pin = str((request.get_json(silent=True) or {}).get("pin", ""))
+    if not hmac.compare_digest(pin, LAB_PIN):
+        with _LAB_LOCK:
+            _LAB_ATTEMPTS["fails"] += 1
+            if _LAB_ATTEMPTS["fails"] >= 5:
+                _LAB_ATTEMPTS["until"] = now + 60
+                _LAB_ATTEMPTS["fails"] = 0
+        time.sleep(0.5)  # slow brute-force guessing
+        return jsonify({"ok": False, "reason": "bad_pin"}), 403
+    with _LAB_LOCK:
+        _LAB_ATTEMPTS["fails"] = 0
+        _LAB_ATTEMPTS["until"] = 0.0
+    return jsonify({"ok": True, "entries": _read_lab_log(), "source": LAB_LOG_DIR})
+
+
 # Self-hosted copies of the dashboard's four typefaces (all SIL Open Font
 # License), formerly pulled from fonts.googleapis.com on every load. Same
 # serving pattern as above. This was the dashboard's only third-party
