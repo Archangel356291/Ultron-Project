@@ -652,6 +652,78 @@
   .exp-i-ic{ font-size:14px; flex-shrink:0; }
   .exp-i-name{ font-weight:600; font-size:12px; }
   .exp-i-rar{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-left:auto; text-align:right; }
+  /* modular robot preview: parts drive body / legs / head silhouettes */
+  .exp-robot{ width:66px; height:86px; }
+  .exp-head{ position:absolute; left:15px; right:15px; top:8px; height:16px; border-radius:5px 5px 0 0; background:linear-gradient(180deg,#b8b6ac,#86847a); }
+  .exp-eye{ position:absolute; left:23px; top:13px; width:20px; height:6px; border-radius:2px; background:var(--rc); box-shadow:0 0 8px var(--rc); }
+  .exp-body{ position:absolute; left:13px; right:13px; top:26px; height:34px; border-radius:4px; background:linear-gradient(180deg,#454b55,#2f343c); box-shadow:inset 0 0 0 1px rgba(255,255,255,.05); }
+  .exp-base{ position:absolute; left:15px; right:15px; bottom:8px; height:9px; background:#4a5058; border-radius:2px; }
+  /* Core Chassis */
+  .exp-robot.core1 .exp-body{ left:9px; right:9px; height:38px; background:linear-gradient(180deg,#565d68,#343a42); }
+  .exp-robot.core2 .exp-body{ left:17px; right:17px; background:repeating-linear-gradient(90deg,#3b414a 0 5px,#2a2f36 5px 8px); }
+  .exp-robot.core3 .exp-body{ top:30px; height:24px; border-radius:8px; background:radial-gradient(circle at 50% 40%,#5b6270,#2c313a); box-shadow:0 0 12px -2px var(--rc); }
+  .exp-robot.core0 .exp-body::after{ content:''; position:absolute; left:50%; top:50%; width:9px; height:9px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--rc); box-shadow:0 0 8px var(--rc); }
+  /* Propulsion */
+  .exp-robot.legs0 .exp-base{ background:linear-gradient(90deg,#4a5058 0 40%,transparent 40% 60%,#4a5058 60%); }
+  .exp-robot.legs1 .exp-base{ background:repeating-linear-gradient(90deg,#4a5058 0 3px,transparent 3px 8px); height:11px; }
+  .exp-robot.legs2 .exp-base{ left:8px; right:8px; height:12px; border-radius:3px; background:repeating-linear-gradient(90deg,#23272d 0 4px,#4a5058 4px 8px); }
+  .exp-robot.legs3 .exp-base{ left:16px; right:16px; height:5px; border-radius:50%; background:var(--rc); box-shadow:0 6px 14px -1px var(--rc); opacity:.85; }
+  /* Head / sensor */
+  .exp-robot.head0 .exp-eye{ left:26px; width:14px; height:8px; border-radius:50%; }
+  .exp-robot.head1 .exp-eye{ left:18px; right:18px; width:auto; height:4px; top:14px; }
+  .exp-robot.head2 .exp-head{ box-shadow:-6px -5px 0 -3px #86847a,6px -5px 0 -3px #86847a; }
+  .exp-robot.head3 .exp-head{ border-radius:9px 9px 0 0; height:19px; background:linear-gradient(180deg,rgba(180,200,220,.5),#6a7078); }
+  .exp-load{ display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:7px; margin-top:12px; }
+  .exp-slot{ background:var(--panel-raised); border:1px solid var(--line); border-left-width:3px; border-radius:6px; padding:7px 9px 8px; position:relative; }
+  .exp-slot-h{ font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; }
+  .exp-slot-n{ font-size:12px; font-weight:600; margin-top:2px; }
+  .exp-slot.empty .exp-slot-n{ color:var(--text-faint); font-weight:400; }
+  .exp-x{ position:absolute; top:6px; right:7px; font-family:var(--font-mono); font-size:9px; color:var(--text-faint); background:none; border:0; cursor:pointer; text-decoration:underline; }
+  .exp-tot{ display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+  .exp-stat{ font-family:var(--font-mono); font-size:10.5px; padding:3px 7px; border-radius:5px; background:var(--void); border:1px solid var(--line); color:var(--text-dim); }
+  .exp-stat b{ color:var(--text); }
+  .exp-item{ flex-wrap:wrap; }
+  .exp-item.eqbl{ cursor:pointer; }
+  .exp-item.eqbl:hover{ border-color:#e6a41e; }
+  .exp-item.on{ box-shadow:inset 0 0 0 1px currentColor; }
+  .exp-i-stats{ width:100%; font-family:var(--font-mono); font-size:9.5px; color:var(--text-dim); }
+  .exp-i-ab{ width:100%; font-size:10px; color:var(--text-faint); font-style:italic; }
+  .exp-hint{ font-size:11px; color:var(--text-faint); margin-top:10px; }
+  .exp-stat.pow{ border-color:rgba(230,164,30,.55); color:#ffd88a; }
+  .exp-battle{ margin-top:10px; padding:9px 12px; border-radius:8px; border:1px solid var(--line); background:var(--panel-raised); font-size:12.5px; border-left-width:3px; }
+  .exp-battle.win{ border-left-color:#33d17a; } .exp-battle.win b{ color:#5fe39a; }
+  .exp-battle.loss{ border-left-color:#ff5a7a; } .exp-battle.loss b{ color:#ff8098; }
+  .exp-blog{ margin-top:5px; font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
+  .exp-blog .w{ color:#5fe39a; } .exp-blog .l{ color:#ff8098; }
+  .exp-sell{ margin-left:auto; font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); background:none; border:1px solid var(--line); border-radius:5px; padding:2px 7px; cursor:pointer; }
+  .exp-sell:hover{ color:#ffd88a; border-color:rgba(230,164,30,.55); }
+  .exp-selljunk{ margin-left:10px; font-family:var(--font-mono); font-size:10px; color:var(--text-faint); background:none; border:1px solid var(--line); border-radius:5px; padding:2px 8px; cursor:pointer; text-transform:none; letter-spacing:0; }
+  .exp-selljunk:hover{ color:#ffd88a; border-color:rgba(230,164,30,.55); }
+  .exp-skin{ position:relative; width:26px; height:26px; border-radius:6px; border:1px solid var(--line); cursor:pointer; padding:0; overflow:hidden; }
+  .exp-skin i{ position:absolute; left:50%; top:50%; width:8px; height:5px; margin:-2px 0 0 -4px; border-radius:2px; box-shadow:0 0 5px var(--sg); }
+  .exp-skin.on{ border-color:var(--sg); box-shadow:0 0 0 2px var(--sg) inset, 0 0 7px -1px var(--sg); }
+  .exp-builder{ margin-top:14px; }
+  .exp-b-h{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; margin-bottom:7px; }
+  .exp-presets{ display:flex; gap:6px; flex-wrap:wrap; }
+  .exp-preset{ font-family:var(--font-display); font-weight:700; font-size:11.5px; padding:5px 11px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text); cursor:pointer; }
+  .exp-preset:hover{ border-color:#e6a41e; color:#ffd88a; }
+  .exp-saverow{ display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+  .exp-ldname{ background:var(--void); border:1px solid var(--line); border-radius:6px; padding:5px 9px; color:var(--text); font-family:var(--font-mono); font-size:11px; max-width:150px; }
+  .exp-saved{ display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .exp-ld{ display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .exp-ld-load{ background:var(--panel-raised); border:0; color:var(--text); font-size:11px; padding:4px 9px; cursor:pointer; font-family:var(--font-mono); }
+  .exp-ld-load:hover{ color:#ffd88a; }
+  .exp-ld-x{ background:none; border:0; border-left:1px solid var(--line); color:var(--text-faint); padding:4px 8px; cursor:pointer; }
+  .exp-sec{ margin-top:8px; border:1px solid var(--line); border-radius:7px; background:var(--panel-raised); }
+  .exp-sec>summary{ cursor:pointer; padding:8px 11px; font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text-dim); list-style:none; }
+  .exp-sec>summary::-webkit-details-marker{ display:none; }
+  .exp-sec>summary::before{ content:'\25B8 '; color:var(--text-faint); }
+  .exp-sec[open]>summary{ color:var(--text); border-bottom:1px solid var(--line); }
+  .exp-sec[open]>summary::before{ content:'\25BE '; }
+  .exp-catgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:7px 12px; padding:11px; }
+  .exp-catrow{ display:flex; align-items:center; gap:8px; justify-content:space-between; }
+  .exp-catn{ font-size:11.5px; color:var(--text-dim); flex-shrink:0; }
+  .exp-catrow select{ flex:1; max-width:132px; background:var(--void); border:1px solid var(--line); border-radius:5px; color:var(--text); font-family:var(--font-mono); font-size:10.5px; padding:4px 6px; }
 
   /* "What Ultron knows": the Brain vault graph under his corner. Same frame
      as the room above it, so the two read as one place. */
@@ -1300,13 +1372,12 @@
             <div class="foundry-bal">
               <span class="foundry-coin" aria-hidden="true">◉</span>
               <span class="foundry-bits" id="foundry-bits">0</span>
-              <span class="foundry-unit">data-bits</span>
               <span class="foundry-rate" id="foundry-rate"></span>
             </div>
             <div class="foundry-offline" id="foundry-offline" hidden></div>
             <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
-            <div class="foundry-note">Every package shipped out and every squad that marches out mints data-bits — and it keeps minting while you're away. Spend them on upgrades to run the line faster.</div>
+            <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
           </div>
 
           <div class="panel-label" style="margin-top:28px;">Ultron's expedition</div>
@@ -5082,6 +5153,15 @@ function toggleReducedVisuals(el) {
     { color: 'bitcoin', hex: '#f7931a', label: 'Oracle', agent: 'market_analyst', busyPlate: 'pricing' },
     { color: 'gold', hex: '#e5b80b', label: 'Tally', agent: 'stats_tracker', busyPlate: 'tallying' },
     { color: 'crimson', hex: '#d7264a', label: 'Redcell', agent: 'ethical_hacking', busyPlate: 'reviewing' },
+    { color: 'cobalt', hex: '#2f6bff', label: 'Bastion', agent: 'sentinel_defense', busyPlate: 'auditing' },
+    { color: 'slate', hex: '#7d8ba0', label: 'Overwatch', agent: 'overwatch_logger', busyPlate: 'logging' },
+    { color: 'ember', hex: '#ff8c42', label: 'Anvil', agent: 'forge_coder', busyPlate: 'refactoring' },
+    { color: 'vermilion', hex: '#ff3b2e', label: 'Breach', agent: 'red_team_sandbox', busyPlate: 'sandboxing' },
+    { color: 'ivory', hex: '#e6ddc4', label: 'Architect', agent: 'architecture_lead', busyPlate: 'planning' },
+    { color: 'mulberry', hex: '#a64d79', label: 'Critic', agent: 'code_reviewer', busyPlate: 'reviewing' },
+    { color: 'graphite', hex: '#5a6270', label: 'Steward', agent: 'homelab_monitor', busyPlate: 'monitoring' },
+    { color: 'candy', hex: '#ff6ad5', label: 'Pixel', agent: 'pixel_artist', busyPlate: 'drawing' },
+    { color: 'spearmint', hex: '#3fe0a0', label: 'Arbiter', agent: 'game_balancer', busyPlate: 'balancing' },
   ];
   SUBAGENTS.forEach(function (a) {
     IMG['agent_' + a.color] = loadImg('agent_' + a.color + '.png');
@@ -5229,6 +5309,10 @@ function toggleReducedVisuals(el) {
     mint: 'block', copper: 'hammer', sky: 'magnifier', teal: 'brush', indigo: 'network',
     lime: 'check', rose: 'eye', steel: 'lines', lavender: 'folder', peach: 'book',
     magenta: 'megaphone', olive: 'chat', gold: 'chart', bitcoin: 'bitcoin', crimson: 'target',
+    // least-privilege + full-ecosystem specialists (2026-09-17): each ships a
+    // parcel whose glyph matches what it does, tinted its own colour.
+    cobalt: 'shield', slate: 'lines', ember: 'hammer', vermilion: 'bug',
+    ivory: 'blueprint', mulberry: 'check', graphite: 'gauge', candy: 'palette', spearmint: 'dice',
   };
   function spawnParcel(a) {
     if (parcels.length > 40) return;
@@ -5310,6 +5394,11 @@ function toggleReducedVisuals(el) {
       case 'chart': ctx.fillRect(cx - .7 * r, cy + .1 * r, .35 * r, .5 * r); ctx.fillRect(cx - .18 * r, cy - .35 * r, .35 * r, .95 * r); ctx.fillRect(cx + .34 * r, cy - .1 * r, .35 * r, .7 * r); break;
       case 'target': C(0, 0, .8); C(0, 0, .26, true); L([[-1, 0], [-.5, 0]]); L([[1, 0], [.5, 0]]); L([[0, -1], [0, -.5]]); L([[0, 1], [0, .5]]); break;
       case 'core': C(0, 0, .82); C(0, 0, .42, true); break;
+      case 'bug': C(0, .05, .5, true); L([[-.5, -.2], [-.95, -.5]]); L([[.5, -.2], [.95, -.5]]); L([[-.55, .15], [-.98, .15]]); L([[.55, .15], [.98, .15]]); L([[-.5, .45], [-.85, .78]]); L([[.5, .45], [.85, .78]]); L([[-.18, -.5], [-.32, -.9]]); L([[.18, -.5], [.32, -.9]]); break;
+      case 'blueprint': box(-.8, -.7, 1.6, 1.4); L([[-.8, -.15], [.8, -.15]]); L([[-.2, -.7], [-.2, .7]]); C(.42, .32, .2); break;
+      case 'gauge': ctx.beginPath(); ctx.arc(cx, cy + .25 * r, .78 * r, Math.PI, 0); ctx.stroke(); L([[0, .25], [.5, -.35]]); C(0, .25, .13, true); break;
+      case 'palette': C(0, 0, .82); C(-.38, -.28, .15, true); C(.16, -.42, .15, true); C(.46, .08, .15, true); C(-.06, .42, .15, true); break;
+      case 'dice': box(-.72, -.72, 1.44, 1.44); C(-.36, -.36, .13, true); C(.36, .36, .13, true); C(0, 0, .13, true); C(.36, -.36, .13, true); C(-.36, .36, .13, true); break;
       default: L([[-.7, 0], [.7, 0]]); L([[0, -.7], [0, .7]]);
     }
     ctx.restore();
@@ -5962,6 +6051,12 @@ function toggleReducedVisuals(el) {
      panel, and publishes window.__foundry -- the multipliers the room reads
      each frame (belt speed, production rate, squad size). Per-viewer only
      (localStorage), so it never claims to be shared or server state. -->
+<!-- Data-driven game modules: the loot engine (seeded item generation, rarity,
+     affixes, validation) and the shared colour-palette tokens. Loaded before
+     the foundry IIFE so window.LootEngine / window.GamePalettes are ready. -->
+<script src="/pixel-game/palettes.js"></script>
+<script src="/pixel-game/loot-engine.js"></script>
+<script src="/pixel-game/combat.js"></script>
 <script>
 (function () {
   'use strict';
@@ -5970,23 +6065,43 @@ function toggleReducedVisuals(el) {
   // first buy (+0.9) then +1.0 each after. Floors and robots-per-floor both
   // cap at 10.
   var UPGRADES = [
-    { id: 'yield', name: 'Bit Yield', base: 2, grow: 1.85, max: 30, desc: function (l) { return (l === 0 ? '0.1' : l.toFixed(1)) + ' data-bits per robot' + (l < 30 ? ' → ' + (l === 0 ? '1.0' : (l + 1).toFixed(1)) : ''); } },
+    { id: 'yield', name: 'Bit Yield', base: 2, grow: 1.85, max: 30, desc: function (l) { return (l === 0 ? '0.1' : l.toFixed(1)) + ' bits per robot' + (l < 30 ? ' → ' + (l === 0 ? '1.0' : (l + 1).toFixed(1)) : ''); } },
     { id: 'perbay', name: 'Robots / Bay', base: 5, grow: 1.8, max: 8, desc: function (l) { return (2 + l) + ' robots per bay (cap 10)'; } },
     { id: 'bays', name: 'Open Bay', base: 25, grow: 2.35, max: 9, desc: function (l) { return (1 + l) + ' production bays open (cap 10)'; } },
     { id: 'assembler', name: 'Assembler', base: 8, grow: 1.6, max: 20, desc: function (l) { return '+25% production speed (x' + (1 + 0.25 * l).toFixed(2) + ')'; } },
     { id: 'belt', name: 'Conveyor', base: 10, grow: 1.6, max: 20, desc: function (l) { return '+20% belt speed (x' + (1 + 0.2 * l).toFixed(1) + ')'; } },
-    { id: 'collector', name: 'Auto-Collector', base: 14, grow: 1.7, max: 20, desc: function (l) { return '+0.5 data-bits / sec while idle (' + (0.5 * l).toFixed(1) + '/s)'; } },
+    { id: 'collector', name: 'Auto-Collector', base: 14, grow: 1.7, max: 20, desc: function (l) { return '+0.5 bits / sec while idle (' + (0.5 * l).toFixed(1) + '/s)'; } },
     { id: 'march', name: 'March Drums', base: 12, grow: 1.6, max: 8, desc: function (l) { return '+15% march & walk speed (x' + (1 + 0.15 * l).toFixed(2) + ')'; } },
     { id: 'offline', name: 'Offline Storage', base: 250, grow: 1.8, max: 10, desc: function (l) { return (1.5 + l) + 'h of offline accrual (+1h)'; } },
   ];
 
-  var state = { bits: 0, up: {} };
+  var SAVE_VER = 2;
+  // Forward-only migration: never drops data, fills new fields, stamps ver.
+  function migrateSave(j) {
+    j.ver = j.ver || 1;
+    if (j.ver < 2 && j.adv) {
+      j.adv.build = j.adv.build || {}; j.adv.loadouts = j.adv.loadouts || {}; j.adv.gear = j.adv.gear || {};
+      if (j.adv.inv) j.adv.inv = j.adv.inv.slice(-40);
+    }
+    j.ver = SAVE_VER;
+    return j;
+  }
+  var state = { bits: 0, up: {}, ver: SAVE_VER };
   try {
     var raw = localStorage.getItem(KEY);
-    if (raw) { var j = JSON.parse(raw); if (j && typeof j.bits === 'number') { state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; } }
+    if (raw) {
+      var j = null;
+      try { j = JSON.parse(raw); }
+      catch (pe) { try { localStorage.setItem(KEY + '_corrupt', raw); } catch (e2) { /* keep a copy if we can */ } }  // recover, don't crash
+      if (j && typeof j.bits === 'number') {
+        j = migrateSave(j);
+        state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv;
+      }
+    }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
   UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
-  if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b', weapon: 'blaster' }, endsAt: 0, dur: 0, inv: [] };
+  if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
 
   var saveTimer = null;
   function save() {
@@ -6044,12 +6159,18 @@ function toggleReducedVisuals(el) {
     dirty = true; save();
   };
 
+  // Currency evolves in named tiers (owner's order), each 1000x the last:
+  // Bits -> Bytes -> Chits -> Scrip -> Nanits. Every cost/balance uses these.
+  var UNITS = ['bits', 'bytes', 'chits', 'scrip', 'nanits'];
   function fmt(n) {
-    if (n < 100) return (Math.round(n * 10) / 10).toFixed(1);
-    if (n < 10000) return Math.floor(n).toLocaleString();
-    var u = ['', 'K', 'M', 'B', 'T'], i = 0;
-    while (n >= 1000 && i < u.length - 1) { n /= 1000; i++; }
-    return (n < 10 ? n.toFixed(2) : n < 100 ? n.toFixed(1) : Math.floor(n)) + u[i];
+    if (!(n > 0)) n = 0;
+    var i = 0;
+    while (n >= 1000 && i < UNITS.length - 1) { n /= 1000; i++; }
+    var num;
+    if (i === 0) num = n < 100 ? (Math.round(n * 10) / 10).toFixed(1) : Math.floor(n).toLocaleString();
+    else if (n >= 1000) num = Math.floor(n).toLocaleString();      // beyond nanits: big numbers
+    else num = n < 10 ? n.toFixed(2) : n < 100 ? n.toFixed(1) : Math.floor(n).toString();
+    return num + ' ' + UNITS[i];
   }
 
   var bitsEl = document.getElementById('foundry-bits');
@@ -6124,7 +6245,7 @@ function toggleReducedVisuals(el) {
     var rar = LOOT_RARITY[0];
     for (var i = LOOT_RARITY.length - 1; i >= 0; i--) { if (earned >= LOOT_RARITY[i].p && Math.random() < 0.35 + i * 0.06) { rar = LOOT_RARITY[i]; break; } }
     var name = pick(LOOT_ADJ, Math.random()) + ' ' + pick(LOOT_MAT, Math.random()) + ' ' + pick(LOOT_TYPE, Math.random());
-    var lore = 'Ultron forged it while you were away, mulling over ' + theme + '. It hums with ' + fmt(earned) + ' data-bits of idle labour.';
+    var lore = 'Ultron forged it while you were away, mulling over ' + theme + '. It hums with ' + fmt(earned) + ' of idle labour.';
     return { name: name + ' of ' + theme.replace(/^the /i, ''), lore: lore, rarity: rar.n, color: rar.c, at: Date.now() };
   }
 
@@ -6141,7 +6262,7 @@ function toggleReducedVisuals(el) {
 
   var offEl = document.getElementById('foundry-offline');
   if (offEl && offlineEarned > 0.05) {
-    offEl.textContent = 'Welcome back — the line minted ' + fmt(offlineEarned) + ' data-bits over ' +
+    offEl.textContent = 'Welcome back — the line minted ' + fmt(offlineEarned) + ' over ' +
       humanDur(Math.min((Date.now() - (state.seen || Date.now())) / 1000, (window.__foundry.offlineHours || 1.5) * 3600)) +
       ' offline' + (offlineCapped ? ' (storage was full — upgrade Offline Storage)' : '') + '.';
     offEl.hidden = false;
@@ -6151,55 +6272,247 @@ function toggleReducedVisuals(el) {
   // on an idle adventure; it returns with loot rolled from a weighted pool
   // (rarity tiers + prefix/base/suffix affixes, per the owner's blueprint). ----
   var ADV_COST = 5000;
-  var ADV_DUR = [{ n: 'Scout', mins: 5, loot: 1 }, { n: 'Delve', mins: 30, loot: 2 }, { n: 'Odyssey', mins: 120, loot: 3 }];
+  // ilvl scales stats with the run's length; loot = parts dropped.
+  var ADV_DUR = [{ n: 'Scout', mins: 5, loot: 1, ilvl: 1 }, { n: 'Delve', mins: 30, loot: 2, ilvl: 2 }, { n: 'Odyssey', mins: 120, loot: 3, ilvl: 4 }];
+  // Rarity: note's colours + stat multiplier + an innate rarity perk, plus a
+  // vanishingly rare Mythic top. mult scales every base stat on the part.
   var RARITIES = [
-    { n: 'Common', w: 6000, c: '#9aa2ae', aff: 0 },
-    { n: 'Uncommon', w: 2500, c: '#33d17a', aff: 0 },
-    { n: 'Rare', w: 1100, c: '#3d9bff', aff: 1 },
-    { n: 'Epic', w: 350, c: '#b084f0', aff: 2 },
-    { n: 'Legendary', w: 45, c: '#ffcf6a', aff: 3 },
-    { n: 'Mythic', w: 5, c: '#ff5a7a', aff: 3 },
+    { n: 'Common', w: 6900, c: '#9aa2ae', mult: 1.0, perk: '' },
+    { n: 'Uncommon', w: 2000, c: '#33d17a', mult: 1.2, perk: '' },
+    { n: 'Rare', w: 700, c: '#3d9bff', mult: 1.5, perk: '+1 mod slot' },
+    { n: 'Epic', w: 250, c: '#b084f0', mult: 2.0, perk: 'Elemental resist' },
+    { n: 'Legendary', w: 45, c: '#ff9d3c', mult: 3.0, perk: 'Unique passive' },
+    { n: 'Mythic', w: 5, c: '#ff5a7a', mult: 4.5, perk: 'Ascendant passive' },
   ];
+  // pre = stat-boost prefixes, suf = ability suffixes (Legendary+ draw a Perk first)
+  var MODPLAN = [{ pre: 0, suf: 0 }, { pre: 1, suf: 0 }, { pre: 1, suf: 1 }, { pre: 1, suf: 1 }, { pre: 1, suf: 1 }, { pre: 1, suf: 2 }];
+  // Five modular build slots (owner's part spec). Loot drops a part for a slot.
+  var SLOTS = [
+    { id: 'core', name: 'Core Chassis', ic: '▣' },
+    { id: 'legs', name: 'Propulsion', ic: '◍' },
+    { id: 'arm', name: 'Weapon Arm', ic: '⚔' },
+    { id: 'util', name: 'Utility Arm', ic: '⛨' },
+    { id: 'head', name: 'Head', ic: '◉' },
+  ];
+  var SLOT_IC = { core: '▣', legs: '◍', arm: '⚔', util: '⛨', head: '◉' };
+  var STAT_LABEL = { dmg: 'DMG', rate: 'RATE', rng: 'RNG', crit: 'CRIT%', hp: 'HP', shield: 'SHLD', regen: 'REGEN', dr: 'DR%', spd: 'SPD', pwr: 'PWR' };
+  var STAT_ORDER = ['dmg', 'rate', 'rng', 'crit', 'hp', 'shield', 'regen', 'dr', 'spd', 'pwr'];
+  // Named parts per slot (owner's spec). look = index -> preview silhouette class.
   var BASES = {
-    weapon: ['Claymore', 'Staff', 'Bow', 'Dagger', 'Blaster', 'Warhammer', 'Laser Lance'],
-    armor: ['Helm', 'Chestplate', 'Boots', 'Greatshield'],
-    accessory: ['Ring', 'Amulet', 'Cape'],
-    shard: ['Fire Shard', 'Frost Shard', 'Void Shard', 'Mind Shard', 'Pixel Dust'],
-    relic: ['Idle Booster', 'Gold Statue', 'Recursion Core'],
+    core: [
+      { n: 'Humanoid Pod', s: { hp: 80, pwr: 10, dr: 6 }, e: 'Balanced all-rounder' },
+      { n: 'Heavy Exo-Shell', s: { hp: 160, dr: 16 }, e: 'Defense over speed' },
+      { n: 'Aerodynamic Core', s: { hp: 60, pwr: 16, regen: 5 }, e: 'Energy regen' },
+      { n: 'Orphaned AI CPU', s: { pwr: 22, crit: 8 }, e: 'Drone / hover frame' },
+    ],
+    legs: [
+      { n: 'Bipedal Hydraulics', s: { spd: 12, dr: 2 }, e: 'Balanced jump & speed' },
+      { n: 'Quad-Legged Arachnid', s: { spd: 6, dr: 10 }, e: 'Recoil reduction' },
+      { n: 'Heavy Tank Tracks', s: { spd: 3, dr: 18, hp: 20 }, e: 'Massive posture' },
+      { n: 'Magnetic Hover-Pads', s: { spd: 18 }, e: 'Floats over hazards' },
+    ],
+    arm: [
+      { n: 'Laser Blaster', s: { dmg: 14, rate: 10, rng: 5 }, e: 'High fire-rate' },
+      { n: 'Plasma Railgun', s: { dmg: 40, rate: 2, rng: 9, crit: 6 }, e: 'Piercing line' },
+      { n: 'Micro-Missile Pod', s: { dmg: 28, rate: 4, rng: 7 }, e: 'Homing AoE' },
+      { n: 'Hydraulic Pile-Bunker', s: { dmg: 44, rate: 2, rng: 1 }, e: 'Shield-break melee' },
+      { n: 'High-Freq Saw Gun', s: { dmg: 22, rate: 7, rng: 2, crit: 8 }, e: 'Rips organics' },
+    ],
+    util: [
+      { n: 'Energy Aegis Shield', s: { shield: 90, dr: 6 }, e: 'Blocks projectiles' },
+      { n: 'Repair Nanite Rig', s: { regen: 10, hp: 30 }, e: 'Self-heal over time' },
+      { n: 'Overclock Chip', s: { rate: 6, pwr: 10 }, e: 'ATK / MOV burst' },
+      { n: 'Gravity Well Emitter', s: { dmg: 8, pwr: 8 }, e: 'Pulls foes for AoE' },
+    ],
+    head: [
+      { n: 'Mono-Lens Visor', s: { crit: 14, rng: 6 }, e: 'Long-range accuracy' },
+      { n: 'Panoramic Multi-Sensor', s: { crit: 6, rng: 4, dr: 4 }, e: 'Trap detection' },
+      { n: 'Horned Comm-Array', s: { pwr: 12, crit: 4 }, e: '+Sub-agent sync' },
+      { n: 'Dome Cockpit', s: { hp: 40, dr: 8 }, e: 'Reinforced AI shell' },
+    ],
   };
-  var CAT_ICON = { weapon: '⚔', armor: '⛨', accessory: '◉', shard: '◆', relic: '✦' };
   var PREFIX = [
-    { n: 'Searing', m: '+Fire Dmg' }, { n: 'Glinting', m: '+Gold' }, { n: 'Mind-Braced', m: '+Mana' },
-    { n: 'Vampiric', m: '+Life Steal' }, { n: 'Hardened', m: '+Def' }, { n: 'Swift', m: '+Speed' },
+    { n: 'Overclocked', k: 'rate', v: 0.10, m: '+10% Rate' }, { n: 'Reinforced', k: 'dr', v: 0.15, m: '+15% DR' },
+    { n: 'Searing', k: 'dmg', v: 0.12, m: '+12% Dmg' }, { n: 'Precise', k: 'crit', v: 0.15, m: '+15% Crit' },
+    { n: 'Vital', k: 'hp', v: 0.15, m: '+15% HP' }, { n: 'Warded', k: 'shield', v: 0.20, m: '+20% Shield' },
+    { n: 'Fleet', k: 'spd', v: 0.15, m: '+15% Speed' },
   ];
   var SUFFIX = [
-    { n: 'of the Bear', m: '+HP' }, { n: 'of Swiftness', m: '+SPD' }, { n: 'of the Titan', m: '+Crit' },
-    { n: 'of Carnage', m: '+Crit' }, { n: 'of the Mind', m: '+Max Mana' },
+    { n: 'of the Phoenix', m: 'Adds fire damage' }, { n: 'of the Vampire', m: '1% life steal' },
+    { n: 'of the Titan', m: '+Crit damage' }, { n: 'of Swiftness', m: '+Move speed' },
+    { n: 'of the Void', m: 'Ignores armor' },
+  ];
+  var PERKS = [
+    { n: 'of Ascension', m: 'Perk: +100% loot this run' }, { n: 'of Rebirth', m: 'Perk: revive once per run' },
+    { n: 'of the Aegis', m: 'Perk: doubles all shield' }, { n: 'of Cascade', m: 'Perk: crits chain to a 2nd foe' },
+    { n: 'of Blink', m: 'Perk: short-range teleport' },
   ];
   var ADV_COLORS = ['#ff3b3b', '#3dd6ff', '#33d17a', '#ffc24b', '#b084f0', '#00beb4', '#e650c8', '#ff8a1e'];
-  var ADV_WEAPONS = ['blaster', 'rifle', 'cannon', 'spear', 'scythe', 'saw', 'laser', 'hammer', 'bow'];
 
-  function rollLoot() {
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function scaleStats(base, mult, ilvl) {
+    var out = {}, k, f = mult * (1 + 0.30 * (ilvl - 1));
+    for (k in base) if (base[k]) out[k] = Math.max(1, Math.round(base[k] * f));
+    return out;
+  }
+  // stat label/unit resolve through the loot engine first, then legacy keys
+  function slabel(k) { return (window.LootEngine && LootEngine.STATS[k] && LootEngine.STATS[k].l) || STAT_LABEL[k] || k; }
+  function sunit(k) { return (window.LootEngine && LootEngine.STATS[k] && LootEngine.STATS[k].u) || ''; }
+  function statLine(st) {
+    if (!st) return '';
+    return Object.keys(st).filter(function (k) { return st[k]; })
+      .map(function (k) { return slabel(k) + ' ' + st[k] + sunit(k); }).join(' · ');
+  }
+  // which engine base seeds each of the 5 equip slots at game start (Common)
+  var STARTER = { core: 'scrap_chestplate', legs: 'reinforced_leg_frame', arm: 'rusty_pulse_pistol', util: 'servo_arm_plating', head: 'salvaged_headplate' };
+  function makePart(slot, idx, r, ilvl) {
+    var base = BASES[slot][idx];
+    var stats = scaleStats(base.s, r.mult, ilvl), name = base.n, mods = [], rIdx = RARITIES.indexOf(r);
+    if (base.e) mods.push(base.e);
+    if (r.perk) mods.push(r.perk);
+    var plan = MODPLAN[rIdx], j, keys = Object.keys(stats);
+    for (j = 0; j < plan.pre; j++) {
+      var cands = PREFIX.filter(function (pf) { return keys.indexOf(pf.k) >= 0; });
+      var pf = pick(cands.length ? cands : PREFIX);
+      if (stats[pf.k] != null) stats[pf.k] = Math.round(stats[pf.k] * (1 + pf.v));
+      name = pf.n + ' ' + name; mods.push(pf.m);
+    }
+    var pool = rIdx >= 4 ? PERKS : SUFFIX;   // Legendary+ get a game-changing Perk first
+    for (j = 0; j < plan.suf; j++) { var sf = pick(pool); name = name + ' ' + sf.n; mods.push(sf.m); pool = SUFFIX; }
+    return { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, rarity: r.n, rIdx: rIdx, color: r.c, slot: slot, look: idx, stats: stats, mods: mods, at: Date.now() };
+  }
+  function rollLoot(ilvl) {
+    ilvl = ilvl || 1;
+    if (window.LootEngine) {
+      var it = LootEngine.rollDrop({ seed: 'd' + Date.now() + Math.random(), ilvl: ilvl });
+      it.rarity = it.tierLabel;   // the render shows it.rarity as the tier label
+      return it;
+    }
+    // fallback: legacy part generator
     var total = 0, i; for (i = 0; i < RARITIES.length; i++) total += RARITIES[i].w;
     var roll = Math.random() * total, r = RARITIES[0];
     for (i = 0; i < RARITIES.length; i++) { roll -= RARITIES[i].w; if (roll <= 0) { r = RARITIES[i]; break; } }
-    var cats = Object.keys(BASES), cat = cats[Math.floor(Math.random() * cats.length)];
-    var base = BASES[cat][Math.floor(Math.random() * BASES[cat].length)];
-    var name = base, mods = [];
-    if (r.aff >= 1) { var pf = PREFIX[Math.floor(Math.random() * PREFIX.length)]; name = pf.n + ' ' + name; mods.push(pf.m); }
-    if (r.aff >= 2) { var sf = SUFFIX[Math.floor(Math.random() * SUFFIX.length)]; name = name + ' ' + sf.n; mods.push(sf.m); }
-    if (r.aff >= 3) { var sf2 = SUFFIX[Math.floor(Math.random() * SUFFIX.length)]; if (mods.indexOf(sf2.m) < 0) mods.push(sf2.m); }
-    return { name: name, rarity: r.n, color: r.c, cat: cat, mods: mods, at: Date.now() };
+    var slot = pick(SLOTS).id, idx = Math.floor(Math.random() * BASES[slot].length);
+    return makePart(slot, idx, r, ilvl);
+  }
+  function starterGear() {
+    var g = {};
+    if (window.LootEngine) {
+      SLOTS.forEach(function (sl) {
+        var it = LootEngine.generate(STARTER[sl.id], { seed: 'seed_' + sl.id, ilvl: 1, rarity: 'common' });
+        it.id = 'seed_' + sl.id; it.rarity = it.tierLabel; g[sl.id] = it;
+      });
+      return g;
+    }
+    SLOTS.forEach(function (sl) { var it = makePart(sl.id, 0, RARITIES[0], 1); it.id = 'seed_' + sl.id; g[sl.id] = it; });
+    return g;
   }
 
   function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  var VENDOR = 6;   // sell scales loot value into foundry bits (tunable)
+  function sellValue(it) { return Math.max(1, Math.round((it.sellPrice || Math.round((it.value || 10) * 0.25)) * VENDOR)); }
+  function gearHasId(gear, id) { return Object.keys(gear || {}).some(function (k) { return gear[k] && gear[k].id === id; }); }
   function claimAdventure() {
-    var a = state.adv, out = [];
-    for (var i = 0; i < (ADV_DUR[a.dur] ? ADV_DUR[a.dur].loot : 1); i++) out.push(rollLoot());
-    a.inv = (a.inv || []).concat(out).slice(-30);
+    var a = state.adv, run = ADV_DUR[a.dur] || ADV_DUR[0];
+    var battle = window.Combat ? Combat.resolveRun(a.gear, { ilvl: run.ilvl, dur: a.dur, seed: 'b' + Date.now() + Math.random() }) : null;
+    a.lastBattle = battle;
+    var mult = battle ? battle.lootMult : 1;
+    var lootCount = Math.max(1, Math.round(run.loot * mult));
+    var bonusIlvl = run.ilvl + (battle && battle.win ? 1 : 0);   // a win yields better loot
+    var out = [];
+    for (var i = 0; i < lootCount; i++) out.push(rollLoot(bonusIlvl));
+    a.inv = (a.inv || []).concat(out).slice(-40);
     a.endsAt = 0; a.lastHaul = out;
     dirty = true; save();
     return out;
+  }
+
+  // ---- Modular chassis builder: every part category the owner listed, as a
+  // data table rendered to native <select>s (cheap, keyboard-friendly). A few
+  // categories drive the preview silhouette; the rest are identity/spec. Named
+  // presets + user-saved loadouts snapshot the whole build. ----
+  var BUILD_SECTIONS = [
+    { g: 'Frame', cats: [
+      ['core', 'Core Chassis', ['Light', 'Balanced', 'Heavy', 'Hover', 'Crawler', 'Quadruped']],
+      ['torso', 'Torso', ['Compact', 'Armored', 'Reactor-Core', 'Storage', 'Stealth', 'Command Chassis']],
+      ['neck', 'Neck', ['Fixed', 'Rotating', 'Reinforced', 'Telescopic']],
+      ['waist', 'Waist', ['Fixed', 'Rotating', 'Stabilized', 'Cargo Belt', 'Utility Belt']],
+      ['hips', 'Hips', ['Standard', 'Reinforced', 'Agile', 'Hover Mount', 'Quadruped Mount']],
+    ] },
+    { g: 'Head & Sensors', cats: [
+      ['head', 'Head', ['Scout', 'Armored', 'AI Dome', 'Visor', 'Sensor Tower', 'Drone Head']],
+      ['eyes', 'Eyes / Sensors', ['Camera', 'Thermal', 'Night Vision', 'Radar', 'Sonar', 'Scanner', 'Targeting Array']],
+      ['brain', 'Brain / CPU', ['Basic', 'Tactical', 'Hacker', 'Engineering', 'Medical', 'Autonomous', 'Quantum']],
+      ['antenna', 'Antennas', ['Radio', 'Satellite', 'Signal Booster', 'Jammer', 'Data Receiver']],
+      ['voice', 'Voice Module', ['Standard Speaker', 'Synth Voice', 'Radio Voice', 'Holographic']],
+    ] },
+    { g: 'Arms & Weapons', cats: [
+      ['shoulders', 'Shoulders', ['Light Mounts', 'Armor Plates', 'Turret Mounts', 'Utility Mounts']],
+      ['arms', 'Arms', ['Standard', 'Heavy-Lift', 'Precision', 'Medical', 'Hacking', 'Repair', 'Shield Arm']],
+      ['forearms', 'Forearms', ['Blade Mount', 'Tool Mount', 'Scanner', 'Storage', 'Grappling Unit']],
+      ['hands', 'Hands', ['Claw', 'Five-Finger', 'Magnetic', 'Welding', 'Tool Hand', 'Cannon Mount']],
+      ['tools', 'Tools', ['Wrench', 'Welder', 'Cutter', 'Drill', 'Repair Laser', 'Scanner', 'Lockpick', 'Cable Launcher']],
+      ['lweap', 'Left Weapon', ['Pulse Blaster', 'Laser', 'Stun Unit', 'Railgun', 'Flamethrower', 'EMP Emitter', 'Melee Blade']],
+      ['rweap', 'Right Weapon', ['Pulse Blaster', 'Laser', 'Stun Unit', 'Railgun', 'Flamethrower', 'EMP Emitter', 'Melee Blade']],
+    ] },
+    { g: 'Locomotion', cats: [
+      ['legs', 'Legs', ['Biped', 'Reverse-Joint', 'Tank Treads', 'Spider Legs', 'Hover Engines', 'Wheels']],
+      ['thighs', 'Thigh Modules', ['Speed Actuators', 'Strength Pistons', 'Armor', 'Storage']],
+      ['knees', 'Knees', ['Standard', 'Shock Absorber', 'Reinforced', 'Spring-Jump', 'Hydraulic']],
+      ['shins', 'Shins', ['Armored', 'Stealth', 'Booster', 'Tool Storage']],
+      ['feet', 'Feet', ['Standard', 'Magnetic', 'Climbing', 'Hover Pads', 'Tank Treads', 'Roller Wheels', 'Jump Boots']],
+      ['move', 'Movement Upgrade', ['Sprint Booster', 'Double Jump', 'Dash', 'Wall Climb', 'Flight', 'Swimming', 'Silent']],
+    ] },
+    { g: 'Defense & Power', cats: [
+      ['armor', 'Armor', ['Light Alloy', 'Plated Steel', 'Ceramic', 'Energy-Resistant', 'Stealth', 'Reactive']],
+      ['shieldsys', 'Shield System', ['Kinetic', 'Energy', 'Directional', 'Bubble', 'Deployable Barrier']],
+      ['power', 'Power Source', ['Battery', 'Solar Cell', 'Fusion Core', 'Plasma Core', 'Kinetic Generator', 'Backup Cell']],
+      ['cooling', 'Cooling', ['Passive Vents', 'Fan', 'Liquid Cooling', 'Cryo Cooling', 'Heat Shield']],
+      ['back', 'Back Module', ['Backpack', 'Shield Generator', 'Drone Bay', 'Cargo Rack', 'Jetpack', 'Repair Unit']],
+    ] },
+    { g: 'Systems', cats: [
+      ['utility', 'Utility Module', ['Lock Bypass', 'Terminal Interface', 'Map Scanner', 'Resource Detector', 'Translator', 'Camouflage']],
+      ['drone', 'Drone Companion', ['None', 'Scout Drone', 'Repair Drone', 'Defense Drone', 'Hacking Drone', 'Cargo Drone']],
+      ['network', 'Network Module', ['Wi-Fi', 'Secure Radio', 'Mesh Network', 'Encrypted Uplink', 'Remote Receiver']],
+      ['memory', 'Memory Chip', ['Storage', 'Mission Memory', 'Map Memory', 'Skill Memory', 'Experimental']],
+      ['personality', 'Personality Chip', ['Calm', 'Tactical', 'Curious', 'Sarcastic', 'Guardian', 'Engineer', 'Rogue', 'Friendly']],
+      ['upslot', 'Upgrade Slot', ['Common', 'Rare', 'Epic', 'Legendary', 'Prototype']],
+    ] },
+    { g: 'Identity & Cosmetic', cats: [
+      ['shell', 'Cosmetic Shell', ['Cyberpunk', 'Military', 'Industrial', 'Retro Arcade', 'Stealth', 'Neon', 'Rusted', 'Chrome']],
+      ['effect', 'Effects', ['Eye Glow', 'Exhaust Color', 'Electrical Arcs', 'Hologram', 'Footsteps', 'Voice Filter']],
+      ['damage', 'Battle Wear', ['Pristine', 'Cracked Visor', 'Dented Armor', 'Exposed Wires', 'Damaged Core']],
+      ['repair', 'Repair Kit', ['None', 'Patch Plates', 'Replacement Limbs', 'Spare Circuits', 'Emergency Battery', 'Repair Kit']],
+    ] },
+  ];
+  // preview silhouette lookups (owner has 4 art variants per zone; parts map in)
+  var LOOK_CORE = { Light: 2, Balanced: 0, Heavy: 1, Hover: 3, Crawler: 1, Quadruped: 1 };
+  var LOOK_LEGS = { Biped: 0, 'Reverse-Joint': 0, 'Tank Treads': 2, 'Spider Legs': 1, 'Hover Engines': 3, Wheels: 1 };
+  var LOOK_HEAD = { Scout: 0, Armored: 3, 'AI Dome': 3, Visor: 1, 'Sensor Tower': 2, 'Drone Head': 0 };
+  var PRESETS = {
+    Scout: { core: 'Light', legs: 'Hover Engines', head: 'Scout', eyes: 'Night Vision', armor: 'Light Alloy', shell: 'Stealth', personality: 'Curious', _color: '#3dd6ff' },
+    Tank: { core: 'Heavy', legs: 'Tank Treads', head: 'Armored', armor: 'Plated Steel', shieldsys: 'Kinetic', power: 'Fusion Core', personality: 'Guardian', _color: '#ffc24b' },
+    Hacker: { core: 'Balanced', brain: 'Hacker', head: 'AI Dome', eyes: 'Scanner', network: 'Encrypted Uplink', utility: 'Terminal Interface', personality: 'Rogue', _color: '#33d17a' },
+    Builder: { core: 'Crawler', arms: 'Repair', hands: 'Welding', tools: 'Welder', back: 'Repair Unit', brain: 'Engineering', personality: 'Engineer', _color: '#e650c8' },
+    Medic: { core: 'Balanced', arms: 'Medical', tools: 'Repair Laser', back: 'Repair Unit', brain: 'Medical', personality: 'Guardian', _color: '#00beb4' },
+    Ultron: { core: 'Heavy', head: 'AI Dome', eyes: 'Targeting Array', shell: 'Chrome', brain: 'Autonomous', personality: 'Guardian', effect: 'Eye Glow', _color: '#ff3b3b' },
+  };
+  function renderBuilder(a) {
+    var b = a.build;
+    var presetBtns = Object.keys(PRESETS).map(function (n) { return '<button type="button" class="exp-preset" data-a="preset" data-v="' + n + '">' + n + '</button>'; }).join('');
+    var saved = Object.keys(a.loadouts || {});
+    var savedHtml = saved.length ? '<div class="exp-saved">' + saved.map(function (n) { return '<span class="exp-ld"><button type="button" class="exp-ld-load" data-a="load-ld" data-v="' + esc(n) + '">' + esc(n) + '</button><button type="button" class="exp-ld-x" data-a="del-ld" data-v="' + esc(n) + '" title="delete">\u00d7</button></span>'; }).join('') + '</div>' : '';
+    var sections = BUILD_SECTIONS.map(function (sec) {
+      var rows = sec.cats.map(function (c) {
+        var os = c[2].map(function (o) { return '<option' + (b[c[0]] === o ? ' selected' : '') + '>' + o + '</option>'; }).join('');
+        return '<label class="exp-catrow"><span class="exp-catn">' + c[1] + '</span><select data-cat="' + c[0] + '">' + os + '</select></label>';
+      }).join('');
+      return '<details class="exp-sec"><summary>' + sec.g + '</summary><div class="exp-catgrid">' + rows + '</div></details>';
+    }).join('');
+    return '<div class="exp-builder"><div class="exp-b-h">Chassis Builder \u2014 quick presets</div>' +
+      '<div class="exp-presets">' + presetBtns + '</div>' +
+      '<div class="exp-saverow"><input class="exp-ldname" maxlength="16" placeholder="loadout name"><button type="button" class="exp-btn" data-a="save-load">Save build</button></div>' +
+      savedHtml + sections + '</div>';
   }
 
   var expEl = document.getElementById('expedition');
@@ -6212,9 +6525,14 @@ function toggleReducedVisuals(el) {
         '<button type="button" class="exp-btn big' + (can ? ' can' : '') + '" data-a="unlock"' + (can ? '' : ' disabled') + '>Unlock ◉ ' + fmt(ADV_COST) + '</button></div>';
       return;
     }
-    var r = a.robot, away = a.endsAt > now, ready = a.endsAt > 0 && a.endsAt <= now;
-    var colorChips = ADV_COLORS.map(function (c) { return '<button type="button" class="exp-chip' + (r.color === c ? ' on' : '') + '" style="background:' + c + '" data-a="color" data-v="' + c + '"></button>'; }).join('');
-    var wpnChips = ADV_WEAPONS.map(function (w) { return '<button type="button" class="exp-wpn' + (r.weapon === w ? ' on' : '') + '" data-a="weapon" data-v="' + w + '">' + w + '</button>'; }).join('');
+    var r = a.robot, gear = a.gear || (a.gear = {});
+    if (!gear.core) { a.gear = gear = starterGear(); dirty = true; save(); }
+    var away = a.endsAt > now, ready = a.endsAt > 0 && a.endsAt <= now;
+    var SKINS = window.GamePalettes && GamePalettes.robotSkins;
+    var colorChips = SKINS ? Object.keys(SKINS).map(function (key) {
+      var sk = SKINS[key], on = r.skin === key;
+      return '<button type="button" class="exp-skin' + (on ? ' on' : '') + '" title="' + esc(sk.name) + '" data-a="skin" data-v="' + key + '" style="--sg:' + sk.glow + ';background:linear-gradient(135deg,' + sk.primary + ' 45%,' + sk.secondary + ' 45%)"><i style="background:' + sk.eye + '"></i></button>';
+    }).join('') : ADV_COLORS.map(function (c) { return '<button type="button" class="exp-chip' + (r.color === c ? ' on' : '') + '" style="background:' + c + '" data-a="color" data-v="' + c + '"></button>'; }).join('');
     var status;
     if (ready) {
       status = '<div class="exp-status ready">Your robot has returned! <button type="button" class="exp-btn can" data-a="claim">Claim rewards</button></div>';
@@ -6225,30 +6543,74 @@ function toggleReducedVisuals(el) {
     } else {
       status = '<div class="exp-send">' + ADV_DUR.map(function (d, i) { return '<button type="button" class="exp-btn can" data-a="send" data-v="' + i + '">' + d.n + ' · ' + (d.mins < 60 ? d.mins + 'm' : (d.mins / 60) + 'h') + ' · ' + d.loot + ' loot</button>'; }).join('') + '</div>';
     }
+    // default every build category once, then derive the preview silhouette
+    var b = a.build || (a.build = {});
+    BUILD_SECTIONS.forEach(function (sec) { sec.cats.forEach(function (c) { if (b[c[0]] == null) b[c[0]] = c[2][0]; }); });
+    a.loadouts = a.loadouts || {};
+    var robotCls = 'exp-robot core' + (LOOK_CORE[b.core] || 0) + ' legs' + (LOOK_LEGS[b.legs] || 0) + ' head' + (LOOK_HEAD[b.head] || 0);
+    // loadout: five slots, click an inventory part to equip
+    var load = SLOTS.map(function (sl) {
+      var it = gear[sl.id];
+      return '<div class="exp-slot' + (it ? '' : ' empty') + '" style="border-color:' + (it ? it.color : 'var(--line)') + '">' +
+        '<div class="exp-slot-h">' + sl.ic + ' ' + sl.name + '</div>' +
+        '<div class="exp-slot-n"' + (it ? ' style="color:' + it.color + '"' : '') + '>' + (it ? esc(it.name) : '— empty —') + '</div>' +
+        (it ? '<div class="exp-i-stats">' + statLine(it.stats) + '</div>' + (it.id.indexOf('seed_') ? '<button type="button" class="exp-x" data-a="unequip" data-slot="' + sl.id + '">unequip</button>' : '') : '') +
+        '</div>';
+    }).join('');
+    var tot = {}; SLOTS.forEach(function (sl) { var it = gear[sl.id]; if (it && it.stats) { for (var k in it.stats) tot[k] = (tot[k] || 0) + it.stats[k]; } });
+    var totKeys = Object.keys(tot).filter(function (k) { return tot[k]; });
+    var power = window.Combat ? Combat.deriveStats(gear).power : 0;
+    var totHtml = '<div class="exp-tot"><span class="exp-stat" style="border-color:' + r.color + '">' + esc(r.name) + '</span>' +
+      (power ? '<span class="exp-stat pow">\u2694 Power <b>' + power + '</b></span>' : '') +
+      totKeys.map(function (k) { return '<span class="exp-stat">' + slabel(k) + ' <b>' + tot[k] + sunit(k) + '</b></span>'; }).join('') + '</div>';
+
+    var lb = a.lastBattle;
+    var battleHtml = lb ? '<div class="exp-battle ' + (lb.win ? 'win' : 'loss') + '"><b>' + (lb.win ? 'Victory' : 'Defeated') + '</b> \u00b7 cleared ' + lb.wavesCleared + '/' + lb.totalWaves + ' waves \u00b7 power ' + lb.power +
+      '<div class="exp-blog">' + lb.log.map(function (w) { return '<span class="' + (w.win ? 'w' : 'l') + '">' + esc(w.enemy) + '</span>'; }).join(' \u2192 ') + '</div></div>' : '';
     var haul = a.lastHaul && a.lastHaul.length ? '<div class="exp-haul">Last haul: ' + a.lastHaul.map(function (it) { return '<span style="color:' + it.color + '">' + esc(it.name) + '</span>'; }).join(', ') + '</div>' : '';
     var inv = (a.inv || []).slice().reverse().map(function (it) {
-      return '<div class="exp-item" style="border-color:' + it.color + '"><span class="exp-i-ic" style="color:' + it.color + '">' + (CAT_ICON[it.cat] || '◉') + '</span>' +
+      var can = it.slot && it.stats, on = can && gear[it.slot] && gear[it.slot].id === it.id;
+      return '<div class="exp-item' + (can ? ' eqbl' : '') + (on ? ' on' : '') + '"' + (can ? ' data-a="equip" data-id="' + it.id + '"' : '') + ' style="border-color:' + it.color + (on ? ';color:' + it.color : '') + '">' +
+        '<span class="exp-i-ic" style="color:' + it.color + '">' + (SLOT_IC[it.slot] || '◉') + '</span>' +
         '<span class="exp-i-name" style="color:' + it.color + '">' + esc(it.name) + '</span>' +
-        '<span class="exp-i-rar">' + it.rarity + (it.mods && it.mods.length ? ' · ' + esc(it.mods.join(' ')) : '') + '</span></div>';
+        '<span class="exp-i-rar">' + it.rarity + (on ? ' · equipped' : '') + '</span>' +
+        (it.stats ? '<span class="exp-i-stats">' + statLine(it.stats) + '</span>' : '') +
+        (it.mods && it.mods.length ? '<span class="exp-i-ab">' + esc(it.mods.join(' · ')) + '</span>' : '') +
+        (on ? '' : '<button type="button" class="exp-sell" data-a="sell" data-id="' + it.id + '">sell \u25C9' + sellValue(it) + '</button>') + '</div>';
     }).join('');
     expEl.innerHTML =
-      '<div class="exp-build"><div class="exp-robot" style="--rc:' + r.color + '"><span class="exp-eye"></span></div>' +
+      '<div class="exp-build"><div class="' + robotCls + '" style="--rc:' + r.color + '"><span class="exp-head"></span><span class="exp-eye"></span><span class="exp-body"></span><span class="exp-base"></span></div>' +
       '<div class="exp-cfg"><label class="exp-lab">Name</label><input class="exp-name" data-a="name" maxlength="18" value="' + esc(r.name) + '">' +
-      '<label class="exp-lab">Colour</label><div class="exp-row">' + colorChips + '</div>' +
-      '<label class="exp-lab">Weapon</label><div class="exp-row exp-wpns">' + wpnChips + '</div></div></div>' +
-      status + haul +
-      (inv ? '<div class="exp-inv-h">Inventory (' + (a.inv || []).length + ')</div><div class="exp-inv">' + inv + '</div>' : '');
+      '<label class="exp-lab">Skin</label><div class="exp-row">' + colorChips + '</div>' +
+      '<div class="exp-hint">Design the look under Chassis Builder; looted parts (with stats) snap into the five slots below.</div></div></div>' +
+      renderBuilder(a) +
+      '<div class="exp-load">' + load + '</div>' + totHtml +
+      status + battleHtml + haul +
+      (inv ? '<div class="exp-inv-h">Inventory (' + (a.inv || []).length + ') \u2014 tap a part to equip<button type="button" class="exp-selljunk" data-a="sell-junk">Sell all Common</button></div><div class="exp-inv">' + inv + '</div>' : '');
   }
   if (expEl) {
     expEl.addEventListener('click', function (e) {
       var b = e.target.closest('[data-a]'); if (!b) return; var act = b.dataset.a, a = state.adv;
       if (act === 'unlock') { if (state.bits >= ADV_COST) { state.bits -= ADV_COST; a.unlocked = true; dirty = true; save(); renderBalance(); renderAdventure(); } }
       else if (act === 'color') { a.robot.color = b.dataset.v; save(); renderAdventure(); }
-      else if (act === 'weapon') { a.robot.weapon = b.dataset.v; save(); renderAdventure(); }
+      else if (act === 'skin') { var sk = window.GamePalettes && GamePalettes.robotSkins[b.dataset.v]; if (sk) { a.robot.skin = b.dataset.v; a.robot.color = sk.eye; dirty = true; save(); renderAdventure(); } }
+      else if (act === 'equip') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && it.slot) { a.gear = a.gear || {}; a.gear[it.slot] = it; dirty = true; save(); renderAdventure(); } }
+      else if (act === 'unequip') { if (a.gear) { delete a.gear[b.dataset.slot]; dirty = true; save(); renderAdventure(); } }
+      else if (act === 'sell') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { state.bits += sellValue(it); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); dirty = true; save(); renderBalance(); renderAdventure(); } }
+      else if (act === 'sell-junk') { var kept = [], gained = 0; (a.inv || []).forEach(function (x) { if (x.rarity === 'Common' && !gearHasId(a.gear, x.id)) gained += sellValue(x); else kept.push(x); }); if (gained > 0) { state.bits += gained; a.inv = kept; dirty = true; save(); renderBalance(); renderAdventure(); } }
+      else if (act === 'preset') { var pr = PRESETS[b.dataset.v]; if (pr) { a.build = a.build || {}; for (var k in pr) { if (k === '_color') a.robot.color = pr[k]; else a.build[k] = pr[k]; } dirty = true; save(); renderAdventure(); } }
+      else if (act === 'save-load') { var inp = expEl.querySelector('.exp-ldname'); var nm = (inp && inp.value.trim()) || ('Build ' + (Object.keys(a.loadouts || {}).length + 1)); a.loadouts = a.loadouts || {}; a.loadouts[nm] = { build: Object.assign({}, a.build), color: a.robot.color }; dirty = true; save(); renderAdventure(); }
+      else if (act === 'load-ld') { var ld = (a.loadouts || {})[b.dataset.v]; if (ld) { a.build = Object.assign({}, ld.build); if (ld.color) a.robot.color = ld.color; dirty = true; save(); renderAdventure(); } }
+      else if (act === 'del-ld') { if (a.loadouts) { delete a.loadouts[b.dataset.v]; dirty = true; save(); renderAdventure(); } }
       else if (act === 'send') { a.dur = +b.dataset.v; a.endsAt = Date.now() + ADV_DUR[a.dur].mins * 60000; a.lastHaul = null; save(); renderAdventure(); }
       else if (act === 'claim') { claimAdventure(); renderBalance(); renderAdventure(); }
     });
     expEl.addEventListener('input', function (e) { var b = e.target.closest('[data-a="name"]'); if (b) { state.adv.robot.name = b.value.slice(0, 18); dirty = true; save(); } });
+    expEl.addEventListener('change', function (e) {
+      var sel = e.target.closest('select[data-cat]'); if (!sel) return;
+      var a = state.adv; a.build = a.build || {}; a.build[sel.dataset.cat] = sel.value; dirty = true; save();
+      var rb = expEl.querySelector('.exp-robot'); if (rb) rb.className = 'exp-robot core' + (LOOK_CORE[a.build.core] || 0) + ' legs' + (LOOK_LEGS[a.build.legs] || 0) + ' head' + (LOOK_HEAD[a.build.head] || 0);
+    });
   }
   function advTick() {
     var a = state.adv; if (!a.unlocked) return;

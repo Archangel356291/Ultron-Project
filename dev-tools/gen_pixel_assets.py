@@ -87,6 +87,17 @@ AGENT_COLORS = {
     "gold": (229, 184, 11, 255),      # Tally (stats)
     "bitcoin": (247, 147, 26, 255),   # Oracle (crypto market)
     "crimson": (215, 38, 74, 255),    # Redcell (ethical-hacking lab)
+    # least-privilege cyber/coding/records specialists (owner-requested 2026-09-17)
+    "cobalt": (47, 107, 255, 255),    # Bastion (sentinel-defense)
+    "slate": (125, 139, 160, 255),    # Overwatch (overwatch-logger)
+    "ember": (255, 140, 66, 255),     # Anvil (forge-coder)
+    "vermilion": (255, 59, 46, 255),  # Breach (red-team-sandbox)
+    # full-ecosystem specialists (owner-requested 2026-09-17)
+    "ivory": (230, 221, 196, 255),    # Architect (architecture-lead)
+    "mulberry": (166, 77, 121, 255),  # Critic (code-reviewer)
+    "graphite": (90, 98, 112, 255),   # Steward (homelab-monitor)
+    "candy": (255, 106, 213, 255),    # Pixel (pixel-artist)
+    "spearmint": (63, 224, 160, 255), # Arbiter (game-balancer)
 }
 OUTLINE_COLOR = (5, 6, 8, 255)
 
@@ -755,6 +766,15 @@ AGENT_LOOKS = {
     "gold": ("dome", "chart"),            # Tally (stats)
     "bitcoin": ("antenna", "coin"),       # Oracle (crypto market)
     "crimson": ("horns", "target"),       # Redcell (ethical-hacking lab)
+    "cobalt": ("plates", "eye"),          # Bastion (sentinel-defense)
+    "slate": ("antenna", "lines"),        # Overwatch (overwatch-logger)
+    "ember": ("dome", "code"),            # Anvil (forge-coder)
+    "vermilion": ("antenna", "target"),   # Breach (red-team-sandbox)
+    "ivory": ("dome", "network"),         # Architect (architecture-lead)
+    "mulberry": ("visor", "check"),       # Critic (code-reviewer)
+    "graphite": ("plates", "chart"),      # Steward (homelab-monitor)
+    "candy": ("antenna", "brush"),        # Pixel (pixel-artist)
+    "spearmint": ("dome", "block"),       # Arbiter (game-balancer)
 }
 
 

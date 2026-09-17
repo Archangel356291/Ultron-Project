@@ -2907,6 +2907,17 @@ def pixel_asset(filename):
     return send_from_directory(PIXEL_ASSETS_DIR, filename)
 
 
+# Pixel-game data modules (data-driven loot engine + colour-palette tokens),
+# loaded by ultron-dashboard.html. Same serving pattern as above; these are
+# plain same-origin JS (CSP script-src 'self') and node-testable in dev-tools.
+PIXEL_GAME_DIR = os.path.join(DASHBOARD_DIR, "pixel-game")
+
+
+@app.route("/pixel-game/<path:filename>")
+def pixel_game_asset(filename):
+    return send_from_directory(PIXEL_GAME_DIR, filename)
+
+
 # Self-hosted copies of the dashboard's four typefaces (all SIL Open Font
 # License), formerly pulled from fonts.googleapis.com on every load. Same
 # serving pattern as above. This was the dashboard's only third-party
@@ -3872,6 +3883,74 @@ AGENT_REGISTRY = {
         "tools": "Read, Grep, Glob (the D:\\Ethical Hacking Lab vault, sanitized evidence only). Scanning tools (nmap, etc.) stay UNWIRED until the lab plan is approved",
         "forbidden": "any scan/exploit/probe of any host, touching non-lab or public/production/unknown systems, malware/persistence/evasion/DoS, acting outside an approved trial, storing secrets or raw payloads",
         "scope": "ONLY systems deliberately created inside D:\\Ethical Hacking Lab and explicitly authorized; deny-by-default, approval-gated (see docs/AGENT_LAB_GOVERNANCE.md)",
+    },
+    # --- least-privilege cyber/coding/records specialists (owner-requested
+    # 2026-09-17). Tighter tool scopes than their cousins above; all four are
+    # enlisted in the ethical-hacking lab roster (docs/AGENT_LAB_GOVERNANCE.md). ---
+    "sentinel_defense": {
+        "role": "Bastion — read-only security watch & vulnerability auditor: static analysis + threat modeling of code, .env exposures (key names), Docker networking, firewall/port posture",
+        "kind": "claude-code", "models": "sonnet (Claude Code)",
+        "tools": "Read, Grep, Glob (NO Write, NO Bash — cannot create a hole or execute anything)",
+        "forbidden": "printing secret values, writing exploit/attack code, probing any external target, any execution",
+        "scope": "this repository, compose/Dockerfiles, .env key names, firewall/port posture on this PC; lab files read-only per lab governance",
+    },
+    "overwatch_logger": {
+        "role": "Overwatch — telemetry & audit-log analyst / records keeper: parses container/Tailscale/runtime logs and project stats for anomalies, appends structured entries to an append-only audit log",
+        "kind": "claude-code", "models": "haiku (Claude Code)",
+        "tools": "Read, Grep, Glob, Write (append-only to dev-tools/audit/ ONLY)",
+        "forbidden": "writing anywhere but the audit log, truncating/rewriting entries, logging secret values/credentials/chat content, acting on anomalies (records & flags only)",
+        "scope": "logs and records already kept on this PC; lab audit records per lab governance",
+    },
+    "forge_coder": {
+        "role": "Anvil — automated code & test architect: writes/refactors/patches components (incl. Bastion's findings) and designs unit tests; never executes them",
+        "kind": "claude-code", "models": "sonnet (Claude Code)",
+        "tools": "Read, Write, Edit, Grep, Glob (NO Bash — writes code, never runs it)",
+        "forbidden": "reading/writing secret values, weakening tests, new deps/services/ports without approval, claiming tests pass (cannot run them)",
+        "scope": "the Ultron repository on this PC; in the lab, only the demo-app target's tree per lab governance",
+    },
+    "red_team_sandbox": {
+        "role": "Breach — ethical-hacking execution sandbox: contained PoC checks, dependency vuln audits, and test suites to VERIFY defenses, inside the isolated lab on authorized local targets",
+        "kind": "claude-code", "models": "sonnet (Claude Code)",
+        "tools": "Read, Bash, Glob (NO Write to the codebase). Active exploit tooling/scanners UNWIRED until a specific trial is approved",
+        "forbidden": "any execution against external/production/personal/unknown or Ultron's own systems, malware/persistence/evasion/DoS, mass targeting, exfiltration, acting outside an approved in-scope trial",
+        "scope": "ONLY authorized targets inside D:\\Ethical Hacking Lab; deny-by-default, approval-gated (see docs/AGENT_LAB_GOVERNANCE.md)",
+    },
+    # --- full-ecosystem specialists (owner-requested 2026-09-17): the gaps the
+    # ecosystem brief named that no existing agent covered. ---
+    "architecture_lead": {
+        "role": "Architect — architecture & system lead: maps dependencies and produces sequenced implementation blueprints for other agents; read-only planner",
+        "kind": "claude-code", "models": "sonnet (Claude Code)",
+        "tools": "Read, Grep, Glob (read-only; designs, never edits)",
+        "forbidden": "editing files, reading/exposing secret values, guessing on irreversible decisions instead of surfacing them",
+        "scope": "the Ultron repository on this PC; hands off to Anvil/Forge/Proof",
+    },
+    "code_reviewer": {
+        "role": "Critic — code reviewer & quality gate: correctness/performance/safety/test-coverage verdict on diffs before commit; advisory, does not commit",
+        "kind": "claude-code", "models": "sonnet (Claude Code)",
+        "tools": "Read, Grep, Glob, Bash (read-only: run tests/linters, git diff/log)",
+        "forbidden": "editing or committing code, weakening tests, printing secret values, waving through unreviewed changes",
+        "scope": "diffs and code in the Ultron repository on this PC",
+    },
+    "homelab_monitor": {
+        "role": "Steward — homelab monitor & sysadmin: host + container health (CPU/mem/disk, restarts, healthchecks); reports thresholds and proposes fixes",
+        "kind": "claude-code", "models": "haiku (Claude Code)",
+        "tools": "Read, Grep, Glob, Bash (read-only: df/free/docker ps/docker stats)",
+        "forbidden": "restarts or any host/container mutation (proposes to owner; Dockhand executes), writing to source/data/.env, probing any host off this PC",
+        "scope": "this PC's host metrics and its containers; read-only observation",
+    },
+    "pixel_artist": {
+        "role": "Pixel — art & visual asset designer for the pixel-game: sprites, backdrops, colour palettes via the Pillow generator + palettes.js; keeps the metallic/cyberpunk look",
+        "kind": "claude-code", "models": "sonnet (Claude Code)",
+        "tools": "Read, Write, Edit, Grep, Glob, Bash (python gen_pixel_assets.py)",
+        "forbidden": "copying Marvel's Ultron design, hard-coding one-off colours in gameplay code, hand-editing generated PNG bytes, blur-heavy effects that muddy sprites",
+        "scope": "dev-tools/gen_pixel_assets.py, pixel-assets/, pixel-game/palettes.js, COLOR_PALETTES.md",
+    },
+    "game_balancer": {
+        "role": "Arbiter — game rules & balancing: tunes loot/combat data and upgrade cost curves, proves changes with the Node sims; keeps the loop fair and rewarding",
+        "kind": "claude-code", "models": "sonnet (Claude Code)",
+        "tools": "Read, Write, Edit, Grep, Glob, Bash (node dev-tools/test_loot_engine.js / test_combat.js)",
+        "forbidden": "rewriting gameplay logic by feel, weakening tests, unseeded randomness, claiming balanced without the sim output",
+        "scope": "pixel-game/loot-engine.js, pixel-game/combat.js, foundry cost curves in ultron-dashboard.html, the game tests",
     },
 }
 TASK_STATUSES = ("created", "assigned", "acknowledged", "in_progress", "blocked", "awaiting_review",

@@ -26,6 +26,10 @@
 !three-pipeline/**
 !pixel-assets/
 !pixel-assets/**
+# Pixel-game data modules (loot engine, palettes, combat), served by app.py's
+# /pixel-game/<file> route. JS + docs only; no secrets here.
+!pixel-game/
+!pixel-game/**
 # Self-hosted dashboard typefaces (OFL woff2 + their README), served by
 # app.py's /fonts/<file> route.
 !fonts/
