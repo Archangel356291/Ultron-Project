@@ -94,8 +94,9 @@
     var waveCount = [3, 5, 8][dur] || 3;
     var waves = [], i;
     for (i = 0; i < waveCount - 1; i++) waves.push(scaleEnemy(TRASH[Math.floor(rnd() * TRASH.length)], ilvl));
-    var capId = CAP[dur] || 'warden';
+    var capId = opts.bossMult ? 'sentinel_prime' : (CAP[dur] || 'warden');
     waves.push(scaleEnemy(ENEMIES.filter(function (e) { return e.id === capId; })[0], ilvl));
+    if (opts.bossMult && opts.bossMult !== 1) waves.forEach(function (w) { w.hp = Math.round(w.hp * opts.bossMult); w.dmg = Math.round(w.dmg * opts.bossMult); });  // boss challenge: everything hits harder
 
     var log = [], cleared = 0, win = true;
     for (i = 0; i < waves.length; i++) {

@@ -2931,10 +2931,17 @@ def _game_user_key():
 # file predates the non-root switch), but the /data dir is writable, so game
 # saves live in their OWN sqlite file the container creates and owns. Persistent
 # (on the same volume) and cross-device.
-GAME_DB_PATH = os.path.join(DATA_DIR, "game_saves.db")
+# Owner-chosen game-save location (C:\Ultron Project\Ultrons Game, bind-mounted
+# to /game-saves in compose); falls back to the data dir if unset.
+GAME_DIR = os.environ.get("ULTRON_GAME_DIR", DATA_DIR)
+GAME_DB_PATH = os.path.join(GAME_DIR, "game_saves.db")
 
 
 def _game_db():
+    try:
+        os.makedirs(GAME_DIR, exist_ok=True)
+    except OSError:
+        pass
     conn = sqlite3.connect(GAME_DB_PATH, timeout=10)
     conn.row_factory = sqlite3.Row
     conn.execute(

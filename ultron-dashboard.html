@@ -594,7 +594,10 @@
 
   /* Ultron's foundry -- the idle-game panel under his corner. */
   .foundry{ max-width:1280px; }
-  .foundry-bal{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-mono); }
+  .foundry-bal{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-mono); position:relative; }
+  .game-pops{ position:absolute; left:0; right:0; top:-4px; pointer-events:none; display:flex; flex-direction:column; align-items:center; gap:1px; z-index:6; }
+  .game-pop{ font-family:var(--font-display); font-weight:700; font-size:12.5px; animation:gamePop 1s ease-out forwards; text-shadow:0 1px 4px rgba(0,0,0,.7); white-space:nowrap; }
+  @keyframes gamePop{ 0%{opacity:0; transform:translateY(6px) scale(.8);} 18%{opacity:1; transform:translateY(0) scale(1.12);} 100%{opacity:0; transform:translateY(-24px) scale(1);} }
   .foundry-coin{ color:#e6a41e; font-size:20px; line-height:1; text-shadow:0 0 10px rgba(230,164,30,0.5); }
   .foundry-bits{ font-family:var(--font-display); font-size:30px; font-weight:700; color:var(--text); transition:color .12s; }
   .foundry-bits.pop{ color:#ffd24b; }
@@ -603,7 +606,10 @@
   .foundry-upgrades{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:10px; margin:12px 0; }
   .foundry-up{ text-align:left; background:var(--panel-raised); border:1px solid var(--line); border-radius:8px; padding:10px 12px; cursor:pointer; color:var(--text); transition:border-color .15s, background .15s, transform .05s; }
   .foundry-up:hover:not(:disabled){ border-color:var(--gold, #e6a41e); }
-  .sfx-btn{ margin-left:auto; background:none; border:1px solid var(--line); border-radius:6px; color:var(--text-faint); cursor:pointer; font-size:13px; line-height:1; padding:3px 7px; }
+  .game-save-btn{ margin-left:auto; background:none; border:1px solid rgba(95,227,154,.4); border-radius:6px; color:#5fe39a; cursor:pointer; font-family:var(--font-mono); font-size:11px; line-height:1; padding:4px 9px; }
+  .game-save-btn:hover{ background:rgba(95,227,154,.1); }
+  .game-save-btn:active{ transform:scale(.96); }
+  .sfx-btn{ background:none; border:1px solid var(--line); border-radius:6px; color:var(--text-faint); cursor:pointer; font-size:13px; line-height:1; padding:3px 7px; }
   .sfx-btn.on{ border-color:rgba(120,200,255,.5); color:#9be8ff; }
   .agent-roster{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px; }
   .ar-card{ display:flex; align-items:center; gap:9px; background:var(--panel-raised); border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
@@ -651,13 +657,13 @@
   .cx-lore.locked .cx-lore-t{ color:var(--text-faint); }
   .cx-lore-b{ font-size:11.5px; color:var(--text-dim); line-height:1.5; margin-top:2px; }
   .cx-lore.locked .cx-lore-b{ color:var(--text-faint); font-style:italic; }
-  .progression{ margin-top:14px; padding:11px 13px; border:1px solid rgba(120,200,255,.35); border-radius:8px; background:linear-gradient(180deg,rgba(120,200,255,.06),transparent); }
+  .progression{ margin-top:14px; padding:11px 13px; border:1px solid rgba(255,59,59,.35); border-radius:8px; background:linear-gradient(180deg,rgba(255,59,59,.06),transparent); }
   .prog-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
-  .prog-lvl{ font-family:var(--font-display); font-weight:700; font-size:14px; color:#9be8ff; }
+  .prog-lvl{ font-family:var(--font-display); font-weight:700; font-size:14px; color:#ff8098; }
   .prog-pts{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
   .prog-pts.has{ color:#ffd88a; }
   .prog-bar{ height:7px; background:var(--void); border:1px solid var(--line); border-radius:4px; overflow:hidden; margin:7px 0 3px; }
-  .prog-bar i{ display:block; height:100%; background:linear-gradient(90deg,#3d9bff,#9be8ff); }
+  .prog-bar i{ display:block; height:100%; background:linear-gradient(90deg,#ff2b3d,#ff8098); }
   .prog-xp{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
   .prog-skills{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:7px; margin-top:9px; }
   .skill{ text-align:left; background:var(--panel-raised); border:1px solid var(--line); border-radius:7px; padding:7px 9px; cursor:default; color:var(--text); }
@@ -697,6 +703,9 @@
   .exp-btn{ font-family:var(--font-display); font-weight:700; font-size:12.5px; padding:7px 12px; border-radius:7px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text); cursor:pointer; }
   .exp-btn.big{ font-size:14px; padding:9px 16px; }
   .exp-btn.can{ border-color:rgba(230,164,30,0.55); color:#ffd88a; }
+  .exp-btn.boss{ border-color:rgba(255,90,122,.35); color:#ff8098; }
+  .exp-btn.boss.can{ border-color:rgba(255,90,122,.7); color:#ff9db8; }
+  .exp-btn.boss.can:hover{ background:rgba(255,90,122,.1); }
   .exp-btn:disabled{ opacity:0.5; cursor:not-allowed; }
   .exp-build{ display:flex; gap:16px; align-items:flex-start; background:var(--panel-raised); border:1px solid var(--line); border-radius:8px; padding:12px 14px; flex-wrap:wrap; }
   .exp-robot{ width:56px; height:70px; border-radius:6px; background:linear-gradient(180deg,#2c313a,#181c22); border:1px solid var(--line); position:relative; flex-shrink:0; box-shadow:0 0 14px -4px var(--rc); }
@@ -1446,16 +1455,15 @@
             <div class="pixel-bubble" id="pixel-bubble" hidden></div>
           </div>
 
-          <div class="panel-label" style="margin-top:24px;">Agent roster &amp; enlistments</div>
-          <div class="agent-roster" id="agent-roster"></div>
-
           <div class="panel-label" style="margin-top:28px;">Ultron's foundry</div>
           <div class="foundry" id="foundry">
             <div class="foundry-bal">
               <span class="foundry-coin" aria-hidden="true">◉</span>
               <span class="foundry-bits" id="foundry-bits">0</span>
               <span class="foundry-rate" id="foundry-rate"></span>
-              <button type="button" class="sfx-btn" id="sfx-toggle" title="Game sound effects (off by default)" aria-label="Toggle game sound">🔇</button>
+              <button type="button" class="game-save-btn" id="game-save-btn" title="Save all game progress now">💾 Save</button>
+              <button type="button" class="sfx-btn" id="sfx-toggle" title="Game sound effects" aria-label="Toggle game sound">🔊</button>
+              <div class="game-pops" id="game-pops"></div>
             </div>
             <div class="foundry-offline" id="foundry-offline" hidden></div>
             <div class="foundry-loot" id="foundry-loot" hidden></div>
@@ -1478,7 +1486,10 @@
           <div class="expedition" id="expedition"></div>
 
           <div class="panel-label" style="margin-top:28px;">Codex</div>
-          <details class="codex-wrap"><summary>Enemies, loot, rarities &amp; bays \u2014 the game's database</summary><div id="codex"></div></details>
+          <details class="codex-wrap"><summary>Enemies, loot, rarities &amp; bays &mdash; the game's database</summary><div id="codex"></div></details>
+
+          <div class="panel-label" style="margin-top:28px;">Agent roster &amp; enlistments</div>
+          <div class="agent-roster" id="agent-roster"></div>
 
           <div class="panel-label" style="margin-top:28px;">What Ultron knows</div>
           <div class="vault-head">
@@ -2747,6 +2758,24 @@
       }, 2500);
     };
   })();
+  // Subagents completing tasks earn the player game XP. Each poll, count the
+  // completed agent tasks; the first poll sets a baseline, later increases grant
+  // XP (admin only -- the tasks endpoint is admin-scoped).
+  var __lastCompletedTasks = -1;
+  async function pollAgentTaskXp() {
+    if (state.role !== 'admin' || !state.token || !window.__foundryXp) return;
+    try {
+      var data = await apiGet('/api/agents/tasks?status=completed&limit=300');
+      var list = Array.isArray(data) ? data : (data && (data.tasks || data.data)) || [];
+      var n = list.length;
+      if (__lastCompletedTasks < 0) { __lastCompletedTasks = n; return; }
+      if (n > __lastCompletedTasks) {
+        var delta = n - __lastCompletedTasks; __lastCompletedTasks = n;
+        window.__foundryXp(delta * 60, delta + ' agent task' + (delta === 1 ? '' : 's'));
+      }
+    } catch (e) { /* ignore -- game still works without it */ }
+  }
+
   async function syncGameFromCloud() {
     if (!state.token || !window.__foundryImport) return;
     try {
@@ -2786,6 +2815,7 @@
           fetchConnections(),
           fetchEvolutionIdeas(),
           fetchMetricsHistory(),
+          pollAgentTaskXp(),
         ];
       // One explicit heartbeat decides "connected"; the feeds decide
       // nothing. Before, Promise.all over the feeds did double duty: one
@@ -5229,7 +5259,7 @@ function toggleReducedVisuals(el) {
   // fall in, salute "for a Better World", form up, and march up the stairs and
   // out through the same OUT the package belt exits by -- forever. Ultron moved
   // to the TOP office; agents fill the storeys between.
-  var BAY_H = 220, BAY_WALL = 164;               // each production bay's strip height + floor line
+  var BAY_H = 385, BAY_WALL = 287;               // each production bay's strip height + floor line (0.75x larger to fit the robots)
   var MAX_BAYS = 10, MAX_PER_BAY = 10;           // unlockable floors, and robots per floor -- both capped
   // Per-bay robot styling: body / plate (head) / eye+core / weapon. One per floor.
   // Each bay is a named unit of a distinct robot archetype: its own colour,
@@ -6037,12 +6067,17 @@ function toggleReducedVisuals(el) {
       drawSprite(IMG['agent_' + a.color], a.x + DESK_DX + 55 - 60, a.floorY, -ROBOT_SINK);
       var desk = drawSprite(IMG['desk_' + a.color + (lit ? '_active' : '_idle')], a.x + DESK_DX, a.floorY);
       if (desk.w) {
-        var status = alarmed ? 'alert' : (busy && a.busyPlate) ? a.busyPlate : '';
+        var status = alarmed ? 'alert' : busy ? (a.busyPlate || 'busy') : 'idle';
         plate(a.label, status, a.x + DESK_DX + 9, a.floorY - DESK_H + 15, DESK_W - 18, DESK_H - 24, alarmed ? '#ff6b6b' : a.plateHex, alarmed ? '#ff6b6b' : '#e8e6e0');
+        // idle/busy status LED on the workstation
+        var dotC = alarmed ? '#ff4d5e' : busy ? '#ffc24b' : '#33d17a';
+        ctx.fillStyle = dotC; ctx.beginPath(); ctx.arc(a.x + DESK_DX + DESK_W - 13, a.floorY - DESK_H + 13, 3.4, 0, Math.PI * 2); ctx.fill();
+        if (busy || alarmed) { ctx.globalAlpha = 0.35 + 0.35 * Math.sin(t * 5 + a.x); ctx.beginPath(); ctx.arc(a.x + DESK_DX + DESK_W - 13, a.floorY - DESK_H + 13, 5.6, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+        ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.beginPath(); ctx.arc(a.x + DESK_DX + DESK_W - 14, a.floorY - DESK_H + 12, 1, 0, Math.PI * 2); ctx.fill();
       }
       hover(a.label, a.x + DESK_DX + DESK_W / 2, a.floorY - DESK_H * 0.5, DESK_W * 0.62,
         '<b style="color:' + a.hex + '">' + a.label + '</b> \u2014 ' + (AGENT_ROLE[a.agent] || '') +
-        '<br><span class="rt-enl">' + agentEnlist(a.agent) + '</span>');
+        '<br><span class="rt-enl">' + agentEnlist(a.agent) + ' \u00b7 ' + (alarmed ? 'ALERT' : busy ? 'busy' : 'idle') + '</span>');
     });
 
     // Ultron's office at the top: recharge pod, desk, and the man himself.
@@ -6248,7 +6283,7 @@ function toggleReducedVisuals(el) {
 window.__sfx = (function () {
   'use strict';
   var ctx = null, muted = true, lastCoin = 0;
-  try { muted = localStorage.getItem('ultron_sfx_muted') !== '0'; } catch (e) { }
+  try { muted = localStorage.getItem('ultron_sfx_muted') === '1'; } catch (e) { }   // default: sound ON
   function ac() {
     if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ctx = null; } }
     if (ctx && ctx.state === 'suspended') { try { ctx.resume(); } catch (e) { } }
@@ -6314,44 +6349,56 @@ window.__sfx = (function () {
   // ---- Refinery: an adamantium forge and a vibranium forge cast ingots onto
   // one belt that feeds a currency press. Each machine and the belt upgrade
   // individually, on the same Bits->Nanits exponential scale as the foundry. ----
-  var REF_UNLOCKS = [
-    { id: 'unlA', name: 'Adamantium Forge', cost: 500, desc: 'Cast bright-silver adamantium ingots' },
-    { id: 'unlV', name: 'Vibranium Forge', cost: 6000, desc: 'Cast black, blue-crackled vibranium ingots' },
-    { id: 'unlP', name: 'Currency Press', cost: 25000, desc: 'Press ingots on the belt into bits' },
+  // ---- Refinery materials (data-driven). Each has an EXTRACTOR (mines raw ore)
+  // and a SMELTER (melts ore into a rarity-tiered ingot, lava-vat pour); ingots
+  // ride the belt into the currency press. Every machine + the belt upgrade
+  // individually on the same Bits->Nanits scale; value scales with rarity. ----
+  var REF_MATS = [
+    { id: 'copp', name: 'Copper',     rarity: 'Rare',      color: '#c9772e', ore: '#5a3a20', extCost: 300,    smCost: 900,    value: 0.8, rate: 0.80 },
+    { id: 'silv', name: 'Silver',     rarity: 'Epic',      color: '#c0c6cf', ore: '#4a4e55', extCost: 2000,   smCost: 6000,   value: 1.6, rate: 0.65 },
+    { id: 'gold', name: 'Gold',       rarity: 'Legendary', color: '#ffd24b', ore: '#7a5a12', extCost: 12000,  smCost: 36000,  value: 3.2, rate: 0.50 },
+    { id: 'adam', name: 'Adamantium', rarity: 'Mythic',    color: '#f4f6fa', ore: '#6b7076', extCost: 40000,  smCost: 120000, value: 4.0, rate: 0.45 },
+    { id: 'uran', name: 'Uranium',    rarity: 'Mythic',    color: '#b6ff3d', ore: '#3a4a12', extCost: 90000,  smCost: 270000, value: 6.0, rate: 0.40, glow: true },
+    { id: 'vibr', name: 'Vibranium',  rarity: 'Mythic',    color: '#3da9ff', ore: '#14161c', extCost: 150000, smCost: 450000, value: 12,  rate: 0.30 },
   ];
-  var REF_UPGRADES = [
-    { id: 'adam', name: 'Adamantium Speed', base: 60, grow: 1.55, max: 25, need: 'unlA', desc: function (l) { return '+20% adamantium output (x' + (1 + 0.2 * l).toFixed(2) + ')'; } },
-    { id: 'vibr', name: 'Vibranium Speed', base: 220, grow: 1.60, max: 25, need: 'unlV', desc: function (l) { return '+20% vibranium output (x' + (1 + 0.2 * l).toFixed(2) + ')'; } },
-    { id: 'conv', name: 'Refinery Belt', base: 120, grow: 1.50, max: 25, need: 'unlA', desc: function (l) { return '+15% belt speed (x' + (1 + 0.15 * l).toFixed(2) + ')'; } },
-    { id: 'press', name: 'Press Yield', base: 400, grow: 1.60, max: 25, need: 'unlP', desc: function (l) { return 'x' + (2 + 0.5 * l).toFixed(1) + ' ingot value at the press'; } },
-  ];
+  var REF_UNLOCKS = [];
+  var REF_UPGRADES = [];
+  (function () {
+    REF_MATS.forEach(function (m) {
+      REF_UNLOCKS.push({ id: 'ext_' + m.id, name: m.name + ' Extractor', cost: m.extCost, desc: 'Mine raw ' + m.name.toLowerCase() + ' ore' });
+      REF_UNLOCKS.push({ id: 'sm_' + m.id, name: m.name + ' Smelter', cost: m.smCost, desc: 'Smelt ' + m.name.toLowerCase() + ' ore into ' + m.rarity + ' ingots', need: 'ext_' + m.id });
+    });
+    REF_UNLOCKS.push({ id: 'unlP', name: 'Currency Press', cost: 25000, desc: 'Press ingots on the belt into bits', need: 'sm_copp' });
+    REF_MATS.forEach(function (m) {
+      REF_UPGRADES.push({ id: 'mine_' + m.id, name: m.name + ' Mining', base: Math.ceil(m.extCost * 0.12), grow: 1.55, max: 25, need: 'ext_' + m.id, desc: (function (nm) { return function (l) { return '+20% ' + nm + ' ore (x' + (1 + 0.2 * l).toFixed(2) + ')'; }; })(m.name) });
+      REF_UPGRADES.push({ id: 'smh_' + m.id, name: m.name + ' Smelter Heat', base: Math.ceil(m.smCost * 0.12), grow: 1.6, max: 25, need: 'sm_' + m.id, desc: (function (nm) { return function (l) { return '+15% ' + nm + ' smelt (x' + (1 + 0.15 * l).toFixed(2) + ')'; }; })(m.name) });
+    });
+    REF_UPGRADES.push({ id: 'conv', name: 'Refinery Belt', base: 400, grow: 1.5, max: 25, need: 'ext_copp', desc: function (l) { return '+15% belt speed (x' + (1 + 0.15 * l).toFixed(2) + ')'; } });
+    REF_UPGRADES.push({ id: 'press', name: 'Press Yield', base: 5000, grow: 1.6, max: 25, need: 'unlP', desc: function (l) { return 'x' + (2 + 0.5 * l).toFixed(1) + ' ingot value at the press'; } });
+    // Ultron's Drones: global mining upgrades for the laser-mining bots.
+    REF_UPGRADES.push({ id: 'dspeed', name: 'Drone Mine Speed', base: 800, grow: 1.55, max: 25, need: 'ext_copp', desc: function (l) { return '+10% all ore output (x' + (1 + 0.1 * l).toFixed(2) + ')'; } });
+    REF_UPGRADES.push({ id: 'dqual', name: 'Drone Mine Quality', base: 1200, grow: 1.60, max: 25, need: 'ext_copp', desc: function (l) { return '+8% all ingot value (x' + (1 + 0.08 * l).toFixed(2) + ')'; } });
+    REF_UPGRADES.push({ id: 'deff', name: 'Drone Efficiency', base: 1000, grow: 1.55, max: 25, need: 'ext_copp', desc: function (l) { return '+6% all smelt yield (x' + (1 + 0.06 * l).toFixed(2) + ')'; } });
+  })();
   function refLvl(id) { return (state.ref && state.ref.up && state.ref.up[id]) || 0; }
   function refUnlocked(id) { return !!(state.ref && state.ref[id]); }
   function refConfig() {
-    var r = state.ref || {};
-    return {
-      unlA: !!r.unlA, unlV: !!r.unlV, unlP: !!r.unlP,
-      adamRate: r.unlA ? 0.45 * (1 + 0.2 * refLvl('adam')) : 0,   // ingots / sec
-      vibrRate: r.unlV ? 0.30 * (1 + 0.2 * refLvl('vibr')) : 0,
-      convMult: 1 + 0.15 * refLvl('conv'),
-      // Both ingots are MYTHIC quality; base value follows the currency scale.
-      // The press MULTIPLIES that value (and scales with its own upgrades) --
-      // ingots are only worth bits after going through the unlocked press.
-      quality: 'Mythic',
-      adamValue: 4, vibrValue: 12,                               // raw mythic ingot value (vibranium the rarer)
-      pressMult: 2 + 0.5 * refLvl('press'),                      // press converts + scales the value
-    };
+    var dS = 1 + 0.1 * refLvl('dspeed'), dQ = 1 + 0.08 * refLvl('dqual'), dE = 1 + 0.06 * refLvl('deff');
+    var mats = REF_MATS.map(function (m) {
+      return { id: m.id, name: m.name, rarity: m.rarity, color: m.color, ore: m.ore, glow: !!m.glow,
+        ext: refUnlocked('ext_' + m.id), sm: refUnlocked('sm_' + m.id),
+        rate: refUnlocked('ext_' + m.id) ? m.rate * (1 + 0.2 * refLvl('mine_' + m.id)) * dS : 0,
+        smelt: (1 + 0.15 * refLvl('smh_' + m.id)) * dE, value: m.value * dQ };
+    });
+    return { unlP: refUnlocked('unlP'), convMult: 1 + 0.15 * refLvl('conv'), pressMult: 2 + 0.5 * refLvl('press'), quality: 'Mythic', mats: mats };
   }
   function refIncome() {
-    if (!refUnlocked('unlP')) return 0;
     var c = window.__refinery || refConfig();
-    return (c.adamRate * c.adamValue + c.vibrRate * c.vibrValue) * c.pressMult;
+    if (!c.unlP) return 0;
+    var sum = 0; (c.mats || []).forEach(function (m) { if (m.ext && m.sm) sum += m.rate * m.smelt * m.value; });
+    return sum * c.pressMult;
   }
-  // per-ingot value after the press (what the UI shows)
-  function ingotPressed(kind) {
-    var c = window.__refinery || refConfig();
-    return (kind === 'vibr' ? c.vibrValue : c.adamValue) * c.pressMult;
-  }
+
   // Prestige: reboot the line for permanent Nanite Cores (+10% all income each).
   // Cores scale with the square root of lifetime bits, so each reboot is a real
   // reset that pushes past the exponential wall.
@@ -6372,7 +6419,7 @@ window.__sfx = (function () {
     if (!state.prog || !(n > 0)) return;
     state.prog.xp += n; var up = false;
     while (state.prog.xp >= xpForLevel(state.prog.level)) { state.prog.xp -= xpForLevel(state.prog.level); state.prog.level++; state.prog.pts++; up = true; }
-    if (up) { dirty = true; if (window.__sfx) window.__sfx('level'); if (typeof renderProgression === 'function') { renderProgression(); renderAdventure(); } }
+    if (up) { dirty = true; if (window.__sfx) window.__sfx('level'); gamePop('\u2605 LEVEL ' + state.prog.level, '#ff3b3b'); if (typeof renderProgression === 'function') { renderProgression(); renderAdventure(); } }
   }
 
   // ---- Expedition regions (biomes): each sets a difficulty (ilvl), a loot bias,
@@ -6388,6 +6435,19 @@ window.__sfx = (function () {
     { name: 'Boss / Danger', ilvl: 5, types: null, color: '#ff2b3d', unlock: 16 },
   ];
   function playerLevel() { return (state.prog && state.prog.level) || 1; }
+  // Each region has a BOSS: a hard challenge that, on victory, guarantees a
+  // signature item themed to the region (and marks the boss defeated).
+  var BOSSES = [
+    { name: 'Sentinel Prime', base: 'ultron_prime_core', rarity: 'mythic' },
+    { name: 'The Ghost', base: 'hacker_spike', rarity: 'mythic' },
+    { name: 'Neon Warlord', base: 'plasma_scattergun', rarity: 'legendary' },
+    { name: 'Scrap Titan', base: 'reactor_core_housing', rarity: 'mythic' },
+    { name: 'Meltdown', base: 'nano_swarm_emitter', rarity: 'mythic' },
+    { name: 'Frost Warden', base: 'void_phase_shield', rarity: 'mythic' },
+    { name: 'Void Herald', base: 'singularity_battery', rarity: 'mythic' },
+    { name: 'Omega Core', base: 'gravity_hammer', rarity: 'mythic' },
+  ];
+  function bossUnlockLevel(i) { return (REGIONS[i] ? REGIONS[i].unlock : 1) + 2; }
 
   // ---- Story / lore: unlocks as the player levels. Shown in the Codex. ----
   var LORE = [
@@ -6434,6 +6494,7 @@ window.__sfx = (function () {
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
   if (!state.adv.region) state.adv.region = 0;
+  if (!state.adv.bosses) state.adv.bosses = {};
   if (!state.mats) state.mats = { scrap: 0, alloy: 0, core: 0 };
 
   var saveTimer = null;
@@ -6488,11 +6549,25 @@ window.__sfx = (function () {
     var eff = Math.min(away, capSec);
     offlineEarned = prodRate() * eff * globalMult();
     if (offlineEarned > 0.05) { state.bits += offlineEarned; state.lifetime = (state.lifetime || 0) + offlineEarned; dirty = true; }
+    state.seen = Date.now();   // reset so returning to the tab doesn't double-count
   }
   // flush last-seen when the tab is hidden/closed so offline time is accurate
   function flush() { state.seen = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } }
+  // Coming back to the tab: gather everything earned while it was hidden/closed
+  // (offline = not on the game tab), up to the offline-storage cap.
+  function claimOffline() {
+    if (!state.seen) { state.seen = Date.now(); return; }
+    var away = Math.max(0, (Date.now() - state.seen) / 1000); state.seen = Date.now();
+    if (away < 3) return;
+    var eff = Math.min(away, (window.__foundry.offlineHours || 1.5) * 3600);
+    var earned = prodRate() * eff * globalMult();
+    if (earned > 0.05) {
+      state.bits += earned; state.lifetime = (state.lifetime || 0) + earned; dirty = true; save(); renderBalance();
+      if (window.__gamePop) gamePop('◉ +' + fmt(earned) + ' while away', '#5fe39a');
+    }
+  }
   window.addEventListener('pagehide', flush);
-  document.addEventListener('visibilitychange', function () { if (document.hidden) flush(); });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) flush(); else claimOffline(); });
 
   window.__foundryEarn = function (n) {
     var amt = (n || 0) * globalMult();
@@ -6504,6 +6579,7 @@ window.__sfx = (function () {
   // Currency evolves in named tiers (owner's order), each 1000x the last:
   // Bits -> Bytes -> Chits -> Scrip -> Nanits. Every cost/balance uses these.
   var UNITS = ['bits', 'bytes', 'chits', 'scrip', 'nanits'];
+  var UNIT_SYM = ['\u2301', '\u25A6', '\u25C8', '\u2B21', '\u2726'];   // cyber glyph per tier: bit/byte/chit/scrip/nanit
   function fmt(n) {
     if (!(n > 0)) n = 0;
     var i = 0;
@@ -6512,8 +6588,30 @@ window.__sfx = (function () {
     if (i === 0) num = n < 100 ? (Math.round(n * 10) / 10).toFixed(1) : Math.floor(n).toLocaleString();
     else if (n >= 1000) num = Math.floor(n).toLocaleString();      // beyond nanits: big numbers
     else num = n < 10 ? n.toFixed(2) : n < 100 ? n.toFixed(1) : Math.floor(n).toString();
-    return num + ' ' + UNITS[i];
+    return UNIT_SYM[i] + num + ' ' + UNITS[i];
   }
+
+  function gamePop(text, color) {
+    var c = document.getElementById('game-pops'); if (!c) return;
+    var d = document.createElement('div'); d.className = 'game-pop'; d.style.color = color || '#ffd88a'; d.textContent = text;
+    c.appendChild(d); setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 1000);
+  }
+  window.__gamePop = gamePop;
+  // Manual save: write everything immediately (bypass the debounce) + push to cloud.
+  function saveNow() {
+    state.seen = state.savedAt = Date.now();
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+    if (window.__foundryCloudPush) window.__foundryCloudPush();
+    gamePop('✔ Game saved', '#5fe39a'); if (window.__sfx) window.__sfx('unlock');
+  }
+  (function () { var b = document.getElementById('game-save-btn'); if (b) b.addEventListener('click', saveNow); })();
+  // Subagents completing tasks earn the player game XP (called by the dashboard
+  // poller when it sees newly-completed agent tasks).
+  window.__foundryXp = function (n, label) {
+    n = n || 0; if (n <= 0) return;
+    addXp(n); gamePop((label || 'agent task') + ' \u2605 +' + Math.round(n) + ' XP', '#ff3b3b');
+    dirty = true; save();
+  };
 
   var bitsEl = document.getElementById('foundry-bits');
   var rateEl = document.getElementById('foundry-rate');
@@ -6539,6 +6637,7 @@ window.__sfx = (function () {
         if (state.bits < c) return;
         state.bits -= c; state.up[u.id] = lvl(u.id) + 1;
         if (window.__sfx) window.__sfx('unlock');
+        gamePop('\u25B2 ' + u.name + ' Lv ' + lvl(u.id), '#ffd88a');
         publish();
         if (u.id === 'bays' && window.__roomRelayout) window.__roomRelayout();
         dirty = true; save(); renderUpgrades();
@@ -6567,20 +6666,22 @@ window.__sfx = (function () {
         '<div class="fu-cost' + (can || maxed ? '' : ' short') + '">' + (maxed ? '\u2014' : '\u25c9 ' + fmt(c)) + '</div></button>';
     });
     var c = window.__refinery || refConfig();
+    var anyExt = (c.mats || []).some(function (m) { return m.ext; });
     var status = '';
-    if (c.unlA || c.unlV) {
+    if (anyExt) {
       var pm = c.pressMult || 1, pressed = refUnlocked('unlP');
-      status = '<div class="ref-status"><span class="ref-mythic">\u2726 Mythic ingots</span>' +
-        (c.unlA ? '<span class="ref-ing adam">Adamantium ' + fmt(c.adamValue) + (pressed ? ' \u2192 ' + fmt(c.adamValue * pm) : '') + '</span>' : '') +
-        (c.unlV ? '<span class="ref-ing vibr">Vibranium ' + fmt(c.vibrValue) + (pressed ? ' \u2192 ' + fmt(c.vibrValue * pm) : '') + '</span>' : '') +
-        '<span class="ref-press">' + (pressed ? 'press \u00d7' + pm.toFixed(1) : 'press locked \u2014 ingots not yet valued') + '</span></div>';
+      status = '<div class="ref-status"><span class="ref-mythic">Ingots \u00b7 press \u00d7' + pm.toFixed(1) + '</span>' +
+        (c.mats || []).filter(function (m) { return m.ext; }).map(function (m) {
+          var v = (pressed && m.sm) ? fmt(m.value * pm) : (m.sm ? fmt(m.value) : 'needs smelter');
+          return '<span class="ref-ing" style="color:' + m.color + ';border-color:' + m.color + '">' + m.name + ' \u00b7 ' + m.rarity + ' \u00b7 ' + v + '</span>';
+        }).join('') + '</div>';
     }
-    refEl.innerHTML = status + (html || '<div class="fu-desc" style="grid-column:1/-1">Refinery ready to unlock \u2014 keep minting bits in the foundry.</div>');
+        refEl.innerHTML = status + (html || '<div class="fu-desc" style="grid-column:1/-1">Refinery ready to unlock \u2014 keep minting bits in the foundry.</div>');
     refEl.querySelectorAll('[data-refunl]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var u = REF_UNLOCKS.filter(function (x) { return x.id === btn.dataset.refunl; })[0];
         if (!u || refUnlocked(u.id) || state.bits < u.cost) return;
-        state.bits -= u.cost; state.ref[u.id] = true; if (window.__sfx) window.__sfx('unlock'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
+        state.bits -= u.cost; state.ref[u.id] = true; if (window.__sfx) window.__sfx('unlock'); gamePop('\u2726 ' + u.name, '#9be8ff'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
       });
     });
     refEl.querySelectorAll('[data-refup]').forEach(function (btn) {
@@ -6589,7 +6690,7 @@ window.__sfx = (function () {
         if (!u || !refUnlocked(u.need)) return;
         var l = refLvl(u.id); if (l >= u.max) return;
         var c = Math.ceil(u.base * Math.pow(u.grow, l)); if (state.bits < c) return;
-        state.bits -= c; state.ref.up = state.ref.up || {}; state.ref.up[u.id] = l + 1; if (window.__sfx) window.__sfx('unlock'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
+        state.bits -= c; state.ref.up = state.ref.up || {}; state.ref.up[u.id] = l + 1; if (window.__sfx) window.__sfx('unlock'); gamePop('\u25B2 ' + u.name, '#9be8ff'); publish(); dirty = true; save(); renderBalance(); renderRefinery();
       });
     });
   }
@@ -6908,20 +7009,31 @@ window.__sfx = (function () {
   function addMats(y) { state.mats = state.mats || { scrap: 0, alloy: 0, core: 0 }; state.mats.scrap += y.scrap || 0; state.mats.alloy += y.alloy || 0; state.mats.core += y.core || 0; }
   function costStr(c) { var p = []; if (c.scrap) p.push('\u2B22' + c.scrap); if (c.alloy) p.push('\u25C8' + c.alloy); if (c.core) p.push('\u2726' + c.core); return p.join(' '); }
   function claimAdventure() {
-    var a = state.adv, run = ADV_DUR[a.dur] || ADV_DUR[0];
-    var region = REGIONS[a.region || 0] || REGIONS[0];
-    var ilvl = run.ilvl + (region.ilvl || 0) + Math.floor(skillLvl('loot') / 2);
+    var a = state.adv, isBoss = !!a.bossRun, run = ADV_DUR[a.dur] || ADV_DUR[0];
+    var ri = isBoss ? (a.bossRegion || 0) : (a.region || 0);
+    var region = REGIONS[ri] || REGIONS[0];
+    var ilvl = run.ilvl + (region.ilvl || 0) + Math.floor(skillLvl('loot') / 2) + (isBoss ? 2 : 0);
     var pmult = 1 + 0.06 * skillLvl('combat');   // Combat Doctrine skill
-    var battle = window.Combat ? Combat.resolveRun(a.gear, { ilvl: ilvl, dur: a.dur, seed: 'b' + Date.now() + Math.random(), powerMult: pmult }) : null;
-    a.lastBattle = battle;
+    var battle = window.Combat ? Combat.resolveRun(a.gear, { ilvl: ilvl, dur: a.dur, seed: 'b' + Date.now() + Math.random(), powerMult: pmult, bossMult: isBoss ? 2.2 : 0 }) : null;
+    a.lastBattle = battle; a.lastBoss = isBoss ? BOSSES[ri].name : null;
     var mult = battle ? battle.lootMult : 1;
     var lootCount = Math.max(1, Math.round(run.loot * mult));
     var bonusIlvl = ilvl + (battle && battle.win ? 1 : 0);   // a win yields better loot
     var out = [];
     for (var i = 0; i < lootCount; i++) out.push(rollLoot(bonusIlvl, region.types));
+    if (isBoss && battle && battle.win && window.LootEngine) {   // boss victory -> guaranteed signature
+      var boss = BOSSES[ri];
+      if (boss) {
+        var sig = LootEngine.generate(boss.base, { seed: 'sig' + Date.now() + Math.random(), ilvl: ilvl + 2, rarity: boss.rarity });
+        sig.rarity = sig.tierLabel; sig.name = boss.name + "'s " + sig.name; out.push(sig);
+      }
+      a.bosses = a.bosses || {}; a.bosses[ri] = true;
+      state.bits += 5000 * globalMult(); addXp(200);
+    }
+    a.bossRun = 0;
     a.inv = (a.inv || []).concat(out).slice(-40);
     a.endsAt = 0; a.lastHaul = out;
-    addXp((battle ? battle.wavesCleared * 12 + (battle.win ? 40 : 0) : 20) * (1 + 0.5 * (a.dur || 0)));   // adventures grant XP
+    addXp((battle ? battle.wavesCleared * 12 + (battle.win ? 40 : 0) : 20) * (1 + 0.5 * (a.dur || 0)) * (isBoss ? 2 : 1));   // adventures grant XP
     dirty = true; save();
     return out;
   }
@@ -7040,11 +7152,14 @@ window.__sfx = (function () {
     if (ready) {
       status = '<div class="exp-status ready">Your robot has returned! <button type="button" class="exp-btn can" data-a="claim">Claim rewards</button></div>';
     } else if (away) {
-      var left = Math.max(0, a.endsAt - now), tot = (ADV_DUR[a.dur] ? ADV_DUR[a.dur].mins * 60000 : 1);
-      status = '<div class="exp-status"><div>On <b>' + esc(ADV_DUR[a.dur] ? ADV_DUR[a.dur].n : '') + '</b> — returns in <span id="exp-clock">' + Math.ceil(left / 1000) + 's</span></div>' +
+      var left = Math.max(0, a.endsAt - now), tot = a.runMs || (ADV_DUR[a.dur] ? ADV_DUR[a.dur].mins * 60000 : 1);
+      var runLabel = a.bossRun ? (esc(BOSSES[a.bossRegion || 0].name) + ' (boss)') : esc(ADV_DUR[a.dur] ? ADV_DUR[a.dur].n : '');
+      status = '<div class="exp-status"><div>On <b>' + runLabel + '</b> — returns in <span id="exp-clock">' + Math.ceil(left / 1000) + 's</span></div>' +
         '<div class="exp-prog"><i style="width:' + Math.round((1 - left / tot) * 100) + '%"></i></div></div>';
     } else {
-      status = '<div class="exp-send">' + ADV_DUR.map(function (d, i) { return '<button type="button" class="exp-btn can" data-a="send" data-v="' + i + '">' + d.n + ' · ' + (d.mins < 60 ? d.mins + 'm' : (d.mins / 60) + 'h') + ' · ' + d.loot + ' loot</button>'; }).join('') + '</div>';
+      var bi = a.region || 0, boss = BOSSES[bi], bok = boss && playerLevel() >= bossUnlockLevel(bi), bdone = a.bosses && a.bosses[bi];
+      status = '<div class="exp-send">' + ADV_DUR.map(function (d, i) { return '<button type="button" class="exp-btn can" data-a="send" data-v="' + i + '">' + d.n + ' · ' + (d.mins < 60 ? d.mins + 'm' : (d.mins / 60) + 'h') + ' · ' + d.loot + ' loot</button>'; }).join('') +
+        (boss ? '<button type="button" class="exp-btn boss' + (bok ? ' can' : '') + '"' + (bok ? ' data-a="boss"' : ' disabled title="Reach level ' + bossUnlockLevel(bi) + '"') + '>☠ ' + esc(boss.name) + (bdone ? ' ✓' : '') + ' · 10m</button>' : '') + '</div>';
     }
     // default every build category once, then derive the preview silhouette
     var b = a.build || (a.build = {});
@@ -7114,7 +7229,8 @@ window.__sfx = (function () {
       else if (act === 'save-load') { var inp = expEl.querySelector('.exp-ldname'); var nm = (inp && inp.value.trim()) || ('Build ' + (Object.keys(a.loadouts || {}).length + 1)); a.loadouts = a.loadouts || {}; a.loadouts[nm] = { build: Object.assign({}, a.build), color: a.robot.color }; dirty = true; save(); renderAdventure(); }
       else if (act === 'load-ld') { var ld = (a.loadouts || {})[b.dataset.v]; if (ld) { a.build = Object.assign({}, ld.build); if (ld.color) a.robot.color = ld.color; dirty = true; save(); renderAdventure(); } }
       else if (act === 'del-ld') { if (a.loadouts) { delete a.loadouts[b.dataset.v]; dirty = true; save(); renderAdventure(); } }
-      else if (act === 'send') { a.dur = +b.dataset.v; a.endsAt = Date.now() + ADV_DUR[a.dur].mins * 60000; a.lastHaul = null; save(); renderAdventure(); }
+      else if (act === 'send') { a.dur = +b.dataset.v; a.bossRun = 0; a.runMs = ADV_DUR[a.dur].mins * 60000; a.endsAt = Date.now() + a.runMs; a.lastHaul = null; save(); renderAdventure(); }
+      else if (act === 'boss') { a.bossRun = 1; a.bossRegion = a.region || 0; a.dur = 2; a.runMs = 10 * 60000; a.endsAt = Date.now() + a.runMs; a.lastHaul = null; save(); renderAdventure(); }
       else if (act === 'claim') { claimAdventure(); renderBalance(); renderAdventure(); }
     });
     expEl.addEventListener('input', function (e) { var b = e.target.closest('[data-a="name"]'); if (b) { state.adv.robot.name = b.value.slice(0, 18); dirty = true; save(); } });
@@ -7180,64 +7296,111 @@ window.__sfx = (function () {
   var canvas = document.getElementById('refinery-canvas');
   if (!canvas || !canvas.getContext) return;
   var ctx = canvas.getContext('2d');
-  var W = 900, H = 150; canvas.width = W; canvas.height = H;
-  var onScreen = true, ingots = [], lastA = 0, lastV = 0, pressFlash = 0, sparks = [];
-  var beltY = 116, forgeAX = 150, forgeVX = 300, pressX = 770;
-  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function cfg() { return window.__refinery || {}; }
-  function spawn(kind, x) { if (ingots.length < 60) ingots.push({ x: x, y: beltY - 8, kind: kind }); }
+  var N = (cfg().mats || []).length || 6;
+  var seg = 210, startX = 90, pressX = startX + N * seg + 40;
+  var W = pressX + 100, H = 176; canvas.width = W; canvas.height = H;
+  var beltY = 132;
+  var onScreen = true, ingots = [], lastSpawn = [], smeltFlash = [], pressFlash = 0, sparks = [], drones = [];
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function xExt(i) { return startX + i * seg + 48; }
+  function xSm(i) { return startX + i * seg + 140; }
+  function spawn(mi, x) { if (ingots.length < 90) ingots.push({ x: x, y: beltY - 8, mi: mi, stage: 'ore' }); }
 
   function update(t, dt) {
-    var c = cfg(), sp = 60 * (c.convMult || 1);
-    if (c.unlA && c.adamRate > 0 && t - lastA > 1 / c.adamRate) { lastA = t; spawn('adam', forgeAX + 16); }
-    if (c.unlV && c.vibrRate > 0 && t - lastV > 1 / c.vibrRate) { lastV = t; spawn('vibr', forgeVX + 16); }
+    var c = cfg(), sp = 60 * (c.convMult || 1), mats = c.mats || [];
+    for (var mi = 0; mi < mats.length; mi++) {
+      var m = mats[mi];
+      if (m.ext && m.rate > 0 && t - (lastSpawn[mi] || 0) > 1 / m.rate) { lastSpawn[mi] = t; spawn(mi, xExt(mi) + 6); if (drones[mi]) drones[mi].laserT = t + 0.28; }
+    }
+    for (var di = 0; di < mats.length; di++) {                     // Ultron's Drones patrol + laser-mine + do silly things
+      if (!mats[di].ext) { drones[di] = null; continue; }
+      var dr = drones[di]; if (!dr) { dr = drones[di] = { x: xExt(di), dir: 1, laserT: 0, sillyT: 0, silly: 0, bob: Math.random() * 6 }; }
+      dr.bob += dt * 3;
+      if (t > dr.sillyT) {
+        dr.x += dr.dir * 18 * dt;
+        if (dr.x > xExt(di) + 34) dr.dir = -1; else if (dr.x < xExt(di) - 34) dr.dir = 1;
+        if (Math.random() < 0.005) { dr.sillyT = t + 1.1; dr.silly = 1 + Math.floor(Math.random() * 3); }
+      }
+    }
     for (var i = ingots.length - 1; i >= 0; i--) {
-      var g = ingots[i]; g.x += sp * dt;
-      if (c.unlP && g.x >= pressX - 14) {
-        ingots.splice(i, 1); pressFlash = t + 0.18; if (window.__sfx) window.__sfx('press');
-        for (var k = 0; k < 5; k++) sparks.push({ x: pressX - 8, y: beltY - 6, vx: 30 + Math.random() * 70, vy: -30 - Math.random() * 45, life: 0 });
+      var g = ingots[i]; g.x += sp * dt; var gm = mats[g.mi];
+      if (g.stage === 'ore') {
+        if (gm && gm.sm && g.x >= xSm(g.mi)) { g.stage = 'ingot'; smeltFlash[g.mi] = t + 0.35; if (window.__sfx) window.__sfx('press'); }
+      }
+      if (g.stage === 'ingot' && c.unlP && g.x >= pressX - 16) {
+        ingots.splice(i, 1); pressFlash = t + 0.18;
+        for (var k = 0; k < 5; k++) sparks.push({ x: pressX - 10, y: beltY - 6, vx: 30 + Math.random() * 70, vy: -30 - Math.random() * 45, life: 0 });
       } else if (g.x > W + 20) ingots.splice(i, 1);
     }
     for (var j = sparks.length - 1; j >= 0; j--) { var s2 = sparks[j]; s2.life += dt; s2.x += s2.vx * dt; s2.y += s2.vy * dt; s2.vy += 130 * dt; if (s2.life > 0.5) sparks.splice(j, 1); }
   }
 
-  function machine(x, label, active, tint) {
+  function extractor(x, label, active, tint) {
     ctx.fillStyle = active ? '#2b3038' : '#181b20'; ctx.fillRect(x - 27, beltY - 76, 54, 76);
     ctx.globalAlpha = active ? 0.5 : 0.22; ctx.fillStyle = tint; ctx.fillRect(x - 27, beltY - 76, 54, 10); ctx.globalAlpha = 1;
     ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.5; ctx.strokeRect(x - 27, beltY - 76, 54, 76);
     ctx.fillStyle = active ? '#33d17a' : '#5a2323'; ctx.fillRect(x - 21, beltY - 70, 8, 5);
-    ctx.fillStyle = active ? '#565d68' : '#2a2e34'; ctx.fillRect(x - 6, beltY - 22, 12, 22);   // chute to belt
-    ctx.fillStyle = '#8a93a3'; ctx.font = '10px ui-monospace,monospace'; ctx.textAlign = 'center';
-    ctx.fillText(label, x, beltY - 82);
-    if (active) { ctx.fillStyle = '#ff5a7a'; ctx.font = '8px ui-monospace,monospace'; ctx.fillText('✦ MYTHIC', x, beltY - 71); }
-    if (!active) { ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.fillRect(x - 27, beltY - 76, 54, 76); ctx.fillStyle = '#8a93a3'; ctx.fillText('locked', x, beltY - 36); }
+    ctx.fillStyle = active ? '#565d68' : '#2a2e34'; ctx.fillRect(x - 6, beltY - 22, 12, 22);
+    ctx.fillStyle = '#8a93a3'; ctx.font = '9px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.fillText(label, x, beltY - 82);
+    if (active) { ctx.fillStyle = '#8a93a3'; ctx.font = '8px ui-monospace,monospace'; ctx.fillText('ore', x, beltY - 71); ctx.fillStyle = tint; ctx.beginPath(); ctx.moveTo(x, beltY - 48); ctx.lineTo(x + 6, beltY - 42); ctx.lineTo(x, beltY - 36); ctx.lineTo(x - 6, beltY - 42); ctx.closePath(); ctx.fill(); }
+    if (!active) { ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.fillRect(x - 27, beltY - 76, 54, 76); ctx.fillStyle = '#8a93a3'; ctx.font = '9px ui-monospace,monospace'; ctx.fillText('locked', x, beltY - 36); }
+  }
+  function smelter(x, active, flash, tint, t) {
+    ctx.fillStyle = active ? '#2b3038' : '#181b20'; ctx.fillRect(x - 28, beltY - 74, 56, 74);
+    ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.5; ctx.strokeRect(x - 28, beltY - 74, 56, 74);
+    ctx.fillStyle = active ? '#3a3038' : '#20232a'; ctx.fillRect(x - 19, beltY - 102, 38, 20); ctx.strokeRect(x - 19, beltY - 102, 38, 20);
+    if (active) {
+      var hot = t < flash;
+      ctx.fillStyle = hot ? '#ffe08a' : '#ff7a1e'; ctx.fillRect(x - 17, beltY - 98, 34, 6);
+      ctx.fillStyle = '#ff9d3c';
+      for (var st = 0; st < 3; st++) { var yy = beltY - 82 + st * 8, wob = Math.sin(t * 12 + st + x) * 2; ctx.fillRect(x - 2 + wob, yy, 4, 7); }
+      var g2 = ctx.createRadialGradient(x, beltY - 40, 2, x, beltY - 40, 22);
+      g2.addColorStop(0, hot ? 'rgba(255,224,130,.85)' : 'rgba(255,122,30,.55)'); g2.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g2; ctx.fillRect(x - 24, beltY - 62, 48, 42);
+      ctx.fillStyle = '#ff6a1e'; ctx.fillRect(x - 10, beltY - 26, 20, 5);
+      ctx.globalAlpha = 0.5; ctx.fillStyle = tint; ctx.fillRect(x - 28, beltY - 74, 56, 4); ctx.globalAlpha = 1;
+    }
+    ctx.fillStyle = '#8a93a3'; ctx.font = '8px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.fillText('SMELTER', x, beltY - 108); if (active) { ctx.fillStyle = tint; ctx.fillRect(x - 9, beltY - 50, 18, 6); ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillRect(x - 9, beltY - 50, 18, 1.5); }
+    if (!active) { ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.fillRect(x - 28, beltY - 102, 56, 102); ctx.fillStyle = '#8a93a3'; ctx.font = '9px ui-monospace,monospace'; ctx.fillText('locked', x, beltY - 34); }
+  }
+  function drawOre(g, t) {
+    var mats = cfg().mats || [], m = mats[g.mi] || { ore: '#5a5a5a', color: '#aaa' };
+    var x = g.x, y = g.y + 1;
+    ctx.save(); ctx.shadowColor = m.color; ctx.shadowBlur = m.glow ? 6 : 3;
+    ctx.fillStyle = m.ore;
+    ctx.beginPath(); ctx.moveTo(x - 7, y + 6); ctx.lineTo(x - 5, y - 3); ctx.lineTo(x + 1, y - 5); ctx.lineTo(x + 7, y - 1); ctx.lineTo(x + 5, y + 6); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = m.color; ctx.globalAlpha = 0.4 + 0.4 * Math.sin(t * 6 + x); ctx.fillRect(x - 2, y - 2, 2.4, 2.4); ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+  function drawIngot(g, t) {
+    var mats = cfg().mats || [], m = mats[g.mi] || { color: '#c0c6cf' };
+    var x = g.x, y = g.y, w = 22, h = 11, dark = m.color === '#3da9ff';
+    ctx.save(); ctx.shadowColor = m.color; ctx.shadowBlur = (m.glow ? 9 : 6) + 2 * Math.sin(t * 5 + x);
+    if (dark) { ctx.fillStyle = '#07080b'; ctx.fillRect(x - w / 2, y, w, h); }
+    else { var gr = ctx.createLinearGradient(x - w / 2, y, x + w / 2, y + h); gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.4, m.color); gr.addColorStop(1, m.color); ctx.fillStyle = gr; ctx.fillRect(x - w / 2, y, w, h); }
+    ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fillRect(x - w / 2, y, w, 2);
+    ctx.strokeStyle = 'rgba(0,0,0,.4)'; ctx.lineWidth = 1; ctx.strokeRect(x - w / 2, y, w, h);
+    if (m.glow) { ctx.fillStyle = '#eaffb0'; ctx.globalAlpha = 0.4 + 0.4 * Math.sin(t * 9 + x); ctx.fillRect(x - w / 2 + 2, y + 3, w - 4, 2); ctx.globalAlpha = 1; }
+    if (dark) { ctx.strokeStyle = '#3da9ff'; ctx.globalAlpha = 0.55 + 0.4 * Math.sin(t * 6 + x); ctx.beginPath(); ctx.moveTo(x - 8, y + 3); ctx.lineTo(x - 2, y + 7); ctx.lineTo(x + 4, y + 3); ctx.lineTo(x + 8, y + 8); ctx.stroke(); ctx.globalAlpha = 1; }
+    ctx.restore();
   }
 
-  function drawIngot(g, t) {
-    var x = g.x, y = g.y, w = 22, h = 11;
-    ctx.save(); ctx.shadowColor = g.kind === 'vibr' ? '#00e5ff' : '#ff9db8'; ctx.shadowBlur = 6 + 2 * Math.sin(t * 5 + x);   // mythic aura
-    if (g.kind === 'adam') {
-      var gr = ctx.createLinearGradient(x - w / 2, y, x + w / 2, y + h);
-      gr.addColorStop(0, '#f4f6fa'); gr.addColorStop(0.5, '#c2c8d2'); gr.addColorStop(1, '#eef1f6');
-      ctx.fillStyle = gr; ctx.fillRect(x - w / 2, y, w, h);
-      ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.fillRect(x - w / 2, y, w, 2);
-      ctx.strokeStyle = '#8b93a0'; ctx.lineWidth = 1; ctx.strokeRect(x - w / 2, y, w, h);
-    } else {
-      ctx.fillStyle = '#07080b'; ctx.fillRect(x - w / 2, y, w, h);
-      ctx.strokeStyle = '#191c22'; ctx.lineWidth = 1; ctx.strokeRect(x - w / 2, y, w, h);
-      ctx.strokeStyle = '#3da9ff'; ctx.lineWidth = 1;
-      for (var c2 = 0; c2 < 2; c2++) {
-        var ph = t * 4 + g.x * 0.25 + c2 * 2.1;
-        ctx.globalAlpha = 0.45 + 0.55 * Math.abs(Math.sin(ph));
-        ctx.beginPath();
-        ctx.moveTo(x - w / 2 + 2, y + 2.5 + c2 * 4);
-        ctx.lineTo(x - 3 + Math.sin(ph) * 2, y + 6);
-        ctx.lineTo(x + 3, y + 2 + c2 * 5);
-        ctx.lineTo(x + w / 2 - 2, y + 5 + c2 * 3);
-        ctx.stroke();
-      }
-      ctx.globalAlpha = 1;
+  function drawDrone(di, t) {
+    var dr = drones[di]; if (!dr) return; var mats = cfg().mats || [], m = mats[di] || {}, col = m.color || '#aaa';
+    var x = dr.x, y = beltY - 100 + Math.sin(dr.bob) * 3;
+    if (dr.silly === 2 && t < dr.sillyT) y -= Math.abs(Math.sin(t * 11)) * 7;          // hop
+    if (t < dr.laserT) {                                                               // mining laser down into the extractor
+      ctx.strokeStyle = col; ctx.globalAlpha = 0.5 + 0.5 * Math.sin(t * 40); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x, y + 6); ctx.lineTo(xExt(di), beltY - 20); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.fillStyle = '#fff'; for (var q = 0; q < 3; q++) ctx.fillRect(xExt(di) - 3 + Math.random() * 6, beltY - 24 + Math.random() * 4, 2, 2);
     }
+    ctx.save(); ctx.translate(x, y); if (dr.silly === 1 && t < dr.sillyT) ctx.rotate(t * 14);   // barrel roll
+    ctx.shadowColor = col; ctx.shadowBlur = m.glow ? 8 : 4;
+    ctx.fillStyle = col; ctx.beginPath(); ctx.ellipse(0, 0, 9, 6, 0, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+    ctx.fillStyle = '#0a0c10'; ctx.fillRect(-5, -2.5, 10, 3.5);
+    ctx.fillStyle = '#fff'; ctx.fillRect(-3 + (dr.silly === 3 && t < dr.sillyT ? Math.sin(t * 10) * 2 : 0), -2, 2.4, 2.4);   // eye (wiggles when silly)
+    ctx.fillStyle = 'rgba(120,200,255,.6)'; ctx.fillRect(-2, 6, 4, 2 + Math.abs(Math.sin(t * 20)) * 2);                     // thruster
     ctx.restore();
   }
 
@@ -7248,19 +7411,24 @@ window.__sfx = (function () {
     ctx.fillStyle = '#2b313a'; ctx.fillRect(0, beltY, W, 2);
     var off = (t * 60 * (cfg().convMult || 1)) % 22;
     for (var bx = -22 + off; bx < W; bx += 22) { ctx.fillStyle = '#20252c'; ctx.fillRect(bx, beltY + 6, 12, 3); }
-    var c = cfg();
-    machine(forgeAX, 'ADAMANTIUM', !!c.unlA, '#e6ebf2');
-    machine(forgeVX, 'VIBRANIUM', !!c.unlV, '#3da9ff');
+    var c = cfg(), mats = c.mats || [];
+    for (var mi = 0; mi < mats.length; mi++) {
+      var m = mats[mi];
+      extractor(xExt(mi), m.name.toUpperCase(), m.ext, m.color);
+      smelter(xSm(mi), m.sm, smeltFlash[mi] || 0, m.color, t);
+    }
     ctx.fillStyle = c.unlP ? '#2b3038' : '#181b20'; ctx.fillRect(pressX - 32, beltY - 88, 76, 88);
     ctx.strokeStyle = '#0a0b0c'; ctx.lineWidth = 1.5; ctx.strokeRect(pressX - 32, beltY - 88, 76, 88);
     ctx.fillStyle = (t < pressFlash) ? '#ffe08a' : (c.unlP ? '#565d68' : '#333'); ctx.fillRect(pressX - 24, beltY - 34 - (t < pressFlash ? 6 : 0), 60, 15);
     ctx.fillStyle = '#8a93a3'; ctx.font = '10px ui-monospace,monospace'; ctx.textAlign = 'center';
-    ctx.fillText(c.unlP ? 'CURRENCY PRESS' : 'PRESS (locked)', pressX + 6, beltY - 94);
+    ctx.fillText(c.unlP ? 'PRESS' : 'PRESS (locked)', pressX + 6, beltY - 94);
     if (t < pressFlash) { ctx.fillStyle = '#ffe08a'; ctx.font = 'bold 12px ui-monospace,monospace'; ctx.fillText('\u25c9', pressX + 6, beltY - 44); }
     if (!c.unlP) { ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(pressX - 32, beltY - 88, 76, 88); }
-    ingots.forEach(function (g) { drawIngot(g, t); });
+    ingots.forEach(function (g) { if (g.stage === 'ore') drawOre(g, t); else drawIngot(g, t); });
     sparks.forEach(function (s2) { ctx.globalAlpha = Math.max(0, 1 - s2.life / 0.5); ctx.fillStyle = '#ffe08a'; ctx.fillRect(s2.x, s2.y, 2, 2); ctx.globalAlpha = 1; });
-    if (!c.unlA && !c.unlV) { ctx.fillStyle = '#5a6270'; ctx.font = '11px ui-monospace,monospace'; ctx.fillText('unlock a forge below to begin', W / 2, 26); }
+    for (var dmi = 0; dmi < mats.length; dmi++) if (mats[dmi].ext) drawDrone(dmi, t);
+    if (mats.some(function (m) { return m.ext; })) { ctx.fillStyle = '#5a6270'; ctx.font = '9px ui-monospace,monospace'; ctx.textAlign = 'left'; ctx.fillText("ULTRON'S DRONES \u2014 laser-mining the ore", 8, 14); }
+    else { ctx.fillStyle = '#5a6270'; ctx.font = '11px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.fillText('unlock an extractor below to begin', W / 2, 22); }
   }
 
   var lastT = performance.now() / 1000;
