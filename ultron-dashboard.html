@@ -526,7 +526,7 @@
   /* while opening: doors have slid away and the panel/chains are gone -> let the
      game be played behind while the big warning holds on screen ~22s */
   .game-lock.open{ background:transparent; pointer-events:none; }
-  .game-lock.open .gl-warning{ animation:gl-warn 22.2s ease-out forwards; }
+  .game-lock.open .gl-warning{ animation:gl-warn 12.2s ease-out forwards; }
   @keyframes gl-warn{ 0%{ opacity:0; transform:translateY(-50%) scale(.6); }
     3%{ opacity:1; transform:translateY(-50%) scale(1.08); } 5%,9%,13%{ opacity:1; } 7%,11%{ opacity:.3; }
     16%{ opacity:1; transform:translateY(-50%) scale(1); } 88%{ opacity:.92; transform:translateY(-50%) scale(1); }
@@ -558,7 +558,7 @@
     background:linear-gradient(180deg,#1d2129,#12151b); box-shadow:0 0 14px -4px rgba(120,170,255,.55), inset 0 1px 0 rgba(255,255,255,.08); }
   /* the big section containers lose their own box borders and blend into the floor */
   .game-floor > .foundry, .game-floor > .refinery, .game-floor > .expedition, .game-floor > .codex-wrap,
-  .game-floor > .progression{ border:none !important; background:transparent !important; }
+  .game-floor > .progression, .game-floor > .armory, .game-floor > .brainlab{ border:none !important; background:transparent !important; }
   /* readability: bump the smallest game-area text up so it's easy to read */
   .game-building{ font-size:13px; }
   .game-building .fbl-sub, .game-building .sl-sub, .game-building .sl-eff, .game-building .cz-sub, .game-building .cz-uniq,
@@ -784,7 +784,9 @@
   /* Ultron's foundry -- the idle-game panel under his corner. */
   .foundry{ max-width:1280px; }
   /* sticky so the currency stays posted at the top of the game panel while scrolling */
-  .foundry-bal{ display:flex; align-items:center; gap:8px; font-family:var(--font-mono); position:sticky; top:0; z-index:40; background:var(--bg,#0b0d10); padding:8px 6px; margin:-8px -6px 4px; border-bottom:1px solid var(--line); box-shadow:0 6px 14px -8px rgba(0,0,0,.6); }
+  /* sticks just BELOW the 58px topbar (not at top:0) and under it in the stack,
+     so scrolling the foundry never clips this bar over the ULTRON AI header */
+  .foundry-bal{ display:flex; align-items:center; gap:8px; font-family:var(--font-mono); position:sticky; top:58px; z-index:9; background:var(--bg,#0b0d10); padding:8px 6px; margin:-8px -6px 4px; border-bottom:1px solid var(--line); box-shadow:0 6px 14px -8px rgba(0,0,0,.6); }
   .foundry-bal-hint{ font-size:10px; color:var(--text-faint); margin-right:auto; }
   .game-pops{ position:absolute; left:0; right:0; top:-4px; pointer-events:none; display:flex; flex-direction:column; align-items:center; gap:1px; z-index:6; }
   .game-pop{ font-family:var(--font-display); font-weight:700; font-size:12.5px; animation:gamePop 1s ease-out forwards; text-shadow:0 1px 4px rgba(0,0,0,.7); white-space:nowrap; }
@@ -846,8 +848,11 @@
   .ar-badge{ font-family:var(--font-mono); font-size:9px; padding:2px 6px; border-radius:5px; border:1px solid var(--line); color:var(--text-faint); white-space:nowrap; }
   .ar-badge.lab{ border-color:rgba(215,38,74,.5); color:#ff8098; }
   .ar-note{ grid-column:1/-1; font-size:11px; color:var(--text-faint); margin-top:4px; }
-  .refinery-canvas-wrap{ border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#0a0c10; margin-bottom:12px; }
-  #refinery-canvas{ display:block; width:100%; height:auto; }
+  /* fixed comfortable height + horizontal scroll: the belt is long, so on a
+     phone this keeps the machines at near full size (easy to see) and scrolls
+     sideways WITHIN its own box -- the page body never scrolls horizontally. */
+  .refinery-canvas-wrap{ border:1px solid var(--line); border-radius:8px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; background:#0a0c10; margin-bottom:12px; }
+  #refinery-canvas{ display:block; height:172px; width:auto; max-width:none; }
   .refinery-upgrades{ display:grid; grid-template-columns:repeat(auto-fill,minmax(158px,1fr)); gap:8px; }
   .ref-status{ grid-column:1/-1; display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:2px; }
   .ref-mythic{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:#ff5a7a; }
@@ -2182,16 +2187,33 @@
             <div class="foundry-bays-label">Production bays <span class="fbl-sub">— each floor's own crew, weapons &amp; armor</span></div>
             <div class="foundry-bays" id="foundry-bays"></div>
             <div class="dev-panel" id="dev-panel" hidden></div>
-            <div class="progression" id="progression"></div>
             <div class="relics" id="relics"></div>
-            <div class="armory" id="armory"></div>
-            <div class="brainlab" id="brainlab"></div>
             <div class="stonelab" id="stonelab"></div>
             <div class="holiday" id="holiday"></div>
             <div class="cosmic" id="cosmic"></div>
             <div class="genesis" id="genesis"></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
           </div>
+          </div>
+
+          <div class="game-floor"><div class="floor-sign">📊 Progression &amp; Stats</div>
+          <div class="progression" id="progression"></div>
+          </div>
+
+          <div class="game-floor"><div class="floor-sign">🤖 Ultron's Expedition</div>
+          <div class="expedition" id="expedition"></div>
+          <div class="exp-viewer-wrap" id="exp-viewer-wrap" hidden>
+            <div class="exp-viewer-h" id="exp-viewer-h">&#9654; Live feed &mdash; your robot in the field</div>
+            <canvas id="exp-viewer-canvas" aria-label="Live view of your custom robot fighting through its expedition"></canvas>
+          </div>
+          </div>
+
+          <div class="game-floor"><div class="floor-sign">🧠 Ultron's Brain Lab</div>
+          <div class="brainlab" id="brainlab"></div>
+          </div>
+
+          <div class="game-floor"><div class="floor-sign">🔫 Ultron's Armory</div>
+          <div class="armory" id="armory"></div>
           </div>
 
           <div class="game-floor"><div class="floor-sign">⚒️ Ultron's Refinery</div>
@@ -2201,14 +2223,6 @@
             </div>
             <div class="refinery-upgrades" id="refinery-upgrades"></div>
             <div class="foundry-note">Two forges cast adamantium (bright silver) and vibranium (black, blue-crackled) ingots onto one belt into the press, which mints extra bits. Unlock and upgrade each machine and the belt individually — same Bits → Nanits scale as the foundry.</div>
-          </div>
-          </div>
-
-          <div class="game-floor"><div class="floor-sign">🤖 Ultron's Expedition</div>
-          <div class="expedition" id="expedition"></div>
-          <div class="exp-viewer-wrap" id="exp-viewer-wrap" hidden>
-            <div class="exp-viewer-h" id="exp-viewer-h">&#9654; Live feed &mdash; your robot in the field</div>
-            <canvas id="exp-viewer-canvas" aria-label="Live view of your custom robot fighting through its expedition"></canvas>
           </div>
           </div>
 
@@ -2225,6 +2239,7 @@
           <div class="panel-label" style="margin-top:28px;">Agent roster &amp; enlistments</div>
           <div class="agent-roster" id="agent-roster"></div>
 
+          <div class="dash-extras">
           <div class="panel-label" style="margin-top:28px;">What Ultron knows</div>
           <div class="vault-head">
             <div class="vault-headline" id="vault-headline">Sign in to see his Brain vault</div>
@@ -2278,6 +2293,7 @@
             <div style="padding:12px 18px; border-top:1px solid var(--line); font-size:11.5px; color:var(--text-faint); line-height:1.5;">
               Tasks move <span style="font-family:var(--font-mono);">created → assigned → acknowledged → in progress → blocked | awaiting review | completed | failed | cancelled</span>. Completion needs evidence; high-risk tasks need your approval before they start; chat can read this but never create or move a task. Full policy: <span style="font-family:var(--font-mono);">AGENT_CAPABILITIES_AND_GOVERNANCE.md</span>.
             </div>
+          </div>
           </div>
         </div>
       </section>
@@ -8043,7 +8059,7 @@ window.__sfx = (function () {
     { id: 'collector', name: 'Auto-Collector', base: 14, grow: 1.7, max: 20, desc: function (l) { return '+0.5 bits / sec while idle (' + (0.5 * l).toFixed(1) + '/s)'; } },
     { id: 'march', name: 'March Drums', base: 12, grow: 1.6, max: 8, desc: function (l) { return '+15% march & walk speed (x' + (1 + 0.15 * l).toFixed(2) + ')'; } },
     { id: 'pkgval', name: 'Package Value', base: 6, grow: 1.7, max: 25, desc: function (l) { return (1 + 0.5 * l).toFixed(1) + 'x bits per package shipped'; } },
-    { id: 'offline', name: 'Offline Storage', base: 250, grow: 1.8, max: 10, desc: function (l) { return (1.5 + l) + 'h of offline accrual (+1h)'; } },
+    { id: 'offline', name: 'Offline Storage', base: 250, grow: 1.8, max: 10, desc: function (l) { return (12 + l) + 'h of offline accrual (+1h)'; } },
   ];
 
   // Per-bay upgrades: each open production bay tunes its own Assembler (speed),
@@ -8519,7 +8535,7 @@ window.__sfx = (function () {
       passive: 0.5 * lvl('collector') * prestigePassMult(),   // Reactor Bank prestige upgrade
       marchMult: 1 + 0.15 * lvl('march'),
       pkgMult: 1 + 0.5 * lvl('pkgval'),
-      offlineHours: 1.5 + lvl('offline') + skillLvl('offline') + 2 * pUp('poff') + stoneOffline(),   // Deep Storage prestige + Space stone
+      offlineHours: 12 + lvl('offline') + skillLvl('offline') + 2 * pUp('poff') + stoneOffline(),   // base 12h + Offline Storage/Battery/Deep Storage prestige + Space stone
       mult: globalMult(),   // so the room can label floating coins with the real credited amount
       tier: 1 + Math.min(3, Math.floor((lvl('yield') + lvl('perbay') + (state.up.asm0 || 0)) / 3)),
       cores: (state.prestige && state.prestige.cores) || 0,   // banked defeats -> permanent buffs
@@ -8550,7 +8566,7 @@ window.__sfx = (function () {
   var offlineEarned = 0, offlineCapped = false;
   if (state.seen) {
     var away = Math.max(0, (Date.now() - state.seen) / 1000);
-    var capSec = (window.__foundry.offlineHours || 1.5) * 3600;
+    var capSec = (window.__foundry.offlineHours || 12) * 3600;
     offlineCapped = away > capSec;
     var eff = Math.min(away, capSec);
     offlineEarned = prodRate() * eff * globalMult() * idleBonus();
@@ -8565,7 +8581,7 @@ window.__sfx = (function () {
     if (!state.seen) { state.seen = Date.now(); return; }
     var away = Math.max(0, (Date.now() - state.seen) / 1000); state.seen = Date.now();
     if (away < 3) return;
-    var cap = (window.__foundry.offlineHours || 1.5) * 3600, eff = Math.min(away, cap);
+    var cap = (window.__foundry.offlineHours || 12) * 3600, eff = Math.min(away, cap);
     var earned = prodRate() * eff * globalMult() * idleBonus();
     if (earned > 0.05) {
       state.bits += earned; state.lifetime = (state.lifetime || 0) + earned; dirty = true; save(); renderBalance();
@@ -9914,7 +9930,7 @@ window.__sfx = (function () {
   var offEl = document.getElementById('foundry-offline');
   if (offEl && offlineEarned > 0.05) {
     offEl.textContent = 'Welcome back — the line minted ' + fmt(offlineEarned) + ' over ' +
-      humanDur(Math.min((Date.now() - (state.seen || Date.now())) / 1000, (window.__foundry.offlineHours || 1.5) * 3600)) +
+      humanDur(Math.min((Date.now() - (state.seen || Date.now())) / 1000, (window.__foundry.offlineHours || 12) * 3600)) +
       ' offline' + (offlineCapped ? ' (storage was full — upgrade Offline Storage)' : '') + '.';
     offEl.hidden = false;
   }
@@ -10540,10 +10556,11 @@ window.__sfx = (function () {
   var ctx = canvas.getContext('2d');
   function cfg() { return window.__refinery || {}; }
   var N = (cfg().mats || []).length || 6;
-  var seg = 170, startX = 90, pressX = startX + N * seg + 40;   // tighter spacing => the canvas (width:100%) renders the machines ~1.25x larger
-  var binX = pressX + 118;                                       // storage container at the belt's end
-  var W = binX + 74, H = 176; canvas.width = W; canvas.height = H;
+  var seg = 148, startX = 56, pressX = startX + N * seg + 34;   // tighter spacing + trimmed margins => the canvas (width:100%) renders the machines noticeably larger / easier to see
+  var binX = pressX + 100;                                       // storage container at the belt's end
+  var W = binX + 56, H = 176; canvas.width = W; canvas.height = H;
   var beltY = 132;
+  var BELT_BASE = 40;   // px/s at 1x -- the belt rollers AND the packages both move at exactly this, so packages ride the belt instead of floating over a faster belt
   var onScreen = true, ingots = [], lastSpawn = [], smeltFlash = [], pressFlash = 0, sparks = [], drones = [];
   var bin = [], binFlash = 0, binSellAcc = 0;                    // stray ingots that miss the press fall here until sold
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -10552,7 +10569,7 @@ window.__sfx = (function () {
   function spawn(mi, x) { if (ingots.length < 90) ingots.push({ x: x, y: beltY - 8, mi: mi, stage: 'ore' }); }
 
   function update(t, dt) {
-    var c = cfg(), sp = 60 * (c.convMult || 1), mats = c.mats || [];
+    var c = cfg(), sp = BELT_BASE * (c.convMult || 1), mats = c.mats || [];
     for (var mi = 0; mi < mats.length; mi++) {
       var m = mats[mi];
       if (m.ext && m.rate > 0 && t - (lastSpawn[mi] || 0) > 1 / m.rate) { lastSpawn[mi] = t; spawn(mi, xExt(mi) + 6); if (drones[mi]) drones[mi].laserT = t + 0.28; }
@@ -10723,7 +10740,7 @@ window.__sfx = (function () {
     ctx.fillStyle = beltG; ctx.fillRect(0, beltY, W, 18);
     ctx.fillStyle = '#4a545f'; ctx.fillRect(0, beltY, W, 2);                 // top rail highlight
     ctx.fillStyle = '#0a0c10'; ctx.fillRect(0, beltY + 17, W, 3);            // shadow under belt
-    var off = (t * 60 * (cfg().convMult || 1)) % 22;
+    var off = (t * BELT_BASE * (cfg().convMult || 1)) % 22;
     for (var bx = -22 + off; bx < W; bx += 22) {
       ctx.fillStyle = '#262c34'; ctx.fillRect(bx, beltY + 5, 14, 5);        // roller body
       ctx.fillStyle = '#39424e'; ctx.fillRect(bx, beltY + 5, 14, 1.5);      // roller sheen
@@ -11408,7 +11425,7 @@ window.__sfx = (function () {
     document.body.classList.remove('game-locked');
     lock.classList.add('open');   // doors slide open (slow, ~3.6s); game is playable behind while the warning holds
     if (window.__sfx) window.__sfx('reboot');
-    setTimeout(function () { lock.classList.add('unlocked'); lock.classList.remove('open'); }, 22500);
+    setTimeout(function () { lock.classList.add('unlocked'); lock.classList.remove('open'); }, 12500);
   }
   function submitPin() { if (locked) return; var m = matchPin(pinBuf); if (m.ok) unlock(m.admin); else { fail(); pinBuf = ''; renderPin(); } }
   function submitPass() { if (locked) return; var u = (document.getElementById('gl-user').value || '').trim(), pw = document.getElementById('gl-pass').value || ''; var m = matchPass(u, pw); if (m.ok) unlock(m.admin); else fail(); }
