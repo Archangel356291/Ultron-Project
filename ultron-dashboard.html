@@ -5929,7 +5929,7 @@ function toggleReducedVisuals(el) {
   // ---- Recurring gag: a little Iron Man sneaks into Ultron's office; Ultron
   // beats him up and throws him out the window. Fires every 45s with a
   // notification toast so the user can scroll up and watch. ----
-  var ironMan = { phase: 'gone', pt: 0, x: 0, y: 0, vx: 0, vy: 0, punchT: 0, rot: 0 };
+  var ironMan = { phase: 'gone', pt: 0, x: 0, y: 0, vx: 0, vy: 0, punchT: 0, rot: 0, laserT: 0, repulseT: 0, recoil: 0 };
   function imToast() {
     var el = document.getElementById('im-toast');
     if (!el) {
@@ -5953,14 +5953,17 @@ function toggleReducedVisuals(el) {
   setInterval(startIronMan, 45000);  // then every 45s
   function stepIronMan(t, dt) {
     var im = ironMan; if (im.phase === 'gone') return;
-    var target = Math.max(walkMinX + 40, walkX - 34);   // stand just left of Ultron
+    var target = Math.max(walkMinX + 60, walkX - 66);   // stand a bit further left of Ultron (he's bigger now)
     if (im.phase === 'enter') {
       im.y = officeFloorY - 4; im.x += (target - im.x) * Math.min(1, dt * 3.2); im.pt += dt;
-      if (Math.abs(im.x - target) < 6 || im.pt > 2.6) { im.phase = 'beat'; im.pt = 0; }
-    } else if (im.phase === 'beat') {
-      im.x = target + Math.sin(t * 34) * 2.4; im.y = officeFloorY - 4; im.pt += dt;
-      if (Math.random() < dt * 7) { im.punchT = t + 0.16; if (window.__sfx) window.__sfx('punch'); }
-      if (im.pt > 2.2) { im.phase = 'toss'; im.pt = 0; im.vx = 210; im.vy = -300; if (window.__sfx) window.__sfx('thud'); }
+      if (Math.abs(im.x - target) < 6 || im.pt > 2.6) { im.phase = 'fight'; im.pt = 0; im.laserT = t + 0.6; im.repulseT = t + 1.1; }
+    } else if (im.phase === 'fight') {
+      im.recoil = Math.max(0, im.recoil - dt * 4);
+      im.x = target + Math.sin(t * 12) * 3 + im.recoil * 6; im.y = officeFloorY - 4; im.pt += dt;
+      if (t > im.laserT) { im.laserT = t + 0.85 + Math.random() * 0.3; im.laserOn = t + 0.32; im.recoil = 1; if (window.__sfx) window.__sfx('laser'); }   // Ultron eye-lasers
+      if (t > im.repulseT) { im.repulseT = t + 0.95 + Math.random() * 0.3; im.repulseOn = t + 0.26; if (window.__sfx) window.__sfx('zap'); }             // Iron Man fires back
+      if (im.pt > 3.5 && Math.random() < dt * 5) { im.punchT = t + 0.16; if (window.__sfx) window.__sfx('punch'); }                                       // then the beatdown
+      if (im.pt > 6.2) { im.phase = 'toss'; im.pt = 0; im.vx = 230; im.vy = -320; if (window.__sfx) window.__sfx('thud'); }
     } else if (im.phase === 'toss') {
       im.x += im.vx * dt; im.y += im.vy * dt; im.vy += 560 * dt; im.rot += dt * 7; im.pt += dt;
       if (im.pt > 1.8 || im.y > officeFloorY + 60) im.phase = 'gone';
@@ -5968,8 +5971,9 @@ function toggleReducedVisuals(el) {
   }
   function drawIronMan(t) {
     var im = ironMan; if (im.phase === 'gone') return;
-    var R = '#c0392b', G = '#f1c40f', GD = '#c9a227';
-    ctx.save(); ctx.translate(im.x, im.y); ctx.scale(1.7, 1.7); if (im.phase === 'toss') ctx.rotate(im.rot);
+    var R = '#c0392b', G = '#f1c40f', GD = '#c9a227', S = 2.8, fighting = im.phase === 'fight';
+    var firingBack = fighting && t < im.repulseOn;
+    ctx.save(); ctx.translate(im.x, im.y); ctx.scale(S, S); if (im.phase === 'toss') ctx.rotate(im.rot);
     if (im.phase !== 'toss') { ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0, 2, 8, 2.2, 0, 0, 6.28); ctx.fill(); }
     ctx.fillStyle = R; ctx.fillRect(-4, -6, 3.4, 6); ctx.fillRect(0.6, -6, 3.4, 6);                 // legs
     ctx.fillStyle = GD; ctx.fillRect(-4, -1.6, 3.4, 1.6); ctx.fillRect(0.6, -1.6, 3.4, 1.6);        // gold boots
@@ -5977,16 +5981,36 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = G; ctx.fillRect(-5, -15, 2, 9); ctx.fillRect(3, -15, 2, 9);                     // gold panels
     ctx.fillStyle = '#0af'; ctx.beginPath(); ctx.arc(0, -11, 2.1, 0, 6.28); ctx.fill();             // arc reactor
     ctx.fillStyle = '#dffbff'; ctx.beginPath(); ctx.arc(0, -11, 1, 0, 6.28); ctx.fill();
-    ctx.fillStyle = R; ctx.fillRect(-7, -14, 2.4, 7); ctx.fillRect(4.6, -14, 2.4, 7);               // arms
+    ctx.fillStyle = R;
+    if (firingBack) { ctx.fillRect(4.6, -16, 8, 2.4); ctx.fillStyle = '#dffbff'; ctx.beginPath(); ctx.arc(13, -14.8, 2, 0, 6.28); ctx.fill(); ctx.fillStyle = R; }  // right arm raised to fire
+    else ctx.fillRect(4.6, -14, 2.4, 7);
+    ctx.fillRect(-7, -14, 2.4, 7);                                                                  // left arm
     ctx.fillStyle = G; ctx.fillRect(-3.4, -22, 6.8, 6.6);                                           // gold faceplate
     ctx.fillStyle = GD; ctx.fillRect(-3.4, -22, 6.8, 1);
-    ctx.fillStyle = im.phase === 'beat' ? '#fff' : '#9be8ff'; ctx.fillRect(-2.4, -19.6, 1.8, 1.2); ctx.fillRect(0.6, -19.6, 1.8, 1.2);   // eyes
+    ctx.fillStyle = fighting ? '#9be8ff' : '#9be8ff'; ctx.fillRect(-2.4, -19.6, 1.8, 1.2); ctx.fillRect(0.6, -19.6, 1.8, 1.2);   // eyes
     ctx.restore();
-    if (im.phase === 'beat' && t < im.punchT + 0.16) {   // "POW!" impact star
-      var px = (im.x + walkX) / 2, py = officeFloorY - 34;
+    // Ultron's eye-lasers (red) streaking from his sprite to Iron Man
+    var ub = lastCharBox, uex = ub ? ub.x + ub.w * 0.42 : walkX + 30, uey = ub ? ub.y + ub.h * 0.2 : officeFloorY - 120;
+    var imChestX = im.x, imChestY = im.y - 30;
+    if (fighting && t < im.laserOn) {
+      ctx.save(); ctx.lineCap = 'round'; ctx.shadowColor = '#ff3b3b'; ctx.shadowBlur = 8;
+      ctx.strokeStyle = '#ff5a5a'; ctx.lineWidth = 2.4 + Math.sin(t * 60);
+      ctx.beginPath(); ctx.moveTo(uex - 6, uey); ctx.lineTo(imChestX, imChestY); ctx.moveTo(uex + 6, uey); ctx.lineTo(imChestX, imChestY); ctx.stroke();
+      ctx.shadowBlur = 0; ctx.fillStyle = '#fff'; for (var q = 0; q < 4; q++) ctx.fillRect(imChestX - 4 + Math.random() * 8, imChestY - 4 + Math.random() * 8, 2, 2);   // impact sparks
+      ctx.restore();
+    }
+    // Iron Man's repulsor firing back (cyan) toward Ultron
+    if (firingBack) {
+      var handX = im.x + 13 * S, handY = im.y - 14.8 * S;
+      ctx.save(); ctx.lineCap = 'round'; ctx.shadowColor = '#28e0ff'; ctx.shadowBlur = 7;
+      ctx.strokeStyle = '#9be8ff'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(handX, handY); ctx.lineTo(uex, uey + 4); ctx.stroke();
+      ctx.fillStyle = '#dffbff'; ctx.beginPath(); ctx.arc(handX, handY, 3, 0, 6.28); ctx.fill(); ctx.restore();
+    }
+    if (fighting && t < im.punchT + 0.16) {   // "POW!" impact star
+      var px = (im.x + walkX) / 2, py = officeFloorY - 44;
       ctx.save(); ctx.translate(px, py); ctx.fillStyle = '#ffd24b';
-      ctx.beginPath(); for (var k = 0; k < 10; k++) { var a = k * Math.PI / 5, r = k % 2 ? 5 : 12; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#c0392b'; ctx.font = 'bold 9px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('POW', 0, 0); ctx.restore();
+      ctx.beginPath(); for (var k = 0; k < 10; k++) { var a = k * Math.PI / 5, r = k % 2 ? 7 : 16; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#c0392b'; ctx.font = 'bold 12px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('POW', 0, 0); ctx.restore();
     }
   }
 
@@ -6851,6 +6875,8 @@ window.__sfx = (function () {
       case 'press': voice(120, { type: 'square', dur: 0.12, vol: 0.09, slide: 55 }); noise({ filter: 'highpass', freq: 3200, dur: 0.045, vol: 0.06 }); break;   // press stamp: thunk + metallic click
       case 'thud': voice(90, { type: 'sine', dur: 0.22, vol: 0.13, slide: 44 }); noise({ filter: 'lowpass', freq: 520, slide: 110, dur: 0.22, vol: 0.09 }); break;   // heavy impact / toss
       case 'punch': noise({ filter: 'bandpass', freq: 900, q: 1.6, dur: 0.06, vol: 0.11 }); voice(160, { type: 'square', dur: 0.05, vol: 0.08, slide: 70 }); break;   // punch: filtered noise hit + low
+      case 'laser': voice(1000, { type: 'sawtooth', dur: 0.2, vol: 0.08, slide: 120 }); noise({ filter: 'bandpass', freq: 2200, q: 3, dur: 0.2, vol: 0.03, slide: 400 }); break;   // Ultron eye-laser: fast downward sweep
+      case 'zap': voice(520, { type: 'square', dur: 0.11, vol: 0.07, slide: 1500 }); noise({ filter: 'highpass', freq: 4000, dur: 0.09, vol: 0.04 }); break;   // repulsor blast: rising zap
     }
   }
   fn.toggle = function () { muted = !muted; try { localStorage.setItem('ultron_sfx_muted', muted ? '1' : '0'); } catch (e) { } if (!muted) { ac(); fn('unlock'); } return muted; };
