@@ -86,6 +86,8 @@ $RECYCLE.BIN/
 # Ultron's Brain & Knowledge mirrors -- written next to ultron.db (D:\ultron's
 # Brain&Knowledge in Docker); if the backend is ever run bare with the default
 # DB path they would land here, and they are runtime data, never source.
+# Sandboxed SAST reports (dev-tools/sast-scan.sh) -- regenerated on demand.
+/dev-tools/sast-reports/
 /ultron-backend/knowledge/
 /ultron-backend/chat logs/
 /ultron-backend/graphify-out/

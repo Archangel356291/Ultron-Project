@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Ultron Project\\Ultron Project",
+        "D:\\ultron's Brain&Knowledge",
+        "C:\\pihole&jellyfin docker containers"
+      ]
+    },
+    "git": {
+      "command": "uvx",
+      "args": ["mcp-server-git", "--repository", "C:\\Ultron Project\\Ultron Project"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest", "--headless", "--browser", "chromium", "--viewport-size", "400,860"]
+    }
+  }
+}

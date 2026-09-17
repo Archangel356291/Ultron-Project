@@ -1,0 +1,18 @@
+# gitleaks config for dev-tools/sast-scan.sh's WORKING-TREE scan only.
+# The pre-commit hook keeps using the default rules with no allowlist, so a
+# force-added .env would still be caught at commit time. Here we scan the
+# checkout as it sits on disk, where these paths hold real secrets that are
+# deliberately gitignored -- reporting them every run would drown the signal.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Secrets that live on disk on purpose and are gitignored"
+paths = [
+  '''(^|/)\.env(\..*)?$''',
+  '''(^|/)ultron-backend/tls/''',
+  '''(^|/)graphify-out/private-nodes\.enc\.json$''',
+  '''(^|/)graphify-out/cache/''',
+  '''(^|/)\.obsidian/''',
+  '''(^|/)dev-tools/sast-reports/''',
+]

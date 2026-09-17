@@ -315,9 +315,15 @@
   .section-desc{ color:var(--text-dim); font-size:13.5px; margin-bottom:22px; }
 
   /* ---------- home layout grid ---------- */
-  .home-top-grid{ display:grid; grid-template-columns:2fr 1fr; gap:18px; align-items:start; margin-bottom:18px; }
+  /* minmax(0, …) tracks + min-width:0 children: a bare 1fr's minimum is
+     min-content, so a text input's intrinsic width (~260px) pushed the
+     Home column to 393px inside a 304px phone viewport and the page
+     scrolled sideways -- found by the first real 400px headless render. */
+  .home-top-grid{ display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:18px; align-items:start; margin-bottom:18px; }
+  .home-main, .home-rail{ min-width:0; }
   .home-rail{ display:flex; flex-direction:column; gap:18px; }
-  @media(max-width:1050px){ .home-top-grid{ grid-template-columns:1fr; } }
+  @media(max-width:1050px){ .home-top-grid{ grid-template-columns:minmax(0,1fr); } }
+  .talk-row input, .chat-input input{ min-width:0; }
 
   .home-bottom-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
   .home-bottom-grid .stack{ display:flex; flex-direction:column; gap:16px; }
@@ -4881,7 +4887,7 @@ function toggleReducedVisuals(el) {
     deskUltronActive: loadImg('desk_ultron_active.png'),
     tubeRed: loadImg('tube_red.png'),
   };
-  ['cyan', 'green', 'amber', 'violet', 'blue', 'indigo', 'mint', 'lime', 'rose', 'steel', 'lavender', 'peach', 'magenta', 'olive'].forEach(function (c) {
+  ['cyan', 'green', 'amber', 'violet', 'blue', 'indigo', 'mint', 'lime', 'rose', 'steel', 'lavender', 'peach', 'magenta', 'olive', 'copper', 'sky', 'teal'].forEach(function (c) {
     IMG['agent_' + c] = loadImg('agent_' + c + '_sit.png');
     IMG['desk_' + c + '_idle'] = loadImg('desk_' + c + '_idle.png');
     IMG['desk_' + c + '_active'] = loadImg('desk_' + c + '_active.png');
@@ -4939,6 +4945,9 @@ function toggleReducedVisuals(el) {
     { color: 'violet', deskX: 966, label: 'SCOUT', agent: 'scout', busyPlate: 'SEARCHING' },
     { color: 'blue', deskX: 110, label: 'DOCKHAND', agent: 'docker_orchestrator', busyPlate: 'DEPLOYING' },
     { color: 'mint', deskX: 230, label: 'GATEKEEPER', agent: 'pihole_guard', busyPlate: 'CHECKING' },
+    { color: 'copper', deskX: 350, label: 'FORGE', agent: 'developer', busyPlate: 'CODING' },
+    { color: 'sky', deskX: 514, label: 'SEEKER', agent: 'research', busyPlate: 'RESEARCHING', row: 'rear' },
+    { color: 'teal', deskX: 582, label: 'MUSE', agent: 'frontend_designer', busyPlate: 'DESIGNING', row: 'rear' },
     { color: 'indigo', deskX: 650, label: 'RELAY', agent: 'tailscale_topology', busyPlate: 'ROUTING', row: 'rear' },
     { color: 'lime', deskX: 718, label: 'PROOF', agent: 'test_automation', busyPlate: 'TESTING', row: 'rear' },
     { color: 'rose', deskX: 786, label: 'AUDITOR', agent: 'security_auditor', busyPlate: 'AUDITING', row: 'rear' },
@@ -4960,11 +4969,12 @@ function toggleReducedVisuals(el) {
   var LABEL_COLORS = {
     cyan: '#2f8fb0', green: '#2f9a5c', amber: '#c9973a', violet: '#8c6bc0', blue: '#3f7fa8', mint: '#5fb894',
     indigo: '#6b6bc0', lime: '#8fae3a', rose: '#c06a80', steel: '#8f98a8', lavender: '#9a80c8', peach: '#c08a68',
-    magenta: '#b04d9a', olive: '#8c9440',
+    magenta: '#b04d9a', olive: '#8c9440', copper: '#a8683a', sky: '#6aa8d8', teal: '#2a9a92',
   };
   var BUSY_COLORS = {
     cyan: '#3dd6ff', green: '#33d17a', violet: '#b084f0', blue: '#4fa6e0', mint: '#78ffc8', indigo: '#6e6eff',
     lime: '#aae63c', rose: '#ff7896', steel: '#aab4c8', lavender: '#c8a0ff', peach: '#ffaa78', magenta: '#e650c8', olive: '#a0aa3c',
+    copper: '#cd7d3c', sky: '#78c8ff', teal: '#00beb4',
   };
   var sentinelAlert = false;
   window.__sentinelAlert = function (on) { sentinelAlert = !!on; };

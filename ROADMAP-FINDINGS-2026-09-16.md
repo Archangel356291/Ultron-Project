@@ -247,6 +247,37 @@ visible: Ultron, four on the floor by him, two by the server rack, eight
 on the catwalk — each lit by a real event (task in progress, learned,
 alert, search). Full matrix in `AGENT_CAPABILITIES_AND_GOVERNANCE.md` §3.
 
+## 11. Tools for the agents (owner-requested 2026-09-16)
+
+From the owner's tooling blueprint. Installed, all local and free:
+`.mcp.json` with a **Filesystem MCP** sandboxed to the project, the Brain
+vault and the compose stacks, a **Git MCP** on the repo, and the
+**Playwright MCP** (headless Chromium installed); plugins
+**claude-security** (in-session vulnerability scan), **context7** (library
+docs as clean text) and **code-review**. `dev-tools/sast-scan.sh` runs
+gitleaks, Bandit and Semgrep in throwaway containers with the repo
+mounted read-only (its own gitleaks config allowlists the gitignored
+secret paths so the working-tree scan reports signal only). In the
+backend, `read_page` gives Ultron a local Firecrawl/Jina-style reader
+(public https only, HTML → headings/paragraphs, capped, untrusted-wrapped)
+so no third party sees his URLs. New specialists with desks: **Forge**
+(developer: Filesystem + Git MCP), **Seeker** (research: WebSearch/
+WebFetch + Context7), **Muse** (front-end design: Playwright + Figma MCP +
+the frontend-design skill). Needs the owner's account, so not installed:
+the `github` plugin (token), Firecrawl (sign-in), Brave Search (key).
+
+**First real phone-width render** (headless Chromium, 400×860, signed in)
+found two defects the automation tab never could: Home overflowed
+horizontally (a bare `1fr` grid track plus a text input's intrinsic width
+pushed the column to 393px in a 304px viewport) — fixed with
+`minmax(0, …)` tracks and `min-width:0` on the inputs; and
+`/api/dev/repos` answered every poll with a 400 when no repos are
+configured — now a 200 with `configured: false` and the same note.
+SAST baseline: one real Bandit item (SHA-1 used as a cache fingerprint →
+`usedforsecurity=False`); the rest triaged as intended behaviour
+(parameterised SQL with code-controlled column names, validated
+`urlopen` schemes, `0.0.0.0` bind inside the container).
+
 ## Also fixed on the way
 
 - **Crypto & Markets no longer shows fake data.** The hardcoded

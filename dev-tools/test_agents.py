@@ -61,7 +61,8 @@ def demo():
     agents = {a["agent"]: a for a in res.get_json()["agents"]}
     assert {"ultron", "sentinel", "scout", "learner", "engineering", "docker_orchestrator", "tailscale_topology",
             "pihole_guard", "test_automation", "security_auditor", "log_coordinator", "context_manager",
-            "knowledge_synthesizer", "slack_communicator", "discord_gateway"} == set(agents), set(agents)
+            "knowledge_synthesizer", "slack_communicator", "discord_gateway", "developer", "research",
+            "frontend_designer"} == set(agents), set(agents)
     for a in agents.values():
         assert a["role"] and a["tools"] and a["forbidden"] and a["scope"], a
     assert agents["test_automation"]["health"].startswith("standby (Claude Code")
@@ -71,7 +72,7 @@ def demo():
         if meta["kind"] == "claude-code":
             path = os.path.join(agents_dir, name.replace("_", "-") + ".md")
             assert os.path.isfile(path), path
-            head = open(path, encoding="utf-8").read(400)
+            head = open(path, encoding="utf-8").read(2000)
             assert head.startswith("---\nname: " + name.replace("_", "-")) and "\ntools:" in head, path
 
     # Scribe's runtime half: redacted, capped, only real container names.
@@ -93,6 +94,38 @@ def demo():
     assert "[redacted]" in r["log"] and "normal line" in r["log"], r["log"]
     assert app._redact("x" * 10) == "x" * 10
     assert "get_container_logs" in app.TOOL_DISPATCH and "get_container_logs" not in app.LITE_ALLOWED_TOOLS
+
+    # read_page: https-only, public hosts only, readable text out of HTML,
+    # capped, and every failure a plain error.
+    assert "read_page" in app.TOOL_DISPATCH and "read_page" not in app.LITE_ALLOWED_TOOLS
+    for bad in ("http://example.org/", "https://user:pw@example.org/", "https://192.168.0.5/", "https://pihole.tailc5bde9.ts.net/admin/",
+                "https://localhost/", "https://host.docker.internal/", ""):
+        assert "error" in app.read_page(url=bad), bad
+    html = ("<html><head><title> Docs &amp; Guide </title><script>evil()</script><style>x{}</style></head>"
+            "<body><nav>Menu Menu</nav><h1>Install</h1><p>Run <code>pip install x</code> first.</p>"
+            "<h2>Config</h2><ul><li>one</li><li>two</li></ul><footer>foot</footer></body></html>")
+    class _R:
+        status = 200
+        headers = {"Content-Type": "text/html; charset=utf-8"}
+        def read(self, n=None): return html.encode()
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+    real_urlopen = app.urllib.request.urlopen
+    app.urllib.request.urlopen = lambda req, timeout=None: _R()
+    try:
+        r = app.read_page(url="https://docs.example.org/guide")
+        assert r["title"] == "Docs & Guide", r
+        assert "# Install" in r["text"] and "## Config" in r["text"] and "pip install x" in r["text"], r["text"]
+        assert "evil()" not in r["text"] and "Menu" not in r["text"] and "foot" not in r["text"], r["text"]
+        assert r["truncated"] is False and "unverified" in r["note"]
+        r = app.read_page(url="https://docs.example.org/guide", max_chars=500)
+        assert r["chars"] <= 500
+        class _Bin(_R):
+            headers = {"Content-Type": "application/pdf"}
+        app.urllib.request.urlopen = lambda req, timeout=None: _Bin()
+        assert "not a readable page" in app.read_page(url="https://docs.example.org/x.pdf")["error"]
+    finally:
+        app.urllib.request.urlopen = real_urlopen
     assert agents["sentinel"]["health"] == "disabled"  # interval 0 in tests
     assert agents["learner"]["daily_cap_usd"] == 0.000001
     assert client.get("/api/agents", headers=BETA).status_code == 403

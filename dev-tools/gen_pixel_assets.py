@@ -69,6 +69,9 @@ AGENT_COLORS = {
     "peach": (255, 170, 120, 255),    # Librarian
     "magenta": (230, 80, 200, 255),   # Herald
     "olive": (160, 170, 60, 255),     # Envoy
+    "copper": (205, 125, 60, 255),    # Forge
+    "sky": (120, 200, 255, 255),      # Seeker
+    "teal": (0, 190, 180, 255),       # Muse
 }
 OUTLINE_COLOR = (5, 6, 8, 255)
 
@@ -546,7 +549,7 @@ def draw_room_background(w, h, floor_y):
     # to the floor. Its top edge is the rear row's floor line (the dashboard's
     # MEZZ_Y) -- keep the two in step if either changes.
     mezz_y = int(floor_y * 0.68)
-    mx0, mx1 = int(w * 0.49), int(w * 0.98)
+    mx0, mx1 = int(w * 0.39), int(w * 0.98)
     d.rectangle([mx0, mezz_y, mx1, mezz_y + 10], fill=shade(LINE, 1.2))
     d.rectangle([mx0, mezz_y, mx1, mezz_y + 2], fill=shade(STEEL, 0.9))
     d.rectangle([mx0, mezz_y + 10, mx1, mezz_y + 13], fill=shade(LINE, 0.6))

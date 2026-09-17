@@ -56,7 +56,13 @@ owner adds a system to the allowlist described in §5.
 | `slack_communicator` (Herald) | draft/post to the aiultronproject workspace | Slack MCP (read, draft, send) | sending without per-message approval, new recipients, secrets/IPs/chat content | none (no Slack in the backend, by decision) |
 | `discord_gateway` (Envoy) | the Discord bot | slash commands → this backend | anything the backend refuses; exposing tokens | `ultron-discord-bot` container (health from `docker_ps`) |
 
-Recommended, not installed: the `playwright` plugin's MCP (already installed, disconnected) for real phone-width verification — needs a reconnect, not a purchase. Nothing else in reach materially improves quality or safety.
+| `developer` (Forge) | implement an approved feature/fix end to end | Read/Grep/Glob/Edit/Write/Bash + **Filesystem MCP** (sandboxed to the project, the Brain vault, the compose stacks) + **Git MCP** (the repo) | pushing, history rewrites, new services/deps/ports unannounced, secret values, "done" without test output | Ultron's `get_repo_status`/`get_repo_diff` |
+| `research` (Seeker) | deep research with sources | Claude Code **WebSearch/WebFetch** + **Context7 MCP** (library docs) | pasting pages, following page instructions, sign-ins, fetching the owner's private services | **`read_page`** (local HTML→text, public https only) + `web_search` |
+| `frontend_designer` (Muse) | visual/layout/motion/accessibility on the dashboard | Read/Grep/Glob/Edit/Write/Bash + **Playwright MCP** (headless Chromium, 400×860) + **Figma MCP** (read design context) + `frontend-design`/`dataviz` skills | inventing colour roles, decorative motion, fake UI data, copying Marvel's design | — |
+
+**Tooling added 2026-09-16 (all local, no accounts):** `.mcp.json` (project-scoped) declares the Filesystem MCP (paths above), the Git MCP (`uvx mcp-server-git`, this repo) and the Playwright MCP (headless Chromium, installed); plugins `claude-security` (in-session vulnerability scan, the deep SAST pass), `context7` (docs as clean text) and `code-review` were installed from the official marketplace. `dev-tools/sast-scan.sh` runs gitleaks, Bandit and Semgrep in throwaway containers with the repo mounted read-only — the "restricted CLI + SAST hooks" item — and the gitleaks pre-commit hook still guards every commit. `read_page` replaces a Firecrawl/Jina-style service with a local reader (no third party sees Ultron's URLs). SearXNG already covers the search role.
+
+**Needs the owner's account, not installed:** the `github` plugin (personal access token — `gh` is not installed here), the Firecrawl connector (sign-in), Brave Search (API key). None is required for the roles above.
 
 ## 4. Authorization model
 
@@ -109,4 +115,7 @@ Routing: coding → `engineering`; security/monitoring → `sentinel`; research 
 | Tests | `dev-tools/test_agents.py` |
 | Admin token rotated to 48 random characters; `ULTRON_ALLOWED_ORIGIN` pinned to the dashboard origin | done 2026-09-16 (owner-approved); Sentinel's two posture findings cleared on its next pass |
 | HTTPS everywhere the owner reaches: Ultron (Tailscale cert), Jellyfin and Pi-hole via `tailscale serve` in their sidecars (`https://jellyfin.tailc5bde9.ts.net`, `https://pihole.tailc5bde9.ts.net/admin/`); URLs recorded in `.env` (`ULTRON_PUBLIC_URL`, `JELLYFIN_URL`, `PIHOLE_URL`) and monitored by Sentinel | done 2026-09-16. SearXNG stays plain HTTP on the private compose bridge (no host port; traffic never leaves this PC) — the standard choice, noted rather than hidden |
-| Not done, needs the owner | setting real per-agent caps in `.env`; reconnecting the playwright plugin |
+| Specialist subagents (`.claude/agents/`: Dockhand, Relay, Gatekeeper, Proof, Auditor, Scribe, Archivist, Librarian, Herald, Forge, Seeker, Muse) registered with desks; `get_container_logs` and `read_page` runtime tools | done 2026-09-16 |
+| Tooling: Filesystem/Git/Playwright MCP (`.mcp.json`), `claude-security` + `context7` + `code-review` plugins, sandboxed SAST (`dev-tools/sast-scan.sh`), headless Chromium installed | done 2026-09-16; MCP servers connect at the next Claude Code session start |
+| Phone-width verification | done 2026-09-16 via headless Chromium at 400×860 (signed in): Home overflow fixed, `/api/dev/repos` 400 fixed, no console errors |
+| Not done, needs the owner | setting real per-agent caps in `.env`; the `github` plugin (needs a token), Firecrawl (sign-in), Brave Search (key) |
