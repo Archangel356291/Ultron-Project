@@ -223,6 +223,88 @@ def draw_ultron(scale, accent, pose):
     return glow(outline(img, size=max(3, scale // 2 * 2 + 1)), accent, blur=max(2, scale // 2))
 
 
+def draw_sentinel(scale, accent):
+    """Sentinel, the security watchdog (owner-requested 2026-09-16: "a more
+    muscular, stronger version of the other subagents"). Same drawing
+    vocabulary as draw_ultron's seated pose on the same 20x28 grid, but a
+    heavyweight build: a wider, sloped shoulder yoke, a thick neck, a
+    barrel torso with layered armour plates, both arms forward and thick,
+    fists on the desk, and a shield emblem on the chest -- the one desk
+    you can tell apart at a glance."""
+    W, H = 20 * scale, 28 * scale
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+
+    def px(x, y):
+        return (x * scale, y * scale)
+
+    def rect(x0, y0, x1, y1, color):
+        d.rectangle([px(x0, y0), px(x1 - 0.01, y1 - 0.01)], fill=color)
+
+    def poly(points, color):
+        d.polygon([px(x, y) for x, y in points], fill=color)
+
+    # Head: squarer and set low into the shoulders (thick neck, no gap).
+    poly([(6.2, 6.0), (6.4, 3.0), (7.6, 1.2), (10, 0.6), (12.4, 1.2), (13.6, 3.0), (13.8, 6.0)], BODY_MID)
+    poly([(6.2, 6.0), (6.4, 3.0), (7.6, 1.2), (10, 0.6), (10, 6.0)], shade(BODY_MID, 1.25))
+    rect(6.2, 6.0, 13.8, 8.6, BODY_LIGHT)
+    poly([(6.7, 6.3), (13.3, 6.3), (13.0, 8.4), (7.0, 8.4)], accent)          # visor
+    poly([(6.7, 6.3), (13.3, 6.3), (13.1, 6.9), (6.9, 6.9)], shade(accent, 1.3))
+    for ex in (8.2, 11.8):  # narrow, hard eye slits
+        rect(ex - 1.0, 6.9, ex + 1.0, 7.5, (8, 6, 6, 255))
+    for gx in (7.6, 8.8, 10.0, 11.2):  # mouth grille
+        rect(gx, 7.8, gx + 0.5, 8.5, (8, 6, 6, 255))
+    # Low crest: three heavy plates instead of Ultron's sharp spikes.
+    for x0 in (7.0, 9.0, 11.0):
+        poly([(x0, 1.6), (x0 + 1.0, 0.3), (x0 + 2.0, 1.6)], accent)
+
+    # Neck + yoke: the shoulders are the widest thing on the sprite.
+    rect(7.5, 8.4, 12.5, 10.0, BODY_MID)
+    poly([(1.0, 11.5), (19.0, 11.5), (17.6, 9.4), (2.4, 9.4)], BODY_LIGHT)      # sloped yoke
+    poly([(1.0, 11.5), (10, 11.5), (10, 9.4), (2.4, 9.4)], shade(BODY_LIGHT, 1.2))
+    rect(1.6, 11.5, 18.4, 12.6, BODY_MID)
+    for sx in (2.0, 16.4):  # shoulder plates with a lit rivet each
+        rect(sx, 9.8, sx + 1.6, 12.4, shade(BODY_LIGHT, 0.85))
+        d.ellipse([px(sx + 0.35, 10.3), px(sx + 1.25, 11.2)], fill=shade(accent, 0.9))
+
+    # Barrel torso with two plate bands and a shield emblem.
+    rect(3.0, 12.6, 17.0, 20.0, BODY_MID)
+    rect(3.0, 12.6, 4.8, 20.0, BODY_DARK)
+    rect(15.2, 12.6, 17.0, 20.0, BODY_DARK)
+    rect(4.8, 12.6, 8.0, 13.2, shade(BODY_MID, 1.18))
+    for gy in (14.6, 17.4):
+        rect(5.0, gy, 15.0, gy + 0.6, accent)
+        rect(5.0, gy + 0.6, 15.0, gy + 0.8, shade(accent, 0.4))
+    # Shield: a heater shape on the chest plate, lit core in its centre.
+    poly([(7.6, 13.4), (12.4, 13.4), (12.4, 16.0), (10, 17.6), (7.6, 16.0)], PANEL)
+    poly([(8.1, 13.9), (11.9, 13.9), (11.9, 15.8), (10, 17.0), (8.1, 15.8)], shade(accent, 0.55))
+    d.ellipse([px(9.0, 14.4), px(11.0, 16.2)], fill=accent)
+    d.ellipse([px(9.5, 14.9), px(10.5, 15.7)], fill=(255, 255, 255, 230))
+
+    # Both arms forward and thick, fists planted on the desk.
+    for (ax0, ax1, fx) in ((1.4, 4.6, 0.6), (15.4, 18.6, 17.0)):
+        rect(ax0, 12.8, ax1, 19.2, BODY_LIGHT)
+        rect(ax0, 12.8, ax0 + 0.8, 19.2, shade(BODY_LIGHT, 1.2))
+        rect(ax0 - 0.2, 15.4, ax1 + 0.2, 16.0, shade(accent, 0.8))            # bicep band
+        rect(fx, 19.0, fx + 3.4, 21.6, BODY_MID)                               # fist
+        rect(fx + 0.3, 19.3, fx + 3.1, 19.9, shade(BODY_MID, 1.25))
+        d.ellipse([px(fx + 1.0, 20.0), px(fx + 2.4, 21.2)], fill=shade(accent, 0.85))
+
+    # Seated base, wider than Ultron's.
+    poly([(2.0, 20.0), (18.0, 20.0), (19.2, 21.2), (0.8, 21.2)], BODY_LIGHT)
+    rect(0.8, 21.2, 19.2, 25.4, BODY_DARK)
+    rect(0.8, 21.2, 19.2, 22.2, STEEL)
+    rect(0.8, 21.2, 10, 22.0, shade(STEEL, 1.15))
+
+    shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(shadow).ellipse([px(1.5, 25.8), px(18.5, 27.4)], fill=(0, 0, 0, 140))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(scale * 0.4))
+    base = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    base.alpha_composite(shadow)
+    base.alpha_composite(img)
+    return glow(outline(base, size=max(3, scale // 2 * 2 + 1)), accent, blur=max(2, scale // 2))
+
+
 def draw_desk_monitor(scale, w_units, h_units, mon_w, mon_h, accent, active, label_alpha):
     W, H = int(w_units * scale), int((h_units + mon_h + 10) * scale)
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -536,7 +618,8 @@ def main():
     # One sprite/desk/tube set per subagent, all from the same drawing code
     # so the four read as one team in four colours.
     for name, color in (("cyan", CYAN), ("green", GREEN), ("amber", AMBER), ("violet", VIOLET)):
-        save(draw_ultron(int(SCALE * 0.6), color, "sit"), f"agent_{name}_sit.png")
+        sprite = draw_sentinel(int(SCALE * 0.6), color) if name == "amber" else draw_ultron(int(SCALE * 0.6), color, "sit")
+        save(sprite, f"agent_{name}_sit.png")
         save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, color, False, 50), f"desk_{name}_idle.png")
         save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, color, True, 80), f"desk_{name}_active.png")
         save(draw_tube(6, 2, 9, color), f"tube_{name}.png")

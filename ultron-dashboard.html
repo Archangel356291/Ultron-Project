@@ -2889,6 +2889,11 @@
         return (e.status === 'error' || e.status === 'warning') && new Date(e.timestamp).getTime() > hourAgo;
       }));
     }
+    // Learner's desk: lit for a couple of minutes after he remembered something.
+    const twoMinAgo = Date.now() - 120e3;
+    if (window.__agentBusy && events.some(function (e) { return e.event_type === 'learned' && new Date(e.timestamp).getTime() > twoMinAgo; })) {
+      window.__agentBusy('green', 20000);
+    }
     if (!events.length) {
       listEl.innerHTML = '<div class="activity-item"><span class="activity-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M12 11v5"/></svg></span><span class="activity-text">No activity recorded yet — backups, deployments, and CVE scans will show up here once you run one.</span><span class="activity-time">—</span></div>';
       return;
@@ -2947,6 +2952,10 @@
     } catch (err) {
       return;
     }
+    // Pixel room: the Engineer's desk stays lit while an engineering task
+    // is in progress (re-armed every poll, so it goes dark when it ends).
+    const eng = (data.agents || []).find(function (a) { return a.agent === 'engineering'; });
+    if (eng && eng.current_task && eng.current_task.status === 'in_progress' && window.__agentBusy) window.__agentBusy('cyan', 20000);
     const tbody = document.querySelector('#agents-table tbody');
     if (!tbody) return;
     tbody.innerHTML = (data.agents || []).map(function (a) {
@@ -4902,20 +4911,29 @@ function toggleReducedVisuals(el) {
   // while the activity log holds a warning/error from the last hour (see
   // window.__sentinelAlert, fed by fetchActivity) -- the first real cue
   // in a room that was otherwise pure scenery.
+  // One desk per agent in the registry (see the Agents card / /api/agents):
+  // Engineer (cyan) = the Claude Code sessions that build Ultron, lit while
+  // an engineering task is in progress; Learner (green), lit for a while
+  // after a "learned" event; Sentinel (amber, the heavyweight build),
+  // lit + red plate while the activity log holds a recent warning/error;
+  // Scout (violet), lit after a reply that used web_search. Ultron himself
+  // has the big red desk.
   var SUBAGENTS = [
-    { color: 'cyan', deskX: 696 },
-    { color: 'green', deskX: 786 },
-    { color: 'amber', deskX: 876, label: 'SENTINEL', alertable: true },
-    { color: 'violet', deskX: 966, label: 'SCOUT' },
+    { color: 'cyan', deskX: 696, label: 'ENGINEER', busyPlate: 'BUILDING' },
+    { color: 'green', deskX: 786, label: 'LEARNER', busyPlate: 'LEARNING' },
+    { color: 'amber', deskX: 876, label: 'SENTINEL', alertable: true, scale: 1.2 },
+    { color: 'violet', deskX: 966, label: 'SCOUT', busyPlate: 'SEARCHING' },
   ];
   SUBAGENTS.forEach(function (a) { a.tubeX = a.deskX + 60; });
-  var LABEL_COLORS = { amber: '#c9973a', violet: '#8c6bc0' };
+  var LABEL_COLORS = { cyan: '#2f8fb0', green: '#2f9a5c', amber: '#c9973a', violet: '#8c6bc0' };
+  var BUSY_COLORS = { cyan: '#3dd6ff', green: '#33d17a', violet: '#b084f0' };
   var sentinelAlert = false;
   window.__sentinelAlert = function (on) { sentinelAlert = !!on; };
-  // Scout lights up for a while after a reply that actually used
-  // web_search (sendChatMessage calls this from the reply's tools_used).
-  var scoutBusyUntil = 0;
-  window.__scoutBusy = function (ms) { scoutBusyUntil = now() + (ms || 20000) / 1000; };
+  // A desk lights up for a while after its agent did something real --
+  // callers elsewhere (fetchAgents, fetchActivity, sendChatMessage) say which.
+  var busyUntil = {};
+  window.__agentBusy = function (color, ms) { busyUntil[color] = now() + (ms || 20000) / 1000; };
+  window.__scoutBusy = function (ms) { window.__agentBusy('violet', ms); };
   var ULTRON_DESK_X = 1050, ULTRON_TUBE_X = 1195;
 
   // Conveyor belt: carries little pixel packages from the workstations to
@@ -4992,15 +5010,19 @@ function toggleReducedVisuals(el) {
     var flicker = Math.sin(t * 0.8) > -0.2;
     SUBAGENTS.forEach(function (a) {
       var alarmed = a.alertable && sentinelAlert;
-      var busy = a.color === 'violet' && t < scoutBusyUntil;
+      var busy = !!a.busyPlate && t < (busyUntil[a.color] || 0);
       drawFloored(IMG['tube_' + a.color], a.tubeX, SUBAGENT_TUBE_SCALE);
       var desk = drawFloored(IMG['desk_' + a.color + (alarmed || busy || flicker ? '_active' : '_idle')], a.deskX, DESK_SCALE);
-      if (desk.w) drawFloored(IMG['agent_' + a.color], a.deskX + desk.w * 0.18, AGENT_SCALE);
+      if (desk.w) {
+        var agentScale = AGENT_SCALE * (a.scale || 1);
+        // Keep the sprite's feet on the same spot whatever its scale.
+        drawFloored(IMG['agent_' + a.color], a.deskX + desk.w * 0.18 - (agentScale - AGENT_SCALE) * 10, agentScale);
+      }
       if (a.label && desk.w) {
-        ctx.fillStyle = alarmed ? '#ff3b3b' : busy ? '#b084f0' : LABEL_COLORS[a.color];
+        ctx.fillStyle = alarmed ? '#ff3b3b' : busy ? BUSY_COLORS[a.color] : LABEL_COLORS[a.color];
         ctx.font = '7px monospace';
         ctx.textAlign = 'center';
-        var plate = alarmed ? a.label + ' · ALERT' : busy ? a.label + ' · SEARCHING' : a.label;
+        var plate = alarmed ? a.label + ' · ALERT' : busy ? a.label + ' · ' + a.busyPlate : a.label;
         ctx.fillText(plate, a.deskX + desk.w / 2, FLOOR_Y + 22);
       }
     });

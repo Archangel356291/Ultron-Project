@@ -14,7 +14,7 @@ owner adds a system to the allowlist described in §5.
 | **Sentinel** | daemon thread, 0 tokens | Security watchdog | `docker_ps`, lockout state, CVE cache — reads | Writes to the activity log only, on change | 5-minute passes |
 | **Scout** | tool + container | Web research | `web_search` → private SearXNG (no host port) | Admin-only; results wrapped untrusted; not in Economy | On demand |
 | **Learner** | opt-in lite-model call | Memory extraction | `remember_note` | Admin-only; skipped if Ultron already remembered | Off unless switched on |
-| cyan / green | pixel-room sprites | none recorded | — | — | scenery |
+| cyan / green | pixel-room sprites | none recorded at audit time; since assigned as the room's **Engineer** (cyan → `engineering`) and **Learner** (green → `learner`) desks, lit by real task/learn events | — | — | scenery → live indicators |
 | **Claude Code** | external session | Engineering | repository, `dev-tools` tests, `docker compose` on this PC, Chrome for verification | Per-session grants; gitleaks pre-commit hook; graphify hook-guard | This work |
 
 **Role coverage found**
