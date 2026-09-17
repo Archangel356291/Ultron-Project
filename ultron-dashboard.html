@@ -473,9 +473,11 @@
   body.game-locked .sidebar{ position:relative; z-index:1300; }
   /* the two blast doors -- top slides up, bottom slides down on unlock */
   .gl-door{ position:absolute; left:0; right:0; height:50%; z-index:2; background:
+      radial-gradient(circle at 20% 30%, rgba(90,60,30,.16) 0 2px, transparent 3px) 0 0/40px 40px,
+      radial-gradient(circle at 70% 65%, rgba(70,45,20,.14) 0 2px, transparent 3px) 12px 8px/46px 46px,
       repeating-linear-gradient(90deg,#171a20 0 34px,#1e222a 34px 36px),
       linear-gradient(180deg,#20242c,#15171d);
-    box-shadow:inset 0 0 60px rgba(0,0,0,.7); transition:transform .9s cubic-bezier(.7,0,.25,1); }
+    box-shadow:inset 0 0 60px rgba(0,0,0,.75); transition:transform 3.6s cubic-bezier(.55,.03,.5,.98); }
   .gl-door::before{ content:""; position:absolute; left:6%; right:6%; height:6px; background:linear-gradient(90deg,#3a3f49,#5a616d,#3a3f49); box-shadow:0 0 4px #000; }
   .gl-door::after{ content:""; position:absolute; left:14%; right:14%; height:3px; background:#0c0e12; }
   .gl-door-top{ top:0; border-bottom:3px solid #0a0b0e; }
@@ -517,11 +519,17 @@
   .gl-msg{ min-height:14px; margin-top:9px; font-family:var(--font-mono); font-size:10.5px; color:#ff6b6b; }
   .game-lock.shake .gl-panel{ animation:lv-shake .35s; }
   /* the big red warning that flashes as the doors open */
-  .gl-warning{ position:absolute; z-index:4; left:0; right:0; top:50%; transform:translateY(-50%) scale(.7); text-align:center; padding:0 12px;
-    font-family:var(--font-display); font-weight:900; font-size:clamp(22px,6vw,52px); line-height:1.1; letter-spacing:.02em;
-    color:#ff2b3d; text-shadow:0 0 18px rgba(255,43,61,.9),0 0 40px rgba(255,43,61,.6); opacity:0; pointer-events:none; }
-  .game-lock.open .gl-warning{ animation:gl-warn 2.2s ease-out forwards; }
-  @keyframes gl-warn{ 0%{ opacity:0; transform:translateY(-50%) scale(.6); } 12%{ opacity:1; transform:translateY(-50%) scale(1.06); } 20%,34%,48%{ opacity:1; } 27%,41%{ opacity:.25; } 60%{ opacity:1; transform:translateY(-50%) scale(1); } 100%{ opacity:0; transform:translateY(-50%) scale(1.1); } }
+  .gl-warning{ position:absolute; z-index:6; left:0; right:0; top:50%; transform:translateY(-50%) scale(.7); text-align:center; padding:0 12px;
+    font-family:var(--font-display); font-weight:900; font-size:clamp(30px,9vw,84px); line-height:1.05; letter-spacing:.02em;
+    color:#ff3b4d; text-shadow:0 0 26px rgba(255,43,61,1),0 0 64px rgba(255,43,61,.85),0 0 120px rgba(255,60,70,.6); opacity:0; pointer-events:none; }
+  /* while opening: doors have slid away and the panel/chains are gone -> let the
+     game be played behind while the big warning holds on screen ~22s */
+  .game-lock.open{ background:transparent; pointer-events:none; }
+  .game-lock.open .gl-warning{ animation:gl-warn 22.2s ease-out forwards; }
+  @keyframes gl-warn{ 0%{ opacity:0; transform:translateY(-50%) scale(.6); }
+    3%{ opacity:1; transform:translateY(-50%) scale(1.08); } 5%,9%,13%{ opacity:1; } 7%,11%{ opacity:.3; }
+    16%{ opacity:1; transform:translateY(-50%) scale(1); } 88%{ opacity:.92; transform:translateY(-50%) scale(1); }
+    100%{ opacity:0; transform:translateY(-50%) scale(1.08); } }
 
   /* ---------- Tower walls: run metal walls down both sides of the whole game
      section so every panel reads as one connected building interior. ---------- */
@@ -795,6 +803,10 @@
   .dev-btn.rem{ border-color:rgba(255,90,110,.5); color:#ff8fa0; }
   .dev-btn.rem:hover{ background:rgba(255,90,110,.12); }
   .dev-num{ width:64px; font-family:var(--font-mono); font-size:11px; padding:3px 6px; border-radius:5px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text); }
+  .dev-sel{ width:100%; font-family:var(--font-mono); font-size:11px; padding:4px 6px; border-radius:5px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text); margin-bottom:5px; }
+  .dev-custom .dev-num{ width:90px; }
+  .dev-confirm{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:9px; padding:9px 11px; border:1px solid #ffce6a; border-radius:8px; background:rgba(255,206,106,.1); }
+  .dev-cf-msg{ font-family:var(--font-mono); font-size:11px; color:#ffe0a0; } .dev-cf-msg b{ color:#fff; }
   .sfx-btn{ background:none; border:1px solid var(--line); border-radius:6px; color:var(--text-faint); cursor:pointer; font-size:13px; line-height:1; padding:3px 7px; }
   .sfx-btn.on{ border-color:rgba(120,200,255,.5); color:#9be8ff; }
   .agent-roster{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px; }
@@ -873,6 +885,33 @@
   .gn-fire{ display:block; width:100%; margin-top:8px; font-family:var(--font-display); font-weight:800; font-size:13px; letter-spacing:.05em; padding:10px; border-radius:7px; border:1px solid #ff2b3d; background:linear-gradient(180deg,rgba(255,43,61,.25),rgba(122,77,255,.15)); color:#ffd6d6; cursor:pointer; animation:gnpulse 1.4s ease-in-out infinite; }
   @keyframes gnpulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,43,61,.5); } 50%{ box-shadow:0 0 18px 2px rgba(255,43,61,.55); } }
   /* Infinity Stone Laboratory */
+  .cosmic{ margin-top:10px; padding:11px 13px; border:1px solid rgba(155,107,255,.45); border-radius:8px; background:linear-gradient(180deg,rgba(120,80,220,.12),rgba(30,20,60,.15)); }
+  .cz-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#c9a6ff; }
+  .cz-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); }
+  .cz-unlock, .cz-forgebtn{ display:block; width:100%; margin-top:8px; font-family:var(--font-display); font-weight:700; font-size:12px; padding:9px; border-radius:7px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; }
+  .cz-unlock.can, .cz-forgebtn.can{ cursor:pointer; border-color:#9b6bff; color:#c9a6ff; box-shadow:0 0 14px -4px rgba(155,107,255,.6); }
+  .cz-unlock.can:hover, .cz-forgebtn.can:hover{ background:rgba(155,107,255,.14); }
+  .cz-unlock:disabled, .cz-forgebtn:disabled{ opacity:.6; }
+  .cz-realms{ display:flex; gap:7px; margin:9px 0; }
+  .cz-realm{ flex:1; padding:7px; border-radius:7px; border:1px solid var(--line); background:#14171d; color:#8b93a0; cursor:pointer; font-family:var(--font-mono); font-size:11px; }
+  .cz-realm.active{ border-color:#9b6bff; color:#c9a6ff; background:rgba(155,107,255,.12); }
+  .cz-realm.locked{ opacity:.55; cursor:default; }
+  .cz-beings{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; }
+  .cz-being{ display:flex; flex-direction:column; gap:6px; padding:9px 10px; border:1px solid var(--line); border-left:3px solid var(--cc); border-radius:7px; background:var(--void); min-width:0; }
+  .cz-being.on{ box-shadow:0 0 16px -6px var(--cc); background:linear-gradient(180deg,rgba(255,255,255,.03),transparent); }
+  .cz-nm{ display:flex; align-items:center; gap:7px; font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text); }
+  .cz-orb{ width:12px; height:12px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#fff,var(--cc)); box-shadow:0 0 8px var(--cc); flex-shrink:0; }
+  .cz-lv{ margin-left:auto; font-family:var(--font-mono); font-size:9.5px; color:var(--cc); border:1px solid var(--cc); border-radius:10px; padding:1px 6px; }
+  .cz-uniq{ font-family:var(--font-mono); font-size:9px; color:var(--text-faint); }
+  .cz-lvl, .cz-harness{ font-family:var(--font-display); font-weight:700; font-size:10px; padding:6px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; text-align:center; }
+  .cz-lvl.can{ cursor:pointer; border-color:#9b6bff; color:#c9a6ff; } .cz-lvl.can:hover{ background:rgba(155,107,255,.14); }
+  .cz-harness.can{ cursor:pointer; border-color:#ffcf5a; color:#ffe08a; box-shadow:0 0 12px -4px rgba(255,207,90,.6); } .cz-harness.can:hover{ background:rgba(255,207,90,.14); }
+  .cz-lvl:disabled, .cz-harness:disabled{ opacity:.6; }
+  .cz-req{ font-family:var(--font-mono); font-size:9.5px; color:#8b93a0; text-align:center; padding:5px; }
+  .cz-harnessed{ font-family:var(--font-mono); font-size:9.5px; color:#ffe08a; text-align:center; padding:5px; }
+  .cz-forge{ margin-top:9px; padding:8px 9px; border:1px solid rgba(255,207,90,.35); border-radius:7px; background:rgba(255,207,90,.05); }
+  .cz-forge-lbl{ font-family:var(--font-mono); font-size:10px; color:#ffe08a; } .cz-forge-lbl b{ color:#fff; }
+  .cz-forge-sub{ display:block; color:var(--text-faint); font-size:8.5px; margin-top:2px; }
   .stonelab{ margin-top:10px; padding:11px 13px; border:1px solid rgba(192,123,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(192,123,255,.07),transparent); }
   .sl-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#c9a6ff; }
   .sl-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); }
@@ -950,6 +989,9 @@
   .prog-pts.has{ color:#ffd88a; }
   .prog-bar{ height:7px; background:var(--void); border:1px solid var(--line); border-radius:4px; overflow:hidden; margin:7px 0 3px; }
   .prog-bar i{ display:block; height:100%; background:linear-gradient(90deg,#ff2b3d,#ff8098); }
+  .hp-bar{ position:relative; height:14px; background:var(--void); border:1px solid var(--line); border-radius:4px; overflow:hidden; margin:4px 0 4px; }
+  .hp-bar i{ display:block; height:100%; background:linear-gradient(90deg,#33d17a,#7fffb0); transition:width .3s, background .3s; }
+  .hp-bar-lbl{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:9px; letter-spacing:.03em; color:#eafff2; text-shadow:0 1px 2px rgba(0,0,0,.8); }
   .prog-xp{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
   .prog-skills{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:7px; margin-top:9px; }
   .skill{ text-align:left; background:var(--panel-raised); border:1px solid var(--line); border-radius:7px; padding:7px 9px; cursor:default; color:var(--text); }
@@ -1919,6 +1961,7 @@
             <div class="prestige" id="prestige"></div>
             <div class="prestige-up" id="prestige-up"></div>
             <div class="stonelab" id="stonelab"></div>
+            <div class="cosmic" id="cosmic"></div>
             <div class="genesis" id="genesis"></div>
             <div class="dev-panel" id="dev-panel" hidden></div>
             <div class="progression" id="progression"></div>
@@ -7837,7 +7880,7 @@ window.__sfx = (function () {
     }).join('');
     return '<div class="set-wrap"><div class="set-head">✦ Signature Gear Sets <span class="set-hint">— collect God-rarity pieces to raise your attributes (2/4/6/8/10)</span></div>' + rows + '</div>';
   }
-  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult(); }
+  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult(); }
   function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
 
   // ---- Refinery: an adamantium forge and a vibranium forge cast ingots onto
@@ -7990,7 +8033,8 @@ window.__sfx = (function () {
   // Each time the Genesis Cannon fires and remakes the universe, EVERYTHING is
   // permanently multiplied -- the ultimate reward for the ultimate grind.
   function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult(); }
+  var PROD_BOOST = 1.25;   // owner buff: a little more currency across every source (all income routes through globalMult)
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * PROD_BOOST; }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -8155,7 +8199,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === 'number') state.devGrant = j.devGrant;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === 'number') state.devGrant = j.devGrant;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -8170,6 +8214,7 @@ window.__sfx = (function () {
   if (!state.genesis) state.genesis = { built: {}, fired: 0 };          // Genesis Cannon build progress
   if (!state.xpcore) state.xpcore = { unlocked: false };               // XP Crystal chamber floor
   if (!state.stoneforge) state.stoneforge = { unlocked: false, tiers: {} };   // Infinity Stone lab (all six)
+  if (!state.cosmic) state.cosmic = { unlocked: false, realm: 'mcu', beings: {}, harness: 0 };   // Cosmic Being Research floor
   if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
@@ -8673,7 +8718,7 @@ window.__sfx = (function () {
     state.roundStart = state.lifetime || 0;
     gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderAdventure(); renderProgression();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderAdventure(); renderProgression();
     if (window.__roomRelayout) window.__roomRelayout();
   }
   var stonelabEl = document.getElementById('stonelab');
@@ -8718,6 +8763,90 @@ window.__sfx = (function () {
       publish(); dirty = true; save(); renderStonelab(); renderBalance(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout();
     }); });
   }
+  // ---- Cosmic Being Research floor: research the great cosmic entities, level
+  // them, and (once maxed + fed a forged Power Harness) HARNESS their power --
+  // a permanent boost to Ultron, a portion of it passed to the adventure bot.
+  // MCU beings first; a multiverse portal (Lv 100) opens the DC beings. ----
+  var COSMIC_BEINGS = [
+    { id: 'death', name: 'Death', realm: 'mcu', lvlReq: 1, col: '#9b6bff', unique: ['Entropy Touch', 'Soul Reclaim'] },
+    { id: 'celestials', name: 'The Celestials', realm: 'mcu', lvlReq: 20, col: '#ffd24b', unique: ['Genesis Forge', 'Cosmic Judgment'] },
+    { id: 'watchers', name: 'The Watchers', realm: 'mcu', lvlReq: 40, col: '#4fd0ff', unique: ['Omniscient Sight', 'Paradox Ward'] },
+    { id: 'eternity', name: 'Eternity', realm: 'mcu', lvlReq: 60, col: '#c07bff', unique: ['Living Cosmos', 'Temporal Flow'] },
+    { id: 'tribunal', name: 'The Living Tribunal', realm: 'mcu', lvlReq: 85, col: '#ff9d3c', unique: ['Absolute Verdict', 'Multiversal Balance'] },
+    { id: 'creator', name: 'The Supreme Creator', realm: 'dc', lvlReq: 100, col: '#ffe08a', unique: ['Prime Genesis', 'Word of Creation'] },
+    { id: 'endless', name: 'The Endless', realm: 'dc', lvlReq: 120, col: '#5fe39a', unique: ['Dream Dominion', 'Book of Destiny'] },
+    { id: 'perpetua', name: 'Perpetua — Architect', realm: 'dc', lvlReq: 150, col: '#ff5a7a', unique: ['Forge of Worlds', 'Crisis Engine'] },
+    { id: 'hands', name: 'The Hands — Architect', realm: 'dc', lvlReq: 175, col: '#7f8cff', unique: ['Hand of Creation', 'Reality Sculpt'] },
+    { id: 'monitor', name: 'The Monitor — Architect', realm: 'dc', lvlReq: 200, col: '#4faaff', unique: ['Positive Matter', 'Multiverse Ledger'] },
+    { id: 'antimonitor', name: 'The Anti-Monitor — Architect', realm: 'dc', lvlReq: 230, col: '#ff3b3b', unique: ['Antimatter Wave', 'Universe Devourer'] }
+  ];
+  var COSMIC_COST = 5e9, COSMIC_MAX = 10, DC_PORTAL_LVL = 100;
+  var cosmicEl = document.getElementById('cosmic');
+  function cosmicUnlocked() { return !!(state.cosmic && state.cosmic.unlocked); }
+  function cosmicRealm() { return (state.cosmic && state.cosmic.realm) || 'mcu'; }
+  function cosmicBeing(id) { return (state.cosmic && state.cosmic.beings && state.cosmic.beings[id]) || { level: 0, harnessed: false }; }
+  function beingLevel(id) { return cosmicBeing(id).level || 0; }
+  function beingHarnessed(id) { return !!cosmicBeing(id).harnessed; }
+  function beingMaxed(id) { return beingLevel(id) >= COSMIC_MAX; }
+  function harnessCount() { return (state.cosmic && state.cosmic.harness) || 0; }
+  function beingLevelCost(b) { return Math.ceil(2e8 * Math.pow(1.8, beingLevel(b.id)) * Math.pow(1.35, b.lvlReq / 20)); }
+  function harnessedTotal() { return COSMIC_BEINGS.filter(function (b) { return beingHarnessed(b.id); }).length; }
+  function harnessCost() { var n = harnessCount() + harnessedTotal(); return { bits: Math.ceil(3e10 * Math.pow(1.6, n)), gpu: 1, cpu: 1, ram: 1 }; }
+  function cosmicPowerMult() { var B = COSMIC_BEINGS; if (!B) return 1; var m = 1; B.forEach(function (b) { m *= (1 + 0.02 * beingLevel(b.id)); if (beingHarnessed(b.id)) m *= 1.25; }); return m; }   // Ultron's own power gain (income)
+  function cosmicCombatMult() { var B = COSMIC_BEINGS; if (!B) return 1; var m = 1; B.forEach(function (b) { if (beingHarnessed(b.id)) m *= 1.12; else m *= (1 + 0.006 * beingLevel(b.id)); }); return m; }   // the portion passed to the adventure bot
+  function haveComp(k, n) { return ((state.comp && state.comp[k]) || 0) >= n; }
+  function renderCosmic() {
+    if (!cosmicEl) return;
+    if (!cosmicUnlocked()) {
+      var can = state.bits >= COSMIC_COST;
+      cosmicEl.innerHTML = '<div class="cz-head">🌌 Cosmic Research Lab <span class="cz-sub">— study the cosmic beings and harvest their power</span></div>' +
+        '<button type="button" class="cz-unlock' + (can ? ' can' : '') + '" data-cz="unlock"' + (can ? '' : ' disabled') + '>Build the Cosmic Lab — <span style="color:' + fmtColor(COSMIC_COST) + '">◉' + fmt(COSMIC_COST) + '</span></button>';
+    } else {
+      var realm = cosmicRealm(), lvl = playerLevel(), dcOpen = lvl >= DC_PORTAL_LVL;
+      if (realm === 'dc' && !dcOpen) realm = 'mcu';
+      var cards = COSMIC_BEINGS.filter(function (b) { return b.realm === realm; }).map(function (b) {
+        var l = beingLevel(b.id), maxed = beingMaxed(b.id), harn = beingHarnessed(b.id), req = lvl >= b.lvlReq;
+        var cost = beingLevelCost(b), canLvl = req && !maxed && state.bits >= cost, canHarness = maxed && !harn && harnessCount() > 0, btn;
+        if (harn) btn = '<div class="cz-harnessed">⚡ HARNESSED — power flowing to Ultron</div>';
+        else if (!req) btn = '<div class="cz-req">🔒 Requires Level ' + b.lvlReq + '</div>';
+        else if (maxed) btn = '<button type="button" class="cz-harness' + (canHarness ? ' can' : '') + '" data-czh="' + b.id + '"' + (canHarness ? '' : ' disabled') + '>' + (harnessCount() > 0 ? '⚡ Harness power (uses 1 device)' : 'Forge a Power Harness first') + '</button>';
+        else btn = '<button type="button" class="cz-lvl' + (canLvl ? ' can' : '') + '" data-czl="' + b.id + '"' + (canLvl ? '' : ' disabled') + '>Research → Lv ' + (l + 1) + ' · <span style="color:' + fmtColor(cost) + '">◉' + fmt(cost) + '</span></button>';
+        return '<div class="cz-being' + (harn ? ' on' : '') + '" style="--cc:' + b.col + '"><div class="cz-nm"><span class="cz-orb"></span>' + b.name + '<span class="cz-lv">Lv ' + l + '/' + COSMIC_MAX + '</span></div>' +
+          '<div class="cz-uniq">✦ ' + b.unique[0] + ' · ✦ ' + b.unique[1] + '</div>' + btn + '</div>';
+      }).join('');
+      var hc = harnessCost(), canForge = state.bits >= hc.bits && haveComp('gpu', 1) && haveComp('cpu', 1) && haveComp('ram', 1);
+      cosmicEl.innerHTML = '<div class="cz-head">🌌 Cosmic Research Lab <span class="cz-sub">— ×' + cosmicPowerMult().toFixed(2) + ' Ultron power · ×' + cosmicCombatMult().toFixed(2) + ' bot</span></div>' +
+        '<div class="cz-realms"><button type="button" class="cz-realm' + (realm === 'mcu' ? ' active' : '') + '" data-czr="mcu">MCU</button>' +
+        '<button type="button" class="cz-realm' + (realm === 'dc' ? ' active' : '') + (dcOpen ? '' : ' locked') + '" data-czr="dc"' + (dcOpen ? '' : ' disabled') + '>🌀 Multiverse (DC)' + (dcOpen ? '' : ' — Lv ' + DC_PORTAL_LVL) + '</button></div>' +
+        '<div class="cz-beings">' + cards + '</div>' +
+        '<div class="cz-forge"><div class="cz-forge-lbl">🔧 Power Harness <b>×' + harnessCount() + '</b><span class="cz-forge-sub">refined adamantium + vibranium + gold (◉) + 1 GPU + 1 CPU + 1 RAM · one-time use; max a being then harness it</span></div>' +
+        '<button type="button" class="cz-forgebtn' + (canForge ? ' can' : '') + '" data-cz="forge"' + (canForge ? '' : ' disabled') + '>Forge harness — <span style="color:' + fmtColor(hc.bits) + '">◉' + fmt(hc.bits) + '</span> · ▦GPU ▦CPU ▦RAM</button></div>';
+    }
+    var u = cosmicEl.querySelector('[data-cz="unlock"]');
+    if (u) u.addEventListener('click', function () { if (state.bits < COSMIC_COST) return; state.bits -= COSMIC_COST; state.cosmic = { unlocked: true, realm: 'mcu', beings: {}, harness: 0 }; if (window.__sfx) window.__sfx('unlock'); gamePop('🌌 Cosmic Research Lab online', '#9b6bff'); addXp(500, 'Discovery: Cosmic Lab'); publish(); dirty = true; save(); renderCosmic(); renderBalance(); if (window.__roomRelayout) window.__roomRelayout(); });
+    cosmicEl.querySelectorAll('[data-czr]').forEach(function (b) { b.addEventListener('click', function () { if (b.disabled) return; state.cosmic.realm = b.dataset.czr; if (window.__sfx) window.__sfx('unlock'); if (b.dataset.czr === 'dc') gamePop('🌀 Multiverse portal open — DC cosmic beings revealed', '#ffe08a'); renderCosmic(); }); });
+    cosmicEl.querySelectorAll('[data-czl]').forEach(function (b) { b.addEventListener('click', function () {
+      var id = b.dataset.czl, be = COSMIC_BEINGS.filter(function (x) { return x.id === id; })[0]; if (!be || playerLevel() < be.lvlReq || beingMaxed(id)) return;
+      var cost = beingLevelCost(be); if (state.bits < cost) return;
+      state.bits -= cost; state.cosmic.beings = state.cosmic.beings || {}; state.cosmic.beings[id] = state.cosmic.beings[id] || { level: 0, harnessed: false }; state.cosmic.beings[id].level++;
+      if (window.__sfx) window.__sfx('upgrade'); gamePop('🌌 ' + be.name + ' → research Lv ' + state.cosmic.beings[id].level, be.col); addXp(80 * state.cosmic.beings[id].level, 'Cosmic research');
+      publish(); dirty = true; save(); renderCosmic(); renderBalance(); renderProgression();
+    }); });
+    cosmicEl.querySelectorAll('[data-czh]').forEach(function (b) { b.addEventListener('click', function () {
+      var id = b.dataset.czh; if (!beingMaxed(id) || beingHarnessed(id) || harnessCount() < 1) return;
+      state.cosmic.harness--; state.cosmic.beings[id].harnessed = true;
+      var be = COSMIC_BEINGS.filter(function (x) { return x.id === id; })[0];
+      if (window.__sfx) window.__sfx('boss'); gamePop('⚡ ' + (be ? be.name : 'Being') + ' HARNESSED — Ultron grows stronger', (be && be.col) || '#9b6bff'); addXp(1000, 'Harnessed: ' + (be ? be.name : id));
+      publish(); dirty = true; save(); renderCosmic(); renderBalance(); renderProgression(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout();
+    }); });
+    var f = cosmicEl.querySelector('[data-cz="forge"]');
+    if (f) f.addEventListener('click', function () {
+      var hc = harnessCost(); if (state.bits < hc.bits || !haveComp('gpu', 1) || !haveComp('cpu', 1) || !haveComp('ram', 1)) return;
+      state.bits -= hc.bits; state.comp.gpu--; state.comp.cpu--; state.comp.ram--; state.cosmic.harness = (state.cosmic.harness || 0) + 1;
+      if (window.__sfx) window.__sfx('build'); gamePop('🔧 Power Harness forged (×' + state.cosmic.harness + ')', '#ffcf5a');
+      publish(); dirty = true; save(); renderCosmic(); renderBalance(); renderGenesis();
+    });
+  }
   // Points minted by a reboot: from the currency earned THIS round (the method
   // = how much you grew before falling) plus a bonus per new core banked.
   function prestigePointsFor(roundGain, coresGained) { return Math.floor(Math.sqrt(Math.max(0, roundGain) / 6000)) + coresGained * 3; }
@@ -8744,7 +8873,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderAdventure();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderAdventure();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -8820,6 +8949,11 @@ window.__sfx = (function () {
     feed.innerHTML = out.length ? out.join('') : '<div class="xplog-empty">Live XP feed — every gain shows here and fades after 15s.</div>';
   }
   setInterval(renderXpLog, 1000);   // keep the fade + pruning moving even when no new XP arrives
+  setInterval(function () {   // live health bar under the XP bar (cheap: width + colour only)
+    var f = document.getElementById('hp-bar-fill'); if (!f) return; var h = (typeof window.__botHp === 'number') ? window.__botHp : 1;
+    f.style.width = Math.round(h * 100) + '%';
+    f.style.background = h > 0.5 ? 'linear-gradient(90deg,#33d17a,#7fffb0)' : h > 0.22 ? 'linear-gradient(90deg,#ffc24b,#ffe08a)' : 'linear-gradient(90deg,#ff5a5a,#ff9090)';
+  }, 300);
   function renderProgression() {
     if (!progEl) return;
     var pr = state.prog || { xp: 0, level: 1, pts: 0, skills: {} };
@@ -8841,6 +8975,7 @@ window.__sfx = (function () {
       (nextTier ? '<span class="prog-tier-next">next: ' + nextTier.name + ' @ Lv ' + nextTier.min + '</span>' : '<span class="prog-tier-next">max tier</span>') + '</div>' +
       '<div class="prog-bar"><i style="width:' + (pr.level >= LEVEL_CAP ? 100 : pct) + '%"></i></div>' +
       '<div class="prog-xp">' + (pr.level >= LEVEL_CAP ? 'MAX LEVEL ★' : Math.floor(pr.xp) + ' / ' + need + ' XP') + '</div>' +
+      (function () { var rs = robotStats((state.adv && state.adv.gear) || {}), hpf = (typeof window.__botHp === 'number' ? window.__botHp : 1); return '<div class="hp-bar" title="Adventure bot health"><i id="hp-bar-fill" style="width:' + Math.round(hpf * 100) + '%"></i><span class="hp-bar-lbl">♥ HP ' + Math.round(hpf * rs.ehp) + ' / ' + rs.ehp + '</span></div>'; })() +
       (function () { var rs = robotStats((state.adv && state.adv.gear) || {}); return '<div class="prog-stats"><span>⚔ Power <b>' + rs.power + '</b></span><span>♥ HP <b>' + rs.ehp + '</b></span><span>↯ DPS <b>' + rs.dps + '</b></span><span>FW <b>' + rs.firmware + '</b></span></div>'; })() +
       '<div class="attr-head">Core attributes</div>' + attrHtml() +
       '<details class="prog-sys" data-dk="sys"' + (progOpen.sys ? ' open' : '') + '><summary>🤖 Robot systems — full attribute sheet</summary>' + statsSheetHtml((state.adv && state.adv.gear) || {}) + '</details>' +
@@ -8917,7 +9052,17 @@ window.__sfx = (function () {
         '<div class="dev-group"><span class="dev-lbl">Unlocks</span><button type="button" class="dev-btn add" data-dev="unlockstone">Stone Lab</button><button type="button" class="dev-btn add" data-dev="unlockxp">XP Crystal</button></div>' +
         '<div class="dev-group"><span class="dev-lbl">Prestige</span><button type="button" class="dev-btn add" data-dev="cores" data-amt="5">+5 Cores</button><button type="button" class="dev-btn rem" data-dev="cores" data-amt="-5">−5 Cores</button><button type="button" class="dev-btn add" data-dev="points" data-amt="100">+100 Pts</button></div>' +
         '<div class="dev-group"><span class="dev-lbl">Stones</span><button type="button" class="dev-btn add" data-dev="stones" data-amt="1">All +1 tier</button><button type="button" class="dev-btn rem" data-dev="stones" data-amt="-1">All −1 tier</button></div>' +
-      '</div></details>';
+        '<div class="dev-group dev-custom"><span class="dev-lbl">Custom — add / remove any amount</span>' +
+          '<select class="dev-sel" id="dev-target">' +
+            '<option value="bits">Currency</option><option value="scrap">Scrap</option><option value="alloy">Alloy</option><option value="core">Core</option>' +
+            '<option value="chip">Chips</option><option value="cpu">CPU</option><option value="gpu">GPU</option><option value="ram">RAM</option>' +
+            '<option value="xp">XP</option><option value="cores">Prestige cores</option><option value="points">Prestige points</option><option value="gear">Gear (Mythic)</option>' +
+          '</select>' +
+          '<input type="number" class="dev-num" id="dev-amt" value="1000" min="0">' +
+          '<button type="button" class="dev-btn add" data-dev="custom" data-sign="1">+ Add</button>' +
+          '<button type="button" class="dev-btn rem" data-dev="custom" data-sign="-1">− Remove</button>' +
+        '</div>' +
+      '</div><div class="dev-confirm" id="dev-confirm" hidden></div></details>';
     function grantGear(forceMythic) {
       if (typeof makePart !== 'function' || typeof BASES === 'undefined') return;
       var slot = SLOTS[Math.floor(Math.random() * SLOTS.length)].id;
@@ -8931,9 +9076,31 @@ window.__sfx = (function () {
       state.adv = state.adv || { inv: [] }; state.adv.inv = (state.adv.inv || []).concat([item]).slice(-40);
       gamePop('🎁 ' + item.rarity + ' gear granted', rar.c);
     }
+    // Add or remove ANY currency / material / part / item by an exact amount.
+    function applyResource(target, delta) {
+      var av = Math.abs(delta), sgn = delta >= 0 ? '+' : '−';
+      if (target === 'bits') { state.bits = Math.max(0, state.bits + delta); if (delta > 0) state.lifetime = (state.lifetime || 0) + delta; gamePop('◉ ' + sgn + fmt(av), '#ffcf5a'); }
+      else if (target === 'scrap' || target === 'alloy' || target === 'core') { state.mats = state.mats || { scrap: 0, alloy: 0, core: 0 }; state.mats[target] = Math.max(0, (state.mats[target] || 0) + delta); gamePop('⬢ ' + sgn + fmtN(av) + ' ' + target, '#9fb0c8'); }
+      else if (target === 'chip' || target === 'cpu' || target === 'gpu' || target === 'ram') { state.comp = state.comp || { chip: 0, cpu: 0, gpu: 0, ram: 0 }; state.comp[target] = Math.max(0, (state.comp[target] || 0) + delta); gamePop('▦ ' + sgn + fmtN(av) + ' ' + target.toUpperCase(), '#4aa3ff'); }
+      else if (target === 'xp') { if (delta > 0) addXp(delta, 'Dev grant'); else if (state.prog) state.prog.xp = Math.max(0, (state.prog.xp || 0) + delta); gamePop('✦ ' + sgn + fmtN(av) + ' XP', '#8fe64b'); }
+      else if (target === 'cores') { state.prestige = state.prestige || { cores: 0, points: 0, up: {} }; state.prestige.cores = Math.max(0, (state.prestige.cores || 0) + delta); gamePop('◈ ' + sgn + av + ' cores', '#a88bff'); }
+      else if (target === 'points') { state.prestige = state.prestige || { cores: 0, points: 0, up: {} }; state.prestige.points = Math.max(0, (state.prestige.points || 0) + delta); gamePop('◈ ' + sgn + av + ' points', '#a88bff'); }
+      else if (target === 'gear') { if (delta > 0) { for (var i = 0; i < Math.min(40, av); i++) grantGear(true); } else { state.adv = state.adv || { inv: [] }; state.adv.inv = (state.adv.inv || []).slice(0, Math.max(0, (state.adv.inv || []).length - av)); gamePop('🎁 −' + av + ' gear', '#ff8098'); } }
+    }
     devPanelEl.querySelectorAll('[data-dev]').forEach(function (b) {
       b.addEventListener('click', function () {
         var k = b.dataset.dev, amt = parseFloat(b.dataset.amt) || 0;
+        if (k === 'custom') {   // typed amount -> requires an explicit confirm before applying
+          var target = document.getElementById('dev-target').value, label = document.getElementById('dev-target').selectedOptions[0].textContent;
+          var raw = Math.abs(Math.floor(+document.getElementById('dev-amt').value || 0)); if (!raw) return;
+          var delta = (parseFloat(b.dataset.sign) || 1) * raw, cbar = document.getElementById('dev-confirm');
+          cbar.hidden = false;
+          cbar.innerHTML = '<span class="dev-cf-msg">Apply <b>' + (delta >= 0 ? '+' : '−') + fmtN(raw) + '</b> to <b>' + label + '</b>?</span>' +
+            '<button type="button" class="dev-btn add" id="dev-cf-yes">✔ Confirm</button><button type="button" class="dev-btn rem" id="dev-cf-no">✕ Cancel</button>';
+          document.getElementById('dev-cf-no').addEventListener('click', function () { cbar.hidden = true; cbar.innerHTML = ''; });
+          document.getElementById('dev-cf-yes').addEventListener('click', function () { applyResource(target, delta); cbar.hidden = true; cbar.innerHTML = ''; if (window.__sfx) window.__sfx('upgrade'); devRefresh(); renderDevPanel(); });
+          return;
+        }
         if (k === 'cur') { state.bits = Math.max(0, state.bits + amt); if (amt > 0) state.lifetime = (state.lifetime || 0) + amt; gamePop('◉ ' + (amt >= 0 ? '+' : '−') + fmt(Math.abs(amt)), '#ffcf5a'); }
         else if (k === 'curzero') { state.bits = 0; gamePop('◉ currency zeroed', '#ff8098'); }
         else if (k === 'xp') { addXp(amt, 'Dev grant'); }
@@ -9033,7 +9200,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderProgression(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderProgression(); }
       dirty = false;
     }
   }, 500);
@@ -9267,8 +9434,8 @@ window.__sfx = (function () {
     a.lastBattle = battle; a.lastBoss = isDungeon ? dungeon.name : isBoss ? BOSSES[ri].name : null;
     if (window.__sfx) { if (battle && !battle.win) window.__sfx('die'); else if (isBoss || isDungeon) window.__sfx('boss'); else window.__sfx('reward'); }   // defeat / boss / haul, each its own sound
     var mult = battle ? battle.lootMult : 1;
-    var lootCount = Math.max(1, Math.round((isDungeon ? 3 + di : run.loot) * mult));
-    var bonusIlvl = ilvl + (battle && battle.win ? 1 : 0);   // a win yields better loot
+    var lootCount = Math.max(1, Math.round((isDungeon ? 3 + di : run.loot) * mult * 1.3));   // owner buff: ~30% more drops
+    var bonusIlvl = ilvl + (battle && battle.win ? 1 : 0) + 2;   // a win yields better loot; +2 nudges rarity up a little
     var out = [];
     for (var i = 0; i < lootCount; i++) out.push(rollLoot(bonusIlvl, isDungeon ? null : region.types));
     if (isDungeon && battle && battle.win && window.LootEngine) {   // vault cleared -> guaranteed mythic signature, scaled reward
@@ -9597,6 +9764,7 @@ window.__sfx = (function () {
   renderPrestigeUpgrades();
   renderGenesis();
   renderStonelab();
+  renderCosmic();
   renderProgression();
   renderDevPanel();
   renderCodex();
@@ -9623,7 +9791,7 @@ window.__sfx = (function () {
       if (j.gen) state.gen = j.gen;
       if (j.comp) state.comp = j.comp;
       if (j.genesis) state.genesis = j.genesis;
-      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge;
+      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic;
       if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
@@ -9640,10 +9808,11 @@ window.__sfx = (function () {
       if (!state.genesis) state.genesis = { built: {}, fired: 0 };
       if (!state.xpcore) state.xpcore = { unlocked: false };
       if (!state.stoneforge) state.stoneforge = { unlocked: false, tiers: {} };
+      if (!state.cosmic) state.cosmic = { unlocked: false, realm: 'mcu', beings: {}, harness: 0 };
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderProgression(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderProgression(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
@@ -9930,6 +10099,7 @@ window.__sfx = (function () {
     }
     for (var k = creatures.length - 1; k >= 0; k--) if (creatures[k].x < botX + 4) { pops.push({ x: creatures[k].x, y: creatures[k].y, life: 0, col: '#ff6b6b' }); creatures.splice(k, 1); botHp = Math.max(0.08, botHp - 0.14); botHurt = t + 0.2; }   // a creature reached the bot -> it takes a hit
     botHp = Math.min(1, botHp + dt * 0.09);   // steady self-repair between hits
+    window.__botHp = botHp;                    // shared with the progression health bar
     for (var pi = pops.length - 1; pi >= 0; pi--) { pops[pi].life += dt; if (pops[pi].life > 0.5) pops.splice(pi, 1); }
     for (var li = loots.length - 1; li >= 0; li--) { var l = loots[li]; l.life += dt; l.y -= 22 * dt; if (l.life > 1) loots.splice(li, 1); }
   }
@@ -10504,9 +10674,9 @@ window.__sfx = (function () {
   function unlock() {
     try { sessionStorage.setItem('ultronGameUnlocked', '1'); } catch (e) {}
     document.body.classList.remove('game-locked');
-    lock.classList.add('open');
+    lock.classList.add('open');   // doors slide open (slow, ~3.6s); game is playable behind while the warning holds
     if (window.__sfx) window.__sfx('reboot');
-    setTimeout(function () { lock.classList.add('unlocked'); lock.classList.remove('open'); }, 2300);
+    setTimeout(function () { lock.classList.add('unlocked'); lock.classList.remove('open'); }, 22500);
   }
   function submitPin() { if (locked) return; if (checkPin(pinBuf)) unlock(); else { fail(); pinBuf = ''; renderPin(); } }
   function submitPass() { if (locked) return; var u = (document.getElementById('gl-user').value || '').trim(), pw = document.getElementById('gl-pass').value || ''; if (checkPass(u, pw)) unlock(); else fail(); }
