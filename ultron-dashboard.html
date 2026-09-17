@@ -6195,45 +6195,47 @@ function toggleReducedVisuals(el) {
   // six Infinity Stones set into its chest, wired to an arc reactor by a live
   // power line. The vertical meter fills with prestige "charge" -- how close
   // Ultron is to the next defeat/reboot (window.__foundry.charge, 0..1). ----
-  function drawVibraniumBody(cx, bot, h, t, charge, cores) {
+  function drawVibraniumBody(cx, bot, h, t, charge, cores, bs) {
+    bs = bs || 1;   // body scale (bigger = closer to Ultron's own size)
     var VB_D = '#363b4d', VB_M = '#5d6480', VB_L = '#9298b6';
-    var feet = bot - 6, bh = h * 0.80, hip = feet - bh * 0.42, sh = feet - bh * 0.80, headTop = feet - bh;
+    var feet = bot - 6, bh = h * 0.90, hip = feet - bh * 0.42, sh = feet - bh * 0.80, headTop = feet - bh;
+    function X(o) { return cx + o * bs; }   // horizontal offsets scale with body size
     // legs
-    ctx.fillStyle = VB_M; ctx.fillRect(cx - 11, hip, 8, feet - hip); ctx.fillRect(cx + 3, hip, 8, feet - hip);
-    ctx.fillStyle = VB_D; ctx.fillRect(cx - 11, hip, 3, feet - hip); ctx.fillRect(cx + 3, hip, 3, feet - hip);
-    ctx.fillStyle = VB_L; ctx.fillRect(cx - 12, feet - 2, 10, 4); ctx.fillRect(cx + 2, feet - 2, 10, 4);   // feet
+    ctx.fillStyle = VB_M; ctx.fillRect(X(-11), hip, 8 * bs, feet - hip); ctx.fillRect(X(3), hip, 8 * bs, feet - hip);
+    ctx.fillStyle = VB_D; ctx.fillRect(X(-11), hip, 3 * bs, feet - hip); ctx.fillRect(X(3), hip, 3 * bs, feet - hip);
+    ctx.fillStyle = VB_L; ctx.fillRect(X(-12), feet - 2, 10 * bs, 4); ctx.fillRect(X(2), feet - 2, 10 * bs, 4);   // feet
     // torso (waist -> shoulders)
     ctx.fillStyle = VB_M; ctx.beginPath();
-    ctx.moveTo(cx - 12, hip); ctx.lineTo(cx + 12, hip); ctx.lineTo(cx + 19, sh); ctx.lineTo(cx - 19, sh); ctx.closePath(); ctx.fill();
+    ctx.moveTo(X(-12), hip); ctx.lineTo(X(12), hip); ctx.lineTo(X(19), sh); ctx.lineTo(X(-19), sh); ctx.closePath(); ctx.fill();
     ctx.fillStyle = VB_L; ctx.beginPath();   // left-lit edge
-    ctx.moveTo(cx - 12, hip); ctx.lineTo(cx - 6, hip); ctx.lineTo(cx - 13, sh); ctx.lineTo(cx - 19, sh); ctx.closePath(); ctx.fill();
+    ctx.moveTo(X(-12), hip); ctx.lineTo(X(-6), hip); ctx.lineTo(X(-13), sh); ctx.lineTo(X(-19), sh); ctx.closePath(); ctx.fill();
     // arms
-    ctx.fillStyle = VB_M; ctx.fillRect(cx - 24, sh + 1, 6, hip - sh + 4); ctx.fillRect(cx + 18, sh + 1, 6, hip - sh + 4);
-    ctx.fillStyle = VB_D; ctx.fillRect(cx + 22, sh + 1, 2, hip - sh + 4);
+    ctx.fillStyle = VB_M; ctx.fillRect(X(-24), sh + 1, 6 * bs, hip - sh + 4); ctx.fillRect(X(18), sh + 1, 6 * bs, hip - sh + 4);
+    ctx.fillStyle = VB_D; ctx.fillRect(X(22), sh + 1, 2 * bs, hip - sh + 4);
     // head + evil red eyes
-    ctx.fillStyle = VB_M; roundRectPath(cx - 9, headTop, 18, sh - headTop + 2, 4); ctx.fill();
-    ctx.fillStyle = VB_L; ctx.fillRect(cx - 9, headTop, 4, sh - headTop);
-    ctx.fillStyle = '#0b0d12'; ctx.fillRect(cx - 6, headTop + 5, 12, 5);   // eye band
+    ctx.fillStyle = VB_M; roundRectPath(X(-9), headTop, 18 * bs, sh - headTop + 2, 4); ctx.fill();
+    ctx.fillStyle = VB_L; ctx.fillRect(X(-9), headTop, 4 * bs, sh - headTop);
+    ctx.fillStyle = '#0b0d12'; ctx.fillRect(X(-6), headTop + 5, 12 * bs, 5);   // eye band
     var ep = 0.6 + 0.4 * Math.sin(t * 3);
     ctx.fillStyle = 'rgba(255,40,40,' + ep + ')';
-    ctx.beginPath(); ctx.moveTo(cx - 5, headTop + 6.5); ctx.lineTo(cx - 1.5, headTop + 6); ctx.lineTo(cx - 2, headTop + 9); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(cx + 5, headTop + 6.5); ctx.lineTo(cx + 1.5, headTop + 6); ctx.lineTo(cx + 2, headTop + 9); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(-5), headTop + 6.5); ctx.lineTo(X(-1.5), headTop + 6); ctx.lineTo(X(-2), headTop + 9); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(5), headTop + 6.5); ctx.lineTo(X(1.5), headTop + 6); ctx.lineTo(X(2), headTop + 9); ctx.closePath(); ctx.fill();
     // rim light (vibranium violet)
     ctx.strokeStyle = 'rgba(160,140,255,0.35)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(cx + 19, sh); ctx.lineTo(cx + 12, hip); ctx.lineTo(cx + 11, feet); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(19), sh); ctx.lineTo(X(12), hip); ctx.lineTo(X(11), feet); ctx.stroke();
     // --- Infinity Stones set into the chest, a downward 3-2-1 chevron ---
     var chestY = (sh + hip) / 2 - 3;
     var slots = [[-8, -8], [0, -8], [8, -8], [-4, 0], [4, 0], [0, 8]];
     var litN = Math.ceil(charge * 6);
     for (var i = 0; i < 6; i++) {
-      var sx = cx + slots[i][0], sy = chestY + slots[i][1], on = i < litN;
+      var sx = cx + slots[i][0] * bs, sy = chestY + slots[i][1] * bs, on = i < litN;
       var pl = on ? (0.75 + 0.25 * Math.sin(t * 4 + i)) : 0.22;
       ctx.fillStyle = STONES[i].g + (0.5 * pl) + ')';   // halo
-      ctx.beginPath(); ctx.arc(sx, sy, 5.2, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#0c0e13'; ctx.beginPath(); ctx.arc(sx, sy, 3.2, 0, Math.PI * 2); ctx.fill();   // socket
+      ctx.beginPath(); ctx.arc(sx, sy, 5.2 * bs, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0c0e13'; ctx.beginPath(); ctx.arc(sx, sy, 3.2 * bs, 0, Math.PI * 2); ctx.fill();   // socket
       ctx.fillStyle = on ? STONES[i].c : '#2a2d38';
-      ctx.beginPath(); ctx.arc(sx, sy, 2.5, 0, Math.PI * 2); ctx.fill();   // gem
-      if (on) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.arc(sx - 0.8, sy - 0.9, 0.9, 0, Math.PI * 2); ctx.fill(); }
+      ctx.beginPath(); ctx.arc(sx, sy, 2.5 * bs, 0, Math.PI * 2); ctx.fill();   // gem
+      if (on) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.arc(sx - 0.8 * bs, sy - 0.9 * bs, 0.9 * bs, 0, Math.PI * 2); ctx.fill(); }
     }
   }
 
@@ -6270,8 +6272,8 @@ function toggleReducedVisuals(el) {
 
   function drawPowerStation(t) {
     var f = foundryCfg(), charge = Math.max(0, Math.min(1, f.charge || 0)), cores = f.cores || 0;
-    var floor = officeFloorY, x0 = LEFT + 14, w = 74;
-    var top = floor - 214, bot = floor - 6, h = bot - top, cx = x0 + w / 2;
+    var floor = officeFloorY, x0 = LEFT + 14, w = 96;
+    var top = floor - 224, bot = floor - 6, h = bot - top, cx = x0 + w / 2;
     if (top < ROOF_H + 6) return;   // no headroom on a very short canvas
     wallGlow(cx, top + h * 0.42, 150, '#8f7bff', 0.10 + 0.16 * charge + Math.min(0.14, cores * 0.02));
     ctx.fillStyle = M_DARK; ctx.fillRect(x0 - 10, bot, w + 20, 8);
@@ -6284,7 +6286,7 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = cg; ctx.fillRect(x0, fillY, w, bot - fillY);
     for (var b = 0; b < 6; b++) { var bx = x0 + 8 + ((b * 53) % (w - 16)); var span = Math.max(1, bot - fillY); var by = bot - ((t * (20 + b * 6) + b * 40) % span); ctx.fillStyle = 'rgba(180,210,255,0.5)'; ctx.beginPath(); ctx.arc(bx, by, 1.6, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
-    drawVibraniumBody(cx, bot, h, t, charge, cores);
+    drawVibraniumBody(cx, bot, h, t, charge, cores, 1.28);   // near Ultron's own size
     ctx.strokeStyle = '#3a4056'; ctx.lineWidth = 2; roundRectPath(x0, top, w, h, 10); ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fillRect(x0 + 5, top + 4, 6, h - 8);
     ctx.fillStyle = M_STEEL; ctx.fillRect(x0 - 6, top - 6, w + 12, 8); ctx.fillRect(x0 - 6, bot - 2, w + 12, 6);
@@ -6302,7 +6304,7 @@ function toggleReducedVisuals(el) {
     setFont(fontPx * 0.72, false); ctx.fillStyle = '#8b93a0'; ctx.fillText(charge >= 0.999 ? 'CORE READY' : 'CORE CHARGE', cx, top - 24);
     setFont(fontPx * 0.98, true); ctx.fillStyle = charge >= 0.999 ? '#ff5566' : '#cfe6ff'; ctx.fillText(Math.round(charge * 100) + '%', cx, top - 11);
     // arc reactor + live power line into the chest
-    var rcx = x0 + w + 40, rcy = floor - 34, rr = 20;
+    var rcx = x0 + w + 50, rcy = floor - 46, rr = 40;   // doubled arc reactor
     drawArcReactor(rcx, rcy, rr, floor, t);
     drawPowerLine(rcx - rr + 2, rcy - 4, cx + 6, bot - h * 0.5, t, charge);
     caption("ultron's power core", cx + 18, floor + 12);
