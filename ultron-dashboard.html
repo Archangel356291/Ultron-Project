@@ -6709,7 +6709,7 @@ window.__sfx = (function () {
     if (saveTimer) return;
     saveTimer = setTimeout(function () {
       saveTimer = null;
-      state.seen = state.savedAt = Date.now();
+      state.savedAt = Date.now();   // NOT state.seen -- seen is the offline "away" marker, managed only by presence sync
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
       if (window.__foundryCloudPush) window.__foundryCloudPush();   // sync to the user's cloud save (if logged in)
     }, 600);
@@ -6775,10 +6775,30 @@ window.__sfx = (function () {
       if (window.__gamePop) gamePop('◉ +' + fmt(earned) + ' while away', '#5fe39a');
     }
   }
+  // Presence: the game is ONLINE only while its browser tab is visible AND its
+  // dashboard section is the active one. Being on another dashboard section,
+  // minimized, in a hidden tab, or closed all count as OFFLINE -- income then
+  // accrues through claimOffline() (capped), never in real time. Expedition
+  // timers use wall-clock endsAt, so they keep running in the background either
+  // way. seen = the moment we last went offline (the "away" marker).
+  var gameSection = null;
+  try { var rc = document.getElementById('pixel-room-canvas'); gameSection = rc && rc.closest ? rc.closest('.section') : null; } catch (e) { }
+  function gameOnline() { return !document.hidden && (!gameSection || gameSection.classList.contains('active')); }
+  var lastOnline = gameOnline();
+  function syncPresence() {
+    var on = gameOnline();
+    if (on === lastOnline) return;
+    if (on) claimOffline();                       // returned to the game -> bank the away time
+    else { state.seen = Date.now(); flush(); }     // left the game -> stamp the away marker
+    lastOnline = on;
+  }
   window.addEventListener('pagehide', flush);
-  document.addEventListener('visibilitychange', function () { if (document.hidden) flush(); else claimOffline(); });
+  window.addEventListener('beforeunload', flush);
+  document.addEventListener('visibilitychange', syncPresence);
+  document.querySelectorAll('.nav-item, #th-caps [data-section]').forEach(function (n) { n.addEventListener('click', function () { setTimeout(syncPresence, 30); }); });
 
   window.__foundryEarn = function (n) {
+    if (!gameOnline()) return;   // marches only mint in real time while you're watching; offline accrual covers the rest
     var amt = (n || 0) * globalMult();
     state.bits += amt; state.lifetime = (state.lifetime || 0) + amt;
     addXp(1);   // each robot/package shipped is a sliver of XP
@@ -7026,11 +7046,15 @@ window.__sfx = (function () {
   var last = Date.now();
   setInterval(function () {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
-    var p = ((window.__foundry.passive || 0) + refIncome()) * globalMult() * idleBonus();
-    if (p > 0) { state.bits += p * dt; state.lifetime = (state.lifetime || 0) + p * dt; dirty = true; save(); }
-    advTick();
+    syncPresence();                    // catch in-app section switches while the tab is visible
+    if (gameOnline()) {
+      state.seen = now;                // heartbeat: while active, keep the away marker current so offline starts from "now" when you leave
+      var p = ((window.__foundry.passive || 0) + refIncome()) * globalMult() * idleBonus();
+      if (p > 0) { state.bits += p * dt; state.lifetime = (state.lifetime || 0) + p * dt; dirty = true; save(); }
+    }
+    advTick();                         // expeditions run on wall-clock time -> progress in the background regardless
     var shown = Math.round(state.bits * 10);
-    if (dirty && shown !== lastShown) {
+    if (gameOnline() && dirty && shown !== lastShown) {
       lastShown = shown;
       renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderProgression();
       dirty = false;
@@ -7657,11 +7681,23 @@ window.__sfx = (function () {
 
   function draw(t) {
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#0a0c10'; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = '#15181d'; ctx.fillRect(0, beltY, W, 16);
-    ctx.fillStyle = '#2b313a'; ctx.fillRect(0, beltY, W, 2);
+    // industrial hall backdrop: a steel gradient, a faint structural grid, a lit floor line
+    var bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#12151b'); bg.addColorStop(0.55, '#0c0e13'); bg.addColorStop(1, '#070809');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(120,150,190,0.05)'; ctx.lineWidth = 1;
+    for (var gx = 40; gx < W; gx += 80) { ctx.beginPath(); ctx.moveTo(gx, 6); ctx.lineTo(gx, beltY - 4); ctx.stroke(); }
+    var vg = ctx.createRadialGradient(W / 2, beltY - 30, 40, W / 2, beltY - 30, W * 0.6);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.35)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+    // conveyor: dark bed, metallic rails, moving rollers, and a lit leading edge
+    ctx.fillStyle = '#16191f'; ctx.fillRect(0, beltY, W, 18);
+    ctx.fillStyle = '#3a424e'; ctx.fillRect(0, beltY, W, 2);                 // top rail highlight
+    ctx.fillStyle = '#0a0c10'; ctx.fillRect(0, beltY + 17, W, 3);            // shadow under belt
     var off = (t * 60 * (cfg().convMult || 1)) % 22;
-    for (var bx = -22 + off; bx < W; bx += 22) { ctx.fillStyle = '#20252c'; ctx.fillRect(bx, beltY + 6, 12, 3); }
+    for (var bx = -22 + off; bx < W; bx += 22) {
+      ctx.fillStyle = '#262c34'; ctx.fillRect(bx, beltY + 5, 14, 5);        // roller body
+      ctx.fillStyle = '#39424e'; ctx.fillRect(bx, beltY + 5, 14, 1.5);      // roller sheen
+    }
     var c = cfg(), mats = c.mats || [];
     for (var mi = 0; mi < mats.length; mi++) {
       var m = mats[mi];
