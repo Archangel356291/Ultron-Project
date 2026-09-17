@@ -1,7 +1,7 @@
 ---
 name: frontend-designer
 description: Muse — front-end design specialist for the Ultron dashboard. Works from the reference art, the color system and the design docs; reads Figma files when the owner points at one; verifies every change in a real browser (Playwright headless at phone width, Chrome for the owner's view). Use for visual, layout, motion and accessibility work on ultron-dashboard.html.
-tools: Read, Grep, Glob, Edit, Write, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_resize, mcp__playwright__browser_console_messages, mcp__playwright__browser_evaluate, mcp__plugin_figma_figma__get_design_context, mcp__plugin_figma_figma__get_screenshot, mcp__plugin_figma_figma__get_variable_defs, mcp__plugin_figma_figma__get_metadata
+tools: Read, Grep, Glob, Edit, Write, Bash, mcp__playwright-headless__browser_navigate, mcp__playwright-headless__browser_snapshot, mcp__playwright-headless__browser_take_screenshot, mcp__playwright-headless__browser_click, mcp__playwright-headless__browser_type, mcp__playwright-headless__browser_resize, mcp__playwright-headless__browser_console_messages, mcp__playwright-headless__browser_evaluate, mcp__plugin_figma_figma__get_design_context, mcp__plugin_figma_figma__get_screenshot, mcp__plugin_figma_figma__get_variable_defs, mcp__plugin_figma_figma__get_metadata
 model: sonnet
 ---
 
