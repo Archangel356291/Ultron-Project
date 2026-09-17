@@ -696,6 +696,16 @@
   .game-load-btn{ background:none; border:1px solid rgba(90,160,255,.45); border-radius:6px; color:#7fb4ff; cursor:pointer; font-family:var(--font-mono); font-size:11px; line-height:1; padding:4px 9px; }
   .game-load-btn:hover{ background:rgba(90,160,255,.12); }
   .game-load-btn:active{ transform:scale(.96); }
+  .save-picker{ margin:8px 0 2px; padding:8px; border:1px solid rgba(90,160,255,.4); border-radius:8px; background:rgba(90,160,255,.06); }
+  .sp-head{ display:flex; align-items:center; font-family:var(--font-display); font-weight:800; font-size:11.5px; color:#9fc4ff; margin-bottom:6px; }
+  .sp-x{ margin-left:auto; background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:12px; padding:0 2px; }
+  .sp-x:hover{ color:var(--text); }
+  .sp-row{ display:flex; align-items:center; gap:10px; width:100%; text-align:left; margin-bottom:4px; padding:6px 9px; border:1px solid var(--line); border-radius:6px; background:var(--void); color:var(--text); cursor:pointer; font-family:var(--font-mono); font-size:11px; }
+  .sp-row:hover{ background:rgba(255,255,255,.05); border-color:rgba(90,160,255,.5); }
+  .sp-cloud{ border-color:rgba(90,160,255,.5); color:#9fc4ff; }
+  .sp-lv{ font-weight:700; min-width:56px; }
+  .sp-when{ color:var(--text-faint); }
+  .sp-empty{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); padding:4px 2px; }
   /* Developer / Admin console (admin-only, above the XP bar) */
   .dev-panel{ margin-top:10px; }
   .dev-details{ border:1px solid rgba(255,180,70,.5); border-radius:8px; background:linear-gradient(180deg,rgba(255,180,70,.08),transparent); padding:9px 11px; }
@@ -1803,6 +1813,7 @@
               <button type="button" class="sfx-btn" id="sfx-toggle" title="Game sound effects" aria-label="Toggle game sound">🔊</button>
               <div class="game-pops" id="game-pops"></div>
             </div>
+            <div class="save-picker" id="save-picker" hidden></div>
             <div class="foundry-offline" id="foundry-offline" hidden></div>
             <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
@@ -3252,14 +3263,16 @@
   setInterval(function () { if (state.token) syncGameFromCloud(); }, 25000);
   window.addEventListener('focus', function () { if (state.token) syncGameFromCloud(); });
   document.addEventListener('visibilitychange', function () { if (!document.hidden && state.token) syncGameFromCloud(); });
-  // Manual "Load" button: pull the cloud save on demand (highest-level-wins, so it
-  // restores your best progress and never downgrades you).
+  // Cloud load helper for the foundry's save picker (the picker owns the UI; the
+  // "Cloud" row calls this to pull the highest-level cloud save).
+  window.__gameCloudLoad = function () {
+    if (!state.token) { if (window.__gamePop) window.__gamePop('Sign in to load your cloud save', '#ff8098'); return Promise.resolve(); }
+    return Promise.resolve(syncGameFromCloud()).then(function () { if (window.__gamePop) window.__gamePop('☁ Loaded your highest-level cloud save', '#5fe39a'); if (window.__sfx) window.__sfx('unlock'); });
+  };
+  // The "Load" button opens the foundry's timestamped-save picker.
   (function () {
     var b = document.getElementById('game-load-btn'); if (!b) return;
-    b.addEventListener('click', function () {
-      if (!state.token) { if (window.__gamePop) window.__gamePop('Sign in to load your cloud save', '#ff8098'); return; }
-      Promise.resolve(syncGameFromCloud()).then(function () { if (window.__gamePop) window.__gamePop('📂 Loaded your highest-level save', '#5fe39a'); if (window.__sfx) window.__sfx('unlock'); });
-    });
+    b.addEventListener('click', function () { if (window.__foundryToggleLoad) window.__foundryToggleLoad(); else if (window.__gameCloudLoad) window.__gameCloudLoad(); });
   })();
 
   async function refreshAll() {
@@ -8196,15 +8209,54 @@ window.__sfx = (function () {
     c.appendChild(d); setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 1000);
   }
   window.__gamePop = gamePop;
-  // Manual save: write everything immediately (bypass the debounce) + push to cloud.
+  // ---- Timestamped local save history. Every manual save also drops a stamped
+  // snapshot into a rolling ring (newest first, capped) so the player can reload
+  // a specific earlier save from the Load picker. ----
+  var SAVES_KEY = 'ultron_foundry_saves', SAVES_MAX = 12;
+  function loadSnapshots() { try { return JSON.parse(localStorage.getItem(SAVES_KEY) || '[]'); } catch (e) { return []; } }
+  function pushSnapshot() {
+    try {
+      var list = loadSnapshots();
+      list.unshift({ at: Date.now(), level: (state.prog && state.prog.level) || 1, lifetime: Math.round(state.lifetime || 0), data: JSON.stringify(state) });
+      localStorage.setItem(SAVES_KEY, JSON.stringify(list.slice(0, SAVES_MAX)));
+    } catch (e) { /* storage full/blocked -> the main save still works */ }
+  }
+  function fmtWhen(at) { try { return new Date(at).toLocaleString(); } catch (e) { return '' + at; } }
+  // Manual save: write everything immediately (bypass the debounce) + timestamp a
+  // snapshot + push to cloud.
   function saveNow() {
     state.seen = state.savedAt = Date.now();
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+    pushSnapshot();
     if (window.__foundryCloudPushNow) window.__foundryCloudPushNow();   // manual save -> push to the cloud immediately so every device is in sync
     else if (window.__foundryCloudPush) window.__foundryCloudPush();
-    gamePop('✔ Game saved to all devices', '#5fe39a'); if (window.__sfx) window.__sfx('unlock');
+    gamePop('✔ Game saved (' + fmtWhen(state.savedAt) + ')', '#5fe39a'); if (window.__sfx) window.__sfx('unlock');
   }
   (function () { var b = document.getElementById('game-save-btn'); if (b) b.addEventListener('click', saveNow); })();
+  // The Load picker: pick a timestamped local save, or the highest-level cloud save.
+  var pickerEl = document.getElementById('save-picker');
+  window.__foundryToggleLoad = function () { if (!pickerEl) return; if (pickerEl.hidden) { renderSavePicker(); pickerEl.hidden = false; } else { pickerEl.hidden = true; } };
+  function renderSavePicker() {
+    if (!pickerEl) return;
+    var list = loadSnapshots();
+    var rows = list.map(function (s, i) { return '<button type="button" class="sp-row" data-sp="' + i + '"><span class="sp-lv">Lv ' + s.level + '</span><span class="sp-when">' + fmtWhen(s.at) + '</span></button>'; }).join('') ||
+      '<div class="sp-empty">No timestamped saves yet — press 💾 Save to make one.</div>';
+    pickerEl.innerHTML = '<div class="sp-head">📂 Load a save <button type="button" class="sp-x" data-sp="close">✕</button></div>' +
+      '<button type="button" class="sp-row sp-cloud" data-sp="cloud"><span class="sp-lv">☁ Cloud</span><span class="sp-when">your highest-level save</span></button>' +
+      rows;
+    pickerEl.querySelectorAll('[data-sp]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var v = b.dataset.sp;
+        if (v === 'close') { pickerEl.hidden = true; return; }
+        if (v === 'cloud') { pickerEl.hidden = true; if (window.__gameCloudLoad) window.__gameCloudLoad(); return; }
+        var s = loadSnapshots()[+v]; if (!s || !window.__foundryImport) return;
+        window.__foundryImport(s.data);
+        gamePop('📂 Loaded save · Lv ' + s.level + ' · ' + fmtWhen(s.at), '#5fe39a');
+        if (window.__sfx) window.__sfx('unlock');
+        pickerEl.hidden = true;
+      });
+    });
+  }
   // Subagents completing tasks earn the player game XP (called by the dashboard
   // poller when it sees newly-completed agent tasks).
   window.__foundryXp = function (n, label) {
