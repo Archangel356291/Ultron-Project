@@ -533,16 +533,43 @@
 
   /* ---------- Tower walls: run metal walls down both sides of the whole game
      section so every panel reads as one connected building interior. ---------- */
-  #sec-ultron-core{ position:relative; box-sizing:border-box; padding-left:16px; padding-right:16px;
-    border-left:7px solid #20242c; border-right:7px solid #20242c;
-    background:linear-gradient(90deg,#12141a 0,transparent 26px,transparent calc(100% - 26px),#12141a 100%);
-    box-shadow:inset 9px 0 16px -10px rgba(0,0,0,.75), inset -9px 0 16px -10px rgba(0,0,0,.75); }
-  #sec-ultron-core::before, #sec-ultron-core::after{ content:""; position:absolute; top:0; bottom:0; width:7px; z-index:1; pointer-events:none;
-    background:
-      radial-gradient(circle, rgba(140,150,165,.55) 1px, transparent 1.5px) center/7px 26px repeat-y,
-      linear-gradient(180deg,#2c313b,#181b21); }
-  #sec-ultron-core::before{ left:0; box-shadow:1px 0 3px rgba(0,0,0,.6); }
-  #sec-ultron-core::after{ right:0; box-shadow:-1px 0 3px rgba(0,0,0,.6); }
+  #sec-ultron-core{ position:relative; box-sizing:border-box; }
+  /* ---------- The game as ONE solid building: continuous outer walls, a roof and
+     a foundation, with each section a floor stacked inside (floor beams between). */
+  .game-building{ position:relative; margin-top:26px; border-radius:12px 12px 7px 7px; overflow:hidden;
+    background:linear-gradient(180deg,#0e1015,#0a0c10);
+    border-left:14px solid #20242c; border-right:14px solid #20242c;
+    border-top:10px solid #262b35; border-bottom:12px solid #1a1d24;
+    box-shadow:0 14px 44px -16px rgba(0,0,0,.85), inset 0 0 0 1px rgba(255,255,255,.03); }
+  /* riveted metal on the two continuous side walls */
+  .game-building::before, .game-building::after{ content:""; position:absolute; top:-10px; bottom:-12px; width:14px; z-index:3; pointer-events:none;
+    background:radial-gradient(circle, rgba(150,160,175,.55) 1.1px, transparent 1.6px) center/14px 28px repeat-y, linear-gradient(180deg,#2f343f,#181b21); }
+  .game-building::before{ left:-14px; } .game-building::after{ right:-14px; }
+  .game-floor{ position:relative; padding:14px 16px 16px; }
+  /* a metal floor-beam divides one floor from the next */
+  .game-floor + .game-floor{ border-top:6px solid #12141a;
+    box-shadow:inset 0 7px 12px -9px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.05);
+    background:linear-gradient(180deg, rgba(120,150,200,.05), transparent 34px); }
+  .game-floor-base{ background:linear-gradient(180deg, rgba(120,150,200,.05) 0, transparent 34px, transparent 70%, rgba(0,0,0,.35) 100%); }
+  /* the lit floor sign on the wall (replaces the old panel-label for game floors) */
+  .floor-sign{ display:inline-block; font-family:var(--font-display); font-weight:800; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:#dfe7f2;
+    padding:4px 13px; margin-bottom:11px; border-radius:5px; border-left:3px solid #4f9fff;
+    background:linear-gradient(180deg,#1d2129,#12151b); box-shadow:0 0 14px -4px rgba(120,170,255,.55), inset 0 1px 0 rgba(255,255,255,.08); }
+  /* the big section containers lose their own box borders and blend into the floor */
+  .game-floor > .foundry, .game-floor > .refinery, .game-floor > .expedition, .game-floor > .codex-wrap,
+  .game-floor > .progression{ border:none !important; background:transparent !important; }
+  /* readability: bump the smallest game-area text up so it's easy to read */
+  .game-building{ font-size:13px; }
+  .game-building .fbl-sub, .game-building .sl-sub, .game-building .sl-eff, .game-building .cz-sub, .game-building .cz-uniq,
+  .game-building .cz-forge-sub, .game-building .hol-sub, .game-building .hol-sub2, .game-building .gn-sub, .game-building .gn-legend,
+  .game-building .gn-need, .game-building .gn-stock, .game-building .xpu-d, .game-building .xpu-c, .game-building .dev-lbl,
+  .game-building .dev-note, .game-building .cx-st, .game-building .cx-card-n, .game-building .cx-st-lbl, .game-building .cx-chip,
+  .game-building .cx-affix span, .game-building .py-chip, .game-building .cz-lv, .game-building .sl-tier, .game-building .prog-stats,
+  .game-building .cx-sub, .game-building .hol-mile, .game-building .cx-un, .game-building .cx-ur, .game-building .cz-mile-nm,
+  .game-building .exp-catn, .game-building .cx-est i, .game-building .cx-ecard-d{ font-size:11px !important; }
+  .game-building .cx-h, .game-building .prog-lvl, .game-building .cx-card-t, .game-building .sl-head, .game-building .cz-head,
+  .game-building .gn-head, .game-building .hol-head, .game-building .floor-sign{ font-size:13px !important; }
+  .game-building .foundry-note{ font-size:12.5px !important; }
 
   /* ---------- knowledge graph (Home tab) ----------
      Real data: graphify-out/graph.json (the vault graph -- code/doc/
@@ -1985,7 +2012,8 @@
             <div class="pixel-bubble" id="pixel-bubble" hidden></div>
           </div>
 
-          <div class="panel-label" style="margin-top:28px;">Ultron's foundry</div>
+          <div class="game-building">
+          <div class="game-floor"><div class="floor-sign">Ultron's Foundry</div>
           <div class="foundry" id="foundry">
             <div class="foundry-bal">
               <span class="foundry-bal-hint">Currency &amp; /s tracked in the fixed panel (bottom-left)</span>
@@ -2002,18 +2030,16 @@
             <div class="foundry-generators" id="foundry-generators"></div>
             <div class="foundry-bays-label">Production bays <span class="fbl-sub">— each floor's own crew, weapons &amp; armor</span></div>
             <div class="foundry-bays" id="foundry-bays"></div>
-            <div class="prestige" id="prestige"></div>
-            <div class="prestige-up" id="prestige-up"></div>
             <div class="stonelab" id="stonelab"></div>
             <div class="holiday" id="holiday"></div>
             <div class="cosmic" id="cosmic"></div>
             <div class="genesis" id="genesis"></div>
             <div class="dev-panel" id="dev-panel" hidden></div>
-            <div class="progression" id="progression"></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
           </div>
+          </div>
 
-          <div class="panel-label" style="margin-top:28px;">Ultron's refinery</div>
+          <div class="game-floor"><div class="floor-sign">Ultron's Refinery</div>
           <div class="refinery" id="refinery">
             <div class="refinery-canvas-wrap">
               <canvas id="refinery-canvas" aria-label="Ultron's refinery: an adamantium forge and a vibranium forge cast ingots onto one conveyor that feeds a currency press."></canvas>
@@ -2021,16 +2047,26 @@
             <div class="refinery-upgrades" id="refinery-upgrades"></div>
             <div class="foundry-note">Two forges cast adamantium (bright silver) and vibranium (black, blue-crackled) ingots onto one belt into the press, which mints extra bits. Unlock and upgrade each machine and the belt individually — same Bits → Nanits scale as the foundry.</div>
           </div>
+          </div>
 
-          <div class="panel-label" style="margin-top:28px;">Ultron's expedition</div>
+          <div class="game-floor"><div class="floor-sign">Ultron's Expedition</div>
           <div class="expedition" id="expedition"></div>
           <div class="exp-viewer-wrap" id="exp-viewer-wrap" hidden>
             <div class="exp-viewer-h" id="exp-viewer-h">&#9654; Live feed &mdash; your robot in the field</div>
             <canvas id="exp-viewer-canvas" aria-label="Live view of your custom robot fighting through its expedition"></canvas>
           </div>
+          </div>
 
-          <div class="panel-label" style="margin-top:28px;">Codex</div>
+          <div class="game-floor"><div class="floor-sign">Codex</div>
           <details class="codex-wrap"><summary>Enemies, loot, rarities &amp; bays &mdash; the game's database</summary><div id="codex"></div></details>
+          </div>
+
+          <div class="game-floor game-floor-base"><div class="floor-sign">Ultron's Prestige Core</div>
+          <div class="progression" id="progression"></div>
+          <div class="prestige" id="prestige"></div>
+          <div class="prestige-up" id="prestige-up"></div>
+          </div>
+          </div>
 
           <div class="panel-label" style="margin-top:28px;">Agent roster &amp; enlistments</div>
           <div class="agent-roster" id="agent-roster"></div>
@@ -9041,12 +9077,37 @@ window.__sfx = (function () {
     GENERATORS.forEach(function (g, i) { ug.push(ugRow('Reactor \u00b7 ' + g.name, (i ? GENERATORS[i - 1].name + ' + ' : '') + fmt(g.unlock), genUnlocked(g.id))); });
     ug.push(ugRow('Auto-Vendor', 'Build any extractor', vendorUnlocked()));
     ug.push(ugRow('Prestige (Nanite Core)', 'Charge the power core to 100%', prestigeChargePct() >= 0.999));
+    // D&D attributes -- what each core stat does
+    var attrDefs = CHAR_ATTRS.map(function (a) { return '<span class="cx-chip" style="color:' + a.col + ';border-color:' + a.col + '">' + a.abbr + ' \u00b7 ' + a.eff + ' \u00b7 <b>' + (typeof charAttr === 'function' ? charAttr(a.id) : 10) + '</b></span>'; }).join('');
+    // Gear sets & bonuses
+    var setCards = Object.keys(GEAR_SETS).map(function (sk) {
+      var attrs = CHAR_ATTRS.filter(function (a) { return SET_ATTR[sk] && SET_ATTR[sk][a.id]; }).map(function (a) { return '<span class="cx-st" style="color:' + a.col + '">+' + SET_ATTR[sk][a.id] + '/pc ' + a.abbr + '</span>'; }).join('');
+      var have = (typeof setCount === 'function' ? setCount(sk) : 0), tier = (typeof setTier === 'function' ? setTier(sk) : 0);
+      return '<div class="cx-card"><div class="cx-card-ic">' + (sk === 'genesis' ? '\ud83c\udf08' : '\ud83d\udc51') + '</div><div class="cx-card-b">' +
+        '<div class="cx-card-t">' + GEAR_SETS[sk] + ' <span class="cx-card-n">' + have + ' pcs \u00b7 tier ' + tier + '/5</span></div>' +
+        '<div class="cx-card-stats"><span class="cx-st-lbl">grants:</span> ' + attrs + '</div>' +
+        '<div class="cx-card-stats"><span class="cx-st-lbl">set tiers:</span> <span class="cx-st">2 / 4 / 6 / 8 / 10 pieces</span></div></div></div>';
+    }).join('');
+    // Cosmic research bays -- beings + harness bonuses
+    var cosCards = (typeof COSMIC_BEINGS !== 'undefined' ? COSMIC_BEINGS : []).map(function (b) {
+      var lv = (typeof beingLevel === 'function' ? beingLevel(b.id) : 0), harn = (typeof beingHarnessed === 'function' && beingHarnessed(b.id));
+      return '<div class="cx-card" style="border-left:3px solid ' + b.col + '"><div class="cx-card-ic" style="color:' + b.col + '">' + (b.realm === 'dc' ? '\ud83c\udf00' : '\u2604\ufe0f') + '</div><div class="cx-card-b">' +
+        '<div class="cx-card-t">' + b.name + ' <span class="cx-card-n">' + b.realm.toUpperCase() + ' \u00b7 Lv ' + b.lvlReq + (harn ? ' \u00b7 \u26a1 harnessed' : lv ? ' \u00b7 research ' + lv : '') + '</span></div>' +
+        '<div class="cx-card-stats"><span class="cx-st-lbl">powers:</span> <span class="cx-st">\u2726 ' + b.unique[0] + '</span> <span class="cx-st">\u2726 ' + b.unique[1] + '</span></div>' +
+        '<div class="cx-card-stats"><span class="cx-st-lbl">harness:</span> <span class="cx-st">+% power to Ultron, portion to the bot</span></div></div></div>';
+    }).join('');
+    // Materials & crafted-item sources
+    var matDefs = [['\u2b22 Scrap', 'salvage any gear', 'reinforce gear \u00b7 stones \u00b7 Genesis'], ['\u25c8 Alloy', 'salvage gear', 'reinforce \u00b7 stones \u00b7 Genesis'], ['\u2726 Core', 'salvage gear', 'stones \u00b7 Genesis'], ['\u25a6 Chips', 'salvage \u2605Rare gear', 'Genesis logic'], ['\u25ab CPU', 'salvage \u2605Epic gear', 'Genesis \u00b7 Power Harness'], ['\u2b23 GPU', 'salvage \u2605Legendary gear', 'Genesis \u00b7 Power Harness'], ['\u2b1a RAM', 'salvage \u2605Mythic gear', 'Genesis \u00b7 Power Harness']].map(function (m) { return '<div class="cx-card"><div class="cx-card-b"><div class="cx-card-t">' + m[0] + ' <span class="cx-card-n">from ' + m[1] + '</span></div><div class="cx-card-stats"><span class="cx-st-lbl">builds:</span> <span class="cx-st">' + m[2] + '</span></div></div></div>'; }).join('');
     codexEl.innerHTML =
       sec('Unlock requirements \u2014 what unlocks what', '<div class="cx-unlocks">' + ug.join('') + '</div>') +
       sec('Currency (\u00d71000 each tier)', '<div class="cx-chips">' + cur + '</div>') +
       sec('Loot rarity', '<div class="cx-chips">' + rar + '</div>') +
       sec('Item archetypes &amp; the stats they roll', '<div class="cx-cards">' + items + '</div>') +
       sec('Affixes &mdash; possible perks on a drop', '<div class="cx-affixes">' + affixes + '</div>') +
+      sec('Core attributes \u2014 what each stat does (live values)', '<div class="cx-chips">' + attrDefs + '</div>') +
+      sec('Gear sets &amp; bonuses', '<div class="cx-cards">' + setCards + '</div>') +
+      sec('Materials &amp; crafted items \u2014 sources &amp; what they build', '<div class="cx-cards">' + matDefs + '</div>') +
+      sec('Cosmic research bays \u2014 beings &amp; harness bonuses', '<div class="cx-cards">' + cosCards + '</div>') +
       sec('Production bays', '<div class="cx-chips">' + bays + '</div>') +
       sec('Enemies &mdash; full stat cards (Expedition auto-battler)', '<div class="cx-ecards">' + en + '</div>') +
       sec('Lore', '<div class="cx-lore-list">' + LORE.map(function (e) {
