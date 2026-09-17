@@ -229,6 +229,24 @@ folder the owner asked for:**
   three-minute grid drift behind the panels (off under reduced motion),
   and `/` to focus the talk bar or chat from anywhere.
 
+## 10. Specialist subagents (owner-requested 2026-09-16)
+
+From a multi-agent blueprint the owner shared, the ten topics not yet
+covered became agents on two planes: **Claude Code subagents**
+(`.claude/agents/*.md` — isolated context, narrow tools, Plan → Run →
+Sync, all scoped to this PC; now versioned in git) and **registry
+entries** in `app.py` so each has a desk, a task queue and a spend line:
+Dockhand (Docker), Relay (Tailscale), Gatekeeper (Pi-hole/DNS), Proof
+(tests), Auditor (security), Scribe (logs — with a real runtime tool,
+`get_container_logs`, redacted and wrapped as untrusted), Archivist
+(context/memory), Librarian (knowledge, the dev-time half of
+`recall_from_brain`), Herald (Slack, per-message approval), Envoy (the
+Discord bot, health read from `docker_ps`). The pixel room gained a rear
+mezzanine (room background regenerated) so all fifteen agents are
+visible: Ultron, four on the floor by him, two by the server rack, eight
+on the catwalk — each lit by a real event (task in progress, learned,
+alert, search). Full matrix in `AGENT_CAPABILITIES_AND_GOVERNANCE.md` §3.
+
 ## Also fixed on the way
 
 - **Crypto & Markets no longer shows fake data.** The hardcoded

@@ -41,6 +41,21 @@ owner adds a system to the allowlist described in §5.
 | learner | Memory extraction | `remember_note`, lite model | — | The owner's own turns | Live numbers, web content, beta turns | ≈ $0.001/turn, capped by `ULTRON_AGENT_DAILY_USD` | Owner switch, per conversation |
 | engineering | Build/test/maintain | repo, `dev-tools` tests, compose, Chrome | Claude Code skills (`code-review`, `security-review`, `frontend-design`, graphify) | Repository, local containers | External deploy, paid services, credential/destructive changes | Claude Code session cost | Each session; high-risk tasks need `approval_status=approved` |
 
+**Claude Code specialists (added 2026-09-16, `.claude/agents/*.md`)** — narrow, isolated-context subagents invoked by name from a Claude Code session; each states a plan, runs its scoped task, and returns a synthesized result. Registered in `AGENT_REGISTRY` so each has a desk, a task queue and a spend line. All are dev-time (owner in the loop) and local-only.
+
+| Agent | Role | Tools | Forbidden | Runtime half |
+|---|---|---|---|---|
+| `docker_orchestrator` (Dockhand) | compose/Dockerfile changes, rebuilds | Read/Grep/Glob/Edit/Write/Bash — local `docker compose` only | publishing internal ports, writable host mounts, secrets in compose | `deploy-container` action (preview-then-confirm) |
+| `tailscale_topology` (Relay) | tailnet diagnosis, MagicDNS, `tailscale serve`/cert, ACL review | Bash read-only tailscale/docker exec | `tailscale up/down/set`, ACL/serve changes, Funnel, peers that aren't this PC — without approval | Tailscale Watchdog task |
+| `pihole_guard` (Gatekeeper) | DNS answering, port 53/admin exposure, stack health | Bash read-only docker/nslookup | blocklist/upstream/password changes, restarts, exposing 53/admin | Sentinel HTTPS probe + Docker healthcheck |
+| `test_automation` (Proof) | run `dev-tools` tests, write the one needed check | Read/Grep/Glob/Edit/Write/Bash (tests, syntax checks) | weakening assertions, live containers, real API key | — |
+| `security_auditor` (Auditor) | secrets, ignore files, auth, headers/CSP, deps | read-only git/grep/gitleaks | printing secret values, exploit code, external probing | Sentinel posture review, gitleaks hook |
+| `log_coordinator` (Scribe) | root cause from logs, redacted | Bash `docker logs --tail` | restarting/clearing, quoting credentials | **`get_container_logs`** tool (admin, redacted, wrapped untrusted) |
+| `context_manager` (Archivist) | what becomes durable memory; tidy stores | Read/Grep/Glob/Edit/Write on memory folders | live metrics/secrets/web content in memory, editing `ultron.db`, Desktop/OneDrive | learner + 40-message/200-note caps |
+| `knowledge_synthesizer` (Librarian) | exact snippet from either vault, vaults kept separate | Bash graphify query/path/explain | mixing vaults, whole files, credentials from chat logs | `recall_from_brain` + situational context |
+| `slack_communicator` (Herald) | draft/post to the aiultronproject workspace | Slack MCP (read, draft, send) | sending without per-message approval, new recipients, secrets/IPs/chat content | none (no Slack in the backend, by decision) |
+| `discord_gateway` (Envoy) | the Discord bot | slash commands → this backend | anything the backend refuses; exposing tokens | `ultron-discord-bot` container (health from `docker_ps`) |
+
 Recommended, not installed: the `playwright` plugin's MCP (already installed, disconnected) for real phone-width verification — needs a reconnect, not a purchase. Nothing else in reach materially improves quality or safety.
 
 ## 4. Authorization model

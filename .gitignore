@@ -1,5 +1,7 @@
-# Custom AI & Claude Code
-.claude/
+# Custom AI & Claude Code -- local state stays out, but the project's
+# subagent definitions (.claude/agents/*.md) are source and travel with it.
+.claude/*
+!.claude/agents/
 claude-code.log
 *.log
 .env

@@ -53,6 +53,23 @@ GREEN = (51, 209, 122, 255)
 # UI already speaks, not new ones.
 AMBER = (255, 194, 75, 255)
 VIOLET = (176, 132, 240, 255)
+# The ten specialists added 2026-09-16 (see AGENT_REGISTRY in app.py and the
+# SUBAGENTS table in ultron-dashboard.html) -- each its own colour so the
+# room reads at a glance. Deliberately away from Ultron's red and Sentinel's
+# amber.
+AGENT_COLORS = {
+    "cyan": CYAN, "green": GREEN, "amber": AMBER, "violet": VIOLET,
+    "blue": (79, 166, 224, 255),      # Dockhand
+    "indigo": (110, 110, 255, 255),   # Relay
+    "mint": (120, 255, 200, 255),     # Gatekeeper
+    "lime": (170, 230, 60, 255),      # Proof
+    "rose": (255, 120, 150, 255),     # Auditor
+    "steel": (170, 180, 200, 255),    # Scribe
+    "lavender": (200, 160, 255, 255), # Archivist
+    "peach": (255, 170, 120, 255),    # Librarian
+    "magenta": (230, 80, 200, 255),   # Herald
+    "olive": (160, 170, 60, 255),     # Envoy
+}
 OUTLINE_COLOR = (5, 6, 8, 255)
 
 
@@ -496,9 +513,10 @@ def draw_room_background(w, h, floor_y):
         gd.line([(0, gy), (w, gy)], fill=(61, 214, 255, 12))
     img.alpha_composite(grid)
 
-    # Wall conduit: a horizontal pipe run with hangers, midway up the wall,
-    # for the kind of mechanical clutter a real server room actually has.
-    pipe_y = int(floor_y * 0.62)
+    # Wall conduit: a horizontal pipe run with hangers, high on the wall
+    # (above the mezzanine added below), for the kind of mechanical clutter
+    # a real server room actually has.
+    pipe_y = int(floor_y * 0.40)
     d.rectangle([0, pipe_y, w, pipe_y + 6], fill=shade(LINE, 1.3))
     d.line([(0, pipe_y), (w, pipe_y)], fill=shade(LINE, 1.8), width=1)
     for hx in range(20, w, 90):
@@ -515,11 +533,36 @@ def draw_room_background(w, h, floor_y):
     # drawn on top each frame further right (see SUBAGENTS/ULTRON_DESK_X
     # in the dashboard's own pixel-room script); these are just the static
     # backdrop filling what would otherwise be bare wall between/behind them.
-    draw_console_panel(d, img, int(w * 0.34), int(floor_y * 0.18), int(w * 0.09), int(floor_y * 0.5), seed=11)
-    draw_console_panel(d, img, int(w * 0.46), int(floor_y * 0.22), int(w * 0.07), int(floor_y * 0.42), seed=23)
+    # Consoles sit high on the wall now, clear of the mezzanine row below.
+    draw_console_panel(d, img, int(w * 0.34), int(floor_y * 0.07), int(w * 0.09), int(floor_y * 0.30), seed=11)
+    draw_console_panel(d, img, int(w * 0.46), int(floor_y * 0.09), int(w * 0.07), int(floor_y * 0.27), seed=23)
     for i, wx in enumerate((0.58, 0.68, 0.78, 0.88)):
-        draw_console_panel(d, img, int(w * wx), int(floor_y * (0.16 + 0.05 * (i % 2))),
-                            int(w * 0.055), int(floor_y * (0.4 - 0.04 * (i % 2))), seed=31 + i * 7)
+        draw_console_panel(d, img, int(w * wx), int(floor_y * (0.07 + 0.03 * (i % 2))),
+                            int(w * 0.055), int(floor_y * (0.28 - 0.03 * (i % 2))), seed=31 + i * 7)
+
+    # Mezzanine (2026-09-16): a steel catwalk across the back wall's right
+    # half where the specialist desks stand, one row behind the floor crew.
+    # Deck plate, a lit front edge, railing posts and a top rail, two struts
+    # to the floor. Its top edge is the rear row's floor line (the dashboard's
+    # MEZZ_Y) -- keep the two in step if either changes.
+    mezz_y = int(floor_y * 0.68)
+    mx0, mx1 = int(w * 0.49), int(w * 0.98)
+    d.rectangle([mx0, mezz_y, mx1, mezz_y + 10], fill=shade(LINE, 1.2))
+    d.rectangle([mx0, mezz_y, mx1, mezz_y + 2], fill=shade(STEEL, 0.9))
+    d.rectangle([mx0, mezz_y + 10, mx1, mezz_y + 13], fill=shade(LINE, 0.6))
+    for gx in range(mx0 + 12, mx1, 22):
+        d.line([(gx, mezz_y + 3), (gx + 6, mezz_y + 9)], fill=shade(LINE, 0.7), width=1)
+    rail_y = mezz_y - 24
+    for px_ in range(mx0 + 8, mx1, 60):
+        d.rectangle([px_, rail_y, px_ + 2, mezz_y], fill=shade(STEEL, 0.75))
+    d.rectangle([mx0, rail_y, mx1, rail_y + 2], fill=STEEL)
+    d.rectangle([mx0, rail_y + 12, mx1, rail_y + 13], fill=shade(STEEL, 0.6))
+    for sx in (mx0 + 6, mx1 - 8):
+        d.rectangle([sx, mezz_y + 13, sx + 4, floor_y], fill=shade(LINE, 0.9))
+    # Soft light spill under the deck so it reads as a real overhang.
+    spill = Image.new("RGBA", (mx1 - mx0, floor_y - mezz_y - 13), (0, 0, 0, 0))
+    ImageDraw.Draw(spill).rectangle([0, 0, mx1 - mx0, 18], fill=(0, 0, 0, 90))
+    img.alpha_composite(spill.filter(ImageFilter.GaussianBlur(6)), (mx0, mezz_y + 13))
 
     # Floor: reflection gradient (brighter near the wall, fading to void)
     # under the existing tile grid, plus the tile seams themselves.
@@ -617,7 +660,7 @@ def main():
 
     # One sprite/desk/tube set per subagent, all from the same drawing code
     # so the four read as one team in four colours.
-    for name, color in (("cyan", CYAN), ("green", GREEN), ("amber", AMBER), ("violet", VIOLET)):
+    for name, color in AGENT_COLORS.items():
         sprite = draw_sentinel(int(SCALE * 0.6), color) if name == "amber" else draw_ultron(int(SCALE * 0.6), color, "sit")
         save(sprite, f"agent_{name}_sit.png")
         save(draw_desk_monitor(6, 8, 2.4, 3.2, 3.0, color, False, 50), f"desk_{name}_idle.png")

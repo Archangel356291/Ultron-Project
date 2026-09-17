@@ -59,9 +59,40 @@ def demo():
     res = client.get("/api/agents", headers=ADMIN)
     assert res.status_code == 200, res.get_json()
     agents = {a["agent"]: a for a in res.get_json()["agents"]}
-    assert set(agents) == {"ultron", "sentinel", "scout", "learner", "engineering"}, set(agents)
+    assert {"ultron", "sentinel", "scout", "learner", "engineering", "docker_orchestrator", "tailscale_topology",
+            "pihole_guard", "test_automation", "security_auditor", "log_coordinator", "context_manager",
+            "knowledge_synthesizer", "slack_communicator", "discord_gateway"} == set(agents), set(agents)
     for a in agents.values():
         assert a["role"] and a["tools"] and a["forbidden"] and a["scope"], a
+    assert agents["test_automation"]["health"].startswith("standby (Claude Code")
+    # Every Claude Code specialist has a definition file the session can invoke.
+    agents_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".claude", "agents")
+    for name, meta in app.AGENT_REGISTRY.items():
+        if meta["kind"] == "claude-code":
+            path = os.path.join(agents_dir, name.replace("_", "-") + ".md")
+            assert os.path.isfile(path), path
+            head = open(path, encoding="utf-8").read(400)
+            assert head.startswith("---\nname: " + name.replace("_", "-")) and "\ntools:" in head, path
+
+    # Scribe's runtime half: redacted, capped, only real container names.
+    app.docker_ps = lambda: ([{"name": "ultron-searxng", "image": "x", "status": "Up", "running_for": "", "state": "running"}], None)
+    r = app.get_container_logs(container="not-a-container")
+    assert "no container named" in r["error"] and r["containers"] == ["ultron-searxng"], r
+    assert app.get_container_logs()["error"].startswith("container is required")
+    # Built from parts so no realistic-looking secret sits in this file
+    # (the repo's gitleaks pre-commit hook rightly refuses those).
+    fake_key = "sk-" + "fake" + "0" * 16
+    fake = ("INFO Authorization: Bearer abcdefghijklmnop123\nWARN api_key=" + fake_key + "\n"
+            "password: hunter2secret\ntskey-auth-XXXXXXXXXXXX ok\nnormal line\n")
+    class _Res:
+        stdout, stderr = fake, ""
+    app.subprocess.run = lambda *a, **k: _Res()
+    r = app.get_container_logs(container="ultron-searxng", lines=999)
+    assert r["lines_requested"] == app.LOG_TAIL_MAX_LINES
+    assert "abcdefghijklmnop123" not in r["log"] and fake_key not in r["log"] and "hunter2secret" not in r["log"] and "XXXXXXXXXXXX" not in r["log"], r["log"]
+    assert "[redacted]" in r["log"] and "normal line" in r["log"], r["log"]
+    assert app._redact("x" * 10) == "x" * 10
+    assert "get_container_logs" in app.TOOL_DISPATCH and "get_container_logs" not in app.LITE_ALLOWED_TOOLS
     assert agents["sentinel"]["health"] == "disabled"  # interval 0 in tests
     assert agents["learner"]["daily_cap_usd"] == 0.000001
     assert client.get("/api/agents", headers=BETA).status_code == 403

@@ -2952,10 +2952,16 @@
     } catch (err) {
       return;
     }
-    // Pixel room: the Engineer's desk stays lit while an engineering task
-    // is in progress (re-armed every poll, so it goes dark when it ends).
-    const eng = (data.agents || []).find(function (a) { return a.agent === 'engineering'; });
-    if (eng && eng.current_task && eng.current_task.status === 'in_progress' && window.__agentBusy) window.__agentBusy('cyan', 20000);
+    // Pixel room: any agent with a task in progress keeps its desk lit
+    // (re-armed every poll, so it goes dark when the task ends).
+    if (window.__agentBusy && window.__agentColor) {
+      (data.agents || []).forEach(function (a) {
+        if (a.current_task && a.current_task.status === 'in_progress') {
+          const color = window.__agentColor(a.agent);
+          if (color) window.__agentBusy(color, 20000);
+        }
+      });
+    }
     const tbody = document.querySelector('#agents-table tbody');
     if (!tbody) return;
     tbody.innerHTML = (data.agents || []).map(function (a) {
@@ -4875,7 +4881,7 @@ function toggleReducedVisuals(el) {
     deskUltronActive: loadImg('desk_ultron_active.png'),
     tubeRed: loadImg('tube_red.png'),
   };
-  ['cyan', 'green', 'amber', 'violet'].forEach(function (c) {
+  ['cyan', 'green', 'amber', 'violet', 'blue', 'indigo', 'mint', 'lime', 'rose', 'steel', 'lavender', 'peach', 'magenta', 'olive'].forEach(function (c) {
     IMG['agent_' + c] = loadImg('agent_' + c + '_sit.png');
     IMG['desk_' + c + '_idle'] = loadImg('desk_' + c + '_idle.png');
     IMG['desk_' + c + '_active'] = loadImg('desk_' + c + '_active.png');
@@ -4896,13 +4902,16 @@ function toggleReducedVisuals(el) {
   // returns the box drawn (or a zero box while the image is still
   // loading, so callers can skip depending on it that frame rather than
   // throw on a 0x0 drawImage).
-  function drawFloored(img, x, scale) {
-    if (!img.complete || !img.naturalWidth) return { x: x, y: FLOOR_Y, w: 0, h: 0 };
+  function drawFloored(img, x, scale, floorY) {
+    floorY = floorY == null ? FLOOR_Y : floorY;
+    if (!img.complete || !img.naturalWidth) return { x: x, y: floorY, w: 0, h: 0 };
     var w = img.naturalWidth * scale, h = img.naturalHeight * scale;
-    var y = FLOOR_Y - h;
+    var y = floorY - h;
     ctx.drawImage(img, x, y, w, h);
     return { x: x, y: y, w: w, h: h };
   }
+  // The mezzanine's top edge in room_bg.png (gen_pixel_assets.py: floor_y*0.68).
+  var MEZZ_Y = Math.round(FLOOR_Y * 0.68);
 
   // The owner's four subagents. Sentinel (security watchdog) and Scout
   // (web research) were named 2026-09-16; the cyan and green pair predate
@@ -4918,15 +4927,45 @@ function toggleReducedVisuals(el) {
   // lit + red plate while the activity log holds a recent warning/error;
   // Scout (violet), lit after a reply that used web_search. Ultron himself
   // has the big red desk.
+  // Three rows. Floor, right: the original crew beside Ultron. Floor, left
+  // (by the server rack): the two infrastructure specialists. Mezzanine
+  // (rear catwalk in room_bg.png, drawn smaller for depth): the eight
+  // Claude Code specialists. `agent` is the AGENT_REGISTRY key, so a task
+  // in progress for that agent (via /api/agents) lights its desk.
   var SUBAGENTS = [
-    { color: 'cyan', deskX: 696, label: 'ENGINEER', busyPlate: 'BUILDING' },
-    { color: 'green', deskX: 786, label: 'LEARNER', busyPlate: 'LEARNING' },
-    { color: 'amber', deskX: 876, label: 'SENTINEL', alertable: true, scale: 1.2 },
-    { color: 'violet', deskX: 966, label: 'SCOUT', busyPlate: 'SEARCHING' },
+    { color: 'cyan', deskX: 696, label: 'ENGINEER', agent: 'engineering', busyPlate: 'BUILDING' },
+    { color: 'green', deskX: 786, label: 'LEARNER', agent: 'learner', busyPlate: 'LEARNING' },
+    { color: 'amber', deskX: 876, label: 'SENTINEL', agent: 'sentinel', alertable: true, scale: 1.2 },
+    { color: 'violet', deskX: 966, label: 'SCOUT', agent: 'scout', busyPlate: 'SEARCHING' },
+    { color: 'blue', deskX: 110, label: 'DOCKHAND', agent: 'docker_orchestrator', busyPlate: 'DEPLOYING' },
+    { color: 'mint', deskX: 230, label: 'GATEKEEPER', agent: 'pihole_guard', busyPlate: 'CHECKING' },
+    { color: 'indigo', deskX: 650, label: 'RELAY', agent: 'tailscale_topology', busyPlate: 'ROUTING', row: 'rear' },
+    { color: 'lime', deskX: 718, label: 'PROOF', agent: 'test_automation', busyPlate: 'TESTING', row: 'rear' },
+    { color: 'rose', deskX: 786, label: 'AUDITOR', agent: 'security_auditor', busyPlate: 'AUDITING', row: 'rear' },
+    { color: 'steel', deskX: 854, label: 'SCRIBE', agent: 'log_coordinator', busyPlate: 'READING', row: 'rear' },
+    { color: 'lavender', deskX: 922, label: 'ARCHIVIST', agent: 'context_manager', busyPlate: 'FILING', row: 'rear' },
+    { color: 'peach', deskX: 990, label: 'LIBRARIAN', agent: 'knowledge_synthesizer', busyPlate: 'LOOKING UP', row: 'rear' },
+    { color: 'magenta', deskX: 1058, label: 'HERALD', agent: 'slack_communicator', busyPlate: 'DRAFTING', row: 'rear' },
+    { color: 'olive', deskX: 1126, label: 'ENVOY', agent: 'discord_gateway', busyPlate: 'RELAYING', row: 'rear' },
   ];
-  SUBAGENTS.forEach(function (a) { a.tubeX = a.deskX + 60; });
-  var LABEL_COLORS = { cyan: '#2f8fb0', green: '#2f9a5c', amber: '#c9973a', violet: '#8c6bc0' };
-  var BUSY_COLORS = { cyan: '#3dd6ff', green: '#33d17a', violet: '#b084f0' };
+  var REAR_K = 0.72;  // mezzanine depth scale
+  SUBAGENTS.forEach(function (a) {
+    a.k = a.row === 'rear' ? REAR_K : 1;
+    a.floorY = a.row === 'rear' ? MEZZ_Y : FLOOR_Y;
+    a.tubeX = a.deskX + Math.round(60 * a.k);
+  });
+  var AGENT_COLOR = {};
+  SUBAGENTS.forEach(function (a) { AGENT_COLOR[a.agent] = a.color; });
+  window.__agentColor = function (agent) { return AGENT_COLOR[agent]; };
+  var LABEL_COLORS = {
+    cyan: '#2f8fb0', green: '#2f9a5c', amber: '#c9973a', violet: '#8c6bc0', blue: '#3f7fa8', mint: '#5fb894',
+    indigo: '#6b6bc0', lime: '#8fae3a', rose: '#c06a80', steel: '#8f98a8', lavender: '#9a80c8', peach: '#c08a68',
+    magenta: '#b04d9a', olive: '#8c9440',
+  };
+  var BUSY_COLORS = {
+    cyan: '#3dd6ff', green: '#33d17a', violet: '#b084f0', blue: '#4fa6e0', mint: '#78ffc8', indigo: '#6e6eff',
+    lime: '#aae63c', rose: '#ff7896', steel: '#aab4c8', lavender: '#c8a0ff', peach: '#ffaa78', magenta: '#e650c8', olive: '#a0aa3c',
+  };
   var sentinelAlert = false;
   window.__sentinelAlert = function (on) { sentinelAlert = !!on; };
   // A desk lights up for a while after its agent did something real --
@@ -5008,22 +5047,25 @@ function toggleReducedVisuals(el) {
     // with Ultron's own real active/idle state (see this module's top
     // comment on why these are scenery, not a live status readout).
     var flicker = Math.sin(t * 0.8) > -0.2;
-    SUBAGENTS.forEach(function (a) {
+    // Rear row first, so the floor crew always draws in front of it.
+    SUBAGENTS.slice().sort(function (p, q) { return (p.row === 'rear' ? 0 : 1) - (q.row === 'rear' ? 0 : 1); }).forEach(function (a) {
       var alarmed = a.alertable && sentinelAlert;
       var busy = !!a.busyPlate && t < (busyUntil[a.color] || 0);
-      drawFloored(IMG['tube_' + a.color], a.tubeX, SUBAGENT_TUBE_SCALE);
-      var desk = drawFloored(IMG['desk_' + a.color + (alarmed || busy || flicker ? '_active' : '_idle')], a.deskX, DESK_SCALE);
+      // Each desk flickers on its own rhythm; the rear row a touch dimmer.
+      var lit = alarmed || busy || Math.sin(t * 0.8 + a.deskX * 0.013) > -0.2;
+      drawFloored(IMG['tube_' + a.color], a.tubeX, SUBAGENT_TUBE_SCALE * a.k, a.floorY);
+      var desk = drawFloored(IMG['desk_' + a.color + (lit ? '_active' : '_idle')], a.deskX, DESK_SCALE * a.k, a.floorY);
       if (desk.w) {
-        var agentScale = AGENT_SCALE * (a.scale || 1);
+        var agentScale = AGENT_SCALE * (a.scale || 1) * a.k;
         // Keep the sprite's feet on the same spot whatever its scale.
-        drawFloored(IMG['agent_' + a.color], a.deskX + desk.w * 0.18 - (agentScale - AGENT_SCALE) * 10, agentScale);
+        drawFloored(IMG['agent_' + a.color], a.deskX + desk.w * 0.18 - (agentScale - AGENT_SCALE * a.k) * 10, agentScale, a.floorY);
       }
       if (a.label && desk.w) {
         ctx.fillStyle = alarmed ? '#ff3b3b' : busy ? BUSY_COLORS[a.color] : LABEL_COLORS[a.color];
-        ctx.font = '7px monospace';
+        ctx.font = (a.row === 'rear' ? '6px' : '7px') + ' monospace';
         ctx.textAlign = 'center';
         var plate = alarmed ? a.label + ' · ALERT' : busy ? a.label + ' · ' + a.busyPlate : a.label;
-        ctx.fillText(plate, a.deskX + desk.w / 2, FLOOR_Y + 22);
+        ctx.fillText(plate, a.deskX + desk.w / 2, a.floorY + (a.row === 'rear' ? 18 : 22));
       }
     });
 
