@@ -6754,6 +6754,59 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = hair; ctx.fillRect(cx - 3.4 * sc, Y(-25) + bob, 6.8 * sc, 2.6 * sc); ctx.fillRect(cx - 3.4 * sc, Y(-24) + bob, 1.4 * sc, 5 * sc); ctx.fillRect(cx + 2 * sc, Y(-24) + bob, 1.4 * sc, 5 * sc);
     ctx.fillStyle = '#333'; ctx.fillRect(cx - 1.6 * sc, Y(-21) + bob, 1 * sc, 1.2 * sc); ctx.fillRect(cx + 0.6 * sc, Y(-21) + bob, 1 * sc, 1.2 * sc);
   }
+  // ---- Wanda & Pietro patrol: every ~1-2 min they leave the couch, walk the
+  // office inspecting Ultron's progress, then return and report to him. ----
+  var twinPatrol = { mode: 'seated', next: 0, x: 0, dir: -1, phase: 0 };
+  function stepTwins(t, dt) {
+    var cb = couchBox(); if (!cb.draw) { twinPatrol.mode = 'seated'; return; }
+    var tp = twinPatrol;
+    if (!tp.next) tp.next = t + 60 + Math.random() * 60;
+    if (tp.mode === 'seated') {
+      if (t > tp.next) { tp.mode = 'walking'; tp.x = cb.cx; tp.dir = -1; tp.phase = 0; }
+    } else {
+      tp.phase += dt * 6; tp.x += tp.dir * 42 * dt;
+      var leftLimit = Math.max(walkMinX + 40, 120);
+      if (tp.dir < 0 && tp.x <= leftLimit) tp.dir = 1;                                   // reached the far side, turn back
+      if (tp.dir > 0 && tp.x >= cb.cx) { tp.x = cb.cx; tp.mode = 'seated'; tp.next = t + 60 + Math.random() * 60; twinReport(); }
+    }
+  }
+  function twinReport() {
+    var pct = Math.round((foundryCfg().charge || 0) * 100);
+    var msgs = ['World domination ' + pct + '% — on schedule, Ultron.', 'The army grows. ' + pct + '% to the next phase.', 'All systems advancing — progress ' + pct + '%.', 'Humanity’s clock is ticking. ' + pct + '% ready.'];
+    if (window.__gamePop) window.__gamePop('🗣 Wanda & Pietro: ' + msgs[Math.floor(Math.random() * msgs.length)], '#e05a6e');
+  }
+  function drawStanding(cx, floorY, coat, hair, t, sc, phase) {
+    var swing = Math.sin(phase) * 2.4 * sc, lift = Math.max(0, Math.sin(phase)) * 2 * sc;
+    function Y(o) { return floorY + o * sc; }
+    ctx.fillStyle = '#22252b'; ctx.fillRect(cx - 3 * sc + swing, Y(-10), 3 * sc, 10 * sc); ctx.fillRect(cx + 0.4 * sc - swing, Y(-10) - lift * 0.25, 3 * sc, 10 * sc);   // striding legs
+    ctx.fillStyle = coat; ctx.fillRect(cx - 4 * sc, Y(-24), 8 * sc, 14 * sc);                                                                                          // torso
+    ctx.fillStyle = coat; ctx.fillRect(cx - 6 * sc, Y(-23) + swing * 0.3, 2.4 * sc, 10 * sc); ctx.fillRect(cx + 3.6 * sc, Y(-23) - swing * 0.3, 2.4 * sc, 10 * sc);      // arms
+    ctx.fillStyle = '#e8b878'; ctx.fillRect(cx - 3 * sc, Y(-31), 6 * sc, 6.4 * sc);                                                                                     // head
+    ctx.fillStyle = hair; ctx.fillRect(cx - 3.4 * sc, Y(-32), 6.8 * sc, 2.6 * sc); ctx.fillRect(cx - 3.4 * sc, Y(-31), 1.4 * sc, 5 * sc); ctx.fillRect(cx + 2 * sc, Y(-31), 1.4 * sc, 5 * sc);
+    ctx.fillStyle = '#333'; ctx.fillRect(cx - 1.6 * sc, Y(-28), 1 * sc, 1.2 * sc); ctx.fillRect(cx + 0.6 * sc, Y(-28), 1 * sc, 1.2 * sc);
+  }
+  // On prestige the whole team finally beats Ultron -- he's left broken and
+  // spends the start of the new run repairing himself, stronger.
+  var repairUntil = 0;
+  window.__ultronBroken = function () { repairUntil = now() + 18; };
+  function drawUltronRepair(t) {
+    if (t >= repairUntil) return;
+    var b = lastCharBox; if (!b || !b.w) return;
+    var cx = b.x + b.w / 2, cy = b.y + b.h * 0.45;
+    for (var i = 0; i < 5; i++) { var a = Math.random() * 6.28, r = 8 + Math.random() * 26; ctx.fillStyle = 'rgba(255,' + (120 + Math.random() * 100 | 0) + ',60,' + (0.4 + Math.random() * 0.4).toFixed(2) + ')'; ctx.fillRect(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 2.5, 2.5); }   // welding sparks
+    if (Math.sin(t * 30) > 0.6) { ctx.strokeStyle = 'rgba(140,210,255,0.8)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(cx - 12, cy); ctx.lineTo(cx - 4, cy - 9); ctx.lineTo(cx + 3, cy - 2); ctx.lineTo(cx + 11, cy - 11); ctx.stroke(); }   // arc flashes
+    ctx.fillStyle = '#ff8098'; setFont(fontPx * 0.82, true); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText('⚙ REBUILDING — stronger', cx, b.y - 6);
+  }
+  function drawTwinsWalking(t) {
+    var tp = twinPatrol; if (tp.mode === 'seated') return;
+    var fy = officeFloorY, sc = 4.2, lead = tp.dir < 0 ? -1 : 1;
+    ctx.fillStyle = 'rgba(0,0,0,0.28)'; ctx.beginPath(); ctx.ellipse(tp.x, fy + 2, 30, 6, 0, 0, 6.28); ctx.fill();
+    drawStanding(tp.x - 20 * lead, fy, '#8e1b2e', '#5a2020', t, sc, tp.phase);           // Wanda
+    drawStanding(tp.x + 20 * lead, fy, '#3a4a6a', '#c8ccd4', t, sc, tp.phase + 1.6);      // Pietro
+    ctx.fillStyle = '#e0b0ff'; setFont(fontPx * 0.72, false); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText('… inspecting the operation', tp.x, fy - 32 * sc - 6);
+  }
   // Shared geometry so the couch (left of the display gap) and the relic tubes
   // (right of it) never overlap. Couch sits left, clear of Ultron's pacing.
   function couchBox() {
@@ -6771,8 +6824,10 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = '#3a2f4a'; ctx.fillRect(cx - hw, fy - seatH, couchW, seatH);                                                         // seat block
     ctx.fillStyle = '#2e2540'; ctx.fillRect(cx - hw - arm, fy - seatH - backH * 0.6, arm, seatH + backH * 0.6); ctx.fillRect(cx + hw, fy - seatH - backH * 0.6, arm, seatH + backH * 0.6);   // armrests
     ctx.fillStyle = '#544766'; ctx.fillRect(cx - hw + 6, fy - seatH - 5, couchW / 2 - 9, 6); ctx.fillRect(cx + 3, fy - seatH - 5, couchW / 2 - 9, 6);   // seat cushions
-    drawSeated(cx - couchW * 0.24, fy - 2 * sc, '#8e1b2e', '#5a2020', t, sc);      // Scarlet Witch (crimson)
-    drawSeated(cx + couchW * 0.24, fy - 2 * sc, '#3a4a6a', '#c8ccd4', t, sc);      // Quicksilver (silver hair, blue jacket)
+    if (twinPatrol.mode === 'seated') {   // when patrolling, the couch sits empty
+      drawSeated(cx - couchW * 0.24, fy - 2 * sc, '#8e1b2e', '#5a2020', t, sc);      // Scarlet Witch (crimson)
+      drawSeated(cx + couchW * 0.24, fy - 2 * sc, '#3a4a6a', '#c8ccd4', t, sc);      // Quicksilver (silver hair, blue jacket)
+    }
     hover('Wanda &amp; her brother — awaiting Ultron’s command', cx, fy - seatH - backH * 0.5, hw,
       '<b style="color:#e05a6e">Wanda &amp; Pietro</b><br><span class="rt-enl">The twins wait on the couch for Ultron’s next order, then patrol the tower to report his progress.</span>');
   }
@@ -7172,6 +7227,8 @@ function toggleReducedVisuals(el) {
     var uCores = foundryCfg().cores || 0;   // each prestige, Ultron wears the tube's last body -> a growing accent aura
     if (uCores > 0) { var usk = bodySkin(uCores), ux = working ? (uDeskX + 85 - 56) : (walkX + 44); wallGlow(ux, officeFloorY - 74, 92, usk.accent, 0.13 + Math.min(0.16, uCores * 0.02)); }
     if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, officeFloorY + 4);
+    drawTwinsWalking(t);   // Wanda & Pietro on patrol across the office
+    drawUltronRepair(t);   // just after a prestige: Ultron rebuilds himself, stronger
     drawIronMan(t);   // recurring gag: the intruder Ultron is beating up / tossing out
 
     drawBelt(LEFT, liftX, officeFloorY, t, 1);                     // Ultron's office belt -> lift
@@ -7267,6 +7324,7 @@ function toggleReducedVisuals(el) {
     if (!laidOut && !(laidOut = layout())) return;
     stepWalk(t);
     stepIronMan(t, dt);
+    stepTwins(t, dt);
     updateParcels(t, dt);
     updateBays(t, dt);
     updateCoins(dt);
@@ -8352,6 +8410,8 @@ window.__sfx = (function () {
       var newD = DUNGEONS[state.adv.dungeons - 1];
       if (window.__gamePop) gamePop('☠ Vault breached: ' + newD.name, newD.color);
     }
+    if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
+    if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
     renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderAdventure();
     if (window.__roomRelayout) window.__roomRelayout();
