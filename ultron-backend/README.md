@@ -93,6 +93,8 @@ New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol T
 | `GET /api/activity`       | Persistent log of real events — backups, deploys, CVE scans |
 | `GET /api/memory`         | Ultron's saved memory notes (most recent first, or `?query=` to search) |
 | `GET /api/brain-graph`    | The Brain vault's graph for the dashboard's "What Ultron knows" panel: nodes by kind, links, counts, learned-per-day (admin only) |
+| `GET /api/crypto/market`  | Oracle: read-only crypto spot prices + 24h change (CoinGecko free API) for ledger coins plus BTC/DOGE. Reference only, never a trade (admin only) |
+| `GET /api/stats/rollup`   | Tally: daily efficiency rollup — LLM spend/tokens, agent task load, activity mix, containers running (admin only) |
 | `GET /api/dev/repos`       | Git status (branch, dirty/clean, last commit) for configured repos |
 | `GET /api/dev/repos/<repo>/diff` | Uncommitted diff for one configured repo             |
 | `GET/POST /api/trades`     | Your manually-recorded trade ledger — list or add    |
@@ -769,7 +771,18 @@ budget/rate-limit backstops above.
 
 ## Running it permanently at startup
 
-The simplest reliable option on Windows is Task Scheduler:
+**With Docker Compose (how the owner's install runs):** `docker compose up -d`
+from the repo root. In the container the backend is served by gunicorn
+(`gunicorn.conf.py`: one worker with 16 threads, because lockouts, rate
+limits and presence live in the process's memory), as the non-root user
+`ultron`, with a `HEALTHCHECK` (`healthcheck.py`). The Discord bot and
+SearXNG are health-checked too, and all three carry the `autoheal` label so
+an autoheal container, if one is running on the host, restarts any that go
+unhealthy. `docker compose ps` shows each one's health.
+
+**Without Docker**, `python app.py` runs Flask's own development server --
+fine for working on it, not for leaving it running. The simplest reliable
+option on Windows is Task Scheduler:
 
 1. Create `start-ultron.bat` in the `ultron-backend` folder:
    ```bat

@@ -119,3 +119,36 @@ Routing: coding → `engineering`; security/monitoring → `sentinel`; research 
 | Tooling: Filesystem/Git/Playwright MCP, `claude-security` + `context7` + `code-review` plugins, sandboxed SAST (`dev-tools/sast-scan.sh`), headless Chromium installed | done 2026-09-16; verified with `claude mcp list`: `filesystem ✔ git ✔ playwright-headless ✔` (registered at user scope in `~/.claude.json` so they connect from any start directory; `.mcp.json` carries the same definitions for other clones), plugin `playwright ✔ context7 ✔ figma ✔`. Firecrawl shows "needs authentication" — owner sign-in, optional |
 | Phone-width verification | done 2026-09-16 via headless Chromium at 400×860 (signed in): Home overflow fixed, `/api/dev/repos` 400 fixed, no console errors |
 | Not done, needs the owner | setting real per-agent caps in `.env`; the `github` plugin (needs a token), Firecrawl (sign-in), Brave Search (key) |
+
+## Blueprint agents added 2026-09-16 (subagent_blueprint.md gaps)
+
+Audited Ultron's registry against `C:\Ultron Project\subagent_blueprint.md`.
+Six of the blueprint's eight roles were already covered (Home Lab Monitoring →
+Sentinel/Dockhand; Coding Assistant → Forge/Engineering/Proof; Code Repository
+Librarian → Librarian; Records Keeper → Archivist; Security Watch Sentinel →
+Sentinel). Three gaps were filled:
+
+| Agent | Kind | Role | Tools | Forbidden | Scope |
+|---|---|---|---|---|---|
+| **Oracle** (`market_analyst`) | tool, 0-token | Read-only crypto market analyst (blueprint #2) | `get_crypto_market` (CoinGecko free public API, cached ~60s), `get_trades`/`get_trade_summary` | placing/recommending trades, any buy/sell/transfer, calling prices advice, exchange/order-book/private-key access | public spot prices + the owner's own manual ledger |
+| **Tally** (`stats_tracker`) | tool, 0-token | Daily efficiency insights (blueprint #8) | `get_stats_rollup` (read-only aggregation over `llm_usage`, agent tasks, activity log, docker) | new data collection, per-user profiling, storing live metrics as memory | this backend's own local records |
+| **Redcell** (`ethical_hacking`) | Claude Code subagent | Authorized ethical-hacking **lab** agent (blueprint #3) | `Read`, `Grep`, `Glob` over the lab vault only. **Scanning tools (nmap, sqlmap, etc.) stay UNWIRED until the lab plan is approved** | any scan/exploit/probe of any host (incl. lab targets) before an approved trial, any non-lab/public/production/unknown system, malware/persistence/evasion/DoS, storing secrets or payloads | ONLY `D:\Ethical Hacking Lab` systems the owner authorizes; see `D:\Ethical Hacking Lab\docs\AGENT_LAB_GOVERNANCE.md` |
+
+**Decisions & boundaries:**
+- Oracle adds a **read-only** live price feed (owner-approved 2026-09-16),
+  reversing the earlier no-feed default for display/analysis only. Module 11's
+  financial-action boundary is **unchanged**: no tool buys, sells, or moves
+  anything; `get_crypto_market` is a `get_`-prefixed read like `get_trades`,
+  and `test_no_financial_action_tools.py` still passes.
+- The blueprint's Crypto **order-book / exchange APIs** and the Ethical
+  Hacking agent's **active scanners** were deliberately **not** wired — the
+  first would cross the financial boundary, the second is gated behind the
+  Ethical Hacking Lab approval plan.
+- Coverage extensions not needing a new agent: Records Keeper OCR and the
+  Repository Librarian's vector search remain future work under Archivist /
+  Librarian; the Home Lab Monitoring agent's Prometheus/Netdata hooks remain
+  future work under Sentinel.
+- Checks: `dev-tools/test_blueprint_agents.py` (new), `test_agents.py` and
+  `test_no_financial_action_tools.py` updated/passing. All three have desks in
+  Ultron's corner (Oracle = bitcoin/coin, Tally = gold/chart, Redcell =
+  crimson/crosshair).

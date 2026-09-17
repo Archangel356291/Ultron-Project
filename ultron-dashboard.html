@@ -1753,8 +1753,21 @@
       <!-- CRYPTO & MARKETS -->
       <section class="section" id="sec-crypto">
         <h2 class="section-title">Crypto &amp; markets</h2>
-        <p class="section-desc">Your own trade ledger and its FIFO gain/loss — record-keeping, not advice. There is no live price feed here: this backend has no exchange or market-data connection, so nothing on this page pretends to be one.</p>
-        <div class="disclaimer">Factual record-keeping only. The realized gain/loss figures are a FIFO calculation over the trades you entered, not tax advice and not a trading signal; the backend embeds the same disclaimer in every API response and CSV export.</div>
+        <p class="section-desc">Your own trade ledger and its FIFO gain/loss — record-keeping, not advice. Live spot prices below are read-only reference from a public feed; Ultron never places a trade.</p>
+        <div class="disclaimer">Factual record-keeping only. The realized gain/loss figures are a FIFO calculation over the trades you entered, not tax advice and not a trading signal; the backend embeds the same disclaimer in every API response and CSV export. Live prices are reference data, not a recommendation.</div>
+
+        <div class="panel-label" style="margin-top:20px">Live market — read-only (Oracle)</div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Coin</th><th style="text-align:right">Price (USD)</th><th style="text-align:right">24h</th></tr></thead>
+            <tbody id="crypto-market-tbody">
+              <tr><td colspan="3" style="color:var(--text-faint)">Sign in to load live prices…</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <div style="margin-top:8px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint)" id="crypto-market-note">Spot prices from a public feed, cached ~60s. Read-only reference, not advice.</div>
+        </div>
 
         <div class="panel-label" style="margin-top:20px" data-role="admin">My trades — manual record-keeping</div>
         <div class="card" style="margin-bottom:16px" data-role="admin">
@@ -2506,6 +2519,7 @@
           fetchMemory(),
           fetchDevRepos(),
           fetchTrades(),
+          fetchCryptoMarket(),
           fetchLlmUsage(),
           fetchConnections(),
           fetchEvolutionIdeas(),
@@ -3175,6 +3189,37 @@
     } catch (err) {
       if (statusEl) statusEl.textContent = 'Could not update idea: ' + err.message;
     }
+  }
+
+  // Oracle's read-only live market. Renders nothing tradeable — just prices.
+  async function fetchCryptoMarket() {
+    const tbody = document.getElementById('crypto-market-tbody');
+    if (!tbody) return;
+    let data;
+    try {
+      data = await apiGet('/api/crypto/market');
+    } catch (err) {
+      return;
+    }
+    const noteEl = document.getElementById('crypto-market-note');
+    if (noteEl && data.note) noteEl.textContent = data.note + (data.cached ? ' · cached' : '');
+    const coins = data.coins || [];
+    if (!data.available || !coins.length) {
+      tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-faint)">' +
+        escapeHtml(data.note || 'Live prices unavailable right now.') + '</td></tr>';
+      return;
+    }
+    tbody.innerHTML = coins.map(function (c) {
+      const price = typeof c.price_usd === 'number'
+        ? c.price_usd.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: c.price_usd < 1 ? 6 : 2 })
+        : '—';
+      const chg = typeof c.change_24h_pct === 'number' ? c.change_24h_pct : null;
+      const chgColor = chg == null ? 'var(--text-faint)' : chg >= 0 ? 'var(--green)' : 'var(--red-bright)';
+      const chgText = chg == null ? '—' : (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+      return '<tr><td>' + escapeHtml(c.symbol || c.id) + '</td>' +
+        '<td style="text-align:right; font-family:var(--font-mono)">' + price + '</td>' +
+        '<td style="text-align:right; font-family:var(--font-mono); color:' + chgColor + '">' + chgText + '</td></tr>';
+    }).join('');
   }
 
   async function fetchTrades() {
@@ -4946,6 +4991,9 @@ function toggleReducedVisuals(el) {
     { color: 'peach', hex: '#ffaa78', label: 'Librarian', agent: 'knowledge_synthesizer', busyPlate: 'looking up' },
     { color: 'magenta', hex: '#e650c8', label: 'Herald', agent: 'slack_communicator', busyPlate: 'drafting' },
     { color: 'olive', hex: '#a0aa3c', label: 'Envoy', agent: 'discord_gateway', busyPlate: 'relaying' },
+    { color: 'bitcoin', hex: '#f7931a', label: 'Oracle', agent: 'market_analyst', busyPlate: 'pricing' },
+    { color: 'gold', hex: '#e5b80b', label: 'Tally', agent: 'stats_tracker', busyPlate: 'tallying' },
+    { color: 'crimson', hex: '#d7264a', label: 'Redcell', agent: 'ethical_hacking', busyPlate: 'reviewing' },
   ];
   SUBAGENTS.forEach(function (a) {
     IMG['agent_' + a.color] = loadImg('agent_' + a.color + '.png');

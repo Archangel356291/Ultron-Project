@@ -72,6 +72,10 @@ AGENT_COLORS = {
     "copper": (205, 125, 60, 255),    # Forge
     "sky": (120, 200, 255, 255),      # Seeker
     "teal": (0, 190, 180, 255),       # Muse
+    # blueprint agents added 2026-09-16 (subagent_blueprint.md gaps)
+    "gold": (229, 184, 11, 255),      # Tally (stats)
+    "bitcoin": (247, 147, 26, 255),   # Oracle (crypto market)
+    "crimson": (215, 38, 74, 255),    # Redcell (ethical-hacking lab)
 }
 OUTLINE_COLOR = (5, 6, 8, 255)
 
@@ -309,7 +313,8 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False):
 # ---- role emblems ----------------------------------------------------------
 # What each monitor shows: one plain symbol per job, drawn in a -1..1 box.
 EMBLEMS = ("core", "code", "bulb", "shield", "globe", "containers", "block", "hammer", "magnifier",
-           "brush", "network", "check", "eye", "lines", "folder", "book", "megaphone", "chat")
+           "brush", "network", "check", "eye", "lines", "folder", "book", "megaphone", "chat",
+           "chart", "coin", "target")
 
 
 def draw_emblem(s, kind, cx, cy, r, color, bg):
@@ -395,6 +400,21 @@ def draw_emblem(s, kind, cx, cy, r, color, bg):
         s.poly([(X(-0.45), Y(0.3)), (X(-0.05), Y(0.3)), (X(-0.55), Y(0.85))], color)
         for a in (-0.4, 0.0, 0.4):
             C(a, -0.18, 0.11, fill=bg)
+    elif kind == "chart":   # rising bars + a baseline: Tally / stats
+        L([(-0.85, 0.8), (0.85, 0.8)], w=lw * 0.7)
+        for i, (bx, h) in enumerate(((-0.62, 0.5), (-0.2, 0.95), (0.22, 0.7), (0.64, 1.35))):
+            s.rect(X(bx - 0.16), Y(0.75 - h), X(bx + 0.16), Y(0.72), fill=color, r=r * 0.05)
+    elif kind == "coin":    # a coin with a currency slash: Oracle / market
+        C(0, 0, 0.8)
+        C(0, 0, 0.55, w=lw * 0.5)
+        L([(0.12, -0.5), (-0.12, 0.5)], w=lw * 0.8)
+        for yy in (-0.18, 0.18):
+            L([(-0.28, yy), (0.28, yy)], w=lw * 0.7)
+    elif kind == "target":  # crosshair: Redcell / authorized recon
+        C(0, 0, 0.78)
+        C(0, 0, 0.3, fill=color)
+        for a, b, c, d in ((-1.0, 0, -0.5, 0), (1.0, 0, 0.5, 0), (0, -1.0, 0, -0.5), (0, 1.0, 0, 0.5)):
+            L([(a, b), (c, d)], w=lw * 0.8)
 
 
 # ---- furniture -------------------------------------------------------------
@@ -647,6 +667,9 @@ AGENT_LOOKS = {
     "peach": ("dome", "book"),            # Librarian
     "magenta": ("fin", "megaphone"),      # Herald
     "olive": ("fin", "chat"),             # Envoy
+    "gold": ("dome", "chart"),            # Tally (stats)
+    "bitcoin": ("antenna", "coin"),       # Oracle (crypto market)
+    "crimson": ("horns", "target"),       # Redcell (ethical-hacking lab)
 }
 
 

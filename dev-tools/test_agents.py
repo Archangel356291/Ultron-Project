@@ -62,7 +62,7 @@ def demo():
     assert {"ultron", "sentinel", "scout", "learner", "engineering", "docker_orchestrator", "tailscale_topology",
             "pihole_guard", "test_automation", "security_auditor", "log_coordinator", "context_manager",
             "knowledge_synthesizer", "slack_communicator", "discord_gateway", "developer", "research",
-            "frontend_designer"} == set(agents), set(agents)
+            "frontend_designer", "market_analyst", "stats_tracker", "ethical_hacking"} == set(agents), set(agents)
     for a in agents.values():
         assert a["role"] and a["tools"] and a["forbidden"] and a["scope"], a
     assert agents["test_automation"]["health"].startswith("standby (Claude Code")
