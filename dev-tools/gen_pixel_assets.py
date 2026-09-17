@@ -217,7 +217,7 @@ HEAD_TOP = 3.5  # grid rows of headroom above the helmet for crests/antennae
 CRESTS = ("crown", "plates", "antenna", "visor", "dome", "fin", "horns")
 
 
-def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DARK, bm=BODY_MID, bl=BODY_LIGHT):
+def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DARK, bm=BODY_MID, bl=BODY_LIGHT, ultron=False):
     """pose: 'walk_a' | 'walk_b' (full body) or 'work' (seated at a desk, cut
     off below the chest -- the desk sprite covers the rest).
 
@@ -270,10 +270,17 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DA
             P([(ox, 5.9), (ix, 6.3), (ix, 7.0), (ox, 6.6)], dark)
         E(ex - 0.55, 6.0, ex + 0.65, 6.8, shade(eye, 1.5))
         E(ex - 0.15, 6.1, ex + 0.35, 6.55, (255, 240, 225, 235))
-    # fanged mouth: a dark maw with five downward teeth
-    R(6.9, 7.15, 13.1, 7.6, dark)
-    for tx in (7.15, 8.35, 9.55, 10.75, 11.95):
-        P([(tx, 7.6), (tx + 1.0, 7.6), (tx + 0.5, 8.35)], dark)
+    if ultron:
+        # iconic Ultron grimace: a wide metal maw crossed by vertical struts
+        # (clenched teeth-bars), corners pulled down into a permanent frown.
+        P([(6.5, 6.95), (13.5, 6.95), (13.0, 8.4), (7.0, 8.4)], dark)
+        for sx in (7.3, 8.2, 9.1, 10.0, 10.9, 11.8, 12.7):
+            R(sx, 7.0, sx + 0.5, 8.25, shade(bm, 1.15))
+    else:
+        # fanged mouth: a dark maw with five downward teeth
+        R(6.9, 7.15, 13.1, 7.6, dark)
+        for tx in (7.15, 8.35, 9.55, 10.75, 11.95):
+            P([(tx, 7.6), (tx + 1.0, 7.6), (tx + 0.5, 8.35)], dark)
 
     # crest -- the silhouette cue
     if crest == "crown":
@@ -301,6 +308,12 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DA
     elif crest == "horns":   # two swept horns: the guards
         P([(6.2, 1.4), (5.0, -2.2), (7.8, 0.2)], accent)
         P([(13.8, 1.4), (15.0, -2.2), (12.2, 0.2)], accent)
+    elif crest == "ultron":  # sleek Ultron head -- a low center ridge to a soft
+        # point + small angular temple plates; NO crown (the real Ultron look)
+        P([(8.5, 0.7), (10.0, -1.6), (11.5, 0.7)], shade(bm, 1.2))
+        P([(9.3, 0.3), (10.0, -1.6), (10.0, 0.5)], shade(bm, 1.4))
+        P([(5.6, 2.4), (5.0, 0.5), (6.5, 1.7)], shade(bm, 1.1))
+        P([(14.4, 2.4), (15.0, 0.5), (13.5, 1.7)], shade(bm, 1.1))
 
     # neck, shoulders, chest
     x0, x1 = (1.0, 19.0) if heavy else (3.0, 17.0)
@@ -795,7 +808,7 @@ def main():
     # platinum / weathered titanium with polished titanium plating and RED
     # eyes + core (owner request 2026-09-16).
     for pose in ("walk_a", "walk_b", "work"):
-        save(draw_robot(10, U_PLATE, pose, "crown", eye=RED_BRIGHT, bd=U_GUNMETAL, bm=U_PLATINUM, bl=U_TITANIUM),
+        save(draw_robot(10, U_PLATE, pose, "ultron", eye=RED_BRIGHT, bd=U_GUNMETAL, bm=U_PLATINUM, bl=U_TITANIUM, ultron=True),
              f"ultron_{pose}.png")
     for active in (False, True):
         save(draw_desk(280, 96, 124, 88, RED_BRIGHT, "core", active), f"desk_ultron_{'active' if active else 'idle'}.png")
@@ -803,7 +816,11 @@ def main():
 
     for name, color in AGENT_COLORS.items():
         crest, emblem = AGENT_LOOKS[name]
-        save(draw_robot(6, color, "work", crest, heavy=(name == "amber")), f"agent_{name}.png")
+        # Each agent is a copy of Ultron: his gunmetal/platinum/titanium body +
+        # iconic grimace, but tinted in the agent's own accent (faceplate, eyes,
+        # core, crest) with its role crest + monitor emblem as the unique bit.
+        save(draw_robot(6, color, "work", crest, heavy=(name == "amber"), eye=color,
+                        bd=U_GUNMETAL, bm=U_PLATINUM, bl=U_TITANIUM, ultron=True), f"agent_{name}.png")
         for active in (False, True):
             save(draw_desk(150, 68, 62, 48, color, emblem, active), f"desk_{name}_{'active' if active else 'idle'}.png")
         save(draw_tube(40, 176, color), f"tube_{name}.png")

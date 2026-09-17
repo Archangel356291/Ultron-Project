@@ -5874,14 +5874,24 @@ function toggleReducedVisuals(el) {
     }
   }
   function drawCoin(c) {
-    var a = Math.max(0, 1 - c.life / c.ttl), r = c.big ? 9 : 6.5;
+    // fade only over the last 45% of life so the pop stays readable, then dies
+    var a = Math.max(0, Math.min(1, (1 - c.life / c.ttl) / 0.45)), r = c.big ? 12 : 8.5;
     ctx.globalAlpha = a;
+    // glowing gold coin
+    ctx.save(); ctx.shadowColor = 'rgba(255,208,120,0.9)'; ctx.shadowBlur = c.big ? 14 : 9;
     var g = ctx.createRadialGradient(c.x - r * 0.3, c.y - r * 0.3, 1, c.x, c.y, r);
-    g.addColorStop(0, '#ffe08a'); g.addColorStop(1, '#e6a41e');
+    g.addColorStop(0, '#fff2c0'); g.addColorStop(0.6, '#ffd24b'); g.addColorStop(1, '#e6a41e');
     ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#a5620a'; ctx.lineWidth = 1; ctx.stroke();
-    ctx.fillStyle = 'rgba(60,32,0,0.85)'; setFont(r * 0.66, true); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('101', c.x, c.y - r * 0.3); ctx.fillText('010', c.x, c.y + r * 0.34);
+    ctx.restore();
+    ctx.strokeStyle = '#a5620a'; ctx.lineWidth = 1.25; ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = 'rgba(60,32,0,0.9)'; setFont(r * 0.55, true); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('101', c.x, c.y - r * 0.28); ctx.fillText('010', c.x, c.y + r * 0.3);
+    // +value label rising above the coin, coloured on the currency tier scale
+    var lbl = '+' + (window.__fmtBits ? window.__fmtBits(c.amt || 0) : (c.amt || 0).toFixed(1));
+    var col = (window.__unitCol ? window.__unitCol(c.amt || 0) : '#ffd24b');
+    setFont(c.big ? 12 : 10, true); ctx.textBaseline = 'alphabetic';
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,0.85)'; ctx.strokeText(lbl, c.x, c.y - r - 4);   // dark outline for contrast on any backdrop
+    ctx.fillStyle = col; ctx.fillText(lbl, c.x, c.y - r - 4);
     ctx.globalAlpha = 1;
   }
   function drawLiftBack(t) {
@@ -5934,12 +5944,12 @@ function toggleReducedVisuals(el) {
   // beaten up and thrown out the window.
   var HERO_KINDS = ['ironman', 'widow', 'cap', 'hulk', 'thor', 'vision'];
   var HEROES = {
-    ironman: { name: 'Iron Man', body: '#c0392b', trim: '#f1c40f', beam: '#9be8ff' },
-    widow: { name: 'Black Widow', body: '#26262c', trim: '#c0392b', beam: '#5fb0ff', hair: '#7a1f1f' },
-    cap: { name: 'Captain America', body: '#2b5cb8', trim: '#ecf0f1', beam: '#eaf2ff', shield: true },
-    hulk: { name: 'the Hulk', body: '#3a9a3a', trim: '#6a4a9a', beam: '#8fe64b', big: true },
-    thor: { name: 'Thor', body: '#7f8792', trim: '#c0392b', beam: '#cfe8ff', cape: '#b03030', hammer: true },
-    vision: { name: 'Vision', body: '#c0392b', trim: '#33d17a', beam: '#ffd24b', cape: '#e0b83a', mind: true }
+    ironman: { name: 'Iron Man', body: '#c0392b', trim: '#f1c40f', beam: '#9be8ff', atk: 'repulsor' },      // repulsor beams
+    widow: { name: 'Black Widow', body: '#26262c', trim: '#c0392b', beam: '#5fb0ff', hair: '#7a1f1f', atk: 'bite' },   // Widow's Bite (electric batons)
+    cap: { name: 'Captain America', body: '#2b5cb8', trim: '#ecf0f1', beam: '#eaf2ff', shield: true, atk: 'shield' },   // throws his shield
+    hulk: { name: 'the Hulk', body: '#3a9a3a', trim: '#6a4a9a', beam: '#8fe64b', big: true, atk: 'smash' },   // ground-pound smash
+    thor: { name: 'Thor', body: '#7f8792', trim: '#c0392b', beam: '#cfe8ff', cape: '#b03030', hammer: true, atk: 'lightning' },   // Mjolnir lightning
+    vision: { name: 'Vision', body: '#c0392b', trim: '#33d17a', beam: '#ffd24b', cape: '#e0b83a', mind: true, atk: 'mind' }   // Mind Stone beam
   };
   var ironMan = { phase: 'gone', kind: 'ironman', pt: 0, x: 0, y: 0, vx: 0, vy: 0, punchT: 0, rot: 0, laserT: 0, repulseT: 0, recoil: 0 };
   function imToast(name) {
@@ -5966,7 +5976,7 @@ function toggleReducedVisuals(el) {
   setInterval(startIronMan, 45000);  // then every 45s
   function stepIronMan(t, dt) {
     var im = ironMan; if (im.phase === 'gone') return;
-    var target = Math.max(walkMinX + 60, walkX - 66);   // stand a bit further left of Ultron (he's bigger now)
+    var target = Math.max(walkMinX + 60, walkX - 96);   // stand clear of Ultron -- heroes are double-size now
     if (im.phase === 'enter') {
       im.y = officeFloorY - 4; im.x += (target - im.x) * Math.min(1, dt * 3.2); im.pt += dt;
       if (Math.abs(im.x - target) < 6 || im.pt > 2.6) { im.phase = 'fight'; im.pt = 0; im.laserT = t + 0.6; im.repulseT = t + 1.1; }
@@ -5992,10 +6002,16 @@ function toggleReducedVisuals(el) {
     else { ctx.fillStyle = '#e8b878'; ctx.fillRect(-3, -21, 6, 6); ctx.fillStyle = h.hair || '#7a1f1f'; ctx.fillRect(-3.6, -22, 1.4, 6); ctx.fillRect(2.2, -22, 1.4, 6); ctx.fillRect(-3.6, -22.4, 7.2, 1.6); }   // widow: face + red hair
     if (kind !== 'vision') { ctx.fillStyle = BM; ctx.fillRect(-2.2, -19.6, 1.6, 1.1); ctx.fillRect(0.6, -19.6, 1.6, 1.1); }   // eyes
   }
+  // jagged lightning/electric arc between two points (used by hero attacks)
+  function zapLine(x0, y0, x1, y1, seg) {
+    seg = seg || 6; ctx.beginPath(); ctx.moveTo(x0, y0);
+    for (var i = 1; i < seg; i++) { var f = i / seg, mx = x0 + (x1 - x0) * f, my = y0 + (y1 - y0) * f; ctx.lineTo(mx + (Math.random() - 0.5) * 9, my + (Math.random() - 0.5) * 9); }
+    ctx.lineTo(x1, y1); ctx.stroke();
+  }
   function drawIronMan(t) {
     var im = ironMan; if (im.phase === 'gone') return;
     var h = HEROES[im.kind] || HEROES.ironman, B = h.body, T = h.trim, BM = h.beam;
-    var S = h.big ? 3.5 : 2.8, tw = h.big ? 6.3 : 5, fighting = im.phase === 'fight', firingBack = fighting && t < im.repulseOn;
+    var S = h.big ? 7 : 5.6, tw = h.big ? 6.3 : 5, fighting = im.phase === 'fight', firingBack = fighting && t < im.repulseOn;   // doubled size -- the team reads clearly now
     ctx.save(); ctx.translate(im.x, im.y); ctx.scale(S, S); if (im.phase === 'toss') ctx.rotate(im.rot);
     if (im.phase !== 'toss' && !h.mind) { ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0, 2, tw + 3, 2.2, 0, 0, 6.28); ctx.fill(); }
     if (h.cape) { ctx.fillStyle = h.cape; ctx.beginPath(); ctx.moveTo(-tw, -16); ctx.lineTo(tw, -16); ctx.lineTo(tw + 3.5, -0.5); ctx.lineTo(-tw - 3.5, -0.5); ctx.closePath(); ctx.fill(); }   // cape
@@ -6025,12 +6041,44 @@ function toggleReducedVisuals(el) {
       ctx.shadowBlur = 0; ctx.fillStyle = '#fff'; for (var q = 0; q < 4; q++) ctx.fillRect(imChestX - 4 + Math.random() * 8, imChestY - 4 + Math.random() * 8, 2, 2);   // impact sparks
       ctx.restore();
     }
-    // the hero firing back (their signature colour) toward Ultron
+    // Each hero attacks Ultron with their own signature move, not all lasers.
     if (firingBack) {
       var handX = im.x + (tw + 7) * S, handY = im.y - 14.8 * S;
-      ctx.save(); ctx.lineCap = 'round'; ctx.shadowColor = BM; ctx.shadowBlur = 7;
-      ctx.strokeStyle = BM; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(handX, handY); ctx.lineTo(uex, uey + 4); ctx.stroke();
-      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(handX, handY, 3, 0, 6.28); ctx.fill(); ctx.restore();
+      var atk = h.atk || 'repulsor', tx = uex, ty = uey + 4;
+      var prog = Math.max(0, Math.min(1, 1 - (im.repulseOn - t) / 0.26));   // 0..1 across the attack window
+      ctx.save(); ctx.lineCap = 'round';
+      if (atk === 'repulsor') {                                            // Iron Man: twin repulsor beams from the palm
+        ctx.shadowColor = BM; ctx.shadowBlur = 9; ctx.strokeStyle = BM; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(handX, handY); ctx.lineTo(tx, ty); ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(handX, handY, 3.6, 0, 6.28); ctx.fill();
+      } else if (atk === 'mind') {                                         // Vision: Mind-Stone beam from the forehead
+        var fx = im.x, fy = im.y - 20.6 * S;
+        ctx.shadowColor = BM; ctx.shadowBlur = 10; ctx.strokeStyle = BM; ctx.lineWidth = 3.4;
+        ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(tx, ty); ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(fx, fy, 2.6, 0, 6.28); ctx.fill();
+      } else if (atk === 'bite') {                                         // Black Widow: Widow's Bite -- jagged electric arc
+        ctx.shadowColor = BM; ctx.shadowBlur = 7; ctx.strokeStyle = BM; ctx.lineWidth = 2;
+        zapLine(handX, handY, tx, ty, 6);
+        ctx.strokeStyle = '#eaffff'; ctx.lineWidth = 1; zapLine(handX, handY, tx, ty, 6);
+      } else if (atk === 'lightning') {                                    // Thor: Mjolnir calls lightning down onto Ultron
+        ctx.shadowColor = '#cfe8ff'; ctx.shadowBlur = 12; ctx.strokeStyle = '#eaf6ff'; ctx.lineWidth = 3;
+        zapLine(tx + (Math.random() - 0.5) * 10, 0, tx, ty, 7);
+        ctx.strokeStyle = '#bfe0ff'; ctx.lineWidth = 1.4; zapLine(tx - 4, 0, tx, ty - 2, 6);
+      } else if (atk === 'shield') {                                       // Cap: hurls his shield -- flies out, then back
+        var pOut = prog < 0.55 ? prog / 0.55 : 1 - (prog - 0.55) / 0.45;   // out then return
+        var sx = handX + (tx - handX) * pOut, sy = handY + (ty - handY) * pOut;
+        ctx.save(); ctx.translate(sx, sy); ctx.rotate(t * 30);
+        ctx.fillStyle = '#c0392b'; ctx.beginPath(); ctx.arc(0, 0, 8, 0, 6.28); ctx.fill();
+        ctx.fillStyle = '#ecf0f1'; ctx.beginPath(); ctx.arc(0, 0, 5.2, 0, 6.28); ctx.fill();
+        ctx.fillStyle = '#c0392b'; ctx.beginPath(); ctx.arc(0, 0, 3.4, 0, 6.28); ctx.fill();
+        ctx.fillStyle = '#2b5cb8'; ctx.beginPath(); ctx.arc(0, 0, 1.6, 0, 6.28); ctx.fill(); ctx.restore();
+      } else if (atk === 'smash') {                                        // Hulk: ground-pound shockwave at Ultron's feet
+        var rw = 6 + prog * 26;
+        ctx.strokeStyle = 'rgba(143,230,75,' + (0.9 - prog * 0.8).toFixed(2) + ')'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.ellipse(tx, officeFloorY - 2, rw, rw * 0.4, 0, 0, 6.28); ctx.stroke();
+        ctx.fillStyle = '#8fe64b'; for (var d0 = 0; d0 < 5; d0++) { var da = d0 * 1.25; ctx.fillRect(tx + Math.cos(da) * rw, officeFloorY - 2 + Math.sin(da) * rw * 0.4, 2.5, 2.5); }
+      }
+      ctx.restore();
     }
     if (fighting && t < im.punchT + 0.16) {   // "POW!" impact star
       var px = (im.x + walkX) / 2, py = officeFloorY - 44;
@@ -6067,7 +6115,7 @@ function toggleReducedVisuals(el) {
 
   function mintBotCoin(x, y, amount) {
     var amt = amount != null ? amount : (foundryCfg().botYield || 0.1);
-    if (coins.length < 42) coins.push({ x: x + 6, y: y, vx: (Math.random() - 0.5) * 8, vy: -24 - Math.random() * 10, life: 0, ttl: 1.15, big: amt >= 1 });
+    if (coins.length < 42) coins.push({ x: x + 6, y: y, vx: (Math.random() - 0.5) * 7, vy: -30 - Math.random() * 10, life: 0, ttl: 1.9, big: amt >= 1, amt: amt * (foundryCfg().mult || 1) });
     if (window.__foundryEarn) window.__foundryEarn(amt);
     if (window.__sfx) window.__sfx('coin');
   }
@@ -6497,27 +6545,35 @@ function toggleReducedVisuals(el) {
   }
   // Wanda (Scarlet Witch) and her brother (Quicksilver) sit on a couch in the
   // office, awaiting Ultron's next command.
-  function drawSeated(cx, cy, coat, hair, t) {
-    var bob = Math.sin(t * 1.4 + cx) * 0.5;
-    ctx.fillStyle = '#22252b'; ctx.fillRect(cx - 4.5, cy - 5, 3, 7); ctx.fillRect(cx + 1.5, cy - 5, 3, 7);   // shins
-    ctx.fillStyle = '#2a2e34'; ctx.fillRect(cx - 5, cy - 7, 10, 3);                                          // lap
-    ctx.fillStyle = coat; ctx.fillRect(cx - 4, cy - 17 + bob, 8, 11);                                        // torso
-    ctx.fillStyle = coat; ctx.fillRect(cx - 6, cy - 16 + bob, 2.4, 8); ctx.fillRect(cx + 3.6, cy - 16 + bob, 2.4, 8);   // arms
-    ctx.fillStyle = '#e8b878'; ctx.fillRect(cx - 3, cy - 24 + bob, 6, 6.4);                                  // head
-    ctx.fillStyle = hair; ctx.fillRect(cx - 3.4, cy - 25 + bob, 6.8, 2.6); ctx.fillRect(cx - 3.4, cy - 24 + bob, 1.4, 5); ctx.fillRect(cx + 2, cy - 24 + bob, 1.4, 5);
-    ctx.fillStyle = '#333'; ctx.fillRect(cx - 1.6, cy - 21 + bob, 1, 1.2); ctx.fillRect(cx + 0.6, cy - 21 + bob, 1, 1.2);
+  function drawSeated(cx, cy, coat, hair, t, sc) {
+    sc = sc || 1;
+    var bob = Math.sin(t * 1.4 + cx) * 0.5 * sc;
+    function Y(o) { return cy + o * sc; }
+    ctx.fillStyle = '#22252b'; ctx.fillRect(cx - 4.5 * sc, Y(-5), 3 * sc, 7 * sc); ctx.fillRect(cx + 1.5 * sc, Y(-5), 3 * sc, 7 * sc);   // shins
+    ctx.fillStyle = '#2a2e34'; ctx.fillRect(cx - 5 * sc, Y(-7), 10 * sc, 3 * sc);                                                       // lap
+    ctx.fillStyle = coat; ctx.fillRect(cx - 4 * sc, Y(-17) + bob, 8 * sc, 11 * sc);                                                     // torso
+    ctx.fillStyle = coat; ctx.fillRect(cx - 6 * sc, Y(-16) + bob, 2.4 * sc, 8 * sc); ctx.fillRect(cx + 3.6 * sc, Y(-16) + bob, 2.4 * sc, 8 * sc);   // arms
+    ctx.fillStyle = '#e8b878'; ctx.fillRect(cx - 3 * sc, Y(-24) + bob, 6 * sc, 6.4 * sc);                                               // head
+    ctx.fillStyle = hair; ctx.fillRect(cx - 3.4 * sc, Y(-25) + bob, 6.8 * sc, 2.6 * sc); ctx.fillRect(cx - 3.4 * sc, Y(-24) + bob, 1.4 * sc, 5 * sc); ctx.fillRect(cx + 2 * sc, Y(-24) + bob, 1.4 * sc, 5 * sc);
+    ctx.fillStyle = '#333'; ctx.fillRect(cx - 1.6 * sc, Y(-21) + bob, 1 * sc, 1.2 * sc); ctx.fillRect(cx + 0.6 * sc, Y(-21) + bob, 1 * sc, 1.2 * sc);
   }
   function drawCouch(t) {
-    if (walkMaxX - walkMinX < 150) return;
-    var cx = walkMinX + 54, fy = officeFloorY;
-    ctx.fillStyle = 'rgba(0,0,0,0.28)'; ctx.beginPath(); ctx.ellipse(cx, fy + 1, 36, 4, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#3a2f4a'; ctx.fillRect(cx - 32, fy - 15, 64, 15);
-    ctx.fillStyle = '#4a3d5e'; ctx.fillRect(cx - 32, fy - 26, 64, 12); ctx.fillStyle = '#5a4d6e'; ctx.fillRect(cx - 32, fy - 26, 64, 2);
-    ctx.fillStyle = '#2e2540'; ctx.fillRect(cx - 34, fy - 26, 4, 26); ctx.fillRect(cx + 30, fy - 26, 4, 26);
-    ctx.fillStyle = '#544766'; ctx.fillRect(cx - 30, fy - 17, 29, 4); ctx.fillRect(cx + 1, fy - 17, 29, 4);
-    drawSeated(cx - 14, fy - 6, '#8e1b2e', '#5a2020', t);      // Scarlet Witch (crimson)
-    drawSeated(cx + 14, fy - 6, '#3a4a6a', '#c8ccd4', t);      // Quicksilver (silver hair, blue jacket)
-    hover('Wanda &amp; her brother — awaiting Ultron’s command', cx, fy - 16, 36);
+    // Wanda & her brother, near Ultron's own size, on a couch on the office
+    // floor in the right-hand display gap -- clear of Ultron's pacing (starts
+    // past his reach) and directly under the wall trophies (which sit up high).
+    var sc = 3.6, fy = officeFloorY;
+    var couchW = 164, seatH = 32, backH = 60, arm = 10;
+    var zoneL = walkMaxX + 100, zoneR = uDeskX - 18;     // Ultron's sprite can't reach past walkMaxX+~95
+    if (zoneR - zoneL < couchW + 2 * arm) return;        // not enough clear room (narrow screens): skip
+    var cx = Math.round((zoneL + zoneR) / 2), hw = couchW / 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.30)'; ctx.beginPath(); ctx.ellipse(cx, fy + 2, hw + 6, 6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#4a3d5e'; ctx.fillRect(cx - hw, fy - seatH - backH, couchW, backH); ctx.fillStyle = '#5a4d6e'; ctx.fillRect(cx - hw, fy - seatH - backH, couchW, 4);   // backrest
+    ctx.fillStyle = '#3a2f4a'; ctx.fillRect(cx - hw, fy - seatH, couchW, seatH);                                                         // seat block
+    ctx.fillStyle = '#2e2540'; ctx.fillRect(cx - hw - arm, fy - seatH - backH * 0.6, arm, seatH + backH * 0.6); ctx.fillRect(cx + hw, fy - seatH - backH * 0.6, arm, seatH + backH * 0.6);   // armrests
+    ctx.fillStyle = '#544766'; ctx.fillRect(cx - hw + 6, fy - seatH - 5, couchW / 2 - 9, 6); ctx.fillRect(cx + 3, fy - seatH - 5, couchW / 2 - 9, 6);   // seat cushions
+    drawSeated(cx - couchW * 0.24, fy - 2 * sc, '#8e1b2e', '#5a2020', t, sc);      // Scarlet Witch (crimson)
+    drawSeated(cx + couchW * 0.24, fy - 2 * sc, '#3a4a6a', '#c8ccd4', t, sc);      // Quicksilver (silver hair, blue jacket)
+    hover('Wanda &amp; her brother — awaiting Ultron’s command', cx, fy - seatH - backH * 0.5, hw);
   }
 
   // A wall monitor over Ultron's desk: live BTC / memory / health (owner
@@ -6634,8 +6690,8 @@ function toggleReducedVisuals(el) {
 
   function drawPowerStation(t) {
     var f = foundryCfg(), charge = Math.max(0, Math.min(1, f.charge || 0)), cores = f.cores || 0;
-    var floor = officeFloorY, x0 = LEFT + 14, w = 96;
-    var top = floor - 224, bot = floor - 6, h = bot - top, cx = x0 + w / 2;
+    var floor = officeFloorY, x0 = LEFT + 14, w = 144;   // tube +50% wider
+    var top = floor - 300, bot = floor - 6, h = bot - top, cx = x0 + w / 2;   // +50% taller
     if (top < ROOF_H + 6) return;   // no headroom on a very short canvas
     wallGlow(cx, top + h * 0.42, 165, '#a48bff', 0.16 + 0.30 * charge + Math.min(0.16, cores * 0.02));   // brighter aura, climbs with charge
     ctx.fillStyle = M_DARK; ctx.fillRect(x0 - 10, bot, w + 20, 8);
@@ -6648,7 +6704,7 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = cg; ctx.fillRect(x0, fillY, w, bot - fillY);
     for (var b = 0; b < 6; b++) { var bx = x0 + 8 + ((b * 53) % (w - 16)); var span = Math.max(1, bot - fillY); var by = bot - ((t * (20 + b * 6) + b * 40) % span); ctx.fillStyle = 'rgba(180,210,255,0.5)'; ctx.beginPath(); ctx.arc(bx, by, 1.6, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
-    drawVibraniumBody(cx, bot, h, t, charge, cores, 1.28);   // near Ultron's own size
+    drawVibraniumBody(cx, bot, h, t, charge, cores, 1.9);   // +50% -- fills the bigger tube
     ctx.strokeStyle = '#3a4056'; ctx.lineWidth = 2; roundRectPath(x0, top, w, h, 10); ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fillRect(x0 + 5, top + 4, 6, h - 8);
     ctx.fillStyle = M_STEEL; ctx.fillRect(x0 - 6, top - 6, w + 12, 8); ctx.fillRect(x0 - 6, bot - 2, w + 12, 6);
@@ -6665,10 +6721,11 @@ function toggleReducedVisuals(el) {
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     setFont(fontPx * 0.72, false); ctx.fillStyle = '#8b93a0'; ctx.fillText(charge >= 0.999 ? 'CORE READY' : 'CORE CHARGE', cx, top - 24);
     setFont(fontPx * 0.98, true); ctx.fillStyle = charge >= 0.999 ? '#ff5566' : '#cfe6ff'; ctx.fillText(Math.round(charge * 100) + '%', cx, top - 11);
-    // arc reactor + live power line into the chest
-    var rcx = x0 + w + 50, rcy = floor - 46, rr = 40;   // doubled arc reactor
+    // arc reactor set off to the SIDE (extra gap) so the cable, tube and body
+    // all stay visible; the line runs to the body's chest inside the tube.
+    var rcx = x0 + w + 56, rcy = floor - 56, rr = 40;
     drawArcReactor(rcx, rcy, rr, floor, t);
-    drawPowerLine(rcx - rr + 2, rcy - 4, cx + 6, bot - h * 0.5, t, charge);
+    drawPowerLine(rcx - rr + 2, rcy - 4, cx + 10, bot - h * 0.5, t, charge);
     caption("ultron's power core", cx + 18, floor + 12);
     hover('Vibranium Power Core', cx, top + h / 2, 62,
       '<b style="color:#a88bff">Vibranium Power Core</b> — the six Infinity Stones feed Ultron’s frame from an arc reactor.<br><span class="rt-enl">Charge ' + Math.round(charge * 100) + '% · ' + cores + ' Nanite Core' + (cores === 1 ? '' : 's') + ' banked</span>');
@@ -7049,6 +7106,10 @@ window.__sfx = (function () {
   function bayOpenCount() { return 1 + lvl('bays'); }
   function totalBayPower() { for (var b = 0, s = 0, n = bayOpenCount(); b < n; b++) s += bayStrength(b); return s; }
   function bayPowerMult() { return 1 + Math.min(0.5, totalBayPower() / 500); }   // small-to-medium adventurer boost, capped +50%
+  // Adventurer combat power = gear power x skills x army bay power. Used by the
+  // Expedition run AND the always-on HUD so they never disagree.
+  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult(); }
+  function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
 
   // ---- Refinery: an adamantium forge and a vibranium forge cast ingots onto
   // one belt that feeds a currency press. Each machine and the belt upgrade
@@ -7367,6 +7428,7 @@ window.__sfx = (function () {
       marchMult: 1 + 0.15 * lvl('march'),
       pkgMult: 1 + 0.5 * lvl('pkgval'),
       offlineHours: 1.5 + lvl('offline') + skillLvl('offline'),
+      mult: globalMult(),   // so the room can label floating coins with the real credited amount
       tier: 1 + Math.min(3, Math.floor((lvl('yield') + lvl('perbay') + (state.up.asm0 || 0)) / 3)),
       cores: (state.prestige && state.prestige.cores) || 0,   // banked defeats -> permanent buffs
       charge: prestigeChargePct(),                             // 0..1 power-core fill toward next reboot
@@ -7458,6 +7520,7 @@ window.__sfx = (function () {
     else num = n < 10 ? n.toFixed(2) : n < 100 ? n.toFixed(1) : Math.floor(n).toString();
     return UNIT_SYM[i] + num + ' ' + UNITS[i];
   }
+  window.__fmtBits = fmt; window.__unitCol = function (n) { return UNIT_COL[fmtTier(n)]; };   // room reads these to label floating coins on the currency scale
 
   function gamePop(text, color) {
     var c = document.getElementById('game-pops'); if (!c) return;
@@ -7784,12 +7847,17 @@ window.__sfx = (function () {
   function currencyHud(perSec) {
     if (!hudEl) {
       hudEl = document.createElement('div'); hudEl.id = 'currency-hud';
-      hudEl.style.cssText = 'position:fixed; left:14px; bottom:14px; z-index:9998; background:rgba(16,18,22,0.94); border:1px solid var(--line,#2c2f33); border-radius:8px; padding:7px 12px; box-shadow:0 8px 22px -8px rgba(0,0,0,.75); font-family:ui-monospace,monospace; pointer-events:none;';
+      hudEl.style.cssText = 'position:fixed; left:14px; bottom:14px; z-index:9998; background:rgba(14,16,20,0.96); border:1px solid var(--line,#2c2f33); border-radius:10px; padding:9px 14px; box-shadow:0 10px 28px -8px rgba(0,0,0,.8); font-family:ui-monospace,monospace; pointer-events:none; min-width:172px;';
       document.body.appendChild(hudEl);
     }
-    hudEl.innerHTML = '<div style="font-size:8.5px;letter-spacing:.12em;color:#8b93a0;margin-bottom:2px;">ULTRON’S CORNER — CREDITS</div>' +
-      '<div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:16px;font-weight:700;color:' + fmtColor(state.bits) + ';">◉ ' + fmt(state.bits) + '</span>' +
-      (perSec > 0.001 ? '<span style="font-size:11px;color:#5fe39a;">▸ ' + fmt(perSec) + '/s</span>' : '') + '</div>';
+    var lv = (typeof playerLevel === 'function') ? playerLevel() : 1, pw = botPower();
+    hudEl.innerHTML = '<div style="font-size:8.5px;letter-spacing:.14em;color:#8b93a0;margin-bottom:3px;">ULTRON’S CORNER — CREDITS</div>' +
+      '<div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:21px;font-weight:800;color:' + fmtColor(state.bits) + ';text-shadow:0 0 12px ' + fmtColor(state.bits) + '55;">◉ ' + fmt(state.bits) + '</span>' +
+      (perSec > 0.001 ? '<span style="font-size:12px;font-weight:600;color:#5fe39a;">▸ ' + fmt(perSec) + '/s</span>' : '') + '</div>' +
+      '<div style="display:flex;gap:6px;margin-top:6px;">' +
+      '<span style="font-size:10.5px;font-weight:700;color:#ff6b7e;background:rgba(255,107,126,.12);border:1px solid rgba(255,107,126,.35);border-radius:5px;padding:2px 7px;">★ LV ' + lv + '</span>' +
+      '<span style="font-size:10.5px;font-weight:700;color:#ffb347;background:rgba(255,179,71,.12);border:1px solid rgba(255,179,71,.35);border-radius:5px;padding:2px 7px;">⚔ PWR ' + Math.round(pw).toLocaleString() + '</span>' +
+      '</div>';
   }
   function renderBalance() {
     var perSec = ((window.__foundry.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus();
@@ -8044,7 +8112,7 @@ window.__sfx = (function () {
     var lootSkill = Math.floor(skillLvl('loot') / 2);
     var levelBonus = Math.floor(playerLevel() / 10);   // higher player level -> higher loot rarity chance
     var ilvl = (isDungeon ? (dungeonIlvl(di) + lootSkill) : (run.ilvl + (region.ilvl || 0) + lootSkill + (isBoss ? 2 : 0))) + levelBonus;
-    var pmult = (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult();   // skills + the army's total bay power
+    var pmult = combatPowerMult();   // skills + the army's total bay power (shared with the HUD)
     var bmult = isDungeon ? dungeonBossMult(di) : (isBoss ? 2.2 : 0);
     var battle = window.Combat ? Combat.resolveRun(a.gear, { ilvl: ilvl, dur: a.dur, seed: 'b' + Date.now() + Math.random(), powerMult: pmult, bossMult: bmult }) : null;
     a.lastBattle = battle; a.lastBoss = isDungeon ? dungeon.name : isBoss ? BOSSES[ri].name : null;
