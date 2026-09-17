@@ -706,6 +706,42 @@
   .prestige-btn.can{ border-color:rgba(122,77,255,.6); color:#c9b6ff; }
   .prestige-btn.can:hover{ background:rgba(122,77,255,.14); }
   .prestige-btn:disabled{ opacity:.55; cursor:not-allowed; }
+  /* prestige-upgrade tree */
+  .prestige-up{ margin-top:10px; padding:11px 13px; border:1px solid rgba(168,139,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(168,139,255,.06),transparent); }
+  .pu-head{ font-family:var(--font-mono); font-size:11.5px; color:#c9b6ff; margin-bottom:9px; }
+  .pu-head b{ font-size:14px; color:#a88bff; }
+  .pu-hint{ color:var(--text-faint); }
+  .pu-cat{ margin-top:8px; }
+  .pu-cat-h{ font-family:var(--font-display); font-weight:700; font-size:11px; color:#8b93a0; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+  .pu-row{ display:flex; align-items:center; gap:8px; width:100%; text-align:left; padding:5px 9px; margin-bottom:4px; border:1px solid var(--line); border-radius:6px; background:var(--void); color:var(--text-dim); cursor:default; }
+  .pu-row.can{ cursor:pointer; border-color:rgba(168,139,255,.55); color:var(--text); }
+  .pu-row.can:hover{ background:rgba(168,139,255,.08); }
+  .pu-row:disabled{ opacity:.5; }
+  .pu-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; min-width:118px; }
+  .pu-dsc{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-right:auto; }
+  .pu-lv{ font-family:var(--font-mono); font-size:10px; color:#a88bff; }
+  .pu-c{ font-family:var(--font-mono); font-size:10.5px; color:#c9b6ff; min-width:44px; text-align:right; }
+  /* Genesis Cannon endgame */
+  .genesis{ margin-top:10px; padding:11px 13px; border:1px solid rgba(255,43,61,.45); border-radius:8px; background:linear-gradient(180deg,rgba(255,43,61,.07),rgba(122,77,255,.04)); }
+  .gn-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#ff5a6e; letter-spacing:.03em; }
+  .gn-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); letter-spacing:0; }
+  .gn-prog{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); margin:5px 0 7px; }
+  .gn-prog b{ color:#ff8098; }
+  .gn-stocks{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+  .gn-stock{ font-family:var(--font-mono); font-size:10px; color:#9db4ff; background:rgba(90,120,255,.1); border:1px solid rgba(90,120,255,.3); border-radius:5px; padding:2px 7px; }
+  .gn-row{ display:flex; align-items:center; gap:8px; padding:5px 9px; margin-bottom:4px; border:1px solid var(--line); border-radius:6px; background:var(--void); }
+  .gn-row.built{ border-color:rgba(51,209,122,.4); background:rgba(51,209,122,.06); }
+  .gn-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; min-width:150px; color:var(--text); }
+  .gn-needs{ display:flex; flex-wrap:wrap; gap:5px; margin-right:auto; }
+  .gn-need{ font-family:var(--font-mono); font-size:9.5px; color:#ff8098; }
+  .gn-need.ok{ color:#5fe39a; }
+  .gn-build{ font-family:var(--font-display); font-weight:700; font-size:10.5px; padding:4px 10px; border-radius:5px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; }
+  .gn-build.can{ cursor:pointer; border-color:rgba(255,90,110,.6); color:#ff8098; }
+  .gn-build.can:hover{ background:rgba(255,90,110,.12); }
+  .gn-build:disabled{ opacity:.5; }
+  .gn-blt{ font-family:var(--font-mono); font-size:10px; color:#5fe39a; }
+  .gn-fire{ display:block; width:100%; margin-top:8px; font-family:var(--font-display); font-weight:800; font-size:13px; letter-spacing:.05em; padding:10px; border-radius:7px; border:1px solid #ff2b3d; background:linear-gradient(180deg,rgba(255,43,61,.25),rgba(122,77,255,.15)); color:#ffd6d6; cursor:pointer; animation:gnpulse 1.4s ease-in-out infinite; }
+  @keyframes gnpulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,43,61,.5); } 50%{ box-shadow:0 0 18px 2px rgba(255,43,61,.55); } }
   .codex-wrap{ border:1px solid var(--line); border-radius:8px; background:var(--panel-raised); }
   .codex-wrap>summary{ cursor:pointer; padding:9px 12px; font-family:var(--font-display); font-weight:700; font-size:12.5px; color:var(--text-dim); list-style:none; }
   .codex-wrap>summary::-webkit-details-marker{ display:none; }
@@ -1631,6 +1667,8 @@
             <div class="foundry-bays-label">Production bays <span class="fbl-sub">— each floor's own crew, weapons &amp; armor</span></div>
             <div class="foundry-bays" id="foundry-bays"></div>
             <div class="prestige" id="prestige"></div>
+            <div class="prestige-up" id="prestige-up"></div>
+            <div class="genesis" id="genesis"></div>
             <div class="progression" id="progression"></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
           </div>
@@ -7227,7 +7265,7 @@ window.__sfx = (function () {
   function bayPowerMult() { return 1 + Math.min(0.5, totalBayPower() / 500); }   // small-to-medium adventurer boost, capped +50%
   // Adventurer combat power = gear power x skills x army bay power. Used by the
   // Expedition run AND the always-on HUD so they never disagree.
-  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult(); }
+  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult(); }
   function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
 
   // ---- Refinery: an adamantium forge and a vibranium forge cast ingots onto
@@ -7346,7 +7384,29 @@ window.__sfx = (function () {
   // exponential cost/enemy curve -- a linear +10%/core would fall behind fast
   // and make prestige pointless. Core COUNT stays sqrt(lifetime) (see below).
   function coreMult() { return Math.pow(1.08, (state.prestige && state.prestige.cores) || 0); }
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult(); }
+  // ---- Prestige upgrade tree: each reboot mints POINTS (from the round's take)
+  // that buy permanent, larger buffs across Character / Economy / Production. ----
+  function pUp(id) { return (state.prestige && state.prestige.up && state.prestige.up[id]) || 0; }
+  var PRESTIGE_UPGRADES = [
+    { id: 'ppow', cat: 'Character', name: 'Combat Matrix', max: 100, base: 1, grow: 1.15, desc: function (l) { return '+' + (4 * l) + '% adventurer power'; } },
+    { id: 'php', cat: 'Character', name: 'Reinforced Chassis', max: 100, base: 1, grow: 1.15, desc: function (l) { return '+' + (5 * l) + '% effective robot HP'; } },
+    { id: 'pcrit', cat: 'Character', name: 'Targeting Core', max: 60, base: 2, grow: 1.18, desc: function (l) { return '+' + (2 * l) + '% strike power'; } },
+    { id: 'pinc', cat: 'Economy', name: 'Market Dominance', max: 100, base: 1, grow: 1.16, desc: function (l) { return '×' + Math.pow(1.05, l).toFixed(2) + ' all income'; } },
+    { id: 'ploot', cat: 'Economy', name: 'Loot Magnet', max: 40, base: 3, grow: 1.2, desc: function (l) { return '+' + l + ' loot item level'; } },
+    { id: 'poff', cat: 'Economy', name: 'Deep Storage', max: 40, base: 2, grow: 1.18, desc: function (l) { return '+' + (2 * l) + 'h offline capacity'; } },
+    { id: 'pprod', cat: 'Production', name: 'Overdrive', max: 100, base: 1, grow: 1.16, desc: function (l) { return '×' + Math.pow(1.05, l).toFixed(2) + ' production'; } },
+    { id: 'pbay', cat: 'Production', name: 'Army Command', max: 80, base: 2, grow: 1.17, desc: function (l) { return '+' + (3 * l) + '% total bay power'; } },
+    { id: 'ppass', cat: 'Production', name: 'Reactor Bank', max: 80, base: 2, grow: 1.17, desc: function (l) { return '×' + Math.pow(1.05, l).toFixed(2) + ' passive income'; } },
+  ];
+  function pUpCost(u) { return Math.ceil(u.base * Math.pow(u.grow, pUp(u.id))); }
+  function prestigeCharMult() { return (1 + 0.04 * pUp('ppow')) * (1 + 0.05 * pUp('php')) * (1 + 0.02 * pUp('pcrit')); }   // adventurer power
+  function prestigeEcoMult() { return Math.pow(1.05, pUp('pinc')); }
+  function prestigeProdMult() { return Math.pow(1.05, pUp('pprod')) * (1 + 0.03 * pUp('pbay')); }
+  function prestigePassMult() { return Math.pow(1.05, pUp('ppass')); }
+  // Each time the Genesis Cannon fires and remakes the universe, EVERYTHING is
+  // permanently multiplied -- the ultimate reward for the ultimate grind.
+  function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult(); }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -7365,7 +7425,7 @@ window.__sfx = (function () {
   function pct(l, per) { return 1 + (per / 100) * skillLvl(l); }       // additive %-boost skill
   function xmul(l, step) { return Math.pow(1 + step, skillLvl(l)); }   // compounding × skill
   function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03); }
-  function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03); }
+  function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03) * prestigeProdMult(); }
   function prodQualMult() { return pct('prodqual', 5) * xmul('prodqualm', 0.025); }
   function incomeMult() { return pct('incboost', 4) * xmul('incmult', 0.03); }
   var SKILLS = [
@@ -7503,7 +7563,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -7511,6 +7571,11 @@ window.__sfx = (function () {
   if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
   if (!state.ref) state.ref = { unlA: false, unlV: false, unlP: false, up: {} };
   if (!state.prestige) state.prestige = { cores: 0 };
+  if (typeof state.prestige.points !== 'number') state.prestige.points = 0;   // prestige upgrade currency
+  if (!state.prestige.up) state.prestige.up = {};
+  if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;   // round baseline for point payouts
+  if (!state.comp) state.comp = { chip: 0, cpu: 0, gpu: 0, ram: 0 };   // universe-weapon components from loot salvage
+  if (!state.genesis) state.genesis = { built: {}, fired: 0 };          // Genesis Cannon build progress
   if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
@@ -7543,10 +7608,10 @@ window.__sfx = (function () {
       perBay: 2 + lvl('perbay'),
       bays: bays,
       botYield: (lvl('yield') === 0 ? 0.1 : lvl('yield')) * prodQualMult(),   // Precision Tooling / Master Craftsmanship skills
-      passive: 0.5 * lvl('collector'),
+      passive: 0.5 * lvl('collector') * prestigePassMult(),   // Reactor Bank prestige upgrade
       marchMult: 1 + 0.15 * lvl('march'),
       pkgMult: 1 + 0.5 * lvl('pkgval'),
-      offlineHours: 1.5 + lvl('offline') + skillLvl('offline'),
+      offlineHours: 1.5 + lvl('offline') + skillLvl('offline') + 2 * pUp('poff'),   // Deep Storage prestige upgrade
       mult: globalMult(),   // so the room can label floating coins with the real credited amount
       tier: 1 + Math.min(3, Math.floor((lvl('yield') + lvl('perbay') + (state.up.asm0 || 0)) / 3)),
       cores: (state.prestige && state.prestige.cores) || 0,   // banked defeats -> permanent buffs
@@ -7853,10 +7918,116 @@ window.__sfx = (function () {
       rebootArmed = false; clearTimeout(rebootTimer); doReboot();
     });
   }
+  var prestigeUpEl = document.getElementById('prestige-up');
+  function renderPrestigeUpgrades() {
+    if (!prestigeUpEl) return;
+    var pts = (state.prestige && state.prestige.points) || 0;
+    var cats = ['Character', 'Economy', 'Production'];
+    var body = cats.map(function (cat) {
+      var rows = PRESTIGE_UPGRADES.filter(function (u) { return u.cat === cat; }).map(function (u) {
+        var l = pUp(u.id), maxed = l >= u.max, c = pUpCost(u), can = pts >= c && !maxed;
+        return '<button type="button" class="pu-row' + (can ? ' can' : '') + '" data-pu="' + u.id + '"' + (maxed ? ' disabled' : '') + '>' +
+          '<span class="pu-nm">' + u.name + '</span><span class="pu-dsc">' + u.desc(l) + '</span>' +
+          '<span class="pu-lv">Lv ' + l + '</span><span class="pu-c">' + (maxed ? 'MAX' : '◈' + c) + '</span></button>';
+      }).join('');
+      return '<div class="pu-cat"><div class="pu-cat-h">' + cat + '</div>' + rows + '</div>';
+    }).join('');
+    prestigeUpEl.innerHTML = '<div class="pu-head">◈ Prestige Points <b>' + pts + '</b> <span class="pu-hint">— minted each reboot from the round’s take; spend on permanent power</span></div>' + body;
+    prestigeUpEl.querySelectorAll('[data-pu]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var u = PRESTIGE_UPGRADES.filter(function (x) { return x.id === btn.dataset.pu; })[0]; if (!u) return;
+        var c = pUpCost(u); if (pUp(u.id) >= u.max || (state.prestige.points || 0) < c) return;
+        state.prestige.points -= c; state.prestige.up[u.id] = pUp(u.id) + 1;
+        if (window.__sfx) window.__sfx('upgrade'); gamePop('▲ ' + u.name + ' Lv ' + pUp(u.id), '#a88bff');
+        publish(); dirty = true; save();
+        renderPrestigeUpgrades(); renderBalance(); renderBays(); renderAdventure();
+      });
+    });
+  }
+  // ---- The Genesis Cannon: the true endgame. A staged build that devours the
+  // deepest resources -- foundry salvage (scrap/alloy/core) + loot-tier
+  // components (chips/CPU/GPU/RAM from Rare/Epic/Legendary/Mythic gear). Finish
+  // every stage to FIRE it: it ends this universe and remakes it in Ultron's
+  // image -- a super-prestige with a huge payout, a permanent x3 to everything,
+  // and a 3-perk best-in-game keepsake. The longest, hardest grind in the game. ----
+  var GENESIS_PARTS = [
+    { id: 'frame', name: 'Containment Frame', need: { scrap: 6000, alloy: 2500 } },
+    { id: 'core', name: 'Singularity Core', need: { core: 900, chip: 250 } },
+    { id: 'logic', name: 'Genesis Logic Board', need: { chip: 600, cpu: 120 } },
+    { id: 'render', name: 'Reality Renderer', need: { cpu: 260, gpu: 70 } },
+    { id: 'memory', name: 'Universe Memory Bank', need: { gpu: 140, ram: 32 } },
+    { id: 'trigger', name: 'Omega Trigger', need: { ram: 90, core: 2400 } },
+  ];
+  var COMP_SYM = { scrap: '⬢', alloy: '◈', core: '✦', chip: '▦', cpu: '◉', gpu: '⬣', ram: '⬚' };
+  var COMP_NAME = { chip: 'chips', cpu: 'CPU', gpu: 'GPU', ram: 'RAM' };
+  function genHave(k) { return (k === 'scrap' || k === 'alloy' || k === 'core') ? ((state.mats && state.mats[k]) || 0) : ((state.comp && state.comp[k]) || 0); }
+  function genPay(need) { for (var k in need) { if (k === 'scrap' || k === 'alloy' || k === 'core') state.mats[k] -= need[k]; else state.comp[k] -= need[k]; } }
+  function genCanBuild(part) { for (var k in part.need) if (genHave(k) < part.need[k]) return false; return true; }
+  function genBuilt(id) { return !!(state.genesis && state.genesis.built && state.genesis.built[id]); }
+  function genAllBuilt() { return GENESIS_PARTS.every(function (p) { return genBuilt(p.id); }); }
+  var genesisEl = document.getElementById('genesis');
+  function renderGenesis() {
+    if (!genesisEl) return;
+    var done = GENESIS_PARTS.filter(function (p) { return genBuilt(p.id); }).length, all = genAllBuilt(), comp = state.comp || {};
+    var stock = ['chip', 'cpu', 'gpu', 'ram'].map(function (k) { return '<span class="gn-stock">' + COMP_SYM[k] + ' ' + fmt(comp[k] || 0) + ' ' + COMP_NAME[k] + '</span>'; }).join('');
+    var rows = GENESIS_PARTS.map(function (p) {
+      var built = genBuilt(p.id), can = !built && genCanBuild(p.id);
+      var needStr = Object.keys(p.need).map(function (k) { var ok = genHave(k) >= p.need[k]; return '<span class="gn-need' + (ok ? ' ok' : '') + '">' + COMP_SYM[k] + ' ' + fmt(p.need[k]) + '</span>'; }).join('');
+      return '<div class="gn-row' + (built ? ' built' : '') + '"><span class="gn-nm">' + (built ? '✔ ' : '') + p.name + '</span><span class="gn-needs">' + needStr + '</span>' +
+        (built ? '<span class="gn-blt">BUILT</span>' : '<button type="button" class="gn-build' + (can ? ' can' : '') + '" data-gn="' + p.id + '"' + (can ? '' : ' disabled') + '>Build</button>') + '</div>';
+    }).join('');
+    genesisEl.innerHTML =
+      '<div class="gn-head">☠ THE GENESIS CANNON <span class="gn-sub">— end this universe, remake it in Ultron’s image</span></div>' +
+      '<div class="gn-prog">Stages <b>' + done + '/' + GENESIS_PARTS.length + '</b> · universes forged <b>' + ((state.genesis && state.genesis.fired) || 0) + '</b> · <b>×' + genesisMult() + '</b> global</div>' +
+      '<div class="gn-stocks">' + stock + '</div>' + rows +
+      (all ? '<button type="button" class="gn-fire" data-gn-fire="1">☠ FIRE THE GENESIS CANNON</button>' : '');
+    genesisEl.querySelectorAll('[data-gn]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var p = GENESIS_PARTS.filter(function (x) { return x.id === btn.dataset.gn; })[0]; if (!p || genBuilt(p.id) || !genCanBuild(p.id)) return;
+        genPay(p.need); state.genesis.built = state.genesis.built || {}; state.genesis.built[p.id] = true;
+        if (window.__sfx) window.__sfx('boss'); gamePop('⚙ ' + p.name + ' assembled', '#ff5a7a');
+        dirty = true; save(); renderGenesis();
+      });
+    });
+    var fire = genesisEl.querySelector('[data-gn-fire]'); if (fire) fire.addEventListener('click', fireGenesis);
+  }
+  var genesisArmed = false;
+  function fireGenesis() {
+    if (!genAllBuilt()) return;
+    if (!genesisArmed) { genesisArmed = true; renderGenesis(); var b = genesisEl.querySelector('[data-gn-fire]'); if (b) b.textContent = '☠ CONFIRM — END THE UNIVERSE?'; setTimeout(function () { genesisArmed = false; renderGenesis(); }, 4000); return; }
+    genesisArmed = false;
+    if (window.__sfx) window.__sfx('reboot');
+    state.genesis.built = {}; state.genesis.fired = ((state.genesis.fired) || 0) + 1;
+    state.prestige.cores = (state.prestige.cores || 0) + 25 * state.genesis.fired;      // mega rewards, KEPT
+    state.prestige.points = (state.prestige.points || 0) + 100 * state.genesis.fired;
+    state.adv = state.adv || { inv: [] };
+    if (window.LootEngine) {   // a 3-perk, best-in-game keepsake weapon
+      var mega = LootEngine.generate('ultron_prime_core', { seed: 'genesis' + Date.now() + Math.random(), ilvl: 150, rarity: 'mythic', affixCount: 3, affixes: 3 });
+      mega.rarity = mega.tierLabel; mega.name = 'Genesis ' + mega.name; mega.genesis = true;
+      state.adv.inv = (state.adv.inv || []).concat([mega]).slice(-40);
+    }
+    state.bits = 100000 * genesisMult(); state.up = {}; UPGRADES.forEach(function (u) { state.up[u.id] = 0; });   // remake the run
+    state.ref = { unlA: false, unlV: false, unlP: false, up: {} };
+    state.roundStart = state.lifetime || 0;
+    gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
+    publish(); dirty = true; save();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderAdventure(); renderProgression();
+    if (window.__roomRelayout) window.__roomRelayout();
+  }
+  // Points minted by a reboot: from the currency earned THIS round (the method
+  // = how much you grew before falling) plus a bonus per new core banked.
+  function prestigePointsFor(roundGain, coresGained) { return Math.floor(Math.sqrt(Math.max(0, roundGain) / 6000)) + coresGained * 3; }
   function doReboot() {
     if (window.__sfx) window.__sfx('reboot');
-    state.prestige = state.prestige || { cores: 0 };
-    state.prestige.cores = prestigeCores(state.lifetime || 0);
+    state.prestige = state.prestige || { cores: 0, points: 0, up: {} };
+    state.prestige.up = state.prestige.up || {};
+    var newCores = prestigeCores(state.lifetime || 0), coresGained = Math.max(0, newCores - (state.prestige.cores || 0));
+    var roundGain = (state.lifetime || 0) - (state.roundStart || 0);
+    var ptsGained = prestigePointsFor(roundGain, coresGained);
+    state.prestige.points = (state.prestige.points || 0) + ptsGained;
+    state.prestige.cores = newCores;
+    state.roundStart = state.lifetime || 0;
+    if (ptsGained > 0 && window.__gamePop) gamePop('◈ +' + ptsGained + ' Prestige Points', '#a88bff');
     state.bits = 0; state.up = {}; UPGRADES.forEach(function (u) { state.up[u.id] = 0; });
     state.ref = { unlA: false, unlV: false, unlP: false, up: {} };
     // each defeat/reboot cracks open the next sealed endgame dungeon
@@ -7867,7 +8038,7 @@ window.__sfx = (function () {
       if (window.__gamePop) gamePop('☠ Vault breached: ' + newD.name, newD.color);
     }
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderAdventure();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderAdventure();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -8015,7 +8186,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderProgression(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderProgression(); }
       dirty = false;
     }
   }, 500);
@@ -8224,13 +8395,17 @@ window.__sfx = (function () {
   function canAfford(c) { var m = state.mats || {}; return (m.scrap || 0) >= (c.scrap || 0) && (m.alloy || 0) >= (c.alloy || 0) && (m.core || 0) >= (c.core || 0); }
   function payMats(c) { state.mats.scrap -= (c.scrap || 0); state.mats.alloy -= (c.alloy || 0); state.mats.core -= (c.core || 0); }
   function addMats(y) { state.mats = state.mats || { scrap: 0, alloy: 0, core: 0 }; state.mats.scrap += y.scrap || 0; state.mats.alloy += y.alloy || 0; state.mats.core += y.core || 0; }
+  // Salvaging high-rarity gear also strips out Genesis Cannon components:
+  // Rare->computer chip, Epic->CPU, Legendary->GPU, Mythic->RAM.
+  var COMP_BY_TIER = { 3: 'chip', 4: 'cpu', 5: 'gpu', 6: 'ram' };
+  function addComp(tier) { var k = COMP_BY_TIER[tier]; if (!k) return; state.comp = state.comp || { chip: 0, cpu: 0, gpu: 0, ram: 0 }; state.comp[k] = (state.comp[k] || 0) + 1; }
   function costStr(c) { var p = []; if (c.scrap) p.push('\u2B22' + c.scrap); if (c.alloy) p.push('\u25C8' + c.alloy); if (c.core) p.push('\u2726' + c.core); return p.join(' '); }
   function claimAdventure() {
     var a = state.adv, isBoss = !!a.bossRun, isDungeon = !!a.dungeonRun, run = ADV_DUR[a.dur] || ADV_DUR[0];
     var di = isDungeon ? (a.dungeonRun - 1) : 0, dungeon = isDungeon ? DUNGEONS[di] : null;
     var ri = isBoss ? (a.bossRegion || 0) : (a.region || 0);
     var region = REGIONS[ri] || REGIONS[0];
-    var lootSkill = Math.floor(skillLvl('loot') / 2);
+    var lootSkill = Math.floor(skillLvl('loot') / 2) + pUp('ploot');   // + Loot Magnet prestige upgrade
     var levelBonus = Math.floor(playerLevel() / 10);   // higher player level -> higher loot rarity chance
     var ilvl = (isDungeon ? (dungeonIlvl(di) + lootSkill) : (run.ilvl + (region.ilvl || 0) + lootSkill + (isBoss ? 2 : 0))) + levelBonus;
     var pmult = combatPowerMult();   // skills + the army's total bay power (shared with the HUD)
@@ -8524,10 +8699,10 @@ window.__sfx = (function () {
       else if (act === 'unequip') { if (a.gear) { delete a.gear[b.dataset.slot]; dirty = true; save(); renderAdventure(); } }
       else if (act === 'sell') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { state.bits += sellValue(it); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); dirty = true; save(); renderBalance(); renderAdventure(); } }
       else if (act === 'sell-junk') { var kept = [], gained = 0; (a.inv || []).forEach(function (x) { if (x.rarity === 'Common' && !gearHasId(a.gear, x.id)) gained += sellValue(x); else kept.push(x); }); if (gained > 0) { state.bits += gained; a.inv = kept; dirty = true; save(); renderBalance(); renderAdventure(); } }
-      else if (act === 'salvage') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { addMats(matYield(itemTier(it))); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); if (window.__sfx) window.__sfx('press'); dirty = true; save(); renderAdventure(); } }
+      else if (act === 'salvage') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { addMats(matYield(itemTier(it))); addComp(itemTier(it)); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); if (window.__sfx) window.__sfx('press'); dirty = true; save(); renderAdventure(); renderGenesis(); } }
       else if (act === 'salvage-junk') { var kept2 = [], got = false; (a.inv || []).forEach(function (x) { if (x.rarity === 'Common' && !gearHasId(a.gear, x.id)) { addMats(matYield(itemTier(x))); got = true; } else kept2.push(x); }); if (got) { a.inv = kept2; if (window.__sfx) window.__sfx('press'); dirty = true; save(); renderAdventure(); } }
       else if (act === 'sell-all') { var keptA = [], gainedA = 0; (a.inv || []).forEach(function (x) { if (x.slot && x.stats && !gearHasId(a.gear, x.id)) gainedA += sellValue(x); else keptA.push(x); }); if (gainedA > 0) { state.bits += gainedA; a.inv = keptA; if (window.__sfx) window.__sfx('coin'); dirty = true; save(); renderBalance(); renderAdventure(); } }
-      else if (act === 'salvage-all') { var keptS = [], gotS = false; (a.inv || []).forEach(function (x) { if (x.slot && x.stats && !gearHasId(a.gear, x.id)) { addMats(matYield(itemTier(x))); gotS = true; } else keptS.push(x); }); if (gotS) { a.inv = keptS; if (window.__sfx) window.__sfx('build'); dirty = true; save(); renderAdventure(); } }
+      else if (act === 'salvage-all') { var keptS = [], gotS = false; (a.inv || []).forEach(function (x) { if (x.slot && x.stats && !gearHasId(a.gear, x.id)) { addMats(matYield(itemTier(x))); addComp(itemTier(x)); gotS = true; } else keptS.push(x); }); if (gotS) { a.inv = keptS; if (window.__sfx) window.__sfx('build'); dirty = true; save(); renderAdventure(); renderGenesis(); } }
       else if (act === 'reinforce') { var g = a.gear && a.gear[b.dataset.slot]; if (g) { var pls = g.plus || 0, rc = reinforceCost(pls); if (canAfford(rc)) { payMats(rc); for (var sk in g.stats) g.stats[sk] = Math.max(1, Math.round(g.stats[sk] * 1.08)); g.plus = pls + 1; if (window.__sfx) window.__sfx('build'); addXp(12, 'Reinforce'); dirty = true; save(); renderAdventure(); } } }
       else if (act === 'preset') { var pr = PRESETS[b.dataset.v]; if (pr) { a.build = a.build || {}; for (var k in pr) { if (k === '_color') a.robot.color = pr[k]; else a.build[k] = pr[k]; } dirty = true; save(); renderAdventure(); } }
       else if (act === 'save-load') { var inp = expEl.querySelector('.exp-ldname'); var nm = (inp && inp.value.trim()) || ('Build ' + (Object.keys(a.loadouts || {}).length + 1)); a.loadouts = a.loadouts || {}; a.loadouts[nm] = { build: Object.assign({}, a.build), color: a.robot.color }; dirty = true; save(); renderAdventure(); }
@@ -8558,6 +8733,8 @@ window.__sfx = (function () {
   renderUpgrades();
   renderRefinery();
   renderPrestige();
+  renderPrestigeUpgrades();
+  renderGenesis();
   renderProgression();
   renderCodex();
   // size the room canvas to the loaded bay count -- without this a refresh
@@ -8581,14 +8758,23 @@ window.__sfx = (function () {
       if (j.ref) state.ref = j.ref;
       if (j.prestige) state.prestige = j.prestige;
       if (j.gen) state.gen = j.gen;
+      if (j.comp) state.comp = j.comp;
+      if (j.genesis) state.genesis = j.genesis;
+      if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
       if (j.mats) state.mats = j.mats;
       UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
       if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
+      if (!state.prestige) state.prestige = { cores: 0 };
+      if (typeof state.prestige.points !== 'number') state.prestige.points = 0;
+      if (!state.prestige.up) state.prestige.up = {};
+      if (!state.comp) state.comp = { chip: 0, cpu: 0, gpu: 0, ram: 0 };
+      if (!state.genesis) state.genesis = { built: {}, fired: 0 };
+      if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderProgression(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderProgression(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
