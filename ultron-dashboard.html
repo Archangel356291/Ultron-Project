@@ -5967,11 +5967,41 @@ function toggleReducedVisuals(el) {
       ctx.globalAlpha = 0.16 + 0.06 * Math.sin(t * 3 + x); ctx.fillStyle = ag;
       ctx.fillRect(x - 17 * s, footY - 27 * s, 34 * s, 32 * s); ctx.globalAlpha = 1;
     }
-    ctx.fillStyle = M_DARK;                                     // legs + feet
-    ctx.fillRect(x - 3 * s + step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
-    ctx.fillRect(x + 0.8 * s - step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
-    ctx.fillRect(x - 3.4 * s + step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);
-    ctx.fillRect(x + 0.4 * s - step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);
+    // locomotion varies by archetype: legs / tank tracks / jump packs / hover
+    var mv = style.move || 'legs';
+    function drawLegs() {
+      ctx.fillStyle = M_DARK;
+      ctx.fillRect(x - 3 * s + step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
+      ctx.fillRect(x + 0.8 * s - step * 1.6, footY - 6 * s, 2.2 * s, 6 * s);
+      ctx.fillRect(x - 3.4 * s + step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);
+      ctx.fillRect(x + 0.4 * s - step * 1.6, footY - 1.2 * s, 3 * s, 1.6 * s);
+    }
+    if (mv === 'tracks') {                                      // tank treads
+      var tw = (bw + 1.2) * s;
+      ctx.fillStyle = '#14161b'; ctx.fillRect(x - tw, footY - 5.4 * s, 2 * tw, 5.4 * s);
+      ctx.fillStyle = '#2a2e34'; ctx.fillRect(x - tw, footY - 5.4 * s, 2 * tw, 1 * s); ctx.fillRect(x - tw, footY - 0.6 * s, 2 * tw, 0.6 * s);
+      ctx.fillStyle = '#3a4049';
+      var off = moving ? (t * 34) % (2.4 * s) : 0;
+      for (var tx = x - tw + off; tx < x + tw; tx += 2.4 * s) ctx.fillRect(tx, footY - 4.8 * s, 1.1 * s, 1 * s);
+      ctx.fillStyle = '#20242b';
+      for (var wxi = -1; wxi <= 1; wxi++) { ctx.beginPath(); ctx.arc(x + wxi * tw * 0.62, footY - 2.4 * s, 1.5 * s, 0, Math.PI * 2); ctx.fill(); }
+    } else if (mv === 'hover') {                                // no legs -- a propulsion pad + glow
+      var hg = ctx.createRadialGradient(x, footY - 1 * s, 1, x, footY - 1 * s, 9 * s);
+      hg.addColorStop(0, eye); hg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = 0.45 + 0.3 * Math.sin(t * 10 + x); ctx.fillStyle = hg; ctx.fillRect(x - 9 * s, footY - 5 * s, 18 * s, 8 * s); ctx.globalAlpha = 1;
+      ctx.fillStyle = M_GUN; ctx.fillRect(x - 3.2 * s, footY - 6 * s, 2.3 * s, 2.4 * s); ctx.fillRect(x + 0.9 * s, footY - 6 * s, 2.3 * s, 2.4 * s);
+      ctx.fillStyle = 'rgba(180,230,255,0.85)';
+      ctx.fillRect(x - 2.7 * s, footY - 3.7 * s, 1.4 * s, (1.4 + Math.abs(Math.sin(t * 20 + x)) * 1.6) * s);
+      ctx.fillRect(x + 1.3 * s, footY - 3.7 * s, 1.4 * s, (1.4 + Math.abs(Math.sin(t * 20 + x + 1)) * 1.6) * s);
+    } else if (mv === 'jump') {                                 // legs + a jump-pack with thrust flame
+      drawLegs();
+      ctx.fillStyle = M_GUN; ctx.fillRect(x + (bw - 0.4) * s, footY - 13 * s, 2.4 * s, 5.2 * s);
+      var fl = moving ? (2 + Math.abs(Math.sin(t * 22 + x)) * 2.6) : 1;
+      ctx.fillStyle = 'rgba(255,170,70,0.9)'; ctx.fillRect(x + (bw + 0.1) * s, footY - 8 * s, 1.9 * s, fl * s);
+      ctx.fillStyle = 'rgba(255,240,180,0.95)'; ctx.fillRect(x + (bw + 0.45) * s, footY - 8 * s, 1.1 * s, fl * 0.6 * s);
+    } else {
+      drawLegs();
+    }
     ctx.fillStyle = body; ctx.fillRect(x - bw * s, footY - 13 * s, 2 * bw * s, 8 * s);      // torso (archetype width)
     ctx.fillStyle = plate; ctx.globalAlpha = 0.5; ctx.fillRect(x - bw * s, footY - 13 * s, 0.6 * bw * s, 8 * s); ctx.globalAlpha = 1;
     ctx.fillStyle = M_LINE; ctx.fillRect(x - bw * s, footY - 9.4 * s, 2 * bw * s, 0.7 * s);
