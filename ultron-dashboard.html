@@ -7006,6 +7006,9 @@ window.__sfx = (function () {
   // Bits -> Bytes -> Chits -> Scrip -> Nanits. Every cost/balance uses these.
   var UNITS = ['bits', 'bytes', 'chits', 'scrip', 'nanits'];
   var UNIT_SYM = ['\u2301', '\u25A6', '\u25C8', '\u2B21', '\u2726'];   // cyber glyph per tier: bit/byte/chit/scrip/nanit
+  var UNIT_COL = ['#7fd0ff', '#5fe39a', '#ffd24b', '#ff9d3c', '#c9a6ff'];   // colour per tier, climbing the scale: cyan\u2192green\u2192gold\u2192amber\u2192violet
+  function fmtTier(n) { var i = 0; n = n > 0 ? n : 0; while (n >= 1000 && i < UNITS.length - 1) { n /= 1000; i++; } return i; }
+  function fmtColor(n) { return UNIT_COL[fmtTier(n)]; }
   function fmt(n) {
     if (!(n > 0)) n = 0;
     var i = 0;
@@ -7052,7 +7055,7 @@ window.__sfx = (function () {
       return '<button type="button" class="foundry-up' + (can ? ' affordable' : '') + '" data-up="' + u.id + '"' + (maxed ? ' disabled' : '') + '>' +
         '<div class="fu-top"><span class="fu-name">' + u.name + '</span><span class="fu-lvl">Lv ' + l + (maxed ? ' (max)' : '') + '</span></div>' +
         '<div class="fu-desc">' + u.desc(l) + '</div>' +
-        '<div class="fu-cost' + (can || maxed ? '' : ' short') + '">' + (maxed ? '—' : '◉ ' + fmt(c)) + '</div>' +
+        '<div class="fu-cost' + (can || maxed ? '' : ' short') + '"' + (maxed ? '' : ' style="color:' + fmtColor(c) + '"') + '>' + (maxed ? '—' : '◉ ' + fmt(c)) + '</div>' +
         '</button>';
     }).join('');
     upsEl.querySelectorAll('[data-up]').forEach(function (btn) {
@@ -7081,7 +7084,7 @@ window.__sfx = (function () {
       var ups = BAY_UP.map(function (u) {
         var def = bayUpgDef(u, b), l = lvl(def.id), maxed = l >= u.max, c = cost(def), can = state.bits >= c && !maxed;
         return '<button type="button" class="bay-up' + (can ? ' can' : '') + '" data-bup="' + u.k + '" data-bay="' + b + '"' + (maxed ? ' disabled' : '') + ' title="' + esc(u.name + ' — ' + def.desc(l)) + '">' +
-          '<span class="bay-up-k">' + u.abbr + '</span><span class="bay-up-l">' + l + '</span><span class="bay-up-c">' + (maxed ? 'max' : fmt(c)) + '</span></button>';
+          '<span class="bay-up-k">' + u.abbr + '</span><span class="bay-up-l">' + l + '</span><span class="bay-up-c"' + (maxed ? '' : ' style="color:' + fmtColor(c) + '"') + '>' + (maxed ? 'max' : fmt(c)) + '</span></button>';
       }).join('');
       cards += '<div class="bay-card" style="--bec:' + (a.eye || '#ff3b3b') + '">' +
         '<div class="bay-card-h"><span class="bay-nm">' + esc(a.name) + '</span><span class="bay-arch">' + esc(a.archetype + ' · ' + a.move) + '</span></div>' +
@@ -7196,7 +7199,7 @@ window.__sfx = (function () {
     if (!codexEl || !window.LootEngine) return;
     var LE = window.LootEngine, CB = window.Combat;
     var sec = function (title, body) { return '<div class="cx-sec"><div class="cx-h">' + title + '</div>' + body + '</div>'; };
-    var cur = ['Bits', 'Bytes', 'Chits', 'Scrip', 'Nanits'].map(function (t, i) { return '<span class="cx-chip">' + t + (i ? ' \u00d7' + Math.pow(1000, i).toLocaleString() : '') + '</span>'; }).join('');
+    var cur = ['Bits', 'Bytes', 'Chits', 'Scrip', 'Nanits'].map(function (t, i) { return '<span class="cx-chip" style="color:' + UNIT_COL[i] + ';border-color:' + UNIT_COL[i] + '">' + UNIT_SYM[i] + ' ' + t + (i ? ' \u00d7' + Math.pow(1000, i).toLocaleString() : '') + '</span>'; }).join('');
     var rar = LE.TIERS.map(function (t) { return '<span class="cx-chip" style="color:' + t.color + ';border-color:' + t.color + '">' + t.shape + ' ' + t.label + '</span>'; }).join('');
     var byType = {}; LE.BASES.forEach(function (b) { byType[b.t] = (byType[b.t] || 0) + 1; });
     var items = Object.keys(byType).map(function (k) { return '<span class="cx-chip">' + k + ' \u00d7' + byType[k] + '</span>'; }).join('') + '<span class="cx-chip">' + LE.BASES.length + ' bases \u00b7 21 stats \u00b7 16 affixes</span>';
@@ -7267,9 +7270,12 @@ window.__sfx = (function () {
     });
   }
 
+  var coinEl = document.querySelector('.foundry-coin');
   function renderBalance() {
     if (bitsEl) {
       bitsEl.textContent = fmt(state.bits);
+      bitsEl.style.color = fmtColor(state.bits);   // balance takes its tier's colour
+      if (coinEl) coinEl.style.color = fmtColor(state.bits);
       bitsEl.classList.add('pop');
       setTimeout(function () { bitsEl.classList.remove('pop'); }, 130);
     }
