@@ -1289,6 +1289,29 @@
   .rstats-v{ color:var(--text); margin-left:auto; font-weight:700; }
   /* compact stats strip by the XP bar */
   .prog-stats{ display:flex; gap:10px; flex-wrap:wrap; font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); margin:2px 0 4px; }
+  .sb-wrap{ display:flex; flex-direction:column; gap:7px; padding:8px 2px; }
+  .sb-row{ border:1px solid var(--line); border-radius:7px; padding:7px 9px; background:var(--void); }
+  .sb-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+  .sb-nm{ font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text); }
+  .sb-tot{ font-family:var(--font-mono); font-size:12px; color:#8fe6b0; font-weight:700; }
+  .sb-src{ display:flex; flex-wrap:wrap; gap:5px; }
+  .sb-s{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:4px; padding:2px 6px; }
+  .sb-s b{ color:var(--text-dim); }
+  .sb-attrhdr{ font-family:var(--font-display); font-weight:700; font-size:11px; color:var(--text-dim); margin:8px 0 4px; }
+  .sb-attrs{ display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:5px; }
+  .sb-attr{ border:1px solid var(--line); border-left-width:3px; border-radius:6px; padding:5px 8px; font-family:var(--font-mono); font-size:9.5px; }
+  .sb-attr b{ display:block; font-size:11px; font-family:var(--font-display); }
+  .sb-attr span{ color:var(--text-faint); }
+  .rar-legend{ display:flex; flex-wrap:wrap; gap:7px; margin:2px 0 6px; }
+  .rar-chip{ font-family:var(--font-mono); font-size:10.5px; font-weight:700; letter-spacing:.02em; border:1px solid; border-radius:5px; padding:3px 10px; background:rgba(255,255,255,.02); text-shadow:0 0 6px currentColor; }
+  /* failed-run improvement suggestions + adventure log */
+  .exp-suggest{ margin-top:9px; padding:9px 11px; border:1px solid rgba(255,90,110,.45); border-radius:8px; background:rgba(255,90,110,.07); }
+  .exp-suggest-h{ font-family:var(--font-display); font-weight:800; font-size:12px; color:#ff8fa0; margin-bottom:6px; }
+  .exp-suggest ul{ margin:0; padding-left:18px; font-family:var(--font-mono); font-size:11px; color:var(--text-dim); line-height:1.55; }
+  .exp-log{ margin-top:9px; padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:var(--void); }
+  .exp-log-h{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:#9fb4d0; margin-bottom:5px; }
+  .exp-log-row{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); padding:2px 0; border-bottom:1px solid rgba(255,255,255,.03); }
+  .exp-log-row b{ color:var(--text); }
   .prog-stats b{ color:#ff8098; }
   .prog-sys, .prog-yield{ margin:4px 0; border:1px solid var(--line); border-radius:6px; background:var(--void); padding:0; }
   .prog-sys>summary, .prog-yield>summary{ cursor:pointer; padding:6px 10px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); list-style:none; }
@@ -7949,6 +7972,28 @@ window.__sfx = (function () {
       return '<span class="attr-chip" style="border-color:' + a.col + '" title="' + a.name + ' — ' + a.eff + '"><span class="attr-ab" style="color:' + a.col + '">' + a.abbr + '</span><b>' + charAttr(a.id) + '</b></span>';
     }).join('') + '</div>';
   }
+  // All loot rarity tiers shown with their colour + symbol, glowing brighter by tier.
+  function rarityLegendHtml() {
+    if (!window.LootEngine) return '';
+    return '<div class="rar-legend">' + window.LootEngine.TIERS.map(function (t, i) {
+      return '<span class="rar-chip" style="color:' + t.color + ';border-color:' + t.color + ';box-shadow:0 0 ' + (3 + i * 2.6) + 'px -1px ' + t.color + ', inset 0 0 ' + (2 + i * 1.4) + 'px -1px ' + t.color + '">' + t.shape + ' ' + t.label + '</span>';
+    }).join('') + '</div>';
+  }
+  // Full stat breakdown: every major stat, its total, and WHERE each bonus comes from.
+  function statBreakdownHtml() {
+    var f2 = function (x) { return '×' + x.toFixed(2); };
+    function s(label, val) { return '<span class="sb-s">' + label + ' <b>' + val + '</b></span>'; }
+    function row(ic, name, total, srcs) { return '<div class="sb-row"><div class="sb-top"><span class="sb-nm">' + ic + ' ' + name + '</span><span class="sb-tot">' + total + '</span></div><div class="sb-src">' + srcs.join('') + '</div></div>'; }
+    return '<div class="sb-wrap">' +
+      row('⚔', 'Combat power', f2(combatPowerMult()), [s('bay power', f2(bayPowerMult())), s('prestige', f2(prestigeCharMult())), s('gear sets', f2(setBonusMult())), s('stones', f2(stonePowerMult())), s('cosmic', f2(cosmicCombatMult())), s('mastery', f2(stoneMasteryMult()))]) +
+      row('✦', 'XP gain', f2(xpGainMult()), [s('Mind stone', f2(stoneXpMult())), s('INT', f2(attrXpMult())), s('mastery', f2(stoneMasteryMult()))]) +
+      row('◉', 'Income', f2(globalMult()), [s('cores', f2(coreMult())), s('milestones', f2(milestoneMult())), s('prestige', f2(prestigeEcoMult())), s('Genesis', '×' + genesisMult()), s('CHA', f2(attrIncMult())), s('Soul stone', f2(stoneIncMult())), s('cosmic', f2(cosmicPowerMult())), s('holiday', holJackpotMult() > 1 ? '×1.05' : '—'), s('mastery', f2(stoneMasteryMult())), s('boost', '×' + PROD_BOOST)]) +
+      row('🏭', 'Production', f2(prodQtyMult()), [s('prestige', f2(prestigeProdMult())), s('Time stone', f2(stoneProdMult())), s('mastery', f2(stoneMasteryMult()))]) +
+      '<div class="sb-attrhdr">Attributes — base 10 + sources</div><div class="sb-attrs">' + CHAR_ATTRS.map(function (a) {
+        var sets = attrFromSets(a.id), pre = 8 * pUp('a_' + a.id);
+        return '<div class="sb-attr" style="border-color:' + a.col + '"><b style="color:' + a.col + '">' + a.abbr + ' ' + charAttr(a.id) + '</b><span>10 base' + (sets ? ' · +' + sets + ' sets' : '') + (pre ? ' · +' + pre + ' prestige' : '') + ' · ' + f2(attrMult()) + '</span></div>';
+      }).join('') + '</div></div>';
+  }
   function setBonusHtml() {
     var rows = Object.keys(GEAR_SETS).map(function (id) {
       var n = setCount(id), tier = setTier(id), next = SET_TIERS.filter(function (th) { return th > n; })[0];
@@ -9138,6 +9183,7 @@ window.__sfx = (function () {
     var f = document.getElementById('hp-bar-fill'); if (!f) return; var h = (typeof window.__botHp === 'number') ? window.__botHp : 1;
     f.style.width = Math.round(h * 100) + '%';
     f.style.background = h > 0.5 ? 'linear-gradient(90deg,#33d17a,#7fffb0)' : h > 0.22 ? 'linear-gradient(90deg,#ffc24b,#ffe08a)' : 'linear-gradient(90deg,#ff5a5a,#ff9090)';
+    var lbl = document.getElementById('hp-bar-lbl'); if (lbl && lbl.dataset.ehp) { var ehp = +lbl.dataset.ehp; lbl.textContent = '♥ HP ' + Math.round(h * ehp) + ' / ' + ehp + ' (' + Math.round(h * 100) + '%)'; }
   }, 300);
   function renderProgression() {
     if (!progEl) return;
@@ -9160,9 +9206,11 @@ window.__sfx = (function () {
       (nextTier ? '<span class="prog-tier-next">next: ' + nextTier.name + ' @ Lv ' + nextTier.min + '</span>' : '<span class="prog-tier-next">max tier</span>') + '</div>' +
       '<div class="prog-bar"><i style="width:' + (pr.level >= LEVEL_CAP ? 100 : pct) + '%"></i></div>' +
       '<div class="prog-xp">' + (pr.level >= LEVEL_CAP ? 'MAX LEVEL ★' : Math.floor(pr.xp) + ' / ' + need + ' XP') + '</div>' +
-      (function () { var rs = robotStats((state.adv && state.adv.gear) || {}), hpf = (typeof window.__botHp === 'number' ? window.__botHp : 1); return '<div class="hp-bar" title="Adventure bot health"><i id="hp-bar-fill" style="width:' + Math.round(hpf * 100) + '%"></i><span class="hp-bar-lbl">♥ HP ' + Math.round(hpf * rs.ehp) + ' / ' + rs.ehp + '</span></div>'; })() +
+      (function () { var rs = robotStats((state.adv && state.adv.gear) || {}), hpf = (typeof window.__botHp === 'number' ? window.__botHp : 1); window.__botMaxHp = rs.ehp; return '<div class="hp-bar" title="Adventure bot health"><i id="hp-bar-fill" style="width:' + Math.round(hpf * 100) + '%"></i><span class="hp-bar-lbl" id="hp-bar-lbl" data-ehp="' + rs.ehp + '">♥ HP ' + Math.round(hpf * rs.ehp) + ' / ' + rs.ehp + ' (' + Math.round(hpf * 100) + '%)</span></div>'; })() +
       (function () { var rs = robotStats((state.adv && state.adv.gear) || {}); return '<div class="prog-stats"><span>⚔ Power <b>' + rs.power + '</b></span><span>♥ HP <b>' + rs.ehp + '</b></span><span>↯ DPS <b>' + rs.dps + '</b></span><span>FW <b>' + rs.firmware + '</b></span></div>'; })() +
       '<div class="attr-head">Core attributes</div>' + attrHtml() +
+      '<div class="attr-head">Loot rarity tiers</div>' + rarityLegendHtml() +
+      '<details class="prog-sys" data-dk="bon"' + (progOpen.bon ? ' open' : '') + '><summary>📊 Stats &amp; bonuses — every stat + where its bonuses come from</summary>' + statBreakdownHtml() + '</details>' +
       '<details class="prog-sys" data-dk="sys"' + (progOpen.sys ? ' open' : '') + '><summary>🤖 Robot systems — full attribute sheet</summary>' + statsSheetHtml((state.adv && state.adv.gear) || {}) + '</details>' +
       (function () {   // what the foundry mints: per-bot value per bay + per package
         var f = window.__foundry || {}, gm = globalMult(), by = (f.botYield || 0.1);
@@ -9900,19 +9948,40 @@ window.__sfx = (function () {
         (a.lastEarn.mats.core ? ' \u00b7 <b>' + a.lastEarn.mats.core + '</b> core' : '') + '</div>' : '') +
       '</div>' : '';
     var haul = a.lastHaul && a.lastHaul.length ? '<div class="exp-haul">Last haul: ' + a.lastHaul.map(function (it) { return '<span style="color:' + it.color + '">' + esc(it.name) + '</span>'; }).join(', ') + '</div>' : '';
+    // Detailed adventure log: every wave, the enemy, damage it dealt to the bot, HP left.
+    var advLog = lb ? (function () {
+      var rows = '', prevHp = lb.ehp;
+      lb.log.forEach(function (w, i) {
+        var hpl = (w.hpLeft != null ? w.hpLeft : prevHp), dmg = Math.max(0, prevHp - hpl); prevHp = hpl;
+        rows += '<div class="exp-log-row"><b>Wave ' + (i + 1) + '</b> · ' + esc(w.enemy) + ' (' + (w.tier || w.kind) + ') · ' + (w.win ? 'cleared' : '<span style="color:#ff8fa0">FAILED</span>') + ' in ' + w.rounds + ' rounds · enemy dealt <b style="color:#ff8fa0">' + dmg + '</b> dmg · bot HP <b>' + hpl + '/' + lb.ehp + '</b> (' + Math.round(hpl / lb.ehp * 100) + '%)</div>';
+      });
+      return '<div class="exp-log"><div class="exp-log-h">📜 Adventure log — ' + (lb.win ? 'Victory' : 'Defeat') + ' · ' + lb.wavesCleared + '/' + lb.totalWaves + ' waves · ' + lb.dps + ' DPS · ended at ' + lb.hpLeft + '/' + lb.ehp + ' HP</div>' + rows +
+        (a.lastEarn && a.lastEarn.kills ? '<div class="exp-log-row">💰 ' + a.lastEarn.kills + ' kills → <b>' + UNIT_SYM[0] + fmt(a.lastEarn.gold) + '</b> + materials</div>' : '') +
+        (a.lastHaul && a.lastHaul.length ? '<div class="exp-log-row">🎁 Loot recovered: <b>' + a.lastHaul.length + '</b> item' + (a.lastHaul.length === 1 ? '' : 's') + '</div>' : '') + '</div>';
+    })() : '';
+    // After a defeat: concrete ways to raise power.
+    var suggest = (lb && !lb.win) ? '<div class="exp-suggest"><div class="exp-suggest-h">⚠ Expedition failed — how to raise your power</div><ul>' +
+      '<li>Equip higher-rarity gear and <b>reinforce</b> your equipped parts.</li>' +
+      '<li><b>Level up</b> — more STR/CON = more power &amp; HP.</li>' +
+      '<li>Add &amp; upgrade <b>production bays</b> (bay power feeds combat power).</li>' +
+      '<li>Spend <b>prestige points</b> on Character upgrades; bank more cores.</li>' +
+      '<li><b>Forge &amp; master Infinity Stones</b> (+% to everything).</li>' +
+      '<li><b>Research &amp; harness Cosmic beings</b> for a power boost.</li>' +
+      '<li>Try a shorter run or an easier region until you out-scale it.</li></ul></div>' : '';
     var inv = (a.inv || []).slice().reverse().map(function (it) {
       var can = it.slot && it.stats, on = can && gear[it.slot] && gear[it.slot].id === it.id;
       // signature SET gear is "God" rarity: bright gold + shimmer; Genesis set is holo-foil.
       var setCls = it.set === 'genesis' ? ' exp-item-holo' : (it.set === 'dominion' ? ' exp-item-god' : '');
       var col = it.set ? '#ffd24b' : it.color;
       var rarLabel = it.set === 'genesis' ? 'GENESIS · GOD SET' : (it.set === 'dominion' ? 'DOMINION · GOD SET' : it.rarity);
-      return '<div class="exp-item' + (can ? ' eqbl' : '') + (on ? ' on' : '') + setCls + '"' + (can ? ' data-a="equip" data-id="' + it.id + '"' : '') + ' style="border-color:' + col + (on ? ';color:' + col : '') + '">' +
+      var rrank = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic'].indexOf(it.rarity), rglow = rrank >= 0 ? (2 + rrank * 3.6) : (it.set ? 20 : 4);
+      return '<div class="exp-item' + (can ? ' eqbl' : '') + (on ? ' on' : '') + setCls + '"' + (can ? ' data-a="equip" data-id="' + it.id + '"' : '') + ' style="border-color:' + col + (on ? ';color:' + col : '') + ';box-shadow:0 0 ' + rglow + 'px -2px ' + col + '">' +
         '<span class="exp-i-ic" style="color:' + col + '">' + (SLOT_IC[it.slot] || '◉') + '</span>' +
         '<span class="exp-i-name" style="color:' + col + '">' + esc(it.name) + '</span>' +
         '<span class="exp-i-rar">' + rarLabel + (on ? ' · equipped' : '') + '</span>' +
         (it.stats ? '<span class="exp-i-stats">' + statLine(it.stats) + '</span>' : '') +
         (it.mods && it.mods.length ? '<span class="exp-i-ab">' + esc(it.mods.join(' · ')) + '</span>' : '') +
-        (on ? '' : (can ? '<button type="button" class="exp-sell exp-equipbtn" data-a="equip" data-id="' + it.id + '">\u21EA equip</button>' : '') + '<button type="button" class="exp-sell" data-a="sell" data-id="' + it.id + '">sell \u25C9' + sellValue(it) + '</button><button type="button" class="exp-sell exp-salv" data-a="salvage" data-id="' + it.id + '">salvage</button>') + '</div>';
+        (on ? '<button type="button" class="exp-sell exp-equipbtn" data-a="unequip" data-id="' + it.id + '">\u21A9 unequip</button>' : (can ? '<button type="button" class="exp-sell exp-equipbtn" data-a="equip" data-id="' + it.id + '">\u21EA equip</button>' : '') + '<button type="button" class="exp-sell" data-a="sell" data-id="' + it.id + '">sell \u25C9' + sellValue(it) + '</button><button type="button" class="exp-sell exp-salv" data-a="salvage" data-id="' + it.id + '">salvage</button>') + '</div>';
     }).join('');
     expEl.innerHTML =
       '<div class="exp-build"><div class="' + robotCls + '" style="--rc:' + r.color + '"><span class="exp-head"></span><span class="exp-eye"></span><span class="exp-body"></span><span class="exp-base"></span></div>' +
@@ -9923,7 +9992,7 @@ window.__sfx = (function () {
       renderBuilder(a) +
       matBar + '<div class="exp-load">' + load + '</div>' + totHtml +
       statsSheetHtml(gear) +
-      status + battleHtml + haul + setBonusHtml() +
+      status + battleHtml + suggest + advLog + haul + setBonusHtml() +
       (inv ? '<details class="exp-inv-wrap"' + (invOpen ? ' open' : '') + '><summary class="exp-inv-sum">\ud83c\udf92 Inventory (' + (a.inv || []).length + ') \u2014 tap to ' + (invOpen ? 'collapse' : 'expand') + ', press Equip on a part</summary>' +
         '<div class="exp-inv-h"><button type="button" class="exp-selljunk" data-a="sell-junk">Sell all Common</button><button type="button" class="exp-selljunk" data-a="salvage-junk">Salvage all Common</button><button type="button" class="exp-selljunk" data-a="sell-all">Sell all</button><button type="button" class="exp-selljunk" data-a="salvage-all">Salvage all</button></div>' +
         '<div class="exp-inv">' + inv + '</div></details>' : '');
@@ -9941,7 +10010,7 @@ window.__sfx = (function () {
       else if (act === 'skin') { var sk = window.GamePalettes && GamePalettes.robotSkins[b.dataset.v]; if (sk) { a.robot.skin = b.dataset.v; a.robot.color = sk.eye; dirty = true; save(); renderAdventure(); } }
       else if (act === 'region') { a.region = +b.dataset.v; dirty = true; save(); renderAdventure(); }
       else if (act === 'equip') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && it.slot) { a.gear = a.gear || {}; a.gear[it.slot] = it; dirty = true; save(); renderAdventure(); } }
-      else if (act === 'unequip') { if (a.gear) { delete a.gear[b.dataset.slot]; dirty = true; save(); renderAdventure(); } }
+      else if (act === 'unequip') { if (a.gear) { if (b.dataset.slot) delete a.gear[b.dataset.slot]; else if (b.dataset.id) Object.keys(a.gear).forEach(function (sl) { if (a.gear[sl] && a.gear[sl].id === b.dataset.id) delete a.gear[sl]; }); dirty = true; save(); renderAdventure(); } }
       else if (act === 'sell') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { state.bits += sellValue(it); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); dirty = true; save(); renderBalance(); renderAdventure(); } }
       else if (act === 'sell-junk') { var kept = [], gained = 0; (a.inv || []).forEach(function (x) { if (x.rarity === 'Common' && !gearHasId(a.gear, x.id)) gained += sellValue(x); else kept.push(x); }); if (gained > 0) { state.bits += gained; a.inv = kept; dirty = true; save(); renderBalance(); renderAdventure(); } }
       else if (act === 'salvage') { var it = (a.inv || []).filter(function (x) { return x.id === b.dataset.id; })[0]; if (it && !gearHasId(a.gear, it.id)) { addMats(matYield(itemTier(it))); addComp(itemTier(it)); a.inv = a.inv.filter(function (x) { return x.id !== it.id; }); if (window.__sfx) window.__sfx('press'); dirty = true; save(); renderAdventure(); renderGenesis(); } }
@@ -10316,10 +10385,10 @@ window.__sfx = (function () {
       for (var ci = 0; ci < creatures.length; ci++) { var cr = creatures[ci]; if (cr.x > botX && Math.abs(b.x - cr.x) < 13 && Math.abs(b.y - cr.y) < 16) { killCreature(cr, ci, v); hit = true; break; } }
       if (hit || b.x > W + 20 || b.x < -20 || b.y < -20 || b.y > H + 20) bolts.splice(bi, 1);
     }
-    for (var k = creatures.length - 1; k >= 0; k--) if (creatures[k].x < botX + 4) { pops.push({ x: creatures[k].x, y: creatures[k].y, life: 0, col: '#ff6b6b' }); creatures.splice(k, 1); botHp = Math.max(0.08, botHp - 0.14); botHurt = t + 0.2; }   // a creature reached the bot -> it takes a hit
+    for (var k = creatures.length - 1; k >= 0; k--) if (creatures[k].x < botX + 4) { pops.push({ x: botX + 6, y: creatures[k].y - 6, life: 0, col: '#ff5a5a', dmg: Math.max(1, Math.round(0.14 * (window.__botMaxHp || 100))) }); creatures.splice(k, 1); botHp = Math.max(0.08, botHp - 0.14); botHurt = t + 0.2; }   // a creature reached the bot -> it takes a hit (floating damage number)
     botHp = Math.min(1, botHp + dt * 0.09);   // steady self-repair between hits
     window.__botHp = botHp;                    // shared with the progression health bar
-    for (var pi = pops.length - 1; pi >= 0; pi--) { pops[pi].life += dt; if (pops[pi].life > 0.5) pops.splice(pi, 1); }
+    for (var pi = pops.length - 1; pi >= 0; pi--) { pops[pi].life += dt; if (pops[pi].life > (pops[pi].dmg ? 0.95 : 0.5)) pops.splice(pi, 1); }
     for (var li = loots.length - 1; li >= 0; li--) { var l = loots[li]; l.life += dt; l.y -= 22 * dt; if (l.life > 1) loots.splice(li, 1); }
   }
   function killCreature(cr, ci, v) {
@@ -10387,7 +10456,9 @@ window.__sfx = (function () {
       ctx.fillStyle = '#cfe6ff'; ctx.font = '8px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
       ctx.fillText('HP ' + Math.round(botHp * 100) + '%', botX, by - 2);
     })();
-    pops.forEach(function (p) { ctx.globalAlpha = Math.max(0, 1 - p.life / 0.5); ctx.fillStyle = p.col; var px = p.x + (p.vx || 0) * p.life, py = p.y + (p.vy || 0) * p.life; ctx.fillRect(px - 1.5, py - 1.5, 3, 3); ctx.globalAlpha = 1; });
+    pops.forEach(function (p) { ctx.globalAlpha = Math.max(0, 1 - p.life / (p.dmg ? 0.95 : 0.5)); ctx.fillStyle = p.col; var px = p.x + (p.vx || 0) * p.life, py = p.y + (p.vy || 0) * p.life - (p.dmg ? p.life * 34 : 0);
+      if (p.dmg) { ctx.font = 'bold 12px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('-' + p.dmg, px, py); }
+      else ctx.fillRect(px - 1.5, py - 1.5, 3, 3); ctx.globalAlpha = 1; });
     loots.forEach(function (l) { ctx.globalAlpha = Math.max(0, 1 - l.life); ctx.fillStyle = l.col; ctx.font = '11px ui-monospace,monospace'; ctx.textAlign = 'center'; ctx.fillText('◉', l.x, l.y); ctx.globalAlpha = 1; });
   }
   var lastT = performance.now() / 1000;
