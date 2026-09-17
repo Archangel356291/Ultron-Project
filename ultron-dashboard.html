@@ -1022,6 +1022,26 @@
   .gn-toast{ display:flex; align-items:flex-start; gap:9px; padding:10px 12px; border-radius:9px; background:linear-gradient(180deg,#171b22,#0f1319); border:1px solid #2a3140; border-left:3px solid #5a78ff; box-shadow:0 8px 24px -8px rgba(0,0,0,.7); font-family:var(--font-mono); font-size:11px; color:var(--text); animation:gn-in .35s ease-out; }
   .gn-toast.out{ animation:gn-out .4s ease-in forwards; }
   .gn-toast.gn-warn{ border-left-color:#ffb020; } .gn-toast.gn-adv{ border-left-color:#33d17a; } .gn-toast.gn-level{ border-left-color:#ffcf5a; } .gn-toast.gn-craft{ border-left-color:#7fb4ff; } .gn-toast.gn-bots{ border-left-color:#ff5a7a; }
+  /* ---- Crypto Mining Rig ---- */
+  .crypto{ margin-top:10px; }
+  .cy-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#f7c948; letter-spacing:.02em; } .cy-sub{ font-family:var(--font-mono); font-size:10px; font-weight:400; color:var(--text-faint); } .cy-sub b{ color:#5fe39a; }
+  .cy-sellall{ margin:8px 0; padding:7px 12px; border-radius:7px; border:1px solid rgba(95,227,154,.5); background:rgba(95,227,154,.1); color:#8fe6b4; cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:11px; } .cy-sellall:hover{ background:rgba(95,227,154,.18); }
+  .cy-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:9px; margin-top:8px; }
+  .cy-card{ border:1px solid var(--line); border-left:3px solid var(--cc,#888); border-radius:8px; background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.15)); padding:9px 11px; }
+  .cy-card.own{ background:linear-gradient(180deg,color-mix(in srgb,var(--cc) 12%,transparent),rgba(0,0,0,.18)); }
+  .cy-h{ display:flex; align-items:center; gap:7px; }
+  .cy-sym{ font-size:18px; font-weight:800; line-height:1; } .cy-nm{ font-family:var(--font-display); font-weight:700; font-size:12.5px; color:var(--text); }
+  .cy-lv{ margin-left:auto; font-family:var(--font-mono); font-size:9.5px; color:#0c0e13; background:var(--cc,#888); border-radius:4px; padding:1px 6px; } .cy-lk{ margin-left:auto; opacity:.7; }
+  .cy-str{ font-family:var(--font-mono); font-size:10px; color:var(--text-dim); margin-top:5px; line-height:1.4; }
+  .cy-risk{ font-family:var(--font-mono); font-size:9.5px; color:#e0a24a; margin-top:2px; line-height:1.4; }
+  .cy-trait{ font-family:var(--font-mono); font-size:9.5px; margin-top:3px; line-height:1.4; }
+  .cy-stat{ font-family:var(--font-mono); font-size:10.5px; color:var(--text); margin:6px 0 5px; } .cy-stat b{ color:var(--cc,#fff); }
+  .cy-out{ color:#ff5a6e; font-weight:700; }
+  .cy-acts{ display:flex; flex-direction:column; gap:5px; }
+  .cy-btn, .cy-sell, .cy-up{ padding:6px 8px; border-radius:6px; border:1px solid var(--line); background:var(--void); color:var(--text-dim); cursor:default; font-family:var(--font-mono); font-size:10px; text-align:center; }
+  .cy-btn.can, .cy-sell.can, .cy-up.can{ cursor:pointer; border-color:var(--cc,#888); color:var(--text); }
+  .cy-btn.can:hover, .cy-sell.can:hover, .cy-up.can:hover{ background:rgba(255,255,255,.05); }
+  .cy-btn:disabled, .cy-sell:disabled, .cy-up:disabled{ opacity:.5; }
   .gn-ic{ font-size:14px; flex-shrink:0; } .gn-msg{ line-height:1.4; }
   @keyframes gn-in{ from{ opacity:0; transform:translateX(30px); } } @keyframes gn-out{ to{ opacity:0; transform:translateX(30px); } }
   .brainlab{ margin-top:10px; padding:12px 14px; border:1px solid rgba(58,200,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(28,107,176,.14),rgba(8,20,36,.25)); }
@@ -2191,9 +2211,9 @@
             <div class="foundry-offline" id="foundry-offline" hidden></div>
             <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
-            <div class="foundry-bays-label">Passive reactors <span class="fbl-sub">— a bank above the line that mints currency every second</span></div>
+            <div class="foundry-bays-label">🔋 Passive reactors <span class="fbl-sub">— a bank above the line that mints currency every second</span></div>
             <div class="foundry-generators" id="foundry-generators"></div>
-            <div class="foundry-bays-label">Production bays <span class="fbl-sub">— each floor's own crew, weapons &amp; armor</span></div>
+            <div class="foundry-bays-label">🤖 Production bays <span class="fbl-sub">— each floor's own crew, weapons &amp; armor</span></div>
             <div class="foundry-bays" id="foundry-bays"></div>
             <div class="dev-panel" id="dev-panel" hidden></div>
             <div class="relics" id="relics"></div>
@@ -2233,6 +2253,10 @@
             <div class="refinery-upgrades" id="refinery-upgrades"></div>
             <div class="foundry-note">Two forges cast adamantium (bright silver) and vibranium (black, blue-crackled) ingots onto one belt into the press, which mints extra bits. Unlock and upgrade each machine and the belt individually — same Bits → Nanits scale as the foundry.</div>
           </div>
+          </div>
+
+          <div class="game-floor"><div class="floor-sign">⛏️ Crypto Mining Rig</div>
+          <div class="crypto" id="crypto"></div>
           </div>
 
           <div class="game-floor"><div class="floor-sign">📖 Codex</div>
@@ -7431,6 +7455,14 @@ function toggleReducedVisuals(el) {
     row('WEALTH', fb(F.bits || 0), '#ffcf5a');
     row('POWER', Math.round(F.power || 0).toLocaleString(), '#ff6b6b');
     row('INCOME/s', fb(F.perSec || 0), '#4fa6e0');
+    // Arc reactor wall-mounted just left of the game-stats monitor, cabled all
+    // the way across to Ultron's body charging in the tube (owner request).
+    var rr = 22, rcx = x - 30, rcy = y + h * 0.5;
+    var chg = Math.max(0, Math.min(1, F.charge || 0));
+    var tcx = (LEFT + 14) + 72, tTop = officeFloorY - 300, tBot = officeFloorY - 6;
+    drawPowerLine(rcx - rr + 2, rcy, tcx + 10, tBot - (tBot - tTop) * 0.5, t, chg, ROOF_H + 12);   // hug the ceiling across the room
+    drawArcReactor(rcx, rcy, rr, 0, t, true);
+    hover('Arc reactor — powers the body in the tube', rcx, rcy, rr + 8);
     hover('Ultron’s board — your game: level, wealth, combat power, income/sec', x + w / 2, y + h / 2, w / 2);
   }
 
@@ -7497,8 +7529,9 @@ function toggleReducedVisuals(el) {
     }
   }
 
-  function drawArcReactor(rcx, rcy, rr, floor, t) {
-    ctx.fillStyle = M_GUN; ctx.fillRect(rcx - 6, rcy + rr - 4, 12, floor - (rcy + rr) + 4);   // stand
+  function drawArcReactor(rcx, rcy, rr, floor, t, wall) {
+    if (wall) { ctx.fillStyle = M_STEEL; ctx.fillRect(rcx - 8, rcy - rr - 12, 16, 4); ctx.fillStyle = M_GUN; ctx.fillRect(rcx - 3, rcy - rr - 10, 6, 12); }   // wall bracket above
+    else ctx.fillStyle = M_GUN, ctx.fillRect(rcx - 6, rcy + rr - 4, 12, floor - (rcy + rr) + 4);   // floor stand
     ctx.fillStyle = M_STEEL; ctx.beginPath(); ctx.arc(rcx, rcy, rr + 4, 0, Math.PI * 2); ctx.fill();   // housing
     ctx.fillStyle = M_GUN; ctx.beginPath(); ctx.arc(rcx, rcy, rr + 1, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#0b0f15'; ctx.beginPath(); ctx.arc(rcx, rcy, rr - 1, 0, Math.PI * 2); ctx.fill();
@@ -7513,8 +7546,8 @@ function toggleReducedVisuals(el) {
     for (var s = 0; s < 12; s++) { var an = s * Math.PI / 6; ctx.beginPath(); ctx.moveTo(rcx + Math.cos(an) * (rr - 3), rcy + Math.sin(an) * (rr - 3)); ctx.lineTo(rcx + Math.cos(an) * rr, rcy + Math.sin(an) * rr); ctx.stroke(); }
   }
 
-  function drawPowerLine(x1, y1, x2, y2, t, charge) {
-    var mx = (x1 + x2) / 2, my = Math.min(y1, y2) - 16;   // arc up between the two
+  function drawPowerLine(x1, y1, x2, y2, t, charge, midYOverride) {
+    var mx = (x1 + x2) / 2, my = (midYOverride != null ? midYOverride : Math.min(y1, y2) - 16);   // arc up between the two (hug the ceiling for a long span)
     function pt(u) { var v = 1 - u; return [v * v * x1 + 2 * v * u * mx + u * u * x2, v * v * y1 + 2 * v * u * my + u * u * y2]; }
     ctx.lineCap = 'round';
     ctx.strokeStyle = '#1c2130'; ctx.lineWidth = 11; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();   // cable sheath (thicker)
@@ -7564,11 +7597,8 @@ function toggleReducedVisuals(el) {
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     setFont(fontPx * 0.72, false); ctx.fillStyle = '#8b93a0'; ctx.fillText(charge >= 0.999 ? 'CORE READY' : 'CORE CHARGE', cx, top - 24);
     setFont(fontPx * 0.98, true); ctx.fillStyle = charge >= 0.999 ? '#ff5566' : '#cfe6ff'; ctx.fillText(Math.round(charge * 100) + '%', cx, top - 11);
-    // arc reactor set off to the SIDE (extra gap) so the cable, tube and body
-    // all stay visible; the line runs to the body's chest inside the tube.
-    var rcx = x0 + w + 56, rcy = floor - 56, rr = 40;
-    drawArcReactor(rcx, rcy, rr, floor, t);
-    drawPowerLine(rcx - rr + 2, rcy - 4, cx + 10, bot - h * 0.5, t, charge);
+    // (arc reactor is now wall-mounted beside the game-stats monitor -- see
+    // drawWallMonitor -- and cabled across to this body's chest.)
     caption("ultron's power core", cx + 18, floor + 12);
     var nextSk = bodySkin((cores || 0) + 1);
     hover('Power Core — next body: ' + nextSk.name, cx, top + h / 2, 62,
@@ -8331,7 +8361,7 @@ window.__sfx = (function () {
   // permanently multiplied -- the ultimate reward for the ultimate grind.
   function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
   var PROD_BOOST = 1.25;   // owner buff: a little more currency across every source (all income routes through globalMult)
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * PROD_BOOST; }
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * cryptoMult() * PROD_BOOST; }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -8498,7 +8528,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev; if (j.palette) state.palette = j.palette;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev; if (j.palette) state.palette = j.palette;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -8518,6 +8548,7 @@ window.__sfx = (function () {
   if (!state.relics) state.relics = {};   // Relics & Artifacts earned
   if (!state.armory) state.armory = { cls: 'pistol', sel: {}, built: null, loadouts: {}, parts: [] };   // Armory Forge
   if (!state.brain) state.brain = { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {} };   // AI Brain Lab
+  if (!state.crypto) state.crypto = { unlocked: {}, bal: {}, up: {} };   // Crypto Mining Rig
   if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
@@ -9079,7 +9110,7 @@ window.__sfx = (function () {
     state.roundStart = state.lifetime || 0;
     gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderProgression();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderProgression();
     if (window.__roomRelayout) window.__roomRelayout();
   }
   var stonelabEl = document.getElementById('stonelab');
@@ -9506,7 +9537,75 @@ window.__sfx = (function () {
     brainEl.querySelectorAll('[data-blbuy]').forEach(function (bt) { bt.addEventListener('click', function () { var m = BRAIN_MATS.filter(function (x) { return x.id === bt.dataset.blbuy; })[0]; if (!m) return; var cost = m.buy * 10; if (state.bits < cost) return; state.bits -= cost; brainInit().mats[m.id] += 10; if (window.__sfx) window.__sfx('press'); publish(); dirty = true; save(); renderBrain(); renderBalance(); }); });
     brainEl.querySelectorAll('[data-blc]').forEach(function (bt) { bt.addEventListener('click', function () { var comp = BRAIN_COMPONENTS.filter(function (x) { return x.id === bt.dataset.blc; })[0]; if (!comp || !brainCanBuild(comp)) return; var c = brainCompCost(comp); state.bits -= c.bits; var m = brainInit().mats; m.syn -= c.mats.syn; m.log -= c.mats.log; m.dat -= c.mats.dat; state.brain.comp[comp.id] = Math.min(BRAIN_RAR.length, brainTier(comp.id) + 1); var rn = BRAIN_RAR[state.brain.comp[comp.id] - 1].n; if (window.__sfx) window.__sfx('build'); gamePop('🧠 ' + comp.name + ' → ' + rn, '#7fd0ff'); addXp(60 * state.brain.comp[comp.id], 'Brain: ' + comp.name); publish(); dirty = true; save(); renderBrain(); renderBalance(); renderProgression(); }); });
     brainEl.querySelectorAll('[data-blinsp]').forEach(function (bt) { bt.addEventListener('click', function () { inspectBrainPart(bt.dataset.blinsp); }); });
-    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); });
+    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); renderCrypto(); });
+  }
+  // ---- Crypto Mining Rig: mine 6 real-world-flavoured coins, each with its own
+  // strength + risk, then convert them to currency. Everything feeds the game
+  // economy: sales are multiplied by globalMult, and just OWNING coins raises a
+  // portfolio multiplier (cryptoMult) folded into globalMult -- so crypto
+  // synergises with the whole game rather than sitting off to the side. ----
+  var CRYPTOS = [
+    { id: 'btc', sym: '₿', name: 'Bitcoin', col: '#f7931a', str: 'Ultimate digital store of value & institutional asset.', risk: 'High energy footprint; slower transactions.', unlock: 5e8, rate: 0.02, val: 9e8, trait: 'Highest sale value per coin (store of value).' },
+    { id: 'eth', sym: 'Ξ', name: 'Ethereum', col: '#8a92b2', str: 'Core infrastructure layer for smart contracts & dApps.', risk: 'Variable, sometimes expensive gas fees.', unlock: 2e9, rate: 0.08, val: 2.2e8, trait: '+8% mine rate to EVERY coin per coin you own (infrastructure).' },
+    { id: 'bnb', sym: '◈', name: 'BNB', col: '#f3ba2f', str: 'Native utility token powering the Binance ecosystem.', risk: 'High centralization risk (single entity).', unlock: 8e9, rate: 0.12, val: 1.1e8, trait: '−5% rig-upgrade cost per BNB rig level (utility).' },
+    { id: 'xrp', sym: '✕', name: 'XRP', col: '#25a768', str: 'Ultra-fast, low-cost cross-border banking payments.', risk: 'Long-term regulatory scrutiny.', unlock: 3e10, rate: 0.5, val: 3.5e7, trait: 'Fastest miner — many cheap coins.' },
+    { id: 'sol', sym: '◎', name: 'Solana', col: '#14f195', str: 'High-performance chain for fast, cheap dApps & memes.', risk: 'Occasional network stability issues / outages.', unlock: 1.2e11, rate: 0.9, val: 4e7, trait: 'Very high rate, but random short outages pause it.' },
+    { id: 'trx', sym: '⟁', name: 'TRON', col: '#eb0029', str: 'Leading network for global stablecoin (USDT) flow.', risk: 'Intense competition from L2s & Solana.', unlock: 5e11, rate: 0.35, val: 8e7, trait: '+4% sale value on ALL coins per TRX rig level (liquidity).' }
+  ];
+  var cryptoEl = document.getElementById('crypto');
+  function cryptoInit() { state.crypto = state.crypto || { unlocked: {}, bal: {}, up: {} }; var c = state.crypto; if (!c.unlocked) c.unlocked = {}; if (!c.bal) c.bal = {}; if (!c.up) c.up = {}; return c; }
+  function cdef(id) { return CRYPTOS.filter(function (x) { return x.id === id; })[0]; }
+  function cryptoOwns(id) { return !!cryptoInit().unlocked[id]; }
+  function cryptoUp(id) { return cryptoInit().up[id] || 0; }
+  function cryptoOwnedCount() { var n = 0; CRYPTOS.forEach(function (x) { if (cryptoOwns(x.id)) n++; }); return n; }
+  function cryptoEthBoost() { return cryptoOwns('eth') ? (1 + 0.08 * cryptoOwnedCount()) : 1; }
+  function cryptoRate(x) { return x.rate * (1 + 0.5 * cryptoUp(x.id)) * cryptoEthBoost(); }   // coins per second
+  function cryptoSellMult() { return 1 + 0.04 * cryptoUp('trx'); }
+  function cryptoUpCost(x) { var base = x.unlock * 0.6 * Math.pow(1.9, cryptoUp(x.id)); if (cryptoOwns('bnb')) base *= Math.max(0.4, 1 - 0.05 * cryptoUp('bnb')); return Math.ceil(base); }
+  function cryptoMult() { var C = CRYPTOS; if (!C) return 1; var c = state.crypto; if (!c || !c.unlocked) return 1; var owned = 0, up = 0; C.forEach(function (x) { if (c.unlocked[x.id]) { owned++; up += (c.up && c.up[x.id]) || 0; } }); return 1 + 0.03 * owned + 0.01 * up; }
+  var solOutageUntil = 0;
+  function cryptoTick(dt) {
+    if (cryptoOwnedCount() === 0) return;
+    var c = cryptoInit(), now = performance.now() / 1000;
+    if (cryptoOwns('sol') && now > solOutageUntil && Math.random() < 0.03 * dt) solOutageUntil = now + 2 + Math.random() * 3;   // Solana: occasional outage
+    CRYPTOS.forEach(function (x) {
+      if (!cryptoOwns(x.id)) return;
+      if (x.id === 'sol' && now < solOutageUntil) return;   // paused during an outage
+      c.bal[x.id] = (c.bal[x.id] || 0) + cryptoRate(x) * dt;
+    });
+  }
+  function cryptoSell(id) {
+    var c = cryptoInit(), x = cdef(id), amt = c.bal[id] || 0; if (amt <= 0) return;
+    var bits = amt * x.val * cryptoSellMult() * globalMult();   // sale scales with the whole economy
+    c.bal[id] = 0; state.bits += bits; state.lifetime = (state.lifetime || 0) + bits;
+    if (window.__sfx) window.__sfx('coin'); gamePop('💱 Sold ' + x.name + ' → ◉' + fmt(bits), x.col);
+    publish(); dirty = true; save(); renderCrypto(); renderBalance();
+  }
+  function renderCrypto() {
+    if (!cryptoEl) return; var c = cryptoInit();
+    var owned = cryptoOwnedCount(), sol = performance.now() / 1000 < solOutageUntil;
+    var cards = CRYPTOS.map(function (x) {
+      var own = cryptoOwns(x.id), bal = c.bal[x.id] || 0, lvl = cryptoUp(x.id);
+      var head = '<div class="cy-h"><span class="cy-sym" style="color:' + x.col + '">' + x.sym + '</span><span class="cy-nm">' + x.name + '</span>' + (own ? '<span class="cy-lv">Rig Lv ' + lvl + '</span>' : '<span class="cy-lk">🔒</span>') + '</div>';
+      var flav = '<div class="cy-str">' + x.str + '</div><div class="cy-risk">⚠ ' + x.risk + '</div><div class="cy-trait" style="color:' + x.col + '">✦ ' + x.trait + '</div>';
+      if (!own) {
+        var can = state.bits >= x.unlock;
+        return '<div class="cy-card" style="--cc:' + x.col + '">' + head + flav +
+          '<button type="button" class="cy-btn' + (can ? ' can' : '') + '" data-cyunl="' + x.id + '"' + (can ? '' : ' disabled') + '>Set up rig · <span style="color:' + fmtColor(x.unlock) + '">◉' + fmt(x.unlock) + '</span></button></div>';
+      }
+      var uc = cryptoUpCost(x), canU = state.bits >= uc, outage = (x.id === 'sol' && sol);
+      return '<div class="cy-card own" style="--cc:' + x.col + '">' + head + flav +
+        '<div class="cy-stat">' + x.sym + ' <b>' + bal.toFixed(3) + '</b> mined · ' + cryptoRate(x).toFixed(3) + '/s' + (outage ? ' <span class="cy-out">⚡ OUTAGE</span>' : '') + '</div>' +
+        '<div class="cy-acts"><button type="button" class="cy-sell' + (bal > 0 ? ' can' : '') + '" data-cysell="' + x.id + '"' + (bal > 0 ? '' : ' disabled') + '>💱 Sell → ◉' + fmt(bal * x.val * cryptoSellMult() * globalMult()) + '</button>' +
+        '<button type="button" class="cy-up' + (canU ? ' can' : '') + '" data-cyup="' + x.id + '"' + (canU ? '' : ' disabled') + '>Upgrade rig +50% · <span style="color:' + fmtColor(uc) + '">◉' + fmt(uc) + '</span></button></div></div>';
+    }).join('');
+    cryptoEl.innerHTML = '<div class="cy-head">⛏️ Crypto Mining Rig <span class="cy-sub">— ' + owned + '/6 coins · portfolio bonus <b>+' + Math.round((cryptoMult() - 1) * 100) + '% all income</b> · sales feed your currency</span></div>' +
+      (owned > 0 ? '<button type="button" class="cy-sellall" data-cysellall="1">💱 Sell every coin → currency</button>' : '') +
+      '<div class="cy-grid">' + cards + '</div>';
+    cryptoEl.querySelectorAll('[data-cyunl]').forEach(function (b) { b.addEventListener('click', function () { var x = cdef(b.dataset.cyunl); if (!x || cryptoOwns(x.id) || state.bits < x.unlock) return; state.bits -= x.unlock; cryptoInit().unlocked[x.id] = true; if (window.__sfx) window.__sfx('unlock'); gamePop('⛏️ ' + x.name + ' rig online', x.col); addXp(120, 'Crypto: ' + x.name); publish(); dirty = true; save(); renderCrypto(); renderBalance(); if (window.__roomRelayout) window.__roomRelayout(); }); });
+    cryptoEl.querySelectorAll('[data-cyup]').forEach(function (b) { b.addEventListener('click', function () { var x = cdef(b.dataset.cyup); if (!x || !cryptoOwns(x.id)) return; var uc = cryptoUpCost(x); if (state.bits < uc) return; state.bits -= uc; cryptoInit().up[x.id] = cryptoUp(x.id) + 1; if (window.__sfx) window.__sfx('upgrade'); gamePop('⛏️ ' + x.name + ' rig Lv ' + cryptoUp(x.id), x.col); publish(); dirty = true; save(); renderCrypto(); renderBalance(); }); });
+    cryptoEl.querySelectorAll('[data-cysell]').forEach(function (b) { b.addEventListener('click', function () { cryptoSell(b.dataset.cysell); }); });
+    var sa = cryptoEl.querySelector('[data-cysellall]'); if (sa) sa.addEventListener('click', function () { CRYPTOS.forEach(function (x) { if (cryptoOwns(x.id) && (cryptoInit().bal[x.id] || 0) > 0) cryptoSell(x.id); }); });
   }
   function prestigePointsFor(roundGain, coresGained) { return Math.floor(Math.sqrt(Math.max(0, roundGain) / 6000)) + coresGained * 3; }
   function doReboot() {
@@ -9532,7 +9631,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -9911,6 +10010,7 @@ window.__sfx = (function () {
       var he = activeHoliday(); if (he) { holEv(he.id).prod += dt * (1 + bayOpenCount()); }   // holiday production-milestone track fills from automated factory output
       checkRelics();   // award relics the instant their objective is met
       if (brainUnlocked()) { var bm = brainInit().mats, gr = brainGrowRate() * dt; bm.syn += gr; bm.log += gr * 0.6; bm.dat += gr * 0.35; }   // the brain lab grows its own materials over time
+      cryptoTick(dt);   // crypto rigs mine coins in the background
     }
     advTick();                         // expeditions run on wall-clock time -> progress in the background regardless
     currencyHud(passivePerSec());   // keep the one fixed currency tracker live on EVERY tab
@@ -9921,7 +10021,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); }
       dirty = false;
     }
   }, 500);
@@ -10541,7 +10641,7 @@ window.__sfx = (function () {
       if (j.gen) state.gen = j.gen;
       if (j.comp) state.comp = j.comp;
       if (j.genesis) state.genesis = j.genesis;
-      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain;
+      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto;
       if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
@@ -10563,10 +10663,11 @@ window.__sfx = (function () {
       if (!state.relics) state.relics = {};
       if (!state.armory) state.armory = { cls: 'pistol', sel: {}, built: null, loadouts: {}, parts: [] };
       if (!state.brain) state.brain = { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {} };
+      if (!state.crypto) state.crypto = { unlocked: {}, bal: {}, up: {} };
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
