@@ -278,13 +278,22 @@
 
   /* ---------- shared bits ---------- */
   .panel-label{
-    font-family:var(--font-display); font-size:13px; font-weight:700;
-    color:var(--text-dim); margin-bottom:12px; text-transform:uppercase;
-    letter-spacing:0.08em; display:flex; align-items:center; gap:8px;
+    font-family:var(--font-display); font-size:14.5px; font-weight:800;
+    color:var(--text); margin-bottom:12px; text-transform:uppercase;
+    letter-spacing:0.1em; display:flex; align-items:center; gap:9px;
+    padding-bottom:8px; border-bottom:1px solid var(--line);
+    text-shadow:0 1px 2px rgba(0,0,0,.5);
   }
   .panel-label::before{
-    content:''; width:7px; height:7px; border-radius:50%;
-    background:var(--blue); box-shadow:0 0 8px var(--blue); flex-shrink:0;
+    content:''; width:4px; height:16px; border-radius:2px;
+    background:var(--blue); box-shadow:0 0 10px var(--blue); flex-shrink:0;
+  }
+  /* Sections connect with a thin gradient seam instead of dead space, so the
+     game reads as one continuous surface rather than separate boxes. */
+  .panel-label[style*="margin-top"]{ margin-top:18px !important; position:relative; }
+  .panel-label[style*="margin-top"]::after{
+    content:''; position:absolute; left:0; right:0; top:-10px; height:1px;
+    background:linear-gradient(90deg,transparent,var(--line),transparent);
   }
   .card{
     /* Glass pass (owner-requested "cinematic/alive," evolving rather than
@@ -907,6 +916,28 @@
   .exp-i-ic{ font-size:14px; flex-shrink:0; }
   .exp-i-name{ font-weight:600; font-size:12px; }
   .exp-i-rar{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-left:auto; text-align:right; }
+  /* God-rarity signature set gear: bright shiny gold + shimmer sweep */
+  .exp-item-god{ border-color:#ffd24b !important; background:linear-gradient(120deg,rgba(255,210,75,.10),rgba(255,170,40,.05)); box-shadow:0 0 12px -3px rgba(255,210,75,.55); position:relative; overflow:hidden; }
+  .exp-item-god .exp-i-rar{ color:#ffd24b; font-weight:700; }
+  .exp-item-god::after, .exp-item-holo::after{ content:''; position:absolute; inset:0; pointer-events:none; background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.35) 48%,transparent 66%); background-size:250% 100%; animation:shimmer 2.6s linear infinite; }
+  @keyframes shimmer{ 0%{ background-position:180% 0; } 100%{ background-position:-80% 0; } }
+  /* Genesis set: holographic foil -- shifting rainbow sheen */
+  .exp-item-holo{ border-color:#ffd24b !important; position:relative; overflow:hidden; background:linear-gradient(120deg,rgba(255,80,120,.10),rgba(120,80,255,.08),rgba(80,220,255,.08),rgba(120,255,140,.08)); box-shadow:0 0 14px -3px rgba(180,120,255,.6); }
+  .exp-item-holo::before{ content:''; position:absolute; inset:0; pointer-events:none; opacity:.5; background:linear-gradient(60deg,#ff5a6e,#ffd24b,#5fe39a,#5fb0ff,#c07bff,#ff5a6e); background-size:300% 300%; animation:holo 5s ease infinite; mix-blend-mode:overlay; }
+  @keyframes holo{ 0%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } 100%{ background-position:0% 50%; } }
+  .exp-item-holo .exp-i-rar{ color:#e0b0ff; font-weight:700; }
+  /* gear-set collection progress */
+  .set-wrap{ margin-top:10px; padding:9px 12px; border:1px solid rgba(255,210,75,.35); border-radius:8px; background:linear-gradient(180deg,rgba(255,210,75,.05),transparent); }
+  .set-head{ font-family:var(--font-mono); font-size:11px; color:#ffd88a; margin-bottom:7px; }
+  .set-hint{ color:var(--text-faint); }
+  .set-row{ display:flex; align-items:center; gap:7px; padding:4px 0; flex-wrap:wrap; }
+  .set-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; min-width:130px; }
+  .set-god .set-nm{ color:#ffd24b; text-shadow:0 0 8px rgba(255,210,75,.4); }
+  .set-holo .set-nm{ background:linear-gradient(90deg,#ff5a6e,#ffd24b,#5fe39a,#5fb0ff,#c07bff); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .set-ct{ font-family:var(--font-mono); font-size:10px; color:var(--text-dim); }
+  .set-pip{ font-family:var(--font-mono); font-size:9px; width:16px; height:16px; line-height:16px; text-align:center; border-radius:50%; border:1px solid var(--line); color:var(--text-faint); }
+  .set-pip.on{ background:#ffd24b; color:#0c0e13; border-color:#ffd24b; font-weight:700; }
+  .set-bon{ font-family:var(--font-mono); font-size:10px; color:#5fe39a; margin-left:auto; }
   /* modular robot preview: parts drive body / legs / head silhouettes */
   .exp-robot{ width:66px; height:86px; }
   .exp-head{ position:absolute; left:15px; right:15px; top:8px; height:16px; border-radius:5px 5px 0 0; background:linear-gradient(180deg,#b8b6ac,#86847a); }
@@ -7265,7 +7296,26 @@ window.__sfx = (function () {
   function bayPowerMult() { return 1 + Math.min(0.5, totalBayPower() / 500); }   // small-to-medium adventurer boost, capped +50%
   // Adventurer combat power = gear power x skills x army bay power. Used by the
   // Expedition run AND the always-on HUD so they never disagree.
-  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult(); }
+  // ---- Signature gear SETS: special drops belong to one of two sets. Owning
+  // more pieces of a set unlocks bonus tiers (2/4/6/8/10 pieces), each a
+  // permanent power boost -- a long collection goal across prestiges. ----
+  var GEAR_SETS = { dominion: "Ultron's Dominion", genesis: 'Genesis Pantheon' };
+  var SET_TIERS = [2, 4, 6, 8, 10];
+  function setCount(setId) { var a = state.adv || {}, n = 0; (a.inv || []).forEach(function (x) { if (x.set === setId) n++; }); return n; }
+  function setTier(setId) { var n = setCount(setId), t = 0; for (var i = 0; i < SET_TIERS.length; i++) if (n >= SET_TIERS[i]) t++; return t; }   // 0..5
+  function setBonusMult() { return 1 + 0.08 * (setTier('dominion') + setTier('genesis')); }   // +8% adventurer power per set tier reached
+  function setBonusHtml() {
+    var rows = Object.keys(GEAR_SETS).map(function (id) {
+      var n = setCount(id), tier = setTier(id), next = SET_TIERS.filter(function (th) { return th > n; })[0];
+      var pips = SET_TIERS.map(function (th) { return '<span class="set-pip' + (n >= th ? ' on' : '') + '">' + th + '</span>'; }).join('');
+      var cls = id === 'genesis' ? 'set-holo' : 'set-god';
+      return '<div class="set-row ' + cls + '"><span class="set-nm">' + GEAR_SETS[id] + '</span>' +
+        '<span class="set-ct">' + n + ' pcs</span>' + pips +
+        '<span class="set-bon">+' + (tier * 8) + '% power' + (next ? ' · next @ ' + next : ' · MAX') + '</span></div>';
+    }).join('');
+    return '<div class="set-wrap"><div class="set-head">✦ Signature Gear Sets <span class="set-hint">— collect God-rarity pieces for permanent power (2/4/6/8/10)</span></div>' + rows + '</div>';
+  }
+  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult(); }
   function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
 
   // ---- Refinery: an adamantium forge and a vibranium forge cast ingots onto
@@ -8003,7 +8053,7 @@ window.__sfx = (function () {
     state.adv = state.adv || { inv: [] };
     if (window.LootEngine) {   // a 3-perk, best-in-game keepsake weapon
       var mega = LootEngine.generate('ultron_prime_core', { seed: 'genesis' + Date.now() + Math.random(), ilvl: 150, rarity: 'mythic', affixCount: 3, affixes: 3 });
-      mega.rarity = mega.tierLabel; mega.name = 'Genesis ' + mega.name; mega.genesis = true;
+      mega.rarity = mega.tierLabel; mega.name = 'Genesis ' + mega.name; mega.genesis = true; mega.set = 'genesis';
       state.adv.inv = (state.adv.inv || []).concat([mega]).slice(-40);
     }
     state.bits = 100000 * genesisMult(); state.up = {}; UPGRADES.forEach(function (u) { state.up[u.id] = 0; });   // remake the run
@@ -8420,13 +8470,13 @@ window.__sfx = (function () {
     for (var i = 0; i < lootCount; i++) out.push(rollLoot(bonusIlvl, isDungeon ? null : region.types));
     if (isDungeon && battle && battle.win && window.LootEngine) {   // vault cleared -> guaranteed mythic signature, scaled reward
       var dsig = LootEngine.generate(dungeon.base, { seed: 'dsig' + Date.now() + Math.random(), ilvl: ilvl + 3, rarity: 'mythic' });
-      dsig.rarity = dsig.tierLabel; dsig.name = dungeon.name + ' ' + dsig.name; out.push(dsig);
+      dsig.rarity = dsig.tierLabel; dsig.name = dungeon.name + ' ' + dsig.name; dsig.set = 'genesis'; out.push(dsig);
       state.bits += 20000 * (di + 1) * globalMult(); addXp(400 * (di + 1), 'Vault: ' + dungeon.name);
     } else if (isBoss && battle && battle.win && window.LootEngine) {   // boss victory -> guaranteed signature
       var boss = BOSSES[ri];
       if (boss) {
         var sig = LootEngine.generate(boss.base, { seed: 'sig' + Date.now() + Math.random(), ilvl: ilvl + 2, rarity: boss.rarity });
-        sig.rarity = sig.tierLabel; sig.name = boss.name + "'s " + sig.name; out.push(sig);
+        sig.rarity = sig.tierLabel; sig.name = boss.name + "'s " + sig.name; sig.set = 'dominion'; out.push(sig);
       }
       a.bosses = a.bosses || {}; a.bosses[ri] = true;
       state.bits += 5000 * globalMult(); addXp(200, 'Boss: ' + boss.name);
@@ -8664,10 +8714,14 @@ window.__sfx = (function () {
     var haul = a.lastHaul && a.lastHaul.length ? '<div class="exp-haul">Last haul: ' + a.lastHaul.map(function (it) { return '<span style="color:' + it.color + '">' + esc(it.name) + '</span>'; }).join(', ') + '</div>' : '';
     var inv = (a.inv || []).slice().reverse().map(function (it) {
       var can = it.slot && it.stats, on = can && gear[it.slot] && gear[it.slot].id === it.id;
-      return '<div class="exp-item' + (can ? ' eqbl' : '') + (on ? ' on' : '') + '"' + (can ? ' data-a="equip" data-id="' + it.id + '"' : '') + ' style="border-color:' + it.color + (on ? ';color:' + it.color : '') + '">' +
-        '<span class="exp-i-ic" style="color:' + it.color + '">' + (SLOT_IC[it.slot] || '◉') + '</span>' +
-        '<span class="exp-i-name" style="color:' + it.color + '">' + esc(it.name) + '</span>' +
-        '<span class="exp-i-rar">' + it.rarity + (on ? ' · equipped' : '') + '</span>' +
+      // signature SET gear is "God" rarity: bright gold + shimmer; Genesis set is holo-foil.
+      var setCls = it.set === 'genesis' ? ' exp-item-holo' : (it.set === 'dominion' ? ' exp-item-god' : '');
+      var col = it.set ? '#ffd24b' : it.color;
+      var rarLabel = it.set === 'genesis' ? 'GENESIS · GOD SET' : (it.set === 'dominion' ? 'DOMINION · GOD SET' : it.rarity);
+      return '<div class="exp-item' + (can ? ' eqbl' : '') + (on ? ' on' : '') + setCls + '"' + (can ? ' data-a="equip" data-id="' + it.id + '"' : '') + ' style="border-color:' + col + (on ? ';color:' + col : '') + '">' +
+        '<span class="exp-i-ic" style="color:' + col + '">' + (SLOT_IC[it.slot] || '◉') + '</span>' +
+        '<span class="exp-i-name" style="color:' + col + '">' + esc(it.name) + '</span>' +
+        '<span class="exp-i-rar">' + rarLabel + (on ? ' · equipped' : '') + '</span>' +
         (it.stats ? '<span class="exp-i-stats">' + statLine(it.stats) + '</span>' : '') +
         (it.mods && it.mods.length ? '<span class="exp-i-ab">' + esc(it.mods.join(' · ')) + '</span>' : '') +
         (on ? '' : (can ? '<button type="button" class="exp-sell exp-equipbtn" data-a="equip" data-id="' + it.id + '">\u21EA equip</button>' : '') + '<button type="button" class="exp-sell" data-a="sell" data-id="' + it.id + '">sell \u25C9' + sellValue(it) + '</button><button type="button" class="exp-sell exp-salv" data-a="salvage" data-id="' + it.id + '">salvage</button>') + '</div>';
@@ -8681,7 +8735,7 @@ window.__sfx = (function () {
       renderBuilder(a) +
       matBar + '<div class="exp-load">' + load + '</div>' + totHtml +
       statsSheetHtml(gear) +
-      status + battleHtml + haul +
+      status + battleHtml + haul + setBonusHtml() +
       (inv ? '<div class="exp-inv-h">Inventory (' + (a.inv || []).length + ') \u2014 press Equip on a part<button type="button" class="exp-selljunk" data-a="sell-junk">Sell all Common</button><button type="button" class="exp-selljunk" data-a="salvage-junk">Salvage all Common</button><button type="button" class="exp-selljunk" data-a="sell-all">Sell all</button><button type="button" class="exp-selljunk" data-a="salvage-all">Salvage all</button></div><div class="exp-inv">' + inv + '</div>' : '');
     var reg = REGIONS[a.region || 0] || REGIONS[0];   // live combat viewer: on while a run is out
     window.__advView = { active: away, color: (r && r.color) || '#ff3b3b', ground: reg.color || '#00e5ff', label: runLabel };
