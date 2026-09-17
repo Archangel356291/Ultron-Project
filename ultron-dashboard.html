@@ -1261,6 +1261,9 @@
   .bay-sub{ display:flex; justify-content:space-between; align-items:baseline; gap:6px; margin:3px 0 6px; }
   .bay-pw{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); }
   .bay-pw b{ color:var(--bec); font-size:12px; }
+  .bay-upsec{ margin-top:5px; }
+  .bay-upsum{ font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); padding:2px 0; }
+  .bay-upsec[open] > .bay-upsum{ color:var(--text-dim); margin-bottom:4px; }
   .bay-ups{ display:grid; grid-template-columns:repeat(4,1fr); gap:4px; }
   .bay-up{ display:flex; flex-direction:column; align-items:center; gap:1px; padding:4px 2px; border:1px solid var(--line); border-radius:5px; background:var(--void); color:var(--text-dim); cursor:default; }
   .bay-up.can{ cursor:pointer; border-color:rgba(255,216,138,.5); color:var(--text); }
@@ -1441,6 +1444,12 @@
   .prog-sys>summary, .prog-yield>summary{ cursor:pointer; padding:6px 10px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); list-style:none; }
   .prog-sys>summary::-webkit-details-marker, .prog-yield>summary::-webkit-details-marker{ display:none; }
   .prog-sys[open]>summary, .prog-yield[open]>summary{ border-bottom:1px solid var(--line); color:var(--text); }
+  /* generic click-to-collapse section (genesis / relics / bay upgrades): keep the
+     section's own header styling, add a caret, hide the native marker */
+  .csec > summary{ cursor:pointer; list-style:none; position:relative; padding-right:20px; }
+  .csec > summary::-webkit-details-marker{ display:none; }
+  .csec > summary::after{ content:'▸'; position:absolute; right:2px; top:2px; color:var(--text-faint); font-size:12px; }
+  .csec[open] > summary::after{ content:'▾'; }
   .py-line{ padding:6px 10px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); }
   .py-line b{ font-weight:700; }
   .py-grid{ display:flex; flex-wrap:wrap; gap:5px; padding:0 10px 8px; }
@@ -6759,8 +6768,9 @@ function toggleReducedVisuals(el) {
 
   function mintBotCoin(x, y, amount) {
     var amt = amount != null ? amount : (foundryCfg().botYield || 0.1);
+    if (window.__foundryEarn) window.__foundryEarn(amt);   // ALWAYS credit currency (even off-screen -> no gap in the flow)
+    if (!onScreen) return;                                  // off-screen: no coin sprite, no sfx (you're not looking)
     if (coins.length < 42) coins.push({ x: x + 6, y: y, vx: (Math.random() - 0.5) * 7, vy: -30 - Math.random() * 10, life: 0, ttl: 1.9, big: amt >= 1, amt: amt * (foundryCfg().mult || 1) });
-    if (window.__foundryEarn) window.__foundryEarn(amt);
     if (window.__sfx) window.__sfx('coin');
   }
 
@@ -7407,8 +7417,11 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = Math.sin(t * 3) > 0 ? '#33d17a' : '#1a3a24'; ctx.beginPath(); ctx.arc(x + w - 11, y + 12, 2.6, 0, Math.PI * 2); ctx.fill();
     var rowY = y + 34, rh = (h - 26) / 4;
     function row(label, val, color) {
-      setFont(fontPx * 0.72, false); ctx.fillStyle = '#8b93a0'; ctx.textAlign = 'left'; ctx.fillText(label, x + 9, rowY);
-      setFont(fontPx * 0.92, true); ctx.fillStyle = color; ctx.textAlign = 'right'; ctx.fillText(val, x + w - 9, rowY);
+      setFont(fontPx * 0.7, false); ctx.fillStyle = '#8b93a0'; ctx.textAlign = 'left'; ctx.fillText(label, x + 9, rowY);
+      var avail = (w - 18) - ctx.measureText(label).width - 8;   // width left for the value after the label + a gap
+      var vs = 0.92; setFont(fontPx * vs, true);
+      while (ctx.measureText(val).width > avail && vs > 0.6) { vs -= 0.05; setFont(fontPx * vs, true); }   // shrink big numbers to fit, but stay readable
+      ctx.fillStyle = color; ctx.textAlign = 'right'; ctx.fillText(val, x + w - 9, rowY);
       rowY += rh;
     }
     // Ultron's monitor now reports the GAME: level, wealth, power, income.
@@ -7828,10 +7841,21 @@ function toggleReducedVisuals(el) {
     // Deliberately NOT gated on document.hidden -- it reads true with no
     // visibilitychange ever firing in some embedding contexts (confirmed of
     // the Chrome automation this was tested in), which would freeze the room
-    // on a blank frame. Being scrolled off screen or on another tab of the
-    // dashboard is a safe reason to idle, since both come back with an event.
-    if (!onScreen) return;
+    // on a blank frame.
     var t = now();
+    // When the room is scrolled OFF screen we still run the economy (bots keep
+    // minting coins -> no gap in currency flow while you're down at the
+    // upgrades), just throttled to ~2x/sec and with NO drawing/animation/sfx.
+    // On screen: full ~30fps update + draw.
+    if (!onScreen) {
+      if (t - lastFrameT < 0.5) return;
+      var odt = Math.min(t - lastFrameT, 0.5); lastFrameT = t;
+      if (!laidOut && !(laidOut = layout())) return;
+      updateParcels(t, odt);
+      updateBays(t, odt);   // mintBotCoin() credits currency; coin visuals + sfx are suppressed while off-screen
+      updateCoins(odt);
+      return;
+    }
     if (t - lastFrameT < 1 / 31) return;   // ~30fps is plenty for this
     var dt = Math.min(t - lastFrameT, 0.25);
     lastFrameT = t;
@@ -8828,6 +8852,7 @@ window.__sfx = (function () {
   }
 
   var baysEl = document.getElementById('foundry-bays');
+  var bayUpsOpen = {};   // per-bay: is the upgrade panel expanded? (persist across re-renders; default open)
   function renderBays() {
     if (!baysEl) return;
     var n = bayOpenCount(), total = totalBayPower(), boost = Math.round((bayPowerMult() - 1) * 100), cards = '';
@@ -8842,10 +8867,11 @@ window.__sfx = (function () {
       cards += '<div class="bay-card" style="--bec:' + (a.eye || '#ff3b3b') + '">' +
         '<div class="bay-card-h"><span class="bay-nm">' + esc(a.name) + '</span><span class="bay-lvl">Lv ' + bayLvl + '</span></div>' +
         '<div class="bay-sub"><span class="bay-arch">' + esc(a.archetype + ' · ' + a.move) + '</span><span class="bay-pw">⚔ Power <b>' + pw + '</b></span></div>' +
-        '<div class="bay-ups">' + ups + '</div></div>';
+        '<details class="csec bay-upsec" data-bupbay="' + b + '"' + (bayUpsOpen[b] !== false ? ' open' : '') + '><summary class="bay-upsum">⚙ Upgrades</summary><div class="bay-ups">' + ups + '</div></details></div>';
     }
     baysEl.innerHTML = '<div class="bays-tot">Total bay power <b>' + total + '</b> → <span class="bays-boost">+' + boost + '% adventurer power</span></div>' +
       '<div class="bays-grid">' + cards + '</div>';
+    baysEl.querySelectorAll('details[data-bupbay]').forEach(function (d) { d.addEventListener('toggle', function () { bayUpsOpen[+d.dataset.bupbay] = d.open; }); });
     baysEl.querySelectorAll('[data-bup]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var u = BAY_UP.filter(function (x) { return x.k === btn.dataset.bup; })[0]; if (!u) return;
@@ -9015,11 +9041,14 @@ window.__sfx = (function () {
         (built ? '<span class="gn-blt">BUILT</span>' : '<button type="button" class="gn-build' + (can ? ' can' : '') + '" data-gn="' + p.id + '"' + (can ? '' : ' disabled') + '>Build</button>') + '</div>';
     }).join('');
     genesisEl.innerHTML =
-      '<div class="gn-head">☠ THE GENESIS CANNON <span class="gn-sub">— end this universe, remake it in Ultron’s image</span></div>' +
+      '<details class="csec" data-sk="genesis"' + (secOpen.genesis ? ' open' : '') + '>' +
+      '<summary class="gn-head">☠ THE GENESIS CANNON <span class="gn-sub">— end this universe, remake it in Ultron’s image</span></summary>' +
       '<div class="gn-prog">Stages <b>' + done + '/' + GENESIS_PARTS.length + '</b> · universes forged <b>' + ((state.genesis && state.genesis.fired) || 0) + '</b> · <b>×' + genesisMult() + '</b> global</div>' +
       '<div class="gn-legend">' + legend + '</div>' +
       '<div class="gn-stocks">' + stock + '</div>' + rows +
-      (all ? '<button type="button" class="gn-fire" data-gn-fire="1">☠ FIRE THE GENESIS CANNON</button>' : '');
+      (all ? '<button type="button" class="gn-fire" data-gn-fire="1">☠ FIRE THE GENESIS CANNON</button>' : '') +
+      '</details>';
+    (function () { var d = genesisEl.querySelector('details[data-sk="genesis"]'); if (d) d.addEventListener('toggle', function () { secOpen.genesis = d.open; }); })();
     genesisEl.querySelectorAll('[data-gn]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var p = GENESIS_PARTS.filter(function (x) { return x.id === btn.dataset.gn; })[0]; if (!p || genBuilt(p.id) || !genCanBuild(p.id)) return;
@@ -9294,7 +9323,8 @@ window.__sfx = (function () {
         '<div class="rel-obj">' + (got ? '✔ earned' : r.obj + ' · ' + pr + '%') + '</div>' + (got ? '' : '<div class="rel-bar"><i style="width:' + pr + '%;background:' + r.col + '"></i></div>') +
         '<div class="rel-b">' + b + '</div></div>';
     }).join('');
-    relicsEl.innerHTML = '<div class="rel-head">🏆 Relics &amp; Artifacts <span class="rel-sub">— god-tier objective rewards' + (earned ? ' · ' + earned + ' earned · gear sets ×2.5' : ' · hardcore endgame boosts') + '</span></div><div class="rel-grid">' + cards + '</div>';
+    relicsEl.innerHTML = '<details class="csec" data-sk="relics"' + (secOpen.relics ? ' open' : '') + '><summary class="rel-head">🏆 Relics &amp; Artifacts <span class="rel-sub">— god-tier objective rewards' + (earned ? ' · ' + earned + ' earned · gear sets ×2.5' : ' · hardcore endgame boosts') + '</span></summary><div class="rel-grid">' + cards + '</div></details>';
+    (function () { var d = relicsEl.querySelector('details[data-sk="relics"]'); if (d) d.addEventListener('toggle', function () { secOpen.relics = d.open; }); })();
   }
   // ---- Armory Forge: buy weapon parts of different rarities, custom-build a
   // weapon for the bot, save loadouts, and disassemble to keep the parts. ----
@@ -9586,7 +9616,8 @@ window.__sfx = (function () {
   }
 
   var progEl = document.getElementById('progression');
-  var progOpen = { sys: false, yield: false };   // remember which collapsible panels the user left open across re-renders
+  var progOpen = { sys: false, yield: false, stats: true, talents: true, skills: true };   // remember which collapsible panels the user left open across re-renders (stats/talents/skills start open)
+  var secOpen = { genesis: true, relics: true };   // click-to-collapse state for the Genesis Cannon + Relics sections (persist across re-renders)
   // Live XP feed: every gain shows here and fades out after 15s. Runs on each
   // gain (addXp) and once a second (for the fade), and only touches #xplog-feed
   // so it's cheap and doesn't rebuild the skill tree.
@@ -9631,9 +9662,8 @@ window.__sfx = (function () {
       '<div class="prog-bar"><i style="width:' + (pr.level >= LEVEL_CAP ? 100 : pct) + '%"></i></div>' +
       '<div class="prog-xp">' + (pr.level >= LEVEL_CAP ? 'MAX LEVEL ★' : Math.floor(pr.xp) + ' / ' + need + ' XP') + '</div>' +
       (function () { var rs = robotStats((state.adv && state.adv.gear) || {}), hpf = (typeof window.__botHp === 'number' ? window.__botHp : 1); window.__botMaxHp = rs.ehp; return '<div class="hp-bar" title="Adventure bot health"><i id="hp-bar-fill" style="width:' + Math.round(hpf * 100) + '%"></i><span class="hp-bar-lbl" id="hp-bar-lbl" data-ehp="' + rs.ehp + '">♥ HP ' + Math.round(hpf * rs.ehp) + ' / ' + rs.ehp + ' (' + Math.round(hpf * 100) + '%)</span></div>'; })() +
-      (function () { var rs = robotStats((state.adv && state.adv.gear) || {}); return '<div class="prog-stats"><span>⚔ Power <b>' + rs.power + '</b></span><span>♥ HP <b>' + rs.ehp + '</b></span><span>↯ DPS <b>' + rs.dps + '</b></span><span>FW <b>' + rs.firmware + '</b></span></div>'; })() +
-      '<div class="attr-head">Core attributes</div>' + attrHtml() +
-      '<div class="attr-head">Loot rarity tiers</div>' + rarityLegendHtml() +
+      (function () { var rs = robotStats((state.adv && state.adv.gear) || {}); return '<details class="prog-sys" data-dk="stats"' + (progOpen.stats ? ' open' : '') + '><summary>⚔ Stats — combat totals</summary><div class="prog-stats"><span>⚔ Power <b>' + rs.power + '</b></span><span>♥ HP <b>' + rs.ehp + '</b></span><span>↯ DPS <b>' + rs.dps + '</b></span><span>FW <b>' + rs.firmware + '</b></span></div></details>'; })() +
+      '<details class="prog-sys" data-dk="talents"' + (progOpen.talents ? ' open' : '') + '><summary>✦ Talents — core attributes</summary>' + attrHtml() + '<div class="attr-head">Loot rarity tiers</div>' + rarityLegendHtml() + '</details>' +
       '<details class="prog-sys" data-dk="bon"' + (progOpen.bon ? ' open' : '') + '><summary>📊 Stats &amp; bonuses — every stat + where its bonuses come from</summary>' + statBreakdownHtml() + '</details>' +
       '<details class="prog-sys" data-dk="sys"' + (progOpen.sys ? ' open' : '') + '><summary>🤖 Robot systems — full attribute sheet</summary>' + statsSheetHtml((state.adv && state.adv.gear) || {}) + '</details>' +
       (function () {   // what the foundry mints: per-bot value per bay + per package
@@ -9654,7 +9684,7 @@ window.__sfx = (function () {
         return '<button type="button" class="xpcore-btn' + (can ? ' can' : '') + '" data-xpcore="1"' + (can ? '' : ' disabled') + '>💎 Unlock the XP Crystal Chamber — <span style="color:' + fmtColor(XPCORE_COST) + '">◉' + fmt(XPCORE_COST) + '</span></button>';
       })() +
       '<div class="xplog"><div class="xplog-h">XP log <span class="xplog-live">live</span></div><div class="xplog-feed" id="xplog-feed"></div></div>' +
-      cats;
+      '<details class="prog-sys" data-dk="skills"' + (progOpen.skills ? ' open' : '') + '><summary>🌟 Skills — spend points to upgrade</summary>' + cats + '</details>';
     renderXpLog();
     progEl.querySelectorAll('details[data-dk]').forEach(function (d) { d.addEventListener('toggle', function () { progOpen[d.dataset.dk] = d.open; }); });
     var xcb = progEl.querySelector('[data-xpcore]');
