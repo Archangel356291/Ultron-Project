@@ -885,6 +885,36 @@
   .gn-fire{ display:block; width:100%; margin-top:8px; font-family:var(--font-display); font-weight:800; font-size:13px; letter-spacing:.05em; padding:10px; border-radius:7px; border:1px solid #ff2b3d; background:linear-gradient(180deg,rgba(255,43,61,.25),rgba(122,77,255,.15)); color:#ffd6d6; cursor:pointer; animation:gnpulse 1.4s ease-in-out infinite; }
   @keyframes gnpulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,43,61,.5); } 50%{ box-shadow:0 0 18px 2px rgba(255,43,61,.55); } }
   /* Infinity Stone Laboratory */
+  .holiday{ margin-top:10px; padding:11px 13px; border:1px solid rgba(143,216,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(80,140,200,.1),transparent); }
+  .hol-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#cdeaff; }
+  .hol-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); }
+  .hol-sub2{ font-family:var(--font-mono); font-size:8.5px; color:var(--text-faint); }
+  .hol-none{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); margin-top:8px; line-height:1.5; }
+  .hol-tracklbl{ font-family:var(--font-display); font-weight:700; font-size:10.5px; color:#9fc4e0; margin:10px 0 5px; }
+  .hol-days{ display:grid; grid-template-columns:repeat(auto-fill,minmax(30px,1fr)); gap:5px; }
+  .hol-day{ display:flex; align-items:center; justify-content:center; height:28px; border-radius:6px; border:1px solid var(--line); background:var(--void); color:var(--text-faint); font-family:var(--font-mono); font-size:11px; }
+  .hol-day.got{ border-color:#33d17a; color:#8fe6b0; background:rgba(51,209,122,.12); }
+  .hol-day.now{ border-color:#ffcf5a; color:#ffe08a; background:rgba(255,207,90,.15); animation:gl-blink 1.2s infinite; }
+  .hol-claim{ display:block; width:100%; margin-top:8px; font-family:var(--font-display); font-weight:700; font-size:12px; padding:9px; border-radius:7px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; }
+  .hol-claim.can{ cursor:pointer; border-color:#8fd8ff; color:#cdeaff; box-shadow:0 0 14px -4px rgba(143,216,255,.6); }
+  .hol-claim.can:hover{ background:rgba(143,216,255,.14); }
+  .hol-claim:disabled{ opacity:.6; }
+  .hol-bar{ height:9px; background:var(--void); border:1px solid var(--line); border-radius:5px; overflow:hidden; margin:4px 0 8px; }
+  .hol-bar i{ display:block; height:100%; }
+  .hol-mile{ display:flex; align-items:center; gap:8px; padding:5px 9px; margin-bottom:4px; border:1px solid var(--line); border-radius:6px; background:var(--void); font-family:var(--font-mono); font-size:10px; }
+  .hol-mile.got{ border-color:rgba(51,209,122,.4); background:rgba(51,209,122,.06); }
+  .hol-mile-th{ font-weight:700; color:#9fc4e0; min-width:40px; }
+  .hol-mile-nm{ color:var(--text); margin-right:auto; min-width:0; }
+  .hol-mile-st{ color:var(--text-faint); } .hol-mile.got .hol-mile-st{ color:#8fe6b0; }
+  .hol-guest-btn{ display:block; width:100%; margin:8px 0; padding:11px; border-radius:8px; border:1px solid #ffcf5a; background:rgba(255,207,90,.12); color:#ffe08a; cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:12px; animation:hol-pulse 1.4s infinite; }
+  .hol-guest-btn:hover{ background:rgba(255,207,90,.22); }
+  @keyframes hol-pulse{ 50%{ box-shadow:0 0 22px -2px rgba(255,207,90,.75); } }
+  /* live UI theming while an event is active (frost / glitching overlay) */
+  body.holiday-winter .content::before, body.holiday-halloween .content::before{ content:""; position:fixed; inset:0; z-index:60; pointer-events:none; }
+  body.holiday-winter .content::before{ background:radial-gradient(130% 26% at 50% 0%, rgba(180,225,255,.12), transparent 60%), radial-gradient(90% 16% at 50% 100%, rgba(180,225,255,.09), transparent 60%); }
+  body.holiday-halloween .content::before{ background:radial-gradient(130% 26% at 50% 0%, rgba(255,120,40,.11), transparent 60%), repeating-linear-gradient(45deg, rgba(120,255,120,.022) 0 6px, transparent 6px 26px); }
+  body.holiday-winter #sec-ultron-core{ border-color:rgba(143,216,255,.5); }
+  body.holiday-halloween #sec-ultron-core{ border-color:rgba(255,139,60,.5); }
   .cosmic{ margin-top:10px; padding:11px 13px; border:1px solid rgba(155,107,255,.45); border-radius:8px; background:linear-gradient(180deg,rgba(120,80,220,.12),rgba(30,20,60,.15)); }
   .cz-head{ font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#c9a6ff; }
   .cz-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); }
@@ -923,6 +953,7 @@
   .sl-eff{ font-family:var(--font-mono); font-size:9px; color:var(--text-faint); width:100%; }
   .sl-stones{ display:grid; grid-template-columns:repeat(auto-fill,minmax(158px,1fr)); gap:8px; margin-top:9px; }
   .sl-stone{ display:flex; flex-direction:column; gap:6px; padding:8px 9px; border:1px solid var(--line); border-left:3px solid var(--sc); border-radius:7px; background:var(--void); }
+  .sl-stone.sl-mastered{ border-color:#ffe08a; box-shadow:0 0 16px -5px rgba(255,224,138,.7), inset 0 0 12px rgba(255,224,138,.06); }
   .sl-stop{ display:flex; align-items:center; gap:7px; }
   .sl-stop b{ font-family:var(--font-display); font-size:12px; }
   .sl-tier{ margin-left:auto; font-family:var(--font-mono); font-size:9.5px; color:var(--sc); border:1px solid var(--sc); border-radius:10px; padding:1px 6px; }
@@ -1245,6 +1276,13 @@
   .xpcore-btn.can:hover{ background:rgba(143,230,75,.16); }
   .xpcore-btn:disabled{ opacity:.6; }
   .xpcore-on{ margin:6px 0; font-family:var(--font-mono); font-size:11px; color:#aef07a; background:rgba(143,230,75,.08); border:1px solid rgba(143,230,75,.3); border-radius:7px; padding:8px 11px; }
+  .xpu-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:6px; margin:2px 0 8px; }
+  .xpu-btn{ display:flex; flex-direction:column; gap:2px; padding:7px 9px; border:1px solid var(--line); border-radius:7px; background:var(--panel-raised); color:var(--text-faint); cursor:default; text-align:left; }
+  .xpu-btn.can{ cursor:pointer; border-color:#8fe64b; color:#cfe0a0; } .xpu-btn.can:hover{ background:rgba(143,230,75,.12); }
+  .xpu-btn:disabled{ opacity:.55; }
+  .xpu-nm{ font-family:var(--font-display); font-weight:700; font-size:10.5px; color:var(--text); } .xpu-nm b{ color:#aef07a; }
+  .xpu-d{ font-family:var(--font-mono); font-size:8.5px; color:var(--text-faint); }
+  .xpu-c{ font-family:var(--font-mono); font-size:10px; }
   .exp-battle{ margin-top:10px; padding:9px 12px; border-radius:8px; border:1px solid var(--line); background:var(--panel-raised); font-size:12.5px; border-left-width:3px; }
   .exp-battle.win{ border-left-color:#33d17a; } .exp-battle.win b{ color:#5fe39a; }
   .exp-battle.loss{ border-left-color:#ff5a7a; } .exp-battle.loss b{ color:#ff8098; }
@@ -1967,6 +2005,7 @@
             <div class="prestige" id="prestige"></div>
             <div class="prestige-up" id="prestige-up"></div>
             <div class="stonelab" id="stonelab"></div>
+            <div class="holiday" id="holiday"></div>
             <div class="cosmic" id="cosmic"></div>
             <div class="genesis" id="genesis"></div>
             <div class="dev-panel" id="dev-panel" hidden></div>
@@ -7886,7 +7925,7 @@ window.__sfx = (function () {
     }).join('');
     return '<div class="set-wrap"><div class="set-head">✦ Signature Gear Sets <span class="set-hint">— collect God-rarity pieces to raise your attributes (2/4/6/8/10)</span></div>' + rows + '</div>';
   }
-  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult(); }
+  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult() * stoneMasteryMult(); }
   function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
 
   // ---- Refinery: an adamantium forge and a vibranium forge cast ingots onto
@@ -8040,7 +8079,7 @@ window.__sfx = (function () {
   // permanently multiplied -- the ultimate reward for the ultimate grind.
   function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
   var PROD_BOOST = 1.25;   // owner buff: a little more currency across every source (all income routes through globalMult)
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * PROD_BOOST; }
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * PROD_BOOST; }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -8058,8 +8097,8 @@ window.__sfx = (function () {
   // exponential scale). Combined they let a stat be pushed hard late-game.
   function pct(l, per) { return 1 + (per / 100) * skillLvl(l); }       // additive %-boost skill
   function xmul(l, step) { return Math.pow(1 + step, skillLvl(l)); }   // compounding × skill
-  function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03) * attrXpMult() * stoneXpMult(); }   // + Intelligence + Mind stone
-  function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03) * prestigeProdMult() * stoneProdMult(); }
+  function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03) * attrXpMult() * stoneXpMult() * stoneMasteryMult(); }   // + Intelligence + Mind stone + stone mastery
+  function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03) * prestigeProdMult() * stoneProdMult() * stoneMasteryMult(); }
   function prodQualMult() { return pct('prodqual', 5) * xmul('prodqualm', 0.025); }
   function incomeMult() { return pct('incboost', 4) * xmul('incmult', 0.03); }
   var SKILLS = [
@@ -8205,7 +8244,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === 'number') state.devGrant = j.devGrant;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -8221,6 +8260,7 @@ window.__sfx = (function () {
   if (!state.xpcore) state.xpcore = { unlocked: false };               // XP Crystal chamber floor
   if (!state.stoneforge) state.stoneforge = { unlocked: false, tiers: {} };   // Infinity Stone lab (all six)
   if (!state.cosmic) state.cosmic = { unlocked: false, realm: 'mcu', beings: {}, harness: 0 };   // Cosmic Being Research floor
+  if (!state.holiday) state.holiday = { events: {}, force: null, components: 0, jackpot: false, nextGuest: 0 };   // Holiday Events Calendar
   if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
@@ -8724,7 +8764,7 @@ window.__sfx = (function () {
     state.roundStart = state.lifetime || 0;
     gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderAdventure(); renderProgression();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderAdventure(); renderProgression();
     if (window.__roomRelayout) window.__roomRelayout();
   }
   var stonelabEl = document.getElementById('stonelab');
@@ -8749,13 +8789,15 @@ window.__sfx = (function () {
       var built = STONE_ASPECTS.filter(function (a) { return stoneTier(a.id) > 0; }).length;
       var cards = STONE_ASPECTS.map(function (a) {
         var t = stoneTier(a.id), c = stoneForgeCost(a.id), mc = { scrap: c.scrap, alloy: c.alloy, core: c.core }, canForge = state.bits >= c.bits && canAfford(mc);
-        return '<div class="sl-stone" style="--sc:' + a.col + '">' +
-          '<div class="sl-stop"><span class="sl-gem" style="background:radial-gradient(circle at 35% 30%,#fff,' + a.col + ');box-shadow:0 0 ' + (6 + t * 2) + 'px ' + a.col + '"></span><b>' + a.name + '</b><span class="sl-tier">T' + t + '</span></div>' +
-          '<div class="sl-eff" style="width:auto">' + stoneBoostText(a.id) + '</div>' +
+        var mastered = t >= STONE_MASTER;
+        return '<div class="sl-stone' + (mastered ? ' sl-mastered' : '') + '" style="--sc:' + a.col + '">' +
+          '<div class="sl-stop"><span class="sl-gem" style="background:radial-gradient(circle at 35% 30%,#fff,' + a.col + ');box-shadow:0 0 ' + (6 + t * 2) + 'px ' + a.col + '"></span><b>' + a.name + '</b><span class="sl-tier">' + (mastered ? '★T' : 'T') + t + '</span></div>' +
+          '<div class="sl-eff" style="width:auto">' + stoneBoostText(a.id) + (mastered ? ' · <b style="color:#ffe08a">★ MASTERED</b>' : ' · master at T' + STONE_MASTER) + '</div>' +
           '<button type="button" class="sl-mini' + (canForge ? ' can' : '') + '" data-slforge="' + a.id + '"' + (canForge ? '' : ' disabled') + '>⚒ Tier ' + (t + 1) + ' — <span style="color:' + fmtColor(c.bits) + '">◉' + fmt(c.bits) + '</span> · ' + costStr(mc) + '</button>' +
           '</div>';
       }).join('');
-      stonelabEl.innerHTML = '<div class="sl-head">💎 Infinity Stone Laboratory <span class="sl-sub">— ' + built + '/6 forged · every stone\'s boost stacks</span></div><div class="sl-stones">' + cards + '</div>';
+      var mc2 = masteredStones();
+      stonelabEl.innerHTML = '<div class="sl-head">💎 Infinity Stone Laboratory <span class="sl-sub">— ' + built + '/6 forged' + (mc2 ? ' · ★' + mc2 + ' mastered → ×' + stoneMasteryMult().toFixed(2) + ' to ALL' : ' · master a stone (T' + STONE_MASTER + ') for a ×-to-all bonus') + '</span></div><div class="sl-stones">' + cards + '</div>';
     }
     var u = stonelabEl.querySelector('[data-sl="unlock"]');
     if (u) u.addEventListener('click', function () { if (state.bits < STONELAB_COST) return; state.bits -= STONELAB_COST; state.stoneforge = { unlocked: true, tiers: {} }; if (window.__sfx) window.__sfx('unlock'); gamePop('💎 Infinity Stone Lab online', '#c07bff'); addXp(300, 'Discovery: Stone Lab'); publish(); dirty = true; save(); renderStonelab(); renderBalance(); if (window.__roomRelayout) window.__roomRelayout(); });
@@ -8853,6 +8895,82 @@ window.__sfx = (function () {
       publish(); dirty = true; save(); renderCosmic(); renderBalance(); renderGenesis();
     });
   }
+  // ---- Holiday Events Calendar: limited-time seasonal events (by real month, or
+  // admin-forced). Daily check-in track + production-milestone track, a roaming
+  // Guest with an RNG supply drop, seasonal cosmetics, and live UI theming. ----
+  var HOLIDAY_EVENTS = {
+    winter: { id: 'winter', name: 'Cosmic Winter', month: 11, days: 24, accent: '#8fd8ff', emoji: '❄️', guest: '🎅',
+      matrix: ['Frosted Titanium Armor', 'Cryo-Core Plasma Rifle', 'Blizzard Jump Thrusters', 'Elfbots (Red/Green)', 'Candy Cane Conveyors & Snow Piles'] },
+    halloween: { id: 'halloween', name: 'Quantum Cyber-Halloween', month: 9, days: 24, accent: '#ff8b3c', emoji: '🎃', guest: '👻',
+      matrix: ['Necro-Circuit Chassis', 'Phantasm Laser Scythe', 'Pumpkin Matrix Shield Generator', 'Scarecrow MK-I Harvesters', 'Gothic Tech Pipes & Green Slime'] }
+  };
+  var HOL_MILES = [50, 150, 400, 900, 2000];   // production-output thresholds -> unlock the 5 cosmetics
+  var holidayEl = document.getElementById('holiday');
+  function holInit() { state.holiday = state.holiday || { events: {}, force: null, components: 0, jackpot: false, nextGuest: 0 }; state.holiday.events = state.holiday.events || {}; return state.holiday; }
+  function holForce() { return state.holiday && state.holiday.force; }
+  function activeHoliday() {
+    if (holForce() === 'off') return null;
+    if (holForce() && HOLIDAY_EVENTS[holForce()]) return HOLIDAY_EVENTS[holForce()];
+    var m = new Date().getMonth(); for (var k in HOLIDAY_EVENTS) if (HOLIDAY_EVENTS[k].month === m) return HOLIDAY_EVENTS[k];
+    return null;
+  }
+  function holEv(id) { holInit(); state.holiday.events[id] = state.holiday.events[id] || { day: 0, lastClaim: '', prod: 0, unlocked: {} }; return state.holiday.events[id]; }
+  function todayKey() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function holJackpotMult() { return (state.holiday && state.holiday.jackpot) ? 1.05 : 1; }
+  function holDayReward(day) { return Math.ceil(2e6 * Math.pow(1.25, day) * globalMult()); }
+  function holClaimDaily() {
+    var e = activeHoliday(); if (!e) return; var pe = holEv(e.id);
+    if (pe.lastClaim === todayKey() || pe.day >= e.days) return;
+    pe.day++; pe.lastClaim = todayKey();
+    var reward = holDayReward(pe.day); state.bits += reward; state.lifetime = (state.lifetime || 0) + reward;
+    var msg = '📆 Day ' + pe.day + ': ◉' + fmt(reward);
+    if (pe.day % 5 === 0) { state.holiday.components = (state.holiday.components || 0) + 1; msg += ' + 🎁 Component'; }
+    if (pe.day % 4 === 0 && window.LootEngine) { var it = rollLoot(playerLevel() + 4, null); state.adv = state.adv || { inv: [] }; state.adv.inv = (state.adv.inv || []).concat([it]).slice(-40); msg += ' + loot'; }
+    if (window.__sfx) window.__sfx('reward'); gamePop(msg, e.accent);
+    publish(); dirty = true; save(); renderHoliday(); renderBalance(); renderAdventure();
+  }
+  function holSupplyDrop(e) {
+    var r = Math.random();
+    if (r < 0.70) { addMats({ scrap: 220, alloy: 130, core: 55 }); addComp(3); addComp(4); gamePop('📦 Premium Materials Bundle', '#9fb0c8'); }
+    else if (r < 0.90) { if (window.LootEngine) { var it = rollLoot(playerLevel() + 10, null); it.holiday = true; state.adv = state.adv || { inv: [] }; state.adv.inv = (state.adv.inv || []).concat([it]).slice(-40); gamePop('🔑 Elite Loot Key: ' + it.rarity + ' ' + it.name, '#b562ff'); } }
+    else if (r < 0.995) { state.holiday.components = (state.holiday.components || 0) + 1; gamePop('🎁 Holiday Component!', e.accent); }
+    else { state.holiday.jackpot = true; gamePop('🌟 COSMIC JACKPOT — permanent +5% fabrication!', '#ffe08a'); }
+    if (window.__sfx) window.__sfx('reward'); publish(); dirty = true; save(); renderHoliday(); renderBalance(); renderAdventure();
+  }
+  function guestHere() {
+    var e = activeHoliday(); if (!e) return false; holInit(); var now = Date.now(), ng = state.holiday.nextGuest || 0;
+    if (!ng) { state.holiday.nextGuest = now + 4 * 3600000; return false; }
+    if (now < ng) return false;
+    if (now < ng + 30 * 60000) return true;
+    state.holiday.nextGuest = now + 4 * 3600000; return false;
+  }
+  function renderHoliday() {
+    if (!holidayEl) return; var e = activeHoliday();
+    if (!e) {
+      document.body.classList.remove('holiday-winter', 'holiday-halloween');
+      var m = new Date().getMonth(), best = null, bestIn = 99;
+      for (var k in HOLIDAY_EVENTS) { var din = (HOLIDAY_EVENTS[k].month - m + 12) % 12; if (din < bestIn) { bestIn = din; best = HOLIDAY_EVENTS[k]; } }
+      holidayEl.innerHTML = '<div class="hol-head">📆 Holiday Events Calendar <span class="hol-sub">— no event live right now</span></div>' +
+        '<div class="hol-none">' + (best ? best.emoji + ' Next: <b>' + best.name + '</b> (~' + bestIn + ' month' + (bestIn === 1 ? '' : 's') + ' away). Limited-time rewards go into deep storage until next year.' : '') + '</div>';
+      return;
+    }
+    var pe = holEv(e.id), prog = pe.prod || 0;
+    document.body.classList.remove('holiday-winter', 'holiday-halloween'); document.body.classList.add('holiday-' + e.id);
+    var cells = '';
+    for (var d = 1; d <= e.days; d++) { var st = d <= pe.day ? 'got' : (d === pe.day + 1 && pe.lastClaim !== todayKey()) ? 'now' : ''; cells += '<span class="hol-day ' + st + '">' + d + '</span>'; }
+    var canClaim = pe.day < e.days && pe.lastClaim !== todayKey();
+    var miles = HOL_MILES.map(function (th, i) { var hit = prog >= th; return '<div class="hol-mile' + (hit ? ' got' : '') + '"><span class="hol-mile-th">' + th + '</span><span class="hol-mile-nm">' + e.matrix[i] + '</span><span class="hol-mile-st">' + (hit ? '✔ blueprint' : 'locked') + '</span></div>'; }).join('');
+    var mp = Math.min(100, prog / HOL_MILES[HOL_MILES.length - 1] * 100), g = guestHere();
+    holidayEl.innerHTML =
+      '<div class="hol-head" style="--ha:' + e.accent + '">' + e.emoji + ' ' + e.name + ' <span class="hol-sub">— day ' + pe.day + '/' + e.days + ' · 🎁 ' + (state.holiday.components || 0) + (state.holiday.jackpot ? ' · 🌟 jackpot' : '') + '</span></div>' +
+      (g ? '<button type="button" class="hol-guest-btn" data-hol="guest">' + e.guest + ' A Holiday Guest has arrived! Click for a Supply Drop</button>' : '') +
+      '<div class="hol-tracklbl">Daily check-in</div><div class="hol-days">' + cells + '</div>' +
+      '<button type="button" class="hol-claim' + (canClaim ? ' can' : '') + '" data-hol="claim"' + (canClaim ? '' : ' disabled') + '>' + (canClaim ? '📆 Claim today’s reward' : (pe.day >= e.days ? 'All days claimed ✔' : 'Come back tomorrow')) + '</button>' +
+      '<div class="hol-tracklbl">Production milestones <span class="hol-sub2">(automated output — ' + Math.round(prog) + ')</span></div>' +
+      '<div class="hol-bar"><i style="width:' + mp + '%;background:' + e.accent + '"></i></div>' + miles;
+    var cb = holidayEl.querySelector('[data-hol="claim"]'); if (cb) cb.addEventListener('click', holClaimDaily);
+    var gb = holidayEl.querySelector('[data-hol="guest"]'); if (gb) gb.addEventListener('click', function () { if (!guestHere()) { renderHoliday(); return; } state.holiday.nextGuest = Date.now() + 4 * 3600000; holSupplyDrop(e); });
+  }
   // Points minted by a reboot: from the currency earned THIS round (the method
   // = how much you grew before falling) plus a bonus per new core banked.
   function prestigePointsFor(roundGain, coresGained) { return Math.floor(Math.sqrt(Math.max(0, roundGain) / 6000)) + coresGained * 3; }
@@ -8879,7 +8997,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderAdventure();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderAdventure();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -8995,7 +9113,10 @@ window.__sfx = (function () {
           '<div class="py-grid">' + chips + '</div></details>';
       })() +
       (function () {   // XP Crystal Chamber: a deep-game floor that mines XP
-        if (xpcoreUnlocked()) return '<div class="xpcore-on">🟢 XP Crystal Chamber online — <b>+' + fmt(xpcoreRate()) + ' XP/s</b> mined by the drones below Ultron’s agents</div>';
+        if (xpcoreUnlocked()) {
+          var ups = XPCORE_UPS.map(function (u) { var c = xpUpCost(u), can = state.bits >= c; return '<button type="button" class="xpu-btn' + (can ? ' can' : '') + '" data-xpu="' + u.id + '"' + (can ? '' : ' disabled') + '><span class="xpu-nm">' + u.name + ' <b>Lv ' + xpUp(u.id) + '</b></span><span class="xpu-d">' + u.desc + '</span><span class="xpu-c" style="color:' + fmtColor(c) + '">◉' + fmt(c) + '</span></button>'; }).join('');
+          return '<div class="xpcore-on">🟢 XP Crystal Chamber online — <b>+' + fmt(xpcoreRate()) + ' XP/s</b> mined by the drones below Ultron’s agents</div><div class="xpu-grid">' + ups + '</div>';
+        }
         var can = state.bits >= XPCORE_COST;
         return '<button type="button" class="xpcore-btn' + (can ? ' can' : '') + '" data-xpcore="1"' + (can ? '' : ' disabled') + '>💎 Unlock the XP Crystal Chamber — <span style="color:' + fmtColor(XPCORE_COST) + '">◉' + fmt(XPCORE_COST) + '</span></button>';
       })() +
@@ -9011,6 +9132,15 @@ window.__sfx = (function () {
       addXp(500, 'Discovery: XP Crystal Chamber');
       publish(); dirty = true; save(); renderProgression(); renderBalance();
       if (window.__roomRelayout) window.__roomRelayout();   // grow the room for the new floor
+    });
+    progEl.querySelectorAll('[data-xpu]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var u = XPCORE_UPS.filter(function (x) { return x.id === btn.dataset.xpu; })[0]; if (!u || !xpcoreUnlocked()) return;
+        var c = xpUpCost(u); if (state.bits < c) return;
+        state.bits -= c; state.xpcore.up = state.xpcore.up || {}; state.xpcore.up[u.id] = xpUp(u.id) + 1;
+        if (window.__sfx) window.__sfx('upgrade'); gamePop('💎 ' + u.name + ' → Lv ' + state.xpcore.up[u.id], '#8fe64b');
+        publish(); dirty = true; save(); renderProgression(); renderBalance();
+      });
     });
     progEl.querySelectorAll('[data-skill]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -9030,7 +9160,8 @@ window.__sfx = (function () {
   // game state at will. Also holds the one-time +1.5 Nanit developer grant. ----
   var devPanelEl = document.getElementById('dev-panel');
   var devModeOn = false;
-  window.__foundryDevMode = function (on) { devModeOn = !!on; renderDevPanel(); };
+  if (state.isDev) devModeOn = true;   // Archangel (admin) stays a developer across sessions
+  window.__foundryDevMode = function (on) { devModeOn = !!on; if (on) { state.isDev = 1; dirty = true; save(); } renderDevPanel(); };
   window.__foundryAdminGrant = function () {
     if (state.devGrant) return false;   // one-time per account (flag rides in the save)
     state.devGrant = 1;
@@ -9039,7 +9170,7 @@ window.__sfx = (function () {
     gamePop('◉ +1.5 Nanits — developer grant', '#ffcf5a');
     return true;
   };
-  function devRefresh() { publish(); dirty = true; save(); renderBalance(); renderProgression(); renderStonelab(); renderGenesis(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout(); }
+  function devRefresh() { publish(); dirty = true; save(); renderBalance(); renderProgression(); renderStonelab(); renderGenesis(); renderCosmic(); renderHoliday(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout(); }
   function renderDevPanel() {
     if (!devPanelEl) return;
     if (!devModeOn) { devPanelEl.hidden = true; devPanelEl.innerHTML = ''; return; }
@@ -9058,6 +9189,7 @@ window.__sfx = (function () {
         '<div class="dev-group"><span class="dev-lbl">Unlocks</span><button type="button" class="dev-btn add" data-dev="unlockstone">Stone Lab</button><button type="button" class="dev-btn add" data-dev="unlockxp">XP Crystal</button></div>' +
         '<div class="dev-group"><span class="dev-lbl">Prestige</span><button type="button" class="dev-btn add" data-dev="cores" data-amt="5">+5 Cores</button><button type="button" class="dev-btn rem" data-dev="cores" data-amt="-5">−5 Cores</button><button type="button" class="dev-btn add" data-dev="points" data-amt="100">+100 Pts</button></div>' +
         '<div class="dev-group"><span class="dev-lbl">Stones</span><button type="button" class="dev-btn add" data-dev="stones" data-amt="1">All +1 tier</button><button type="button" class="dev-btn rem" data-dev="stones" data-amt="-1">All −1 tier</button></div>' +
+        '<div class="dev-group"><span class="dev-lbl">Holiday event (preview)</span><button type="button" class="dev-btn add" data-dev="hol" data-h="winter">❄ Winter</button><button type="button" class="dev-btn add" data-dev="hol" data-h="halloween">🎃 Halloween</button><button type="button" class="dev-btn rem" data-dev="hol" data-h="off">Off</button><button type="button" class="dev-btn" data-dev="holguest">👻 Summon guest</button></div>' +
         '<div class="dev-group dev-custom"><span class="dev-lbl">Custom — add / remove any amount</span>' +
           '<select class="dev-sel" id="dev-target">' +
             '<option value="bits">Currency</option><option value="scrap">Scrap</option><option value="alloy">Alloy</option><option value="core">Core</option>' +
@@ -9119,6 +9251,8 @@ window.__sfx = (function () {
         else if (k === 'cores') { state.prestige = state.prestige || { cores: 0, points: 0, up: {} }; state.prestige.cores = Math.max(0, (state.prestige.cores || 0) + amt); gamePop('◈ ' + (amt >= 0 ? '+' : '−') + Math.abs(amt) + ' cores', '#a88bff'); }
         else if (k === 'points') { state.prestige = state.prestige || { cores: 0, points: 0, up: {} }; state.prestige.points = Math.max(0, (state.prestige.points || 0) + amt); gamePop('◈ +' + amt + ' points', '#a88bff'); }
         else if (k === 'stones') { state.stoneforge = state.stoneforge || { unlocked: true, tiers: {} }; state.stoneforge.unlocked = true; var t = stoneTiers(); STONE_ASPECTS.forEach(function (a) { t[a.id] = Math.max(0, (t[a.id] || 0) + amt); }); gamePop('💎 All stones ' + (amt >= 0 ? '+' : '−') + Math.abs(amt) + ' tier', '#c07bff'); }
+        else if (k === 'hol') { holInit(); state.holiday.force = b.dataset.h; gamePop('📆 Holiday event: ' + b.dataset.h, '#8fd8ff'); }
+        else if (k === 'holguest') { holInit(); state.holiday.nextGuest = Date.now() - 1000; gamePop('👻 Holiday guest summoned', '#ffcf5a'); }
         if (window.__sfx) window.__sfx('upgrade');
         devRefresh(); renderDevPanel();
       });
@@ -9164,7 +9298,16 @@ window.__sfx = (function () {
   var last = Date.now(), idleXpAcc = 0, heavyTick = 0, crystalXpAcc = 0;
   var XPCORE_COST = 4e7;   // XP Crystal chamber: cheaper/earlier unlock (owner request)
   function xpcoreUnlocked() { return !!(state.xpcore && state.xpcore.unlocked); }
-  function xpcoreRate() { return (5 + playerLevel() * 1.5) * (1 + 0.5 * ((state.prestige && state.prestige.cores) || 0)); }   // XP/sec, grows with level + cores
+  var XPCORE_UPS = [
+    { id: 'rate', name: 'XP Production Rate', desc: '+15% XP/sec', base: 6e7 },
+    { id: 'mult', name: 'XP Multiplier', desc: '×1.05 XP/sec', base: 2e8 },
+    { id: 'speed', name: 'Bot Speed', desc: '+10% mining speed', base: 5e7 },
+    { id: 'quality', name: 'Bot Quality', desc: '+10% sliver yield', base: 5e7 },
+    { id: 'eff', name: 'Bot Efficiency', desc: '+10% crystal output', base: 5e7 }
+  ];
+  function xpUp(id) { return (state.xpcore && state.xpcore.up && state.xpcore.up[id]) || 0; }
+  function xpUpCost(u) { return Math.ceil(u.base * Math.pow(1.6, xpUp(u.id))); }
+  function xpcoreRate() { var base = (5 + playerLevel() * 1.5) * (1 + 0.5 * ((state.prestige && state.prestige.cores) || 0)); return base * (1 + 0.15 * xpUp('rate')) * Math.pow(1.05, xpUp('mult')) * (1 + 0.1 * xpUp('speed')) * (1 + 0.1 * xpUp('quality')) * (1 + 0.1 * xpUp('eff')); }   // XP/sec: level + cores, boosted by the crystal upgrades
   // ---- Infinity Stone Laboratory: forge ONE custom stone of a chosen aspect,
   // then evolve its tier for a growing, aspect-specific power boost. ----
   var STONE_ASPECTS = [
@@ -9187,6 +9330,12 @@ window.__sfx = (function () {
   function stoneIncMult() { return Math.pow(1.04, stoneTier('soul')); }
   function stoneOffline() { return stoneTier('space'); }
   function stoneLoot() { return Math.floor(stoneTier('reality') / 2); }
+  // A stone is MASTERED at a high-end tier; each mastered stone adds a flat % to
+  // EVERYTHING (all stats, XP gain, currency, production).
+  var STONE_MASTER = 15;
+  function stoneMastered(id) { return stoneTier(id) >= STONE_MASTER; }
+  function masteredStones() { var A = STONE_ASPECTS; if (!A) return 0; return A.filter(function (a) { return stoneMastered(a.id); }).length; }
+  function stoneMasteryMult() { return Math.pow(1.12, masteredStones()); }   // +12% to all per mastered stone
   setInterval(function () {
     var now = Date.now(), dt = Math.min(2, (now - last) / 1000); last = now;
     syncPresence();                    // catch in-app section switches while the tab is visible
@@ -9196,6 +9345,7 @@ window.__sfx = (function () {
       if (p > 0) { state.bits += p * dt; state.lifetime = (state.lifetime || 0) + p * dt; dirty = true; save(); }
       idleXpAcc += dt * 0.6; if (idleXpAcc >= 1) { var whole = Math.floor(idleXpAcc); idleXpAcc -= whole; addXp(whole, 'Idle ops'); }   // "do to learn": a small XP trickle while running the line
       if (xpcoreUnlocked()) { crystalXpAcc += xpcoreRate() * dt; if (crystalXpAcc >= 1) { var cw = Math.floor(crystalXpAcc); crystalXpAcc -= cw; addXp(cw, 'XP Crystal'); } }   // the secret crystal mine feeds XP
+      var he = activeHoliday(); if (he) { holEv(he.id).prod += dt * (1 + bayOpenCount()); }   // holiday production-milestone track fills from automated factory output
     }
     advTick();                         // expeditions run on wall-clock time -> progress in the background regardless
     currencyHud(passivePerSec());   // keep the one fixed currency tracker live on EVERY tab
@@ -9206,7 +9356,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderProgression(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderProgression(); }
       dirty = false;
     }
   }, 500);
@@ -9771,6 +9921,7 @@ window.__sfx = (function () {
   renderGenesis();
   renderStonelab();
   renderCosmic();
+  renderHoliday();
   renderProgression();
   renderDevPanel();
   renderCodex();
@@ -9797,13 +9948,13 @@ window.__sfx = (function () {
       if (j.gen) state.gen = j.gen;
       if (j.comp) state.comp = j.comp;
       if (j.genesis) state.genesis = j.genesis;
-      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic;
+      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday;
       if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
       if (j.mats) state.mats = j.mats;
       state.matsWipe = (typeof j.matsWipe === 'number') ? j.matsWipe : 0;   // key the wipe off THIS save's provenance, not init's flag
-      if (typeof j.devGrant === 'number') state.devGrant = j.devGrant;   // one-time dev grant flag rides along so it never re-grants
+      if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev;   // one-time dev grant flag rides along so it never re-grants
       matsWipeGuard();   // wipe once if this save predates the reset; flag rides along thereafter
       UPGRADES.forEach(function (u) { if (typeof state.up[u.id] !== 'number') state.up[u.id] = 0; });
       if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
@@ -9815,10 +9966,11 @@ window.__sfx = (function () {
       if (!state.xpcore) state.xpcore = { unlocked: false };
       if (!state.stoneforge) state.stoneforge = { unlocked: false, tiers: {} };
       if (!state.cosmic) state.cosmic = { unlocked: false, realm: 'mcu', beings: {}, harness: 0 };
+      if (!state.holiday) state.holiday = { events: {}, force: null, components: 0, jackpot: false, nextGuest: 0 };
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderProgression(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderProgression(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
@@ -10669,23 +10821,24 @@ window.__sfx = (function () {
   function accts() { return window.__GAME_ACCOUNTS || []; }
   function anyConfigured() { return accts().some(function (a) { return (a.pin && a.pin.length) || (a.name && a.name.length); }); }
   function renderPin() { display.textContent = pinBuf ? pinBuf.replace(/./g, '•') : '– – – –'; }
-  function checkPin(p) { if (!anyConfigured()) return true; return accts().some(function (a) { return a.pin && a.pin === p; }); }
-  function checkPass(u, pw) { if (!anyConfigured()) return true; return accts().some(function (a) { return a.name && a.name === u && (a.pass || '') === (pw || ''); }); }
+  function matchPin(p) { if (!anyConfigured()) return { ok: true, admin: false }; var a = accts().filter(function (x) { return x.pin && x.pin === p; })[0]; return a ? { ok: true, admin: !!a.admin } : { ok: false }; }
+  function matchPass(u, pw) { if (!anyConfigured()) return { ok: true, admin: false }; var a = accts().filter(function (x) { return x.name && x.name === u && (x.pass || '') === (pw || ''); })[0]; return a ? { ok: true, admin: !!a.admin } : { ok: false }; }
   function fail() {
     attempts++; msg.textContent = 'Access denied.'; lock.classList.add('shake');
     setTimeout(function () { lock.classList.remove('shake'); }, 360);
     if (attempts >= 5) { locked = true; msg.textContent = 'Locked — wait 30 seconds.'; setTimeout(function () { locked = false; attempts = 0; msg.textContent = ''; }, 30000); }
     if (window.__sfx) window.__sfx('die');
   }
-  function unlock() {
+  function unlock(isAdmin) {
     try { sessionStorage.setItem('ultronGameUnlocked', '1'); } catch (e) {}
+    if (isAdmin && window.__foundryDevMode) window.__foundryDevMode(true);   // Archangel is always the developer/admin -> dev panel on
     document.body.classList.remove('game-locked');
     lock.classList.add('open');   // doors slide open (slow, ~3.6s); game is playable behind while the warning holds
     if (window.__sfx) window.__sfx('reboot');
     setTimeout(function () { lock.classList.add('unlocked'); lock.classList.remove('open'); }, 22500);
   }
-  function submitPin() { if (locked) return; if (checkPin(pinBuf)) unlock(); else { fail(); pinBuf = ''; renderPin(); } }
-  function submitPass() { if (locked) return; var u = (document.getElementById('gl-user').value || '').trim(), pw = document.getElementById('gl-pass').value || ''; if (checkPass(u, pw)) unlock(); else fail(); }
+  function submitPin() { if (locked) return; var m = matchPin(pinBuf); if (m.ok) unlock(m.admin); else { fail(); pinBuf = ''; renderPin(); } }
+  function submitPass() { if (locked) return; var u = (document.getElementById('gl-user').value || '').trim(), pw = document.getElementById('gl-pass').value || ''; var m = matchPass(u, pw); if (m.ok) unlock(m.admin); else fail(); }
   // numpad
   ['1','2','3','4','5','6','7','8','9','clr','0','ent'].forEach(function (k) {
     var b = document.createElement('button'); b.type = 'button'; b.className = 'gl-key' + (k === 'clr' ? ' clr' : k === 'ent' ? ' ent' : '');
