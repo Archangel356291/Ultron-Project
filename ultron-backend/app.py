@@ -5017,23 +5017,56 @@ def _serialize_content(content):
     return [_serialize_block(b) for b in content]
 
 
+# Block types that may carry a cache_control marker. thinking /
+# redacted_thinking blocks (which Opus and Deep-mode replies can contain,
+# and which must be sent back verbatim) may NOT -- the API answers
+# "messages.N.content.0.thinking.cache_control: Extra inputs are not
+# permitted", the intermittent 400 the owner saw 5-6 times.
+_CACHEABLE_BLOCK_TYPES = {"text", "tool_use", "tool_result", "image", "document"}
+
+
+def _strip_cache_control(messages):
+    """History comes back from the client exactly as we returned it, so the
+    breakpoint we placed last turn is still there -- and the one before,
+    and the one before that. Anthropic allows four in total (two are
+    already spent on the system prompt and tools), so the stale ones are
+    removed here and exactly one is placed again by _add_cache_breakpoint.
+    Returns new dicts; never mutates the client's data."""
+    cleaned = []
+    for msg in messages:
+        content = msg.get("content") if isinstance(msg, dict) else None
+        if isinstance(content, list):
+            blocks = []
+            for b in content:
+                if isinstance(b, dict) and "cache_control" in b:
+                    b = {k: v for k, v in b.items() if k != "cache_control"}
+                blocks.append(b)
+            cleaned.append({**msg, "content": blocks})
+        else:
+            cleaned.append(msg)
+    return cleaned
+
+
 def _add_cache_breakpoint(msg):
     """Returns a NEW message dict with a cache_control breakpoint on its
-    last content block (converting plain string content to block form
-    first if needed) — does not mutate the original message. Used to mark
-    the end of the already-sent conversation history, so Anthropic can
-    reuse that cached prefix as the conversation grows turn over turn,
-    instead of reprocessing the whole thing from scratch every time."""
+    last cacheable content block (converting plain string content to block
+    form first if needed) — does not mutate the original message. Used to
+    mark the end of the already-sent conversation history, so Anthropic can
+    reuse that cached prefix as the conversation grows turn over turn. A
+    message whose blocks are all thinking is returned unchanged rather than
+    tagged in a place the API rejects."""
     content = msg.get("content")
     if isinstance(content, str):
-        new_content = [{"type": "text", "text": content, "cache_control": {"type": "ephemeral"}}]
-    elif isinstance(content, list) and content:
-        new_content = [dict(b) for b in content]
-        new_content[-1] = dict(new_content[-1])
-        new_content[-1]["cache_control"] = {"type": "ephemeral"}
-    else:
+        return {**msg, "content": [{"type": "text", "text": content, "cache_control": {"type": "ephemeral"}}]}
+    if not (isinstance(content, list) and content):
         return msg
-    return {**msg, "content": new_content}
+    new_content = [dict(b) if isinstance(b, dict) else b for b in content]
+    for i in range(len(new_content) - 1, -1, -1):
+        block = new_content[i]
+        if isinstance(block, dict) and block.get("type") in _CACHEABLE_BLOCK_TYPES:
+            new_content[i] = {**block, "cache_control": {"type": "ephemeral"}}
+            return {**msg, "content": new_content}
+    return msg
 
 
 def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker=None, lite=False, deep=False):
@@ -5053,7 +5086,7 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
       fixed value.
     - Real token usage from every API call is logged, win or lose on
       caching, so the daily budget (if set) reflects actual spend."""
-    messages = list(history)
+    messages = _strip_cache_control(history)
     if messages:
         messages[-1] = _add_cache_breakpoint(messages[-1])
     messages.append({"role": "user", "content": user_message})
