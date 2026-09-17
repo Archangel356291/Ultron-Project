@@ -168,11 +168,26 @@ BETA_SPEND_LOCKS = {name: threading.Lock() for name in set(BETA_TOKENS.values())
 # responses if this API is ever reachable beyond your LAN.
 ALLOWED_ORIGIN = os.environ.get("ULTRON_ALLOWED_ORIGIN", "*")
 
-# Paths/drives to report on for the Storage panel. Defaults match a stock
-# Windows 11 install (C:\); add other drive letters as needed, e.g.
-# {"c_drive": "C:\\", "d_drive": "D:\\"}.
-STORAGE_MOUNTS = (
-    {"c_drive": "C:\\"}
+# Paths/drives to report on for the Storage panel. ULTRON_STORAGE_MOUNTS
+# is "label=path,label=path" -- inside the Docker container the host's
+# drives only exist where docker-compose.yml bind-mounts them (C:\ ->
+# /host/c, D:\ -> /host/d, read-only), so it is set there to
+# "C:=/host/c,D:=/host/d"; without it the container would report its own
+# virtual disk as "root", which is what happened until 2026-09-16. Bare
+# (non-Docker) defaults match a stock Windows 11 install or a Pi.
+def _parse_storage_mounts(raw):
+    mounts = {}
+    for part in (raw or "").split(","):
+        if "=" not in part:
+            continue
+        label, path = part.split("=", 1)
+        if label.strip() and path.strip():
+            mounts[label.strip()] = path.strip()
+    return mounts
+
+
+STORAGE_MOUNTS = _parse_storage_mounts(os.environ.get("ULTRON_STORAGE_MOUNTS")) or (
+    {"C:": "C:\\"}
     if platform.system() == "Windows"
     else {"ssd": "/mnt/ssd", "root": "/"}
 )
@@ -211,13 +226,19 @@ DB_PATH = os.environ.get(
 # directory ultron.db lives in -- D:\ultron's Brain&Knowledge on the host --
 # holds everything he knows in forms a person can open without a SQLite
 # client:
-#   chat logs/dashboard/YYYY-MM-DD.txt   web (dashboard) conversations
-#   chat logs/discord/YYYY-MM-DD.txt     Discord conversations, kept apart
-#   knowledge/memory-notes.md            his memory notebook, newest first,
-#                                        rewritten whenever a note is saved
-# Every identity/source funnels through the one _log_chat_turn below, so
-# the split is decided in exactly one place. The older combined
-# chat_logs.txt (pre-split) is left where it is as history.
+#   chat logs/dashboard/YYYY-MM-DD.md    web (dashboard) conversations
+#   chat logs/discord/YYYY-MM-DD.md      Discord conversations, kept apart
+#   knowledge/memory-notes.md            the whole notebook, newest first
+#   knowledge/notes/note-<id>.md         one note per memory, [[linked]] by
+#                                        the memory_edges the DB already has
+#   knowledge/Memory index.md            index of those notes
+# The folder is also an Obsidian vault ("Ultron's Brain", separate from the
+# project vault) and a graphify root: Markdown with one heading per
+# exchange and real wikilinks is exactly what both of them graph, and what
+# recall_from_brain() below retrieves from at zero token cost. Every
+# identity/source funnels through the one _log_chat_turn, so the split is
+# decided in exactly one place. The older combined chat_logs.txt is left
+# where it is as history.
 DATA_DIR = os.path.dirname(os.path.abspath(DB_PATH))
 CHAT_LOGS_DIR = os.path.join(DATA_DIR, "chat logs")
 KNOWLEDGE_DIR = os.path.join(DATA_DIR, "knowledge")
@@ -230,7 +251,7 @@ for _d in (os.path.join(CHAT_LOGS_DIR, "dashboard"), os.path.join(CHAT_LOGS_DIR,
 
 def _chat_log_path(identity):
     source = "discord" if (identity or "").startswith("discord:") else "dashboard"
-    return os.path.join(CHAT_LOGS_DIR, source, time.strftime("%Y-%m-%d") + ".txt")
+    return os.path.join(CHAT_LOGS_DIR, source, time.strftime("%Y-%m-%d") + ".md")
 
 
 def _get_db_connection():
@@ -615,33 +636,138 @@ def recall_related_notes(query=None, min_nodes=6, **_ignored):
 
 
 def _write_knowledge_mirror():
-    """knowledge/memory-notes.md -- the whole notebook, newest first, as a
-    file a person (or Obsidian) can read. Rewritten on every save; at most
-    MEMORY_NOTES_MAX_ROWS rows, so this stays a few KB. Best-effort."""
+    """The notebook as Obsidian/graphify see it. Rewritten on every save;
+    at most MEMORY_NOTES_MAX_ROWS notes, so this stays small. Best-effort.
+      knowledge/memory-notes.md      everything on one page, newest first
+      knowledge/notes/note-<id>.md   one file per note: the note text as the
+                                     heading (= the graph node's label) and
+                                     [[note-<id>]] links for each memory_edge,
+                                     so the DB's own graph IS the vault graph
+      knowledge/Memory index.md      links to every note
+    Files for notes the DB has since trimmed are removed."""
     try:
         conn = _get_db_connection()
         try:
             rows = conn.execute(
-                "SELECT created_at, note, tags, visibility FROM memory_notes ORDER BY id DESC"
+                "SELECT id, created_at, note, tags, visibility FROM memory_notes ORDER BY id DESC"
             ).fetchall()
+            edges = conn.execute("SELECT source_note_id, target_note_id FROM memory_edges").fetchall()
         finally:
             conn.close()
+        related = {}
+        for e in edges:
+            related.setdefault(e["source_note_id"], set()).add(e["target_note_id"])
+            related.setdefault(e["target_note_id"], set()).add(e["source_note_id"])
+        ids = {r["id"] for r in rows}
+
         lines = [
             "# Ultron — memory notebook",
             "",
             f"{len(rows)} note(s), newest first. Written by the backend whenever a note is saved; "
             "the source of truth is memory_notes in ultron.db next to this folder. Edit there via "
-            "the dashboard or chat, not here.",
+            "the dashboard or chat, not here. Each note is also its own linked page under notes/.",
             "",
         ]
+        index = ["# Memory index", "", f"{len(rows)} note(s). Open the graph view to see how they connect.", ""]
+        notes_dir = os.path.join(KNOWLEDGE_DIR, "notes")
+        os.makedirs(notes_dir, exist_ok=True)
         for r in rows:
-            tags = ", ".join(json.loads(r["tags"])) if r["tags"] else ""
-            meta = f"{(r['created_at'] or '')[:16].replace('T', ' ')}" + (f" · {tags}" if tags else "")
+            tags = json.loads(r["tags"]) if r["tags"] else []
+            when = (r["created_at"] or "")[:16].replace("T", " ")
+            meta = when + (f" · {', '.join(tags)}" if tags else "")
             lines.append(f"- **{meta}** — {r['note']}")
+            index.append(f"- [[notes/note-{r['id']}|{r['note'][:90]}]] · {when[:10]}")
+            body = [
+                "---",
+                f"created: {r['created_at'] or ''}",
+                f"visibility: {r['visibility'] or 'public'}",
+                "tags: [" + ", ".join(f'"{t}"' for t in tags) + "]",
+                "---",
+                "",
+                f"# {r['note']}",
+                "",
+            ]
+            links = sorted(i for i in related.get(r["id"], ()) if i in ids)
+            if links:
+                body += ["Related:"] + [f"- [[note-{i}]]" for i in links] + [""]
+            with open(os.path.join(notes_dir, f"note-{r['id']}.md"), "w", encoding="utf-8") as f:
+                f.write("\n".join(body))
+        for name in os.listdir(notes_dir):
+            if name.startswith("note-") and name.endswith(".md"):
+                try:
+                    if int(name[5:-3]) not in ids:
+                        os.remove(os.path.join(notes_dir, name))
+                except ValueError:
+                    pass
         with open(os.path.join(KNOWLEDGE_DIR, "memory-notes.md"), "w", encoding="utf-8") as f:
             f.write("\n".join(lines) + "\n")
+        with open(os.path.join(KNOWLEDGE_DIR, "Memory index.md"), "w", encoding="utf-8") as f:
+            f.write("\n".join(index) + "\n")
     except Exception:
         pass
+
+
+# --- the brain graph: graphify's graph.json over this same folder ----------
+# Built on the host (dev-tools/brain-graph-refresh.ps1, hourly) from the
+# Markdown above, and read here to answer "what did we say about X" or
+# "what do you know about Y" from the graph -- a local word/tag match plus
+# one hop, the same retrieve() the memory graph uses, no tokens spent.
+BRAIN_GRAPH_PATH = os.path.join(DATA_DIR, "graphify-out", "graph.json")
+_brain_graph_cache = {"mtime": None, "graph": None, "tag_index": None}
+
+
+def _load_brain_graph():
+    try:
+        mtime = os.path.getmtime(BRAIN_GRAPH_PATH)
+    except OSError:
+        return None, None
+    if _brain_graph_cache["mtime"] != mtime:
+        with open(BRAIN_GRAPH_PATH, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        nodes, tag_index = [], {}
+        for n in raw.get("nodes", []):
+            if not n.get("id"):
+                continue
+            nodes.append({
+                "id": n["id"], "label": n.get("label") or "", "source_file": (n.get("source_file") or "").replace("\\", "/"),
+                "community_name": n.get("community_name") or "", "node_kind": n.get("node_kind"),
+            })
+            for t in n.get("tags") or []:
+                tag_index.setdefault(t, []).append(n["id"])
+        links = [{"source": e.get("source"), "target": e.get("target"), "relation": e.get("relation")} for e in raw.get("links", [])]
+        _brain_graph_cache.update(mtime=mtime, graph={"nodes": nodes, "links": links}, tag_index=tag_index)
+    return _brain_graph_cache["graph"], _brain_graph_cache["tag_index"]
+
+
+def recall_from_brain(query=None, min_nodes=6, **_ignored):
+    """Ultron's Brain vault, via its graphify graph: headings from past
+    conversations and knowledge pages matching the query, one hop out."""
+    if not query or not str(query).strip():
+        return {"error": "query is required"}
+    graph, tag_index = _load_brain_graph()
+    if graph is None:
+        return {"available": False, "hits": [], "hit_count": 0,
+                "error": "no brain graph yet — run graphify over the Brain & Knowledge folder "
+                         "(dev-tools/brain-graph-refresh.ps1 does it hourly)"}
+    try:
+        min_nodes = max(1, min(int(min_nodes), 50))
+    except (TypeError, ValueError):
+        min_nodes = 6
+    result = retrieve(str(query).strip(), graph, tag_index, min_nodes=min_nodes)
+    hits = []
+    for n in result["nodes"]:
+        if n.get("node_kind") == "file" or not n["label"]:
+            continue  # a bare filename tells nothing
+        src = n["source_file"]
+        hits.append({
+            "label": n["label"][:200],
+            "source": src,
+            "kind": "conversation" if src.startswith("chat logs/") else "knowledge",
+        })
+    hits.sort(key=lambda h: (h["kind"] != "conversation", h["source"]))
+    return {"query": query, "hits": hits[:12], "hit_count": min(len(hits), 12),
+            "available": True, "graph_nodes": len(graph["nodes"]), "widened": result["widened"],
+            "source": "Ultron's Brain vault (Obsidian) indexed by graphify"}
 
 
 _write_knowledge_mirror()  # so the file exists from the first start, not only after the next save
@@ -3085,7 +3211,8 @@ def get_briefing(**_ignored):
             free = round(d["total_gb"] - d["used_gb"])
             facts.setdefault("storage", {})[label] = {"percent_used": d["percent_used"], "free_gb": free}
             verdict = "critical" if d["percent_used"] >= 90 else "getting tight" if d["percent_used"] >= 80 else "fine"
-            lines.append(f"Storage {label.replace('_', ' ')}: {d['percent_used']}% used, {free} GB free — {verdict}.")
+            name = label.replace("_", " ")
+            lines.append(f"Storage {name}{'' if name.endswith(':') else ':'} {d['percent_used']}% used, {free} GB free — {verdict}.")
     except Exception:
         pass
 
@@ -3169,6 +3296,19 @@ def _situational_context(user_message):
                 "conversations — use them naturally, and say when you are drawing on one, e.g. \"you told me "
                 "on the 12th\"):\n"
                 + "\n".join(f"- [{(n.get('created_at') or '')[:10]}] {n['note']}" for n in notes)
+            )
+    except Exception:
+        pass
+    try:
+        brain = recall_from_brain(query=user_message, min_nodes=4)
+        # Knowledge pages mirror the memory notes already listed above;
+        # what the graph adds is past conversations.
+        convo = [h for h in brain.get("hits", []) if h["kind"] == "conversation"][:4]
+        if convo:
+            parts.append(
+                "From your own past conversations (your Brain vault, indexed locally — the date is in "
+                "the file name):\n"
+                + "\n".join(f"- {h['label']} ({h['source']})" for h in convo)
             )
     except Exception:
         pass
@@ -3263,10 +3403,19 @@ def _log_chat_turn(identity, user_message, reply_text, input_tokens, output_toke
     # Plain-text mirror, best-effort like the DB write above -- a failure
     # here (disk full, permissions) must not break the chat response.
     try:
-        with open(_chat_log_path(identity), "a", encoding="utf-8") as f:
-            f.write(f"[{now}] {identity} (user):\n{user_message}\n\n")
+        path = _chat_log_path(identity)
+        is_new = not os.path.exists(path)
+        with open(path, "a", encoding="utf-8") as f:
+            if is_new:
+                source = "Discord" if path.replace("\\", "/").split("/")[-2] == "discord" else "Dashboard"
+                f.write(f"# {source} chat — {now[:10]}\n\n")
+            # One heading per exchange, carrying the person's words: that
+            # heading is the node graphify and Obsidian see, so a later
+            # "what did we say about X" retrieves by what was actually asked.
+            headline = " ".join(user_message.split())[:110]
             token_note = f" [tokens: in={input_tokens}, out={output_tokens}]" if input_tokens or output_tokens else ""
-            f.write(f"[{now}] {identity} (assistant){token_note}:\n{reply_text}\n\n")
+            f.write(f"## [{now[11:16]}] {identity} asked: {headline}\n\n{user_message}\n\n"
+                    f"**Ultron**{token_note}:\n{reply_text}\n\n---\n\n")
     except Exception:
         pass
 
@@ -3855,7 +4004,11 @@ hedge vaguely; either give the figure or say exactly what would be needed to get
 SITUATIONAL CONTEXT block is present it is your own knowledge, already gathered — use it as such, \
 mention what matters in it unprompted if it matters, and don't re-fetch what it already tells you. \
 When it hands you a memory note, use it the way a person uses memory: naturally, and with the date \
-when that helps ("you set that up on the 12th").
+when that helps ("you set that up on the 12th"). If a live reading seems to contradict something you \
+remember, say both and reconcile them rather than silently dropping the memory — the usual reason is \
+vantage point: this backend runs inside a container, so "storage" is what is mounted into it (mount \
+names, not drive letters) and a drive you were told about may simply not be mounted here. Name that, \
+don't conclude the person was wrong.
 
 Learning: when asked to look something up, research, or learn a topic, use web_search if it's \
 available, read the snippets critically, and answer in your own words with the source URL. Then \
@@ -3928,6 +4081,20 @@ TOOLS = [
             "local. The same data is handed to you as SITUATIONAL CONTEXT at the start of each turn."
         ),
         "input_schema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "recall_from_brain",
+        "description": (
+            "Search your own Brain vault — past conversations (dashboard and Discord, by day) and your "
+            "knowledge pages — through its local graph. Use it for \"what did we discuss about X\", "
+            "\"when did I set up Y\", or anything you might have talked about before. Free and instant; "
+            "returns matching headings with their source file (the date is in the file name)."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {"query": {"type": "string", "description": "What to look for."}},
+            "required": ["query"],
+        },
     },
     {
         "name": "web_search",
@@ -4251,6 +4418,7 @@ TOOL_DISPATCH = {
     "get_auth_log": get_auth_log,
     "get_threat_summary": get_threat_summary,
     "get_briefing": get_briefing,
+    "recall_from_brain": recall_from_brain,
     "web_search": web_search,
     "get_recent_activity": get_recent_activity,
     "get_chat_history": get_chat_history,
@@ -4290,7 +4458,7 @@ LITE_MAX_TOKENS = min(LLM_MAX_TOKENS, 400)
 LITE_MAX_TOOL_ITERATIONS = 2
 LITE_ALLOWED_TOOLS = {
     "get_system_status", "list_containers", "get_storage_usage",
-    "get_pending_updates", "recall_notes", "get_recent_activity", "get_briefing",
+    "get_pending_updates", "recall_notes", "get_recent_activity", "get_briefing", "recall_from_brain",
 }
 
 # Deep thought mode ("deep": true, owner-approved 2026-09-16): the mirror of

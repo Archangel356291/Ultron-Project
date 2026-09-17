@@ -67,8 +67,11 @@ def demo():
     assert os.path.dirname(mirror_path) == os.path.join(os.path.dirname(app.DB_PATH), "chat logs", "dashboard"), mirror_path
     with open(mirror_path, encoding="utf-8") as f:
         file_text = f.read()
-    assert "(user):\nhi Ultron" in file_text, file_text
-    assert "(assistant) [tokens: in=42, out=17]:\nhello there" in file_text, file_text
+    # Markdown: a title on first write, one heading per exchange carrying
+    # the person's words (the node graphify/Obsidian see), reply beneath.
+    assert file_text.startswith("# Dashboard chat — "), file_text[:60]
+    assert "] admin asked: hi Ultron\n\nhi Ultron\n\n" in file_text, file_text
+    assert "**Ultron** [tokens: in=42, out=17]:\nhello there" in file_text, file_text
 
     # A Discord-origin turn with a speaker logs under that identity, not "admin" --
     # this is the whole point: one shared bot token, distinguishable people.

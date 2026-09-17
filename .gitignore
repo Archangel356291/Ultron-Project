@@ -80,3 +80,10 @@ $RECYCLE.BIN/
 # purpose: graphify-out/obsidian/.obsidian/ is graphify's own generated
 # vault config and stays tracked.
 /.obsidian/
+
+# Ultron's Brain & Knowledge mirrors -- written next to ultron.db (D:\ultron's
+# Brain&Knowledge in Docker); if the backend is ever run bare with the default
+# DB path they would land here, and they are runtime data, never source.
+/ultron-backend/knowledge/
+/ultron-backend/chat logs/
+/ultron-backend/graphify-out/

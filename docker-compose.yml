@@ -22,7 +22,18 @@ services:
       # per app.py's own check.
       - ULTRON_TLS_CERT=/app/tls/ultron.crt
       - ULTRON_TLS_KEY=/app/tls/ultron.key
+      # The Storage panel, get_storage_usage and the briefing read these
+      # paths -- the host's real drives, bind-mounted read-only below.
+      # Without this the container reported its own virtual disk as
+      # "root" (1 TB, 1% used) while D: alone is 4 TB.
+      - ULTRON_STORAGE_MOUNTS=C:=/host/c,D:=/host/d
     volumes:
+      # Host drives, read-only, so disk usage is the owner's actual C: and
+      # D: (shutil.disk_usage on a bind mount reports the underlying
+      # volume). Never listed or served -- app.py only ever calls
+      # disk_usage() on these paths.
+      - "C:\\:/host/c:ro"
+      - "D:\\:/host/d:ro"
       # Ultron's learned/gathered data (trades, memory notes, evolution
       # ideas, metrics history, activity log -- everything in ultron.db)
       # lives on the host at a real, browsable path instead of inside

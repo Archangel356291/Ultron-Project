@@ -112,12 +112,14 @@ New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol T
 | `GET /api/connections`       | **Admin-only.** Who's connected right now — name, role, device count, last seen |
 | `GET /api/mcp/servers`      | Configured external tool servers and their tools — see External tools |
 
-`STORAGE_MOUNTS` defaults to `{"c_drive": "C:\\"}` on Windows. Add other
-drive letters at the top of `app.py`, e.g.:
-
-```python
-STORAGE_MOUNTS = {"c_drive": "C:\\", "d_drive": "D:\\"}
-```
+Storage paths come from `ULTRON_STORAGE_MOUNTS` as `label=path,label=path`
+(default `C:=C:\` on Windows). **In Docker this is required**: the
+container cannot see the host's drives except where `docker-compose.yml`
+bind-mounts them read-only (`C:\ → /host/c`, `D:\ → /host/d`), and compose
+sets `ULTRON_STORAGE_MOUNTS=C:=/host/c,D:=/host/d` accordingly. Without it
+the container reported its own 1 TB virtual disk as "root" — which is what
+the Storage panel, `get_storage_usage` and the briefing showed until
+2026-09-16.
 
 By default the API allows requests from any origin (`ULTRON_ALLOWED_ORIGIN`
 defaults to `*`), which is fine while you're testing on your own network.
@@ -436,6 +438,19 @@ that's grounded in this backend's own data rather than guessing:
   `knowledge\memory-notes.md`, the whole memory notebook rewritten on
   every save so it can be read — or opened in Obsidian — without a SQLite
   client. `dev-tools/test_deep_learn_brain.py` covers all three.
+- **Ultron's Brain — an Obsidian vault and a graphify root.** That same
+  folder is registered in Obsidian as its own vault (deliberately separate
+  from the *Ultron Project* vault: the project is where he is developed,
+  the Brain is what he knows). Chat logs are Markdown with one heading per
+  exchange carrying the person's words; every memory note is its own page
+  under `knowledge\notes\` with `[[wikilinks]]` for each `memory_edges`
+  row, so Obsidian's graph view *is* his memory graph (gold = notes,
+  blue = dashboard talks, violet = Discord). `dev-tools/brain-graph-refresh.ps1`
+  runs `graphify update` over the vault hourly (scheduled task "Ultron
+  Brain Graph"; AST-only, no API key, no tokens); the backend reads
+  `graphify-out\graph.json` from it for the `recall_from_brain` tool and
+  adds matching past conversations to the situational context — so "what
+  did we say about X" is answered from the vault before any model call.
 - Requests to the Anthropic API time out after 60s by default (override with
   `ULTRON_LLM_TIMEOUT_SECONDS`), and errors are mapped to distinct, useful
   responses instead of one generic failure: a bad/rejected key comes back

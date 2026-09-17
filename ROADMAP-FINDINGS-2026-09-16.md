@@ -199,6 +199,36 @@ folder the owner asked for:**
    and `knowledge\memory-notes.md`, the notebook rewritten on every save
    for reading without a SQLite client. `dev-tools/test_deep_learn_brain.py`.
 
+## 9. Ultron's Brain vault + graphify (owner-requested 2026-09-16)
+
+- `D:\ultron's Brain&Knowledge` is now an **Obsidian vault**, registered
+  in Obsidian's vault list (config backed up first) with its own
+  `.obsidian` settings (dark, gold accent, graph colour groups) and a
+  `Home.md`. It is a separate vault from the *Ultron Project* one on
+  purpose: the project is where he is developed; the Brain is what he
+  knows. Obsidian names a vault after its folder, so it appears as
+  "ultron's Brain&Knowledge"; renaming the folder to "Ultron's Brain" is
+  a one-line `.env` change if the exact name matters.
+- **Structure that graphs.** graphify without an LLM extracts files,
+  headings and links only (the single big notebook page yielded 2 nodes),
+  so the backend now writes what both Obsidian and graphify can graph:
+  chat logs as Markdown with one heading per exchange (the heading carries
+  the person's words), and one page per memory note whose `[[wikilinks]]`
+  are the DB's own `memory_edges`. Obsidian's graph view is therefore his
+  real memory graph, not a picture of one.
+- **Cheaper recall.** `dev-tools/brain-graph-refresh.ps1` runs
+  `graphify update` over the vault hourly (user-level scheduled task
+  "Ultron Brain Graph", no API key, no tokens). The backend loads
+  `graphify-out/graph.json` from the vault (cached by mtime) for a new
+  `recall_from_brain` tool — also in Economy mode — and adds matching
+  past conversations to the situational context, so "what did we say
+  about X" is answered locally before any model call. Word/tag match plus
+  one hop, the same `retrieve()` the memory graph already used.
+- Item 1 polish shipped alongside: a real microphone level meter while
+  listening (AnalyserNode on the mic stream, hidden if refused), a
+  three-minute grid drift behind the panels (off under reduced motion),
+  and `/` to focus the talk bar or chat from anywhere.
+
 ## Also fixed on the way
 
 - **Crypto & Markets no longer shows fake data.** The hardcoded
@@ -214,6 +244,14 @@ folder the owner asked for:**
   `dev-tools/README.md`'s own rule.
 - **Local time in every container** (`TZ` on backend, bot and SearXNG);
   activity, chat-log and Sentinel timestamps were UTC.
+- **Storage was the container's disk, not yours.** Since Dockerization the
+  Storage panel, `get_storage_usage` and the briefing reported the
+  container's 1 TB virtual disk as "root" (1% used) — found when Ultron
+  contradicted his own memory that the media lives on D:. `C:\` and `D:\`
+  are now bind-mounted read-only and `ULTRON_STORAGE_MOUNTS=C:=/host/c,D:=/host/d`
+  names them; the container now reads exactly what Windows does (C: 999 GB,
+  D: 4,001 GB). The prompt also tells him to reconcile a live reading with
+  a memory instead of dropping the memory. `dev-tools/test_storage_mounts.py`.
 
 ## 5. Tools, plugins and skills survey
 

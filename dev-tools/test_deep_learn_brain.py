@@ -120,21 +120,68 @@ def demo():
     assert len(calls) - before == 2, "main call + tool round only; no learner call"
     assert len(_notes()) == 2 and any("UniFi" in n for n in _notes()), _notes()
 
-    # Knowledge mirror reflects the notebook.
+    # Knowledge mirror reflects the notebook: the one-page view, one linked
+    # page per note (with a wikilink where the DB has an edge), an index.
     body = open(mirror, encoding="utf-8").read()
     assert "2 note(s)" in body and "Jellyfin media library" in body and "UniFi" in body, body
+    app.remember_note(note="The Jellyfin media library backup also goes to the D drive weekly")  # shares words -> edge
+    notes_dir = os.path.join(DATA_DIR, "knowledge", "notes")
+    files = sorted(f for f in os.listdir(notes_dir) if f.startswith("note-"))
+    assert len(files) == 3, files
+    pages = {f: open(os.path.join(notes_dir, f), encoding="utf-8").read() for f in files}
+    newest = pages[files[-1]]
+    assert newest.startswith("---\ncreated: ") and "\n# The Jellyfin media library backup" in newest, newest[:200]
+    assert "[[note-" in newest, "the related note should appear as a wikilink:\n" + newest
+    index = open(os.path.join(DATA_DIR, "knowledge", "Memory index.md"), encoding="utf-8").read()
+    assert "3 note(s)" in index and "[[notes/note-" in index, index
+    # Trimmed notes lose their page: fake a trim by deleting a row.
+    conn = app._get_db_connection()
+    conn.execute("DELETE FROM memory_notes WHERE note LIKE 'The owner''s router%'"); conn.commit(); conn.close()
+    app._write_knowledge_mirror()
+    assert not any("UniFi" in open(os.path.join(notes_dir, f), encoding="utf-8").read()
+                   for f in os.listdir(notes_dir) if f.startswith("note-")), "page for a trimmed note must be removed"
 
-    # Chat logs split by source: dashboard turns and a Discord speaker's turn.
-    dash = os.path.join(DATA_DIR, "chat logs", "dashboard", today + ".txt")
-    disc = os.path.join(DATA_DIR, "chat logs", "discord", today + ".txt")
-    assert os.path.isfile(dash) and "jellyfin media lives on the D drive" in open(dash, encoding="utf-8").read()
+    # Chat logs split by source, as Markdown with one heading per exchange.
+    dash = os.path.join(DATA_DIR, "chat logs", "dashboard", today + ".md")
+    disc = os.path.join(DATA_DIR, "chat logs", "discord", today + ".md")
+    d_text = open(dash, encoding="utf-8").read()
+    assert d_text.startswith("# Dashboard chat — " + today), d_text[:60]
+    assert "] admin asked: fyi my jellyfin media lives on the D drive" in d_text, d_text
     assert not os.path.exists(disc)
     script.append(_text("hello from the bot"))
     client.post("/api/chat", json={"message": "ping from discord", "history": [], "speaker": "discord:somebody"}, headers=ADMIN)
     assert os.path.isfile(disc), "a discord:* speaker must land in chat logs/discord"
     d_body = open(disc, encoding="utf-8").read()
-    assert "discord:somebody (user)" in d_body and "ping from discord" in d_body
+    assert d_body.startswith("# Discord chat — ") and "] discord:somebody asked: ping from discord" in d_body, d_body
     assert "ping from discord" not in open(dash, encoding="utf-8").read(), "discord turns must not leak into the dashboard log"
+
+    # Brain graph: absent -> honest "not yet"; present -> conversations
+    # retrieved by the words in their headings, and surfaced in the
+    # situational context as past conversations.
+    r = app.recall_from_brain(query="jellyfin drive")
+    assert r["available"] is False and r["hits"] == [] and "graphify" in r["error"], r
+    gdir = os.path.join(DATA_DIR, "graphify-out")
+    os.makedirs(gdir, exist_ok=True)
+    import json as _json
+    _json.dump({"nodes": [
+        {"id": "f1", "label": today + ".md", "node_kind": "file", "source_file": "chat logs/dashboard/" + today + ".md"},
+        {"id": "h1", "label": "[16:58] admin asked: fyi my jellyfin media lives on the D drive", "node_kind": "heading",
+         "source_file": "chat logs/dashboard/" + today + ".md", "community_name": "Dashboard chat"},
+        {"id": "k1", "label": "The owner keeps the Jellyfin media library on the D drive", "node_kind": "heading",
+         "source_file": "knowledge/notes/note-1.md", "tags": ["visibility:public"]},
+        {"id": "h9", "label": "[09:00] admin asked: how hot is the cpu", "node_kind": "heading",
+         "source_file": "chat logs/dashboard/2026-09-10.md"},
+    ], "links": [{"source": "f1", "target": "h1", "relation": "contains"}]},
+        open(os.path.join(gdir, "graph.json"), "w", encoding="utf-8"))
+    r = app.recall_from_brain(query="where does my jellyfin media live?")
+    assert r["available"] and r["hit_count"] >= 2, r
+    kinds = {h["source"]: h["kind"] for h in r["hits"]}
+    assert kinds["chat logs/dashboard/" + today + ".md"] == "conversation" and kinds["knowledge/notes/note-1.md"] == "knowledge", kinds
+    assert not any(h["label"] == today + ".md" for h in r["hits"]), "bare file nodes must be filtered out"
+    assert not any("cpu" in h["label"] for h in r["hits"]), "unrelated conversation must not match"
+    ctx = app._situational_context("where does my jellyfin media live?")
+    assert "From your own past conversations" in ctx and "jellyfin media lives on the D drive" in ctx, ctx
+    assert "recall_from_brain" in app.TOOL_DISPATCH and "recall_from_brain" in app.LITE_ALLOWED_TOOLS
 
     print("OK: deep mode uses %s with max_tokens=%d and wins over lite, beta gets neither deep nor learning; "
           "learning runs one %s call, saves a new fact once (activity logged), skips NONE/duplicates; "

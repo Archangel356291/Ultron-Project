@@ -97,13 +97,20 @@
      panels let show through. Fixed and static -- zero per-frame cost, so
      it stays on in Reduced Visual Mode. */
   body::before{
-    content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    content:''; position:fixed; inset:-48px 0 0 -48px; z-index:-1; pointer-events:none;
     background:
       radial-gradient(ellipse 60% 40% at 50% -5%, rgba(255,178,56,0.07), transparent 70%),
       radial-gradient(ellipse 80% 60% at 50% 110%, rgba(79,166,224,0.05), transparent 70%),
       repeating-linear-gradient(0deg, rgba(139,147,160,0.035) 0 1px, transparent 1px 48px),
       repeating-linear-gradient(90deg, rgba(139,147,160,0.035) 0 1px, transparent 1px 48px);
+    /* One grid cell every three minutes: the room is not quite still.
+       A transform, not a background-position change, so it composites
+       without repainting; off entirely under reduced motion. */
+    animation:grid-drift 180s linear infinite;
   }
+  @keyframes grid-drift{ to{ transform:translate(48px, 48px); } }
+  @media (prefers-reduced-motion: reduce){ body::before{ animation:none; } }
+  body.reduced-visuals::before{ animation:none; }
   ::selection{background:var(--oxide-dim); color:var(--text);}
 
   /* ---------- top header ---------- */
@@ -709,6 +716,12 @@
   }
   .talk-mic:not(:disabled){ opacity:1; cursor:pointer; color:var(--text); }
   .talk-mic.listening{ color:var(--oxide); border-color:var(--oxide); }
+  /* Live microphone level while listening -- five bars fed by a real
+     AnalyserNode on the mic stream, not a canned animation; hidden when
+     the mic is off or was refused. */
+  .mic-level{ display:none; gap:3px; align-items:center; height:42px; padding:0 4px; }
+  .mic-level.on{ display:inline-flex; }
+  .mic-level i{ width:3px; height:3px; border-radius:2px; background:var(--oxide); box-shadow:0 0 6px var(--core-glow-a); transition:height .06s linear; }
   .talk-send{
     width:42px; flex-shrink:0; border-radius:7px; border:none;
     background:var(--blue); color:var(--void); display:flex; align-items:center; justify-content:center; cursor:pointer;
@@ -1321,7 +1334,8 @@
                   Talk to Ultron
                 </div>
                 <div class="talk-row">
-                  <input type="text" id="home-talk-input" placeholder="Type your request, question, or command…">
+                  <input type="text" id="home-talk-input" placeholder="Type your request, question, or command… (press / to focus)">
+                  <span class="mic-level" id="mic-level" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
                   <button class="talk-mic" id="home-talk-mic" title="Voice input" onclick="toggleVoiceInput()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3"/></svg>
                   </button>
@@ -1616,7 +1630,7 @@
             <button type="button" onclick="stopSpeaking()">Stop</button>
           </div>
           <div class="chat-input">
-            <input type="text" id="chat-input-field" placeholder="Type your request, question, or command…">
+            <input type="text" id="chat-input-field" placeholder="Type your request, question, or command… (press / to focus, Esc stops voice)">
             <button id="chat-send-btn" onclick="sendChatMessage()">Send</button>
           </div>
         </div>
@@ -3785,17 +3799,69 @@
     recognizer.lang = 'en-US';
     recognizer.interimResults = false;
     recognizer.maxAlternatives = 1;
-    recognizer.onstart = () => { micBtn.classList.add('listening'); if (window.__heroSetState) window.__heroSetState('listening'); };
+    recognizer.onstart = () => { micBtn.classList.add('listening'); startMicMeter(); if (window.__heroSetState) window.__heroSetState('listening'); };
     recognizer.onresult = (e) => {
       document.getElementById('home-talk-input').value = e.results[0][0].transcript;
     };
     recognizer.onend = () => {
       micBtn.classList.remove('listening');
+      stopMicMeter();
       recognizer = null;
       if (window.__heroSetState) window.__heroSetState('idle');
     };
     recognizer.start();
   }
+
+  // Real mic level while listening: a second, read-only tap on the mic
+  // (SpeechRecognition keeps its own). Denied or unsupported -> the bars
+  // simply stay hidden; the button's listening colour still shows state.
+  let micMeter = null;
+  async function startMicMeter() {
+    const el = document.getElementById('mic-level');
+    if (!el || !navigator.mediaDevices || !(window.AudioContext || window.webkitAudioContext)) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      ctx.createMediaStreamSource(stream).connect(analyser);
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      const bars = el.querySelectorAll('i');
+      el.classList.add('on');
+      micMeter = { stream: stream, ctx: ctx, raf: 0 };
+      (function tick() {
+        analyser.getByteFrequencyData(data);
+        bars.forEach(function (b, i) {
+          const v = data[Math.floor((i + 1) * data.length / (bars.length + 2))] / 255;
+          b.style.height = (3 + v * 24) + 'px';
+        });
+        micMeter.raf = requestAnimationFrame(tick);
+      })();
+    } catch (e) { /* no meter, no problem */ }
+  }
+  function stopMicMeter() {
+    if (!micMeter) return;
+    cancelAnimationFrame(micMeter.raf);
+    micMeter.stream.getTracks().forEach(function (t) { t.stop(); });
+    micMeter.ctx.close().catch(function () {});
+    micMeter = null;
+    const el = document.getElementById('mic-level');
+    if (el) el.classList.remove('on');
+  }
+
+  // Keyboard-first: "/" anywhere (outside a field) puts the cursor in the
+  // talk bar on Home or the chat box on the Assistant tab -- and opens the
+  // Assistant tab from anywhere else.
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+    const tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    const home = document.getElementById('sec-home');
+    const target = (home && home.classList.contains('active'))
+      ? document.getElementById('home-talk-input')
+      : (switchSection('assistant'), document.getElementById('chat-input-field'));
+    if (target) { e.preventDefault(); target.focus(); }
+  });
 
   // --- voice output: Fish Audio TTS via the backend (key stays server-side).
   // On by default (see the "Speak replies aloud" switch's markup) but still
