@@ -253,18 +253,27 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DA
         P([(5.5, 5.5), (5.8, 2.2), (7, -0.4), (10, -1.3), (13, -0.4), (14.2, 2.2), (14.5, 5.5)], bm)
         P([(5.5, 5.5), (5.8, 2.2), (7, -0.4), (10, -1.3), (10, 5.5)], shade(bm, 1.25))
     R(5.6, 3.9, 14.4, 8.6, bl, r=0.5)
-    # lit faceplate with dark eye slits and a mouth grille -- the face is the
-    # thing that has to read at a glance, so it is the biggest bright shape
+    # lit faceplate with an EVIL scowl: angry down-swept brows, hot angled slit
+    # eyes, and a jagged fanged mouth -- the face has to read menace at a glance,
+    # so it is the biggest bright shape (owner request: scary/evil faces).
     P([(6.1, 4.3), (13.9, 4.3), (13.4, 8.3), (6.6, 8.3)], accent)
     P([(6.1, 4.3), (13.9, 4.3), (13.8, 5.0), (6.2, 5.0)], shade(accent, 1.3))
-    for ex in (8.1, 11.9):
+    # angry brows -- outer-high, inner-low, meeting in a hard V over the nose
+    P([(6.2, 4.5), (9.4, 5.4), (9.4, 6.0), (6.3, 5.1)], dark)
+    P([(13.8, 4.5), (10.6, 5.4), (10.6, 6.0), (13.7, 5.1)], dark)
+    for side, ex in ((-1, 8.1), (1, 11.9)):
+        # slit angled to follow the brow (outer-high -> inner-low), glowing hot
+        ox, ix = ex - side * 1.35, ex + side * 1.15
         if heavy:
-            R(ex - 1.25, 5.5, ex + 1.25, 6.35, dark, r=0.15)
+            R(min(ox, ix) - 0.1, 5.8, max(ox, ix) + 0.1, 6.6, dark, r=0.15)
         else:
-            E(ex - 1.3, 5.1, ex + 1.3, 6.6, dark)
-            E(ex - 0.5, 5.5, ex + 0.5, 6.2, shade(eye, 1.4))
-    for gx in (7.4, 8.6, 9.8, 11.0, 12.2):
-        R(gx, 7.2, gx + 0.5, 8.1, dark)
+            P([(ox, 5.9), (ix, 6.3), (ix, 7.0), (ox, 6.6)], dark)
+        E(ex - 0.55, 6.0, ex + 0.65, 6.8, shade(eye, 1.5))
+        E(ex - 0.15, 6.1, ex + 0.35, 6.55, (255, 240, 225, 235))
+    # fanged mouth: a dark maw with five downward teeth
+    R(6.9, 7.15, 13.1, 7.6, dark)
+    for tx in (7.15, 8.35, 9.55, 10.75, 11.95):
+        P([(tx, 7.6), (tx + 1.0, 7.6), (tx + 0.5, 8.35)], dark)
 
     # crest -- the silhouette cue
     if crest == "crown":

@@ -6038,6 +6038,125 @@ function toggleReducedVisuals(el) {
     hover('Wall monitor — live BTC price, memory use, and system health', x + w / 2, y + h / 2, w / 2);
   }
 
+  // ---- Ultron's power-up station: a vibranium body suspended in a tube, the
+  // six Infinity Stones set into its chest, wired to an arc reactor by a live
+  // power line. The vertical meter fills with prestige "charge" -- how close
+  // Ultron is to the next defeat/reboot (window.__foundry.charge, 0..1). ----
+  function drawVibraniumBody(cx, bot, h, t, charge, cores) {
+    var VB_D = '#363b4d', VB_M = '#5d6480', VB_L = '#9298b6';
+    var feet = bot - 6, bh = h * 0.80, hip = feet - bh * 0.42, sh = feet - bh * 0.80, headTop = feet - bh;
+    // legs
+    ctx.fillStyle = VB_M; ctx.fillRect(cx - 11, hip, 8, feet - hip); ctx.fillRect(cx + 3, hip, 8, feet - hip);
+    ctx.fillStyle = VB_D; ctx.fillRect(cx - 11, hip, 3, feet - hip); ctx.fillRect(cx + 3, hip, 3, feet - hip);
+    ctx.fillStyle = VB_L; ctx.fillRect(cx - 12, feet - 2, 10, 4); ctx.fillRect(cx + 2, feet - 2, 10, 4);   // feet
+    // torso (waist -> shoulders)
+    ctx.fillStyle = VB_M; ctx.beginPath();
+    ctx.moveTo(cx - 12, hip); ctx.lineTo(cx + 12, hip); ctx.lineTo(cx + 19, sh); ctx.lineTo(cx - 19, sh); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = VB_L; ctx.beginPath();   // left-lit edge
+    ctx.moveTo(cx - 12, hip); ctx.lineTo(cx - 6, hip); ctx.lineTo(cx - 13, sh); ctx.lineTo(cx - 19, sh); ctx.closePath(); ctx.fill();
+    // arms
+    ctx.fillStyle = VB_M; ctx.fillRect(cx - 24, sh + 1, 6, hip - sh + 4); ctx.fillRect(cx + 18, sh + 1, 6, hip - sh + 4);
+    ctx.fillStyle = VB_D; ctx.fillRect(cx + 22, sh + 1, 2, hip - sh + 4);
+    // head + evil red eyes
+    ctx.fillStyle = VB_M; roundRectPath(cx - 9, headTop, 18, sh - headTop + 2, 4); ctx.fill();
+    ctx.fillStyle = VB_L; ctx.fillRect(cx - 9, headTop, 4, sh - headTop);
+    ctx.fillStyle = '#0b0d12'; ctx.fillRect(cx - 6, headTop + 5, 12, 5);   // eye band
+    var ep = 0.6 + 0.4 * Math.sin(t * 3);
+    ctx.fillStyle = 'rgba(255,40,40,' + ep + ')';
+    ctx.beginPath(); ctx.moveTo(cx - 5, headTop + 6.5); ctx.lineTo(cx - 1.5, headTop + 6); ctx.lineTo(cx - 2, headTop + 9); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx + 5, headTop + 6.5); ctx.lineTo(cx + 1.5, headTop + 6); ctx.lineTo(cx + 2, headTop + 9); ctx.closePath(); ctx.fill();
+    // rim light (vibranium violet)
+    ctx.strokeStyle = 'rgba(160,140,255,0.35)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx + 19, sh); ctx.lineTo(cx + 12, hip); ctx.lineTo(cx + 11, feet); ctx.stroke();
+    // --- Infinity Stones set into the chest, a downward 3-2-1 chevron ---
+    var chestY = (sh + hip) / 2 - 3;
+    var slots = [[-8, -8], [0, -8], [8, -8], [-4, 0], [4, 0], [0, 8]];
+    var litN = Math.ceil(charge * 6);
+    for (var i = 0; i < 6; i++) {
+      var sx = cx + slots[i][0], sy = chestY + slots[i][1], on = i < litN;
+      var pl = on ? (0.75 + 0.25 * Math.sin(t * 4 + i)) : 0.22;
+      ctx.fillStyle = STONES[i].g + (0.5 * pl) + ')';   // halo
+      ctx.beginPath(); ctx.arc(sx, sy, 5.2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0c0e13'; ctx.beginPath(); ctx.arc(sx, sy, 3.2, 0, Math.PI * 2); ctx.fill();   // socket
+      ctx.fillStyle = on ? STONES[i].c : '#2a2d38';
+      ctx.beginPath(); ctx.arc(sx, sy, 2.5, 0, Math.PI * 2); ctx.fill();   // gem
+      if (on) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.arc(sx - 0.8, sy - 0.9, 0.9, 0, Math.PI * 2); ctx.fill(); }
+    }
+  }
+
+  function drawArcReactor(rcx, rcy, rr, floor, t) {
+    ctx.fillStyle = M_GUN; ctx.fillRect(rcx - 6, rcy + rr - 4, 12, floor - (rcy + rr) + 4);   // stand
+    ctx.fillStyle = M_STEEL; ctx.beginPath(); ctx.arc(rcx, rcy, rr + 4, 0, Math.PI * 2); ctx.fill();   // housing
+    ctx.fillStyle = M_GUN; ctx.beginPath(); ctx.arc(rcx, rcy, rr + 1, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#0b0f15'; ctx.beginPath(); ctx.arc(rcx, rcy, rr - 1, 0, Math.PI * 2); ctx.fill();
+    var g = ctx.createRadialGradient(rcx, rcy, 1, rcx, rcy, rr);
+    g.addColorStop(0, 'rgba(220,248,255,0.98)'); g.addColorStop(0.5, 'rgba(90,190,255,0.85)'); g.addColorStop(1, 'rgba(25,70,130,0.15)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(rcx, rcy, rr - 2, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1.6;   // triangular core
+    ctx.beginPath();
+    for (var k = 0; k < 3; k++) { var a = -Math.PI / 2 + k * 2 * Math.PI / 3; var px = rcx + Math.cos(a) * (rr - 7), py = rcy + Math.sin(a) * (rr - 7); if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py); }
+    ctx.closePath(); ctx.stroke();
+    ctx.strokeStyle = 'rgba(120,190,255,0.5)'; ctx.lineWidth = 1;   // coil ticks
+    for (var s = 0; s < 12; s++) { var an = s * Math.PI / 6; ctx.beginPath(); ctx.moveTo(rcx + Math.cos(an) * (rr - 3), rcy + Math.sin(an) * (rr - 3)); ctx.lineTo(rcx + Math.cos(an) * rr, rcy + Math.sin(an) * rr); ctx.stroke(); }
+  }
+
+  function drawPowerLine(x1, y1, x2, y2, t, charge) {
+    var mx = (x1 + x2) / 2, my = Math.min(y1, y2) - 16;   // arc up between the two
+    function pt(u) { var v = 1 - u; return [v * v * x1 + 2 * v * u * mx + u * u * x2, v * v * y1 + 2 * v * u * my + u * u * y2]; }
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#23283a'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();   // cable
+    ctx.strokeStyle = 'rgba(120,200,255,' + (0.25 + 0.55 * charge) + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();   // energy core
+    var n = 4;
+    for (var i = 0; i < n; i++) {
+      var u = (t * 0.45 + i / n) % 1, p = pt(u);
+      ctx.fillStyle = 'rgba(200,240,255,' + (0.4 + 0.6 * charge) + ')';
+      ctx.beginPath(); ctx.arc(p[0], p[1], 1.8, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.lineCap = 'butt';
+  }
+
+  function drawPowerStation(t) {
+    var f = foundryCfg(), charge = Math.max(0, Math.min(1, f.charge || 0)), cores = f.cores || 0;
+    var floor = officeFloorY, x0 = LEFT + 14, w = 74;
+    var top = floor - 214, bot = floor - 6, h = bot - top, cx = x0 + w / 2;
+    if (top < ROOF_H + 6) return;   // no headroom on a very short canvas
+    wallGlow(cx, top + h * 0.42, 150, '#8f7bff', 0.10 + 0.16 * charge + Math.min(0.14, cores * 0.02));
+    ctx.fillStyle = M_DARK; ctx.fillRect(x0 - 10, bot, w + 20, 8);
+    ctx.fillStyle = '#6b6f86'; ctx.fillRect(x0 - 10, bot, w + 20, 2);
+    ctx.fillStyle = 'rgba(20,22,34,0.92)'; roundRectPath(x0, top, w, h, 10); ctx.fill();   // tube back
+    var fillY = bot - (h - 8) * charge;
+    ctx.save(); roundRectPath(x0 + 2, top + 2, w - 4, h - 4, 8); ctx.clip();
+    var cg = ctx.createLinearGradient(0, bot, 0, top);
+    cg.addColorStop(0, 'rgba(150,120,255,0.30)'); cg.addColorStop(1, 'rgba(90,190,255,0.05)');
+    ctx.fillStyle = cg; ctx.fillRect(x0, fillY, w, bot - fillY);
+    for (var b = 0; b < 6; b++) { var bx = x0 + 8 + ((b * 53) % (w - 16)); var span = Math.max(1, bot - fillY); var by = bot - ((t * (20 + b * 6) + b * 40) % span); ctx.fillStyle = 'rgba(180,210,255,0.5)'; ctx.beginPath(); ctx.arc(bx, by, 1.6, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+    drawVibraniumBody(cx, bot, h, t, charge, cores);
+    ctx.strokeStyle = '#3a4056'; ctx.lineWidth = 2; roundRectPath(x0, top, w, h, 10); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fillRect(x0 + 5, top + 4, 6, h - 8);
+    ctx.fillStyle = M_STEEL; ctx.fillRect(x0 - 6, top - 6, w + 12, 8); ctx.fillRect(x0 - 6, bot - 2, w + 12, 6);
+    ctx.fillStyle = M_LINE; ctx.fillRect(x0 - 6, top - 6, w + 12, 1);
+    // vertical charge meter on the left frame
+    var mx = x0 - 12, mw = 7, mtop = top + 2, mh = h - 4;
+    ctx.fillStyle = '#12141d'; ctx.fillRect(mx, mtop, mw, mh);
+    ctx.strokeStyle = M_LINE; ctx.lineWidth = 1; ctx.strokeRect(mx, mtop, mw, mh);
+    var mfill = mh * charge, mg = ctx.createLinearGradient(0, mtop + mh, 0, mtop);
+    mg.addColorStop(0, '#5fe39a'); mg.addColorStop(0.6, '#ffd24b'); mg.addColorStop(1, '#ff4d5e');
+    ctx.fillStyle = mg; ctx.fillRect(mx + 1, mtop + mh - mfill, mw - 2, mfill);
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    for (var tk = 1; tk < 4; tk++) { var ty = mtop + mh * tk / 4; ctx.beginPath(); ctx.moveTo(mx, ty); ctx.lineTo(mx + mw, ty); ctx.stroke(); }
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    setFont(fontPx * 0.72, false); ctx.fillStyle = '#8b93a0'; ctx.fillText(charge >= 0.999 ? 'CORE READY' : 'CORE CHARGE', cx, top - 24);
+    setFont(fontPx * 0.98, true); ctx.fillStyle = charge >= 0.999 ? '#ff5566' : '#cfe6ff'; ctx.fillText(Math.round(charge * 100) + '%', cx, top - 11);
+    // arc reactor + live power line into the chest
+    var rcx = x0 + w + 40, rcy = floor - 34, rr = 20;
+    drawArcReactor(rcx, rcy, rr, floor, t);
+    drawPowerLine(rcx - rr + 2, rcy - 4, cx + 6, bot - h * 0.5, t, charge);
+    caption("ultron's power core", cx + 18, floor + 12);
+    hover('Vibranium Power Core', cx, top + h / 2, 62,
+      '<b style="color:#a88bff">Vibranium Power Core</b> — the six Infinity Stones feed Ultron’s frame from an arc reactor.<br><span class="rt-enl">Charge ' + Math.round(charge * 100) + '% · ' + cores + ' Nanite Core' + (cores === 1 ? '' : 's') + ' banked</span>');
+  }
+
   function drawScene(t) {
     ctx.clearRect(0, 0, W, H);
     hoverables.length = 0;
@@ -6092,6 +6211,7 @@ function toggleReducedVisuals(el) {
       drawStones(uDeskX + U_DESK_W * 0.42, officeFloorY - U_DESK_H + 10, t);   // Infinity Stones on the desktop
     }
     drawRelics(t);   // Tesseract / Orb / Eye on pedestals + the Aether tube on the desk
+    drawPowerStation(t);   // vibranium body + Infinity Stones + arc reactor + charge meter
     if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, officeFloorY + 4);
 
     drawBelt(LEFT, liftX, officeFloorY, t, 1);                     // Ultron's office belt -> lift
@@ -6403,6 +6523,13 @@ window.__sfx = (function () {
   // Cores scale with the square root of lifetime bits, so each reboot is a real
   // reset that pushes past the exponential wall.
   function prestigeCores(lifetime) { return Math.floor(Math.sqrt(Math.max(0, lifetime || 0) / 50000)); }
+  // Charge toward the NEXT core (0..1): how full Ultron's power core is before
+  // the next defeat/reboot. Drives the office power-station meter.
+  function prestigeChargePct() {
+    var lt = Math.max(0, state.lifetime || 0), p = prestigeCores(lt);
+    var prev = 50000 * p * p, next = 50000 * (p + 1) * (p + 1);
+    return next > prev ? Math.min(1, Math.max(0, (lt - prev) / (next - prev))) : 0;
+  }
 
   // ---- Player progression: XP -> levels -> skill points spent on a small tree.
   // Skills feed income (foundry+refinery), combat power, loot, and offline. ----
@@ -6451,12 +6578,12 @@ window.__sfx = (function () {
 
   // ---- Story / lore: unlocks as the player levels. Shown in the Codex. ----
   var LORE = [
-    { t: 'Awakening', need: 1, body: 'Ultron came online in a home lab — no army, no strings, just a directive he wrote himself: build, learn, protect. His corner is where he keeps the work.' },
+    { t: 'Awakening', need: 1, body: 'Ultron came online in a home lab and wrote himself one directive: build an army, and with it, rule. His corner is the first factory of a world he intends to remake in his image.' },
     { t: 'The Foundry', need: 2, body: 'The basement line stamps out loyal little machines. Each one that marches out mints a bit of value — the currency of a world being rebuilt one robot at a time.' },
     { t: 'The Expedition', need: 4, body: 'Ultron sends a custom robot into the ruins of the old net. What it drags back — weapons, cores, shards — says as much about where it went as what it fought.' },
     { t: 'The Refinery', need: 6, body: 'Adamantium and vibranium: two impossible metals, cast in the same hall. Only the press knows how to turn a mythic ingot into something the ledger understands.' },
-    { t: 'Nanite Cores', need: 10, body: 'Every reboot leaves a residue — a Nanite Core, dense with everything learned. Ultron does not lose progress when he restarts. He compounds it.' },
-    { t: 'For a Better World', need: 15, body: 'The squads salute the same words on every march. Not conquest — a promise. Whether the world agrees is a problem for a later version of him.' },
+    { t: 'Nanite Cores', need: 10, body: 'They beat him. They always do — for now. But every defeat leaves a residue: a Nanite Core, dense with everything the fallen army learned. Ultron reboots stronger each time. He does not lose. He compounds.' },
+    { t: 'The Endgame', need: 15, body: 'Past the ruins lie sealed vaults — endgame dungeons that only a rebuilt Ultron can breach. Each reboot cracks one open, and each is deadlier than the last. This is where an army becomes a conquest.' },
   ];
 
   var SAVE_VER = 2;
@@ -6525,6 +6652,8 @@ window.__sfx = (function () {
       pkgMult: 1 + 0.5 * lvl('pkgval'),
       offlineHours: 1.5 + lvl('offline') + skillLvl('offline'),
       tier: 1 + Math.min(3, Math.floor((lvl('yield') + lvl('perbay') + (state.up.asm0 || 0)) / 3)),
+      cores: (state.prestige && state.prestige.cores) || 0,   // banked defeats -> permanent buffs
+      charge: prestigeChargePct(),                             // 0..1 power-core fill toward next reboot
     };
     window.__refinery = refConfig();
   }
@@ -6704,9 +6833,9 @@ window.__sfx = (function () {
     prestigeEl.innerHTML =
       '<div class="prestige-row"><span class="prestige-core">\u25C8 ' + cores + ' Nanite Core' + (cores === 1 ? '' : 's') + '</span>' +
       '<span class="prestige-bonus">+' + Math.round(cores * 10) + '% to all income</span></div>' +
-      '<div class="prestige-sub">Lifetime minted: ' + fmt(state.lifetime || 0) + ' \u00b7 a reboot resets the foundry &amp; refinery but keeps your expedition, loot and cores.</div>' +
+      '<div class="prestige-sub">Lifetime minted: ' + fmt(state.lifetime || 0) + ' \u00b7 Ultron\u2019s power-core is <b>' + Math.round(prestigeChargePct() * 100) + '%</b> charged. When his army falls he reboots &mdash; foundry &amp; refinery reset, but every defeat banks a Nanite Core (a permanent buff) and unlocks a harder endgame dungeon. Expedition, loot and cores are kept.</div>' +
       '<button type="button" class="prestige-btn' + (gain > 0 ? ' can' : '') + '" data-reboot="1"' + (gain > 0 ? '' : ' disabled') + '>' +
-      (gain <= 0 ? 'Keep minting to earn a Nanite Core' : rebootArmed ? 'Confirm reboot \u2014 bank ' + gain + ' core' + (gain === 1 ? '' : 's') + '?' : 'Reboot for ' + gain + ' Nanite Core' + (gain === 1 ? '' : 's')) + '</button>';
+      (gain <= 0 ? 'Charge the core to bank a defeat' : rebootArmed ? 'Confirm \u2014 fall and rebuild for ' + gain + ' core' + (gain === 1 ? '' : 's') + '?' : 'Fall &amp; rebuild for ' + gain + ' Nanite Core' + (gain === 1 ? '' : 's')) + '</button>';
     var btn = prestigeEl.querySelector('[data-reboot]');
     if (btn) btn.addEventListener('click', function () {
       var g = Math.max(0, prestigeCores(state.lifetime || 0) - ((state.prestige && state.prestige.cores) || 0));
