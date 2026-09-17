@@ -3965,24 +3965,42 @@
         mediaSource.addEventListener('sourceopen', function onOpen() {
           mediaSource.removeEventListener('sourceopen', onOpen);
           const sourceBuffer = mediaSource.addSourceBuffer(mime);
+          // MP3 frames carry no timestamps: sequence mode makes every
+          // appended chunk continue exactly where the last one ended, so
+          // chunk boundaries can't become gaps or overlaps in playback.
+          try { sourceBuffer.mode = 'sequence'; } catch (e) { /* older engines: default mode */ }
           const reader = res.body.getReader();
           beginSpeaking(audio, function () { reader.cancel(); });
+          // Don't start on the first sliver: playing before ~1.5 s is
+          // buffered meant the cursor caught the buffer's end whenever Fish
+          // Audio's next chunk was late, and the voice stuttered. Start once
+          // there's a cushion, or when the whole reply has arrived.
+          const START_BUFFER_SECONDS = 1.5;
           let started = false;
+          function bufferedSeconds() {
+            try { return sourceBuffer.buffered.length ? sourceBuffer.buffered.end(sourceBuffer.buffered.length - 1) : 0; } catch (e) { return 0; }
+          }
+          function startIfReady(force) {
+            if (started || (!force && bufferedSeconds() < START_BUFFER_SECONDS)) return;
+            started = true;
+            audio.play().catch(function () { stopSpeaking(); });
+          }
           (async function pump() {
             try {
               for (;;) {
                 const { done, value } = await reader.read();
                 if (done) {
                   if (mediaSource.readyState === 'open') mediaSource.endOfStream();
+                  startIfReady(true);
                   return;
                 }
                 await new Promise(function (resolve) {
                   sourceBuffer.addEventListener('updateend', resolve, { once: true });
                   sourceBuffer.appendBuffer(value);
                 });
-                if (!started) { started = true; audio.play().catch(function () { stopSpeaking(); }); }
+                startIfReady(false);
               }
-            } catch (e) { /* stream error mid-playback — best-effort, let what already played stand */ }
+            } catch (e) { startIfReady(true); /* stream error mid-playback — play what arrived */ }
           })();
         }, { once: true });
       } else {

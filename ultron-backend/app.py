@@ -1189,6 +1189,23 @@ FISH_AUDIO_MODEL = os.environ.get("ULTRON_FISH_AUDIO_MODEL", "s2.1-pro-free").st
 FISH_AUDIO_TIMEOUT_SECONDS = 20
 FISH_AUDIO_TTS_URL = "https://api.fish.audio/v1/tts"
 TTS_MAX_CHARS = 2000  # keep one reply from turning into an unbounded paid TTS call
+# Voice consistency (owner report 2026-09-16: "sections that sounded off from
+# the rest"). Fish synthesises a reply in text chunks; each chunk samples its
+# delivery independently, so a high temperature and short chunks make the
+# seams audible. Steadier sampling, longer chunks, the top MP3 bitrate, and
+# the normal (not low-latency) mode -- all overridable, none paid-tier.
+def _env_float(name, default, lo, hi):
+    try:
+        return min(hi, max(lo, float(os.environ.get(name, default))))
+    except ValueError:
+        return default
+
+
+FISH_AUDIO_TEMPERATURE = _env_float("ULTRON_FISH_TEMPERATURE", 0.45, 0.1, 1.0)
+FISH_AUDIO_TOP_P = _env_float("ULTRON_FISH_TOP_P", 0.7, 0.1, 1.0)
+FISH_AUDIO_CHUNK_LENGTH = int(_env_float("ULTRON_FISH_CHUNK_LENGTH", 300, 100, 300))
+FISH_AUDIO_MP3_BITRATE = int(_env_float("ULTRON_FISH_MP3_BITRATE", 192, 64, 192))
+FISH_AUDIO_LATENCY = os.environ.get("ULTRON_FISH_LATENCY", "normal").strip() or "normal"
 
 
 def _fish_audio_tts(text):
@@ -1213,6 +1230,12 @@ def _fish_audio_tts(text):
         "text": text,
         "reference_id": FISH_VOICE_ID,
         "format": "mp3",
+        "mp3_bitrate": FISH_AUDIO_MP3_BITRATE,
+        "chunk_length": FISH_AUDIO_CHUNK_LENGTH,
+        "normalize": True,
+        "latency": FISH_AUDIO_LATENCY,
+        "temperature": FISH_AUDIO_TEMPERATURE,
+        "top_p": FISH_AUDIO_TOP_P,
     }).encode("utf-8")
     req = urllib.request.Request(
         FISH_AUDIO_TTS_URL,
