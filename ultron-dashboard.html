@@ -775,6 +775,21 @@
   /* Production Bays panel: compact per-bay cards with 4 small upgrades each */
   .foundry-bays-label{ font-family:var(--font-display); font-weight:700; font-size:12.5px; color:#ffd88a; margin:4px 0 8px; }
   .fbl-sub{ font-family:var(--font-mono); font-weight:400; font-size:10px; color:var(--text-faint); }
+  /* Passive reactor bank */
+  .gen-tot{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-bottom:9px; }
+  .gen-tot b{ color:#5fe39a; }
+  .gen-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:8px; margin-bottom:6px; }
+  .gen-card{ border:1px solid var(--line); border-left:3px solid #3a4049; border-radius:7px; background:var(--panel-raised); padding:8px 10px; }
+  .gen-card.on{ border-left-color:#5fe39a; }
+  .gen-h{ display:flex; justify-content:space-between; align-items:baseline; }
+  .gen-nm{ font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text); }
+  .gen-lv{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); }
+  .gen-rate{ font-family:var(--font-mono); font-size:11px; color:#5fe39a; margin:3px 0 7px; }
+  .gen-rate.gen-locked{ color:var(--text-faint); }
+  .gen-btn{ width:100%; text-align:center; font-family:var(--font-mono); font-size:10.5px; padding:5px 6px; border:1px solid var(--line); border-radius:5px; background:var(--void); color:var(--text-dim); cursor:default; }
+  .gen-btn.can{ cursor:pointer; border-color:rgba(95,227,154,.5); color:var(--text); }
+  .gen-btn.can:hover{ background:rgba(95,227,154,.08); }
+  .gen-btn:disabled{ opacity:.6; }
   .bays-tot{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-bottom:9px; }
   .bays-tot b{ color:#ff8098; }
   .bays-boost{ color:#5fe39a; }
@@ -1573,6 +1588,8 @@
             <div class="foundry-offline" id="foundry-offline" hidden></div>
             <div class="foundry-loot" id="foundry-loot" hidden></div>
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
+            <div class="foundry-bays-label">Passive reactors <span class="fbl-sub">— a bank above the line that mints currency every second</span></div>
+            <div class="foundry-generators" id="foundry-generators"></div>
             <div class="foundry-bays-label">Production bays <span class="fbl-sub">— each floor's own crew, weapons &amp; armor</span></div>
             <div class="foundry-bays" id="foundry-bays"></div>
             <div class="prestige" id="prestige"></div>
@@ -6769,6 +6786,24 @@ window.__sfx = (function () {
     return sum * c.pressMult;
   }
 
+  // ---- Passive reactors: a bank of generators that sit ABOVE the assembly
+  // floors and mint currency every second. Each tier unlocks for a lump sum and
+  // then upgrades for +25% output/level -- all on the same exponential scale.
+  // Their output feeds the same passive/offline income path as everything else. ----
+  var GENERATORS = [
+    { id: 0, name: 'Bit Trickle',     unlock: 200,     base: 0.4,  upBase: 60,      rate: 0.25 },
+    { id: 1, name: 'Data Spring',     unlock: 4000,    base: 3,    upBase: 1200,    rate: 0.25 },
+    { id: 2, name: 'Byte Fountain',   unlock: 80000,   base: 22,   upBase: 24000,   rate: 0.25 },
+    { id: 3, name: 'Chit Geyser',     unlock: 1.5e6,   base: 160,  upBase: 450000,  rate: 0.25 },
+    { id: 4, name: 'Scrip Cascade',   unlock: 3e7,     base: 1200, upBase: 9e6,     rate: 0.25 },
+    { id: 5, name: 'Nanite Torrent',  unlock: 6e8,     base: 9000, upBase: 1.8e8,   rate: 0.25 },
+  ];
+  function genLvl(id) { return (state.gen && state.gen.up && state.gen.up[id]) || 0; }
+  function genUnlocked(id) { return !!(state.gen && state.gen.unlocked && state.gen.unlocked[id]); }
+  function genRate(g) { return genUnlocked(g.id) ? g.base * (1 + g.rate * genLvl(g.id)) : 0; }
+  function genIncome() { var s = 0; for (var i = 0; i < GENERATORS.length; i++) s += genRate(GENERATORS[i]); return s; }   // pre-multiplier; callers apply globalMult+idleBonus
+  function genUpCost(g) { return Math.ceil(g.upBase * Math.pow(1.6, genLvl(g.id))); }
+
   // Prestige: reboot the line for permanent Nanite Cores (+10% all income each).
   // Cores scale with the square root of lifetime bits, so each reboot is a real
   // reset that pushes past the exponential wall.
@@ -6915,7 +6950,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -6923,6 +6958,7 @@ window.__sfx = (function () {
   if (!state.adv) state.adv = { unlocked: false, robot: { name: 'AX-01', color: '#ff3b3b' }, endsAt: 0, dur: 0, inv: [], gear: {}, build: {}, loadouts: {} };
   if (!state.ref) state.ref = { unlA: false, unlV: false, unlP: false, up: {} };
   if (!state.prestige) state.prestige = { cores: 0 };
+  if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
   if (!state.prog.log) state.prog.log = [];
@@ -6971,7 +7007,7 @@ window.__sfx = (function () {
   function prodRate() {
     var f = window.__foundry, bp = f.bayProd || [f.prodMult || 1], sum = 0;
     for (var i = 0; i < bp.length; i++) { var bt = Math.max(0.9, 1.9 / (bp[i] || 1)); sum += 1 / bt; }
-    return sum * (f.botYield || 0.1) * 0.6 + (f.passive || 0) + refIncome();
+    return sum * (f.botYield || 0.1) * 0.6 + (f.passive || 0) + refIncome() + genIncome();
   }
   function humanDur(sec) {
     var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
@@ -7102,7 +7138,48 @@ window.__sfx = (function () {
         dirty = true; save(); renderUpgrades();
       });
     });
+    renderGenerators();
     renderBays();
+  }
+
+  var genEl = document.getElementById('foundry-generators');
+  function renderGenerators() {
+    if (!genEl) return;
+    var totalPerSec = genIncome() * globalMult() * idleBonus(), cards = '';
+    for (var i = 0; i < GENERATORS.length; i++) {
+      var g = GENERATORS[i], unlocked = genUnlocked(g.id), prevOk = i === 0 || genUnlocked(GENERATORS[i - 1].id);
+      if (!unlocked && !prevOk) continue;   // only the unlocked tiers + the next one
+      if (unlocked) {
+        var l = genLvl(g.id), c = genUpCost(g), can = state.bits >= c, rate = genRate(g) * globalMult() * idleBonus();
+        cards += '<div class="gen-card on"><div class="gen-h"><span class="gen-nm">' + g.name + '</span><span class="gen-lv">Lv ' + l + '</span></div>' +
+          '<div class="gen-rate">◉ ' + fmt(rate) + '/s</div>' +
+          '<button type="button" class="gen-btn' + (can ? ' can' : '') + '" data-genup="' + g.id + '"' + (can ? '' : ' disabled') + '>Upgrade +25% · <span style="color:' + fmtColor(c) + '">' + fmt(c) + '</span></button></div>';
+      } else {
+        var uc = g.unlock, ucan = state.bits >= uc;
+        cards += '<div class="gen-card"><div class="gen-h"><span class="gen-nm">' + g.name + '</span><span class="gen-lv">locked</span></div>' +
+          '<div class="gen-rate gen-locked">◉ ' + fmt(g.base) + '/s base</div>' +
+          '<button type="button" class="gen-btn' + (ucan ? ' can' : '') + '" data-genunl="' + g.id + '"' + (ucan ? '' : ' disabled') + '>Unlock · <span style="color:' + fmtColor(uc) + '">' + fmt(uc) + '</span></button></div>';
+        break;
+      }
+    }
+    genEl.innerHTML = '<div class="gen-tot">Reactor output <b>◉ ' + fmt(totalPerSec) + '/s</b> passive</div><div class="gen-grid">' + cards + '</div>';
+    genEl.querySelectorAll('[data-genunl]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var g = GENERATORS[+btn.dataset.genunl]; if (!g || genUnlocked(g.id) || state.bits < g.unlock) return;
+        state.bits -= g.unlock; state.gen.unlocked = state.gen.unlocked || {}; state.gen.unlocked[g.id] = true;
+        if (window.__sfx) window.__sfx('unlock'); gamePop('✦ ' + g.name + ' online', '#5fe39a');
+        publish(); dirty = true; save(); renderGenerators(); renderBalance();
+      });
+    });
+    genEl.querySelectorAll('[data-genup]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var g = GENERATORS[+btn.dataset.genup]; if (!g || !genUnlocked(g.id)) return; var c = genUpCost(g);
+        if (state.bits < c) return;
+        state.bits -= c; state.gen.up = state.gen.up || {}; state.gen.up[g.id] = genLvl(g.id) + 1;
+        if (window.__sfx) window.__sfx('unlock'); gamePop('▲ ' + g.name + ' Lv ' + genLvl(g.id), '#5fe39a');
+        publish(); dirty = true; save(); renderGenerators(); renderBalance();
+      });
+    });
   }
 
   var baysEl = document.getElementById('foundry-bays');
@@ -7322,7 +7399,7 @@ window.__sfx = (function () {
     syncPresence();                    // catch in-app section switches while the tab is visible
     if (gameOnline()) {
       state.seen = now;                // heartbeat: while active, keep the away marker current so offline starts from "now" when you leave
-      var p = ((window.__foundry.passive || 0) + refIncome()) * globalMult() * idleBonus();
+      var p = ((window.__foundry.passive || 0) + refIncome() + genIncome()) * globalMult() * idleBonus();
       if (p > 0) { state.bits += p * dt; state.lifetime = (state.lifetime || 0) + p * dt; dirty = true; save(); }
     }
     advTick();                         // expeditions run on wall-clock time -> progress in the background regardless
@@ -7819,6 +7896,7 @@ window.__sfx = (function () {
       if (j.adv) state.adv = j.adv;
       if (j.ref) state.ref = j.ref;
       if (j.prestige) state.prestige = j.prestige;
+      if (j.gen) state.gen = j.gen;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
       if (j.mats) state.mats = j.mats;
