@@ -1447,6 +1447,8 @@
   .exp-item.on{ box-shadow:inset 0 0 0 1px currentColor; }
   .exp-i-stats{ width:100%; font-family:var(--font-mono); font-size:9.5px; color:var(--text-dim); }
   .exp-i-ab{ width:100%; font-size:10px; color:var(--text-faint); font-style:italic; }
+  .exp-i-eq{ width:100%; font-family:var(--font-mono); font-size:10px; font-weight:700; margin-top:2px; }
+  .exp-i-eq.eq-on{ color:#7fd0ff; } .exp-i-eq.eq-yes{ color:#5fe39a; } .exp-i-eq.eq-no{ color:#ff8fa0; font-weight:400; }
   .exp-salv{ color:#9be8ff !important; }
   .exp-salv:hover{ border-color:rgba(120,200,255,.55) !important; }
   .exp-mats{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:10px 0 4px; }
@@ -10838,6 +10840,13 @@ window.__sfx = (function () {
         '<span class="exp-i-ic" style="color:' + col + '">' + (SLOT_IC[it.slot] || '◉') + '</span>' +
         '<span class="exp-i-name" style="color:' + col + '">' + esc(it.name) + '</span>' +
         '<span class="exp-i-rar">' + rarLabel + (on ? ' · equipped' : '') + '</span>' +
+        (function () {   // ALWAYS state whether this loot can be equipped, and why not
+          var sn = it.slot ? ((SLOTS.filter(function (s) { return s.id === it.slot; })[0] || {}).name || it.slot) : '';
+          if (on) return '<span class="exp-i-eq eq-on">✓ Equipped — in your ' + sn + ' slot</span>';
+          if (can) { var cur = gear[it.slot]; return '<span class="exp-i-eq eq-yes">✔ Can equip → ' + sn + ' slot' + (cur ? ' (replaces ' + esc(cur.name) + ')' : '') + '</span>'; }
+          if (!it.slot) return '<span class="exp-i-eq eq-no">✖ Can’t equip — ' + esc(it.type || 'a support item') + ', not wearable gear. Sell or salvage it.</span>';
+          return '<span class="exp-i-eq eq-no">✖ Can’t equip — this item has no combat stats.</span>';
+        })() +
         (it.stats ? '<span class="exp-i-stats">' + statLine(it.stats) + '</span>' : '') +
         (it.mods && it.mods.length ? '<span class="exp-i-ab">' + esc(it.mods.join(' · ')) + '</span>' : '') +
         (on ? '<button type="button" class="exp-sell exp-equipbtn" data-a="unequip" data-id="' + it.id + '">\u21A9 unequip</button>' : (can ? '<button type="button" class="exp-sell exp-equipbtn" data-a="equip" data-id="' + it.id + '">\u21EA equip</button>' : '') + '<button type="button" class="exp-sell" data-a="sell" data-id="' + it.id + '">sell \u25C9' + sellValue(it) + '</button><button type="button" class="exp-sell exp-salv" data-a="salvage" data-id="' + it.id + '">salvage</button>') + '</div>';
