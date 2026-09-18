@@ -7636,19 +7636,35 @@ function toggleReducedVisuals(el) {
     var cx = box.x + box.w / 2, headY = box.y + box.h * 0.20, chestY = box.y + box.h * 0.42;
     var charge = Math.max(0, Math.min(1, (foundryCfg().charge) || 0));
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    var beat = 0.5 + 0.5 * Math.sin(t * 2.2);   // slow heartbeat on the chest core
-    var cg = ctx.createRadialGradient(cx, chestY, 0, cx, chestY, 26);
-    cg.addColorStop(0, 'rgba(255,70,70,' + (0.2 + 0.2 * beat + 0.15 * charge) + ')'); cg.addColorStop(1, 'rgba(255,50,50,0)');
-    ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, chestY, 26, 0, Math.PI * 2); ctx.fill();
-    var eyeP = 0.55 + 0.45 * Math.sin(t * 6.5 + Math.sin(t * 1.7));   // menacing eye flicker
-    var eg = ctx.createRadialGradient(cx, headY, 0, cx, headY, 15);
-    eg.addColorStop(0, 'rgba(255,60,60,' + (0.5 * eyeP) + ')'); eg.addColorStop(1, 'rgba(255,40,40,0)');
-    ctx.fillStyle = eg; ctx.beginPath(); ctx.arc(cx, headY, 15, 0, Math.PI * 2); ctx.fill();
-    for (var i = 0; i < 4; i++) {                                    // energy motes rising off him
-      var ph = (t * 0.32 + i * 0.27) % 1;
-      var mx = cx + Math.sin(i * 2.1 + t * 0.8) * box.w * 0.42, my = box.y + box.h - ph * box.h * 0.92;
-      ctx.fillStyle = 'rgba(180,130,255,' + (Math.sin(ph * Math.PI) * 0.5) + ')';
-      ctx.beginPath(); ctx.arc(mx, my, 1.6, 0, Math.PI * 2); ctx.fill();
+    var beat = 0.5 + 0.5 * Math.sin(t * 2.4);   // heartbeat on the chest core
+    var cg = ctx.createRadialGradient(cx, chestY, 0, cx, chestY, 28);
+    cg.addColorStop(0, 'rgba(255,70,70,' + (0.22 + 0.24 * beat + 0.15 * charge) + ')'); cg.addColorStop(1, 'rgba(255,50,50,0)');
+    ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, chestY, 28, 0, Math.PI * 2); ctx.fill();
+    var ring = (t * 0.8) % 1;                                        // an energy ripple expands out of the core on each beat
+    ctx.strokeStyle = 'rgba(255,90,90,' + (0.5 * (1 - ring)) + ')'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(cx, chestY, 6 + ring * 30, 0, Math.PI * 2); ctx.stroke();
+    var eyeP = 0.5 + 0.5 * Math.sin(t * 7.5 + Math.sin(t * 2.1));    // menacing eye flicker (faster)
+    var eg = ctx.createRadialGradient(cx, headY, 0, cx, headY, 16);
+    eg.addColorStop(0, 'rgba(255,60,60,' + (0.55 * eyeP) + ')'); eg.addColorStop(1, 'rgba(255,40,40,0)');
+    ctx.fillStyle = eg; ctx.beginPath(); ctx.arc(cx, headY, 16, 0, Math.PI * 2); ctx.fill();
+    for (var i = 0; i < 7; i++) {                                    // more energy motes rising off him, a touch faster
+      var ph = (t * 0.42 + i * 0.15) % 1;
+      var mx = cx + Math.sin(i * 1.7 + t * 1.1) * box.w * 0.46, my = box.y + box.h - ph * box.h * 0.95;
+      ctx.fillStyle = 'rgba(180,130,255,' + (Math.sin(ph * Math.PI) * 0.55) + ')';
+      ctx.beginPath(); ctx.arc(mx, my, 1.7, 0, Math.PI * 2); ctx.fill();
+    }
+    // occasional electric crackle around his frame (every ~3s, brief)
+    var sparkT = t % 3;
+    if (sparkT < 0.5) {
+      var sa = (0.5 - sparkT) * 1.4;
+      ctx.strokeStyle = 'rgba(150,210,255,' + sa + ')'; ctx.lineWidth = 1.3;
+      for (var s = 0; s < 3; s++) {
+        var a0 = (t * 9 + s * 2.1), rr = box.w * 0.5;
+        var x0 = cx + Math.cos(a0) * rr, y0 = chestY + Math.sin(a0) * rr * 0.9;
+        ctx.beginPath(); ctx.moveTo(x0, y0);
+        ctx.lineTo(x0 + Math.cos(a0 + 1.7) * 7, y0 + Math.sin(a0 + 1.7) * 7);
+        ctx.lineTo(x0 + Math.cos(a0 + 0.6) * 13, y0 + Math.sin(a0 + 0.6) * 13); ctx.stroke();
+      }
     }
     ctx.restore();
   }
@@ -8162,7 +8178,7 @@ function toggleReducedVisuals(el) {
     drawWallMonitor(t);                                   // BTC / memory / health, on the wall
     wallGlow(uDeskX + 85, officeFloorY - 180, 220, RED, (working ? 0.2 : 0.09) + (working ? 0.06 * (0.5 + 0.5 * Math.sin(t * 2.2)) : 0));   // breathing backdrop aura
     drawSprite(IMG.tubeRed, uTubeX, officeFloorY);
-    if (working) lastCharBox = drawSprite(IMG.ultronWork, uDeskX + 85 - 100, officeFloorY, -U_ROBOT_SINK + Math.sin(t * 1.5) * 1.3 - 1.3);   // gentle breathing float
+    if (working) lastCharBox = drawSprite(IMG.ultronWork, uDeskX + 85 - 100 + Math.sin(t * 0.9) * 1.8, officeFloorY, -U_ROBOT_SINK + Math.sin(t * 1.5) * 1.3 - 1.3);   // gentle breathing float + sway
     var uDesk = drawSprite(IMG[(working || t < deskFlashUntil) ? 'deskUltronActive' : 'deskUltronIdle'], uDeskX, officeFloorY);
     if (uDesk.w) {
       plate('Ultron', heroState, uDeskX + 9, officeFloorY - U_DESK_H + 34, U_DESK_W - 18, U_DESK_H - 44, '#ff6b6b', '#e8e6e0');
