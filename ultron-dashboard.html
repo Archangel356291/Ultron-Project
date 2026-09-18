@@ -541,7 +541,8 @@
     background:linear-gradient(180deg,#0e1015,#0a0c10);
     border-left:14px solid #20242c; border-right:14px solid #20242c;
     border-top:10px solid #262b35; border-bottom:12px solid #1a1d24;
-    box-shadow:0 14px 44px -16px rgba(0,0,0,.85), inset 0 0 0 1px rgba(255,255,255,.03); }
+    /* the whole game border glows in the active prestige palette colour (--red-bright) */
+    box-shadow:0 14px 44px -16px rgba(0,0,0,.85), inset 0 0 0 1px rgba(255,255,255,.03), 0 0 26px -6px var(--red-bright,#4f9fff), inset 0 0 0 2px color-mix(in srgb, var(--red-bright,#4f9fff) 45%, transparent); }
   /* riveted metal on the two continuous side walls */
   .game-building::before, .game-building::after{ content:""; position:absolute; top:-10px; bottom:-12px; width:14px; z-index:3; pointer-events:none;
     background:radial-gradient(circle, rgba(150,160,175,.55) 1.1px, transparent 1.6px) center/14px 28px repeat-y, linear-gradient(180deg,#2f343f,#181b21); }
@@ -554,15 +555,15 @@
   .game-floor-base{ background:linear-gradient(180deg, rgba(120,150,200,.05) 0, transparent 34px, transparent 70%, rgba(0,0,0,.35) 100%); }
   /* the lit floor sign on the wall (replaces the old panel-label for game floors) */
   .floor-sign{ display:inline-block; font-family:var(--font-display); font-weight:800; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:#dfe7f2;
-    padding:4px 13px; margin-bottom:11px; border-radius:5px; border-left:3px solid #4f9fff;
-    background:linear-gradient(180deg,#1d2129,#12151b); box-shadow:0 0 14px -4px rgba(120,170,255,.55), inset 0 1px 0 rgba(255,255,255,.08); }
+    padding:4px 13px; margin-bottom:11px; border-radius:5px; border-left:3px solid var(--red-bright,#4f9fff);
+    background:linear-gradient(180deg,#1d2129,#12151b); box-shadow:0 0 14px -4px var(--red-bright,#4f9fff), inset 0 1px 0 rgba(255,255,255,.08); }
   /* each floor is a click-to-collapse room: click the sign to open/close it.
      styled as a clean full-width "building directory" bar (app-store polish) */
   .game-floor > .floor-sign{ cursor:pointer; user-select:none; display:flex; align-items:center; gap:9px; width:100%; box-sizing:border-box;
     padding:9px 13px; font-size:12px; transition:box-shadow .18s ease, border-color .18s ease, background .18s ease; }
   .game-floor > .floor-sign::after{ content:'▾'; margin-left:auto; color:#8aa0c0; font-size:11px; transition:transform .18s ease; }
   .game-floor.collapsed > .floor-sign::after{ transform:rotate(-90deg); }
-  .game-floor > .floor-sign:hover{ border-left-color:#7fd0ff; box-shadow:0 0 18px -4px rgba(120,170,255,.7), inset 0 1px 0 rgba(255,255,255,.1); background:linear-gradient(180deg,#232833,#151922); }
+  .game-floor > .floor-sign:hover{ border-left-color:var(--red-bright,#7fd0ff); box-shadow:0 0 20px -3px var(--red-bright,#7fd0ff), inset 0 1px 0 rgba(255,255,255,.1); background:linear-gradient(180deg,#232833,#151922); }
   .game-floor.collapsed > .floor-sign{ margin-bottom:0; opacity:.96; }
   .game-floor.collapsed > :not(.floor-sign):not(.floor-keep){ display:none !important; }
   /* the big section containers lose their own box borders and blend into the floor */
@@ -7990,11 +7991,11 @@ function toggleReducedVisuals(el) {
     // upgrades), just throttled to ~2x/sec and with NO drawing/animation/sfx.
     // On screen: full ~30fps update + draw.
     if (!onScreen) {
-      if (t - lastFrameT < 0.5) return;
-      var odt = Math.min(t - lastFrameT, 0.5); lastFrameT = t;
+      if (t - lastFrameT < 1 / 31) return;   // SAME ~30fps economy as on-screen: assembly floors never slow down when you scroll away, only the drawing is skipped
+      var odt = Math.min(t - lastFrameT, 0.25); lastFrameT = t;
       if (!laidOut && !(laidOut = layout())) return;
       updateParcels(t, odt);
-      updateBays(t, odt);   // mintBotCoin() credits currency; coin visuals + sfx are suppressed while off-screen
+      updateBays(t, odt);   // mintBotCoin() credits currency at full rate; coin visuals + sfx are suppressed while off-screen
       updateCoins(odt);
       return;
     }
@@ -8474,8 +8475,9 @@ window.__sfx = (function () {
   // Each time the Genesis Cannon fires and remakes the universe, EVERYTHING is
   // permanently multiplied -- the ultimate reward for the ultimate grind.
   function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
-  var PROD_BOOST = 1.25;   // owner buff: a little more currency across every source (all income routes through globalMult)
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * cryptoMult() * mechMult() * PROD_BOOST; }
+  var PROD_BOOST = 1.5625;   // owner buff: +25% faster production on top of the prior 1.25 (all income routes through globalMult)
+  var VALUE_BOOST = 1.15;    // owner buff: +15% more value per unit of currency
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * cryptoMult() * mechMult() * PROD_BOOST * VALUE_BOOST; }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -9845,8 +9847,10 @@ window.__sfx = (function () {
     state.prestige.cores = newCores;
     state.roundStart = state.lifetime || 0;
     if (ptsGained > 0 && window.__gamePop) gamePop('◈ +' + ptsGained + ' Prestige Points', '#a88bff');
-    state.bits = 0; state.up = {}; UPGRADES.forEach(function (u) { state.up[u.id] = 0; });
+    state.bits = 0; state.up = {}; UPGRADES.forEach(function (u) { state.up[u.id] = 0; });   // wipes every assembly-bay level + bay upgrade -> back to 1 bay, all bays re-upgraded from scratch
+    state.gen = { unlocked: {}, up: {} };   // also wipe the passive-reactor bank so the whole production line resets each prestige
     state.ref = { unlA: false, unlV: false, unlP: false, up: {} };
+    if (window.__gamePop) gamePop('🏭 Assembly floors wiped — rebuild every bay', '#ffb0bb');
     // each defeat/reboot cracks open the next sealed endgame dungeon
     state.adv = state.adv || {};
     if ((state.adv.dungeons || 0) < DUNGEONS.length) {
@@ -9857,7 +9861,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech();
+    renderBalance(); renderUpgrades(); renderGenerators(); renderBays(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -11006,6 +11010,7 @@ window.__sfx = (function () {
   var W = binX + 56, H = 176; canvas.width = W; canvas.height = H;
   var beltY = 132;
   var BELT_BASE = 40;   // px/s at 1x -- the belt rollers AND the packages both move at exactly this, so packages ride the belt instead of floating over a faster belt
+  var smeltSndTick = 0;   // plays the smelt clank on every OTHER ingot to cut sound
   var onScreen = true, ingots = [], lastSpawn = [], smeltFlash = [], pressFlash = 0, sparks = [], drones = [];
   var bin = [], binFlash = 0, binSellAcc = 0;                    // stray ingots that miss the press fall here until sold
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -11032,7 +11037,7 @@ window.__sfx = (function () {
     for (var i = ingots.length - 1; i >= 0; i--) {
       var g = ingots[i]; g.x += sp * dt; var gm = mats[g.mi];
       if (g.stage === 'ore') {
-        if (gm && gm.sm && g.x >= xSm(g.mi)) { g.stage = 'ingot'; smeltFlash[g.mi] = t + 0.35; if (window.__sfx && Math.random() < 0.12) window.__sfx('press'); }   // throttled: the refinery smelts many ingots/sec -- only an occasional clank so it isn't noisy
+        if (gm && gm.sm && g.x >= xSm(g.mi)) { g.stage = 'ingot'; smeltFlash[g.mi] = t + 0.35; smeltSndTick = (smeltSndTick + 1) % 2; if (window.__sfx && smeltSndTick === 0) window.__sfx('press'); }   // sound on EVERY OTHER ingot -- cuts the refinery clatter roughly in half
       }
       if (g.stage === 'ingot' && c.unlP && g.x >= pressX - 16) {
         ingots.splice(i, 1); pressFlash = t + 0.18;

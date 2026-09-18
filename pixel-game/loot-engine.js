@@ -218,11 +218,20 @@
     for (var i = lo; i <= hi; i++) out.push(TIERS[i]);
     return out;
   }
-  function rollRarity(rnd, base) {
+  function rollRarity(rnd, base, ilvl) {
+    ilvl = ilvl || 1;
     var pool = tierWeightInRange(base.rar[0], base.rar[1]);
-    var total = 0, i; for (i = 0; i < pool.length; i++) total += pool[i].weight;
+    var total = 0, i, w = [];
+    for (i = 0; i < pool.length; i++) {
+      // ^0.82 flattens the extreme common-dominance so all tiers drop more
+      // consistently; lvlBias pushes higher tiers up as item level climbs so
+      // drops track the level scope + scale.
+      var lvlBias = 1 + 0.06 * (ilvl - 1) * (pool[i].tier - 1);
+      var wt = Math.pow(pool[i].weight, 0.82) * lvlBias;
+      w.push(wt); total += wt;
+    }
     var r = rnd() * total;
-    for (i = 0; i < pool.length; i++) { r -= pool[i].weight; if (r <= 0) return pool[i]; }
+    for (i = 0; i < pool.length; i++) { r -= w[i]; if (r <= 0) return pool[i]; }
     return pool[pool.length - 1];
   }
   function scaleFlat(v, ilvl, tierN) { return Math.max(1, Math.round(v * (1 + 0.25 * (ilvl - 1)) * (1 + 0.10 * (tierN - 1)))); }
@@ -235,7 +244,7 @@
     var ilvl = opts.ilvl || 1;
     var seed = opts.seed != null ? opts.seed : (baseId + ':' + Date.now() + ':' + Math.random());
     var rnd = rngFrom(seed);
-    var tier = opts.rarity ? TIER_BY_KEY[opts.rarity] : rollRarity(rnd, base);
+    var tier = opts.rarity ? TIER_BY_KEY[opts.rarity] : rollRarity(rnd, base, ilvl);
     if (!tier) tier = TIER_BY_KEY[base.rar[0]];
 
     // base stats scaled
@@ -321,9 +330,17 @@
       var ti = t.tier - 1;
       return candidates.some(function (b) { return ti >= tierIndex(b.rar[0]) && ti <= tierIndex(b.rar[1]); });
     });
-    var total = 0, i; for (i = 0; i < canProduce.length; i++) total += canProduce[i].weight;
+    // ^0.82 flattens the extreme common-dominance so all tiers drop more
+    // consistently; lvlBias pushes higher tiers up with item level so drops
+    // track the level scope + scale.
+    var ilvlD = opts.ilvl || 1, total = 0, i, w = [];
+    for (i = 0; i < canProduce.length; i++) {
+      var lvlBias = 1 + 0.06 * (ilvlD - 1) * (canProduce[i].tier - 1);
+      var wt = Math.pow(canProduce[i].weight, 0.82) * lvlBias;
+      w.push(wt); total += wt;
+    }
     var r = rnd() * total, tier = canProduce[0];
-    for (i = 0; i < canProduce.length; i++) { r -= canProduce[i].weight; if (r <= 0) { tier = canProduce[i]; break; } }
+    for (i = 0; i < canProduce.length; i++) { r -= w[i]; if (r <= 0) { tier = canProduce[i]; break; } }
     var ti = tier.tier - 1;
     var pool = candidates.filter(function (b) { return ti >= tierIndex(b.rar[0]) && ti <= tierIndex(b.rar[1]); });
     var base = pick(rnd, pool.length ? pool : candidates);
