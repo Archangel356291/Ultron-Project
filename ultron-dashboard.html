@@ -7477,7 +7477,7 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = 'rgba(150,200,255,' + (0.5 + 0.4 * Math.sin(t * 5)) + ')'; ctx.fillRect(cx - 4, cy - 1.5, 8, 3);
     ctx.fillStyle = '#6b4a2a'; ctx.fillRect(cx - 2, cy + 8, 4, 20); ctx.fillStyle = '#4a3520'; ctx.fillRect(cx - 3, cy + 25, 6, 3);
     if (Math.sin(t * 3 + cx) > 0.6) { ctx.strokeStyle = '#9be8ff'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(cx + 12, cy - 6); ctx.lineTo(cx + 17, cy - 11); ctx.lineTo(cx + 14, cy - 9); ctx.lineTo(cx + 20, cy - 15); ctx.stroke(); }
-    caption('mjolnir', cx, cy + 34); hover("Mjolnir", cx, cy, 18,
+    caption('mjolnir', cx, cy + 48); hover("Mjolnir", cx, cy, 18,
       relicTip('Mjolnir', '#9bd0ff', "Thor's enchanted Uru hammer.", 'Forged in a dying star at Nidavellir.', 'Ultron could never lift it — so he clamped it in a stasis cradle and took the cradle.'));
   }
   function hawkeyeBow(cx, cy, t) {
@@ -7498,7 +7498,7 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = '#c9a227'; ctx.fillRect(cx - 8, cy + 3, 16, 3.4);
     ctx.fillStyle = '#3a3f47'; ctx.fillRect(cx - 2.4, cy + 6, 4.8, 12);
     ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(cx, cy + 18, 2.4, 0, 6.28); ctx.fill();
-    caption('power sword', cx, cy + 30); hover("Ultron's Power Sword", cx, cy, 22,
+    caption('power sword', cx, cy + 44); hover("Ultron's Power Sword", cx, cy, 22,
       relicTip("Ultron's Power Sword", acc, 'A plasma-edged blade forged from Ultron’s current ' + sk.name + ' body; it is reforged with each new body.', 'Machined by Ultron himself in the foundry below.', 'Self-forged — the weapon of the new age.'));
   }
   function lokiScepter(cx, cy, t) {
@@ -7510,7 +7510,7 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = '#0d2340'; ctx.beginPath(); ctx.ellipse(cx, cy - 9, 4, 6.5, 0, 0, 6.28); ctx.fill();
     ctx.fillStyle = 'rgba(90,210,255,' + (0.7 + 0.3 * Math.sin(t * 4)) + ')'; ctx.beginPath(); ctx.ellipse(cx, cy - 9, 2.4, 4.5, 0, 0, 6.28); ctx.fill();
     ctx.fillStyle = '#eaffff'; ctx.beginPath(); ctx.ellipse(cx - 0.6, cy - 10.5, 0.9, 1.6, 0, 0, 6.28); ctx.fill();
-    caption('scepter', cx, cy + 32); hover("Loki's Scepter", cx, cy, 20,
+    caption('scepter', cx, cy + 46); hover("Loki's Scepter", cx, cy, 20,
       relicTip("Loki's Scepter", '#5ad0ff', 'Channels the Mind Stone hidden in its gem.', 'Given to Loki by Thanos for the Chitauri invasion.', 'Recovered from HYDRA’s vault — its stone later built Ultron’s own mind.'));
   }
   function infinityGauntlet(cx, cy, t) {
