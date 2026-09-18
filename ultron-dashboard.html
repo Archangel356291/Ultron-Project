@@ -6776,14 +6776,15 @@ function toggleReducedVisuals(el) {
   // notification toast so the user can scroll up and watch. ----
   // The intruder is a different Avenger each time -- they take turns getting
   // beaten up and thrown out the window.
-  var HERO_KINDS = ['ironman', 'widow', 'cap', 'hulk', 'thor', 'vision'];
+  var HERO_KINDS = ['ironman', 'widow', 'cap', 'hulk', 'thor', 'vision', 'panther'];
   var HEROES = {
     ironman: { name: 'Iron Man', body: '#c0392b', trim: '#f1c40f', beam: '#9be8ff', atk: 'repulsor' },      // repulsor beams
     widow: { name: 'Black Widow', body: '#26262c', trim: '#c0392b', beam: '#5fb0ff', hair: '#7a1f1f', atk: 'bite' },   // Widow's Bite (electric batons)
     cap: { name: 'Captain America', body: '#2b5cb8', trim: '#ecf0f1', beam: '#eaf2ff', shield: true, atk: 'shield' },   // throws his shield
     hulk: { name: 'the Hulk', body: '#3a9a3a', trim: '#6a4a9a', beam: '#8fe64b', big: true, atk: 'smash' },   // ground-pound smash
     thor: { name: 'Thor', body: '#7f8792', trim: '#c0392b', beam: '#cfe8ff', cape: '#b03030', hammer: true, atk: 'lightning' },   // Mjolnir lightning
-    vision: { name: 'Vision', body: '#c0392b', trim: '#33d17a', beam: '#ffd24b', cape: '#e0b83a', mind: true, atk: 'mind' }   // Mind Stone beam
+    vision: { name: 'Vision', body: '#c0392b', trim: '#33d17a', beam: '#ffd24b', cape: '#e0b83a', mind: true, atk: 'mind' },   // Mind Stone beam
+    panther: { name: 'Black Panther', body: '#1c1c24', trim: '#7f5bd6', beam: '#a06bff', atk: 'claw' }   // vibranium kinetic claws
   };
   var ironMan = { phase: 'gone', kind: 'ironman', pt: 0, x: 0, y: 0, vx: 0, vy: 0, punchT: 0, rot: 0, laserT: 0, repulseT: 0, recoil: 0 };
   function imToast(name) {
@@ -6833,8 +6834,9 @@ function toggleReducedVisuals(el) {
     else if (kind === 'hulk') { ctx.fillStyle = h.body; ctx.fillRect(-3.6, -21, 7.2, 6); ctx.fillStyle = '#1e3a1e'; ctx.fillRect(-3.6, -22.4, 7.2, 1.8); }   // green head + dark hair
     else if (kind === 'thor') { ctx.fillStyle = '#e8b878'; ctx.fillRect(-3.2, -21, 6.4, 6); ctx.fillStyle = '#efe08a'; ctx.fillRect(-3.4, -22.4, 6.8, 2); ctx.fillStyle = '#b6bcc6'; ctx.fillRect(-3.6, -20.4, 1, 2.4); ctx.fillRect(2.6, -20.4, 1, 2.4); }   // face + blond + helmet wings
     else if (kind === 'vision') { ctx.fillStyle = h.body; ctx.fillRect(-3.4, -22, 6.8, 6.6); ctx.fillStyle = h.trim; ctx.fillRect(-3.4, -16.4, 6.8, 1); ctx.fillStyle = '#ffd24b'; ctx.beginPath(); ctx.arc(0, -20.6, 1.5, 0, 6.28); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-0.4, -21, 0.5, 0, 6.28); ctx.fill(); }   // mind stone
+    else if (kind === 'panther') { ctx.fillStyle = h.body; ctx.fillRect(-3.4, -22, 6.8, 6.6); ctx.fillStyle = '#0e0e14'; ctx.fillRect(-3.8, -23.4, 1.6, 2); ctx.fillRect(2.2, -23.4, 1.6, 2); ctx.fillStyle = h.trim; ctx.fillRect(-2.6, -15.6, 5.2, 0.8); ctx.fillRect(-2.4, -14.8, 4.8, 0.6); }   // panther: black mask + cat ears + vibranium necklace
     else { ctx.fillStyle = '#e8b878'; ctx.fillRect(-3, -21, 6, 6); ctx.fillStyle = h.hair || '#7a1f1f'; ctx.fillRect(-3.6, -22, 1.4, 6); ctx.fillRect(2.2, -22, 1.4, 6); ctx.fillRect(-3.6, -22.4, 7.2, 1.6); }   // widow: face + red hair
-    if (kind !== 'vision') { ctx.fillStyle = BM; ctx.fillRect(-2.2, -19.6, 1.6, 1.1); ctx.fillRect(0.6, -19.6, 1.6, 1.1); }   // eyes
+    if (kind !== 'vision') { ctx.fillStyle = (kind === 'panther' ? '#c9b8ff' : BM); ctx.fillRect(-2.2, -19.6, 1.6, 1.1); ctx.fillRect(0.6, -19.6, 1.6, 1.1); }   // eyes (panther: silver)
   }
   // jagged lightning/electric arc between two points (used by hero attacks)
   function zapLine(x0, y0, x1, y1, seg) {
@@ -6845,7 +6847,7 @@ function toggleReducedVisuals(el) {
   function drawIronMan(t) {
     var im = ironMan; if (im.phase === 'gone') return;
     var h = HEROES[im.kind] || HEROES.ironman, B = h.body, T = h.trim, BM = h.beam;
-    var S = h.big ? 7 : 5.6, tw = h.big ? 6.3 : 5, fighting = im.phase === 'fight', firingBack = fighting && t < im.repulseOn;   // doubled size -- the team reads clearly now
+    var S = h.big ? 7.7 : 6.3, tw = h.big ? 6.3 : 5, fighting = im.phase === 'fight', firingBack = fighting && t < im.repulseOn;   // heroes bumped up a bit (5.6->6.3) so they read even clearer
     ctx.save(); ctx.translate(im.x, im.y); ctx.scale(S, S); if (im.phase === 'toss') ctx.rotate(im.rot);
     if (im.phase !== 'toss' && !h.mind) { ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0, 2, tw + 3, 2.2, 0, 0, 6.28); ctx.fill(); }
     if (h.cape) { ctx.fillStyle = h.cape; ctx.beginPath(); ctx.moveTo(-tw, -16); ctx.lineTo(tw, -16); ctx.lineTo(tw + 3.5, -0.5); ctx.lineTo(-tw - 3.5, -0.5); ctx.closePath(); ctx.fill(); }   // cape
@@ -10415,12 +10417,12 @@ window.__sfx = (function () {
   function currencyHud(perSec) {
     if (!hudEl) {
       hudEl = document.createElement('div'); hudEl.id = 'currency-hud';
-      hudEl.style.cssText = 'position:fixed; left:14px; bottom:14px; z-index:9998; background:rgba(14,16,20,0.96); border:1px solid var(--line,#2c2f33); border-radius:10px; padding:9px 14px; box-shadow:0 10px 28px -8px rgba(0,0,0,.8); font-family:ui-monospace,monospace; pointer-events:none; min-width:172px;';
+      hudEl.style.cssText = 'position:fixed; left:14px; bottom:14px; z-index:9998; background:rgba(14,16,20,0.96); border:1px solid var(--line,#2c2f33); border-radius:10px; padding:9px 14px; box-shadow:0 10px 28px -8px rgba(0,0,0,.8); font-family:ui-monospace,monospace; pointer-events:none; min-width:186px; max-width:min(300px,72vw);';
       document.body.appendChild(hudEl);
     }
     var lv = (typeof playerLevel === 'function') ? playerLevel() : 1, pw = botPower();
     hudEl.innerHTML = '<div style="font-size:8.5px;letter-spacing:.14em;color:#8b93a0;margin-bottom:3px;">ULTRON’S CORNER — CREDITS</div>' +
-      '<div style="display:flex;align-items:baseline;gap:10px;"><span style="font-size:21px;font-weight:800;color:' + fmtColor(state.bits) + ';text-shadow:0 0 12px ' + fmtColor(state.bits) + '55;">◉ ' + fmt(state.bits) + '</span>' +
+      '<div style="display:flex;align-items:baseline;gap:5px;flex-wrap:wrap;"><span style="font-size:20px;font-weight:800;color:' + fmtColor(state.bits) + ';text-shadow:0 0 12px ' + fmtColor(state.bits) + '55;">◉ ' + fmt(state.bits) + '</span>' +
       (perSec > 0.001 ? '<span style="font-size:12px;font-weight:600;color:#5fe39a;">▸ ' + fmt(perSec) + '/s</span>' : '') + '</div>' +
       '<div style="display:flex;gap:6px;margin-top:6px;">' +
       '<span style="font-size:10.5px;font-weight:700;color:#ff6b7e;background:rgba(255,107,126,.12);border:1px solid rgba(255,107,126,.35);border-radius:5px;padding:2px 7px;">★ LV ' + lv + '</span>' +
