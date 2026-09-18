@@ -3014,6 +3014,25 @@ def download_apk():
     return resp
 
 
+# Separate release-candidate channel (R8-shrunk / v2+v3 signed test builds) so the
+# main /download stays on the known-good build. Files live in APK_DIR/rc/.
+@app.route("/download/ultrons-corner-rc.apk")
+def download_apk_rc():
+    rc_dir = os.path.join(APK_DIR, "rc")
+    try:
+        apks = [f for f in os.listdir(rc_dir) if f.lower().endswith(".apk")]
+    except OSError:
+        apks = []
+    if not apks:
+        return Response("No release-candidate build available.", status=404, mimetype="text/plain")
+    resp = send_from_directory(
+        rc_dir, sorted(apks)[-1], mimetype="application/vnd.android.package-archive",
+        as_attachment=True, download_name="Ultrons-Corner-RC.apk",
+    )
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
 @app.route("/api/game/save", methods=["GET"])
 @require_role
 def game_save_get():
