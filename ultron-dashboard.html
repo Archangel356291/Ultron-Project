@@ -8120,8 +8120,8 @@ function toggleReducedVisuals(el) {
     drawUltronRepair(t);   // just after a prestige: Ultron rebuilds himself, stronger
     drawIronMan(t);   // recurring gag: the intruder Ultron is beating up / tossing out
 
-    drawBelt(LEFT, liftX, officeFloorY, t, 1);                     // Ultron's office belt -> lift
-    SUBAGENTS.forEach(function (a, i) { if (i % cols === 0) drawBelt(LEFT, liftX, a.floorY, t, 1); });
+    drawBelt(0, liftX, officeFloorY, t, 1);                        // Ultron's office belt -> lift (runs to the building's left wall, no gap)
+    SUBAGENTS.forEach(function (a, i) { if (i % cols === 0) drawBelt(0, liftX, a.floorY, t, 1); });
     drawBelt(bayOutX() + 4, liftX, basementFloorY, t, -1);         // bay 0 belt: lift -> OUT
     parcels.forEach(function (p) { if (p.phase !== 'lift') drawParcel(p); });
     drawLiftFront();
