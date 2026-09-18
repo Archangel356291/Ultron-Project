@@ -3101,20 +3101,24 @@ _LAB_LOCK = threading.Lock()
 
 
 def _read_lab_log(limit=120):
-    """Recent lines from the lab's log files, newest first. Read-only, size- and
-    length-capped; returns [] if the directory is absent (lab not running)."""
+    """Recent lines from BOTH labs' log files, newest first. Scans the lab log
+    dir and its per-lab subfolders (logs/ethical-lab, logs/hack-lab), so the one
+    vault tracks the Ethical Hacking Lab and the Cyber Range (Hack Lab) together.
+    Each entry is tagged with which lab it came from. Read-only, size- and
+    length-capped; returns [] if the directory is absent (labs not set up)."""
     entries = []
     base = LAB_LOG_DIR
     if not base or not os.path.isdir(base):
         return entries
-    try:
-        names = sorted(os.listdir(base))
-    except OSError:
-        return entries
-    for name in names:
-        if not name.lower().endswith((".log", ".jsonl", ".txt")):
+    exts = (".log", ".jsonl", ".txt", ".md")
+    files = []
+    for root, _dirs, names in os.walk(base):
+        if root[len(base):].count(os.sep) > 2:   # logs/<lab>/ is deep enough
             continue
-        path = os.path.join(base, name)
+        for name in names:
+            if name.lower().endswith(exts):
+                files.append(os.path.join(root, name))
+    for path in sorted(files):
         try:
             if not os.path.isfile(path) or os.path.getsize(path) > 5_000_000:
                 continue
@@ -3123,10 +3127,13 @@ def _read_lab_log(limit=120):
                 lines = fh.readlines()[-limit:]
         except OSError:
             continue
+        rel = os.path.relpath(path, base).replace("\\", "/")
+        low = rel.lower()
+        lab = "Hack Lab" if "hack-lab" in low else ("Ethical Lab" if "ethical-lab" in low else "Lab")
         for ln in lines:
             ln = ln.strip()
             if ln:
-                entries.append({"file": name, "line": ln[:400], "mtime": int(mtime)})
+                entries.append({"file": rel, "lab": lab, "line": ln[:400], "mtime": int(mtime)})
     entries.sort(key=lambda e: e["mtime"], reverse=True)
     return entries[:limit]
 

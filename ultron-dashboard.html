@@ -2679,7 +2679,7 @@
             <div class="lab-vault" id="lab-vault" data-role="admin">
               <div class="lab-vault-head"><span class="lv-led"></span>Lab Activity — Classified<span class="lv-cls">ADMIN · PIN REQUIRED</span></div>
               <div class="lab-vault-box" id="lab-vault-box">
-                <div class="lv-data" id="lv-data"><div class="lv-empty">Sealed. Enter the admin PIN to reveal ethical-hacking lab activity.</div></div>
+                <div class="lv-data" id="lv-data"><div class="lv-empty">Sealed. Enter the admin PIN to reveal lab activity (Ethical Lab + Hack Lab).</div></div>
                 <div class="lv-door lv-door-l" aria-hidden="true"></div>
                 <div class="lv-door lv-door-r" aria-hidden="true"></div>
                 <svg class="lv-chains" id="lv-chains" viewBox="0 0 300 200" preserveAspectRatio="none" aria-hidden="true">
@@ -3815,7 +3815,9 @@
       if (!entries || !entries.length) { dataEl.innerHTML = '<div class="lv-empty">Vault open. No lab activity recorded yet' + (source ? ' at <span style="color:#8a93a3">' + lvEsc(source) + '</span>' : '') + '.</div>'; return; }
       dataEl.innerHTML = entries.map(function (e) {
         var when = e.mtime ? new Date(e.mtime * 1000).toLocaleString() : '';
-        return '<div class="lv-row"><span class="t">' + lvEsc(when) + '</span><span class="f">' + lvEsc(e.file) + '</span><span class="m">' + lvEsc(e.line) + '</span></div>';
+        var labColor = e.lab === 'Hack Lab' ? '#ff8098' : (e.lab === 'Ethical Lab' ? '#7fd4ff' : '#8a93a3');
+        var tag = e.lab ? '<span class="f" style="color:' + labColor + ';font-weight:700">[' + lvEsc(e.lab) + ']</span> ' : '';
+        return '<div class="lv-row"><span class="t">' + lvEsc(when) + '</span>' + tag + '<span class="f">' + lvEsc(e.file) + '</span><span class="m">' + lvEsc(e.line) + '</span></div>';
       }).join('');
     }
     function fail(text, color) { msg.style.color = color || '#ff6b6b'; msg.textContent = text; box.classList.add('shake'); setTimeout(function () { box.classList.remove('shake'); }, 400); pin = ''; renderPin(); }
@@ -3859,7 +3861,7 @@
     window.__labRelock = function () {
       if (!vault.classList.contains('unlocked')) return;
       vault.classList.remove('unlocked'); pin = ''; renderPin(); msg.textContent = '';
-      if (dataEl) dataEl.innerHTML = '<div class="lv-empty">Sealed. Enter the admin PIN to reveal ethical-hacking lab activity.</div>';
+      if (dataEl) dataEl.innerHTML = '<div class="lv-empty">Sealed. Enter the admin PIN to reveal lab activity (Ethical Lab + Hack Lab).</div>';
     };
     renderPin();
   })();
