@@ -7849,18 +7849,28 @@ function toggleReducedVisuals(el) {
     ctx.beginPath(); ctx.moveTo(X(19), sh); ctx.lineTo(X(12), hip); ctx.lineTo(X(11), feet); ctx.stroke();
     ctx.globalAlpha = 1;
     // --- Infinity Stones set into the chest, a downward 3-2-1 chevron ---
+    // All six are ALWAYS visible in their true colour (only slightly dimmed when
+    // the power-core isn't charged); charge lights them one by one with a pulsing
+    // glow. A metal bezel + socket well seats each gem INTO the vibranium so they
+    // read as forged in, not stuck on.
     var chestY = (sh + hip) / 2 - 3;
     var slots = [[-8, -8], [0, -8], [8, -8], [-4, 0], [4, 0], [0, 8]];
     var litN = Math.ceil(charge * 6);
     for (var i = 0; i < 6; i++) {
       var sx = cx + slots[i][0] * bs, sy = chestY + slots[i][1] * bs, on = i < litN;
-      var pl = on ? (0.75 + 0.25 * Math.sin(t * 4 + i)) : 0.22;
-      ctx.fillStyle = STONES[i].g + (0.5 * pl) + ')';   // halo
-      ctx.beginPath(); ctx.arc(sx, sy, 5.2 * bs, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#0c0e13'; ctx.beginPath(); ctx.arc(sx, sy, 3.2 * bs, 0, Math.PI * 2); ctx.fill();   // socket
-      ctx.fillStyle = on ? STONES[i].c : '#2a2d38';
-      ctx.beginPath(); ctx.arc(sx, sy, 2.5 * bs, 0, Math.PI * 2); ctx.fill();   // gem
-      if (on) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.arc(sx - 0.8 * bs, sy - 0.9 * bs, 0.9 * bs, 0, Math.PI * 2); ctx.fill(); }
+      var pulse = 0.75 + 0.25 * Math.sin(t * 4 + i);
+      // colour halo around every stone (brighter when charged) so it always pops off the dark chest
+      ctx.fillStyle = STONES[i].g + (on ? 0.4 * pulse : 0.16) + ')';
+      ctx.beginPath(); ctx.arc(sx, sy, 5.4 * bs, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = VB_L; ctx.beginPath(); ctx.arc(sx, sy, 4 * bs, 0, Math.PI * 2); ctx.fill();          // metal bezel
+      ctx.fillStyle = '#0c0e13'; ctx.beginPath(); ctx.arc(sx, sy, 3.2 * bs, 0, Math.PI * 2); ctx.fill();   // socket well
+      ctx.save(); if (on) { ctx.shadowColor = STONES[i].c; ctx.shadowBlur = (5 + 4 * Math.sin(t * 4 + i)) * bs; }
+      ctx.fillStyle = STONES[i].c;                                                                          // gem body -- always its real colour
+      ctx.beginPath(); ctx.arc(sx, sy, 2.7 * bs, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      if (!on) { ctx.fillStyle = 'rgba(8,10,18,0.42)'; ctx.beginPath(); ctx.arc(sx, sy, 2.7 * bs, 0, Math.PI * 2); ctx.fill(); }   // uncharged: a touch darker, still clearly coloured
+      ctx.fillStyle = 'rgba(255,255,255,' + (on ? 0.55 + 0.35 * pulse : 0.5) + ')';                         // cut-gem specular
+      ctx.beginPath(); ctx.arc(sx - 0.8 * bs, sy - 0.95 * bs, 0.85 * bs, 0, Math.PI * 2); ctx.fill();
     }
   }
 
@@ -8959,10 +8969,12 @@ window.__sfx = (function () {
   matsWipeGuard();
 
   var saveTimer = null;
+  var wiping = false;   // set true by a dev "Reset game progress" so nothing re-persists the old state before the reload
   function save() {
-    if (saveTimer) return;
+    if (wiping || saveTimer) return;
     saveTimer = setTimeout(function () {
       saveTimer = null;
+      if (wiping) return;   // a reset started while this was pending -- don't write the old state back
       state.savedAt = Date.now();   // NOT state.seen -- seen is the offline "away" marker, managed only by presence sync
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
       if (window.__foundryCloudPush) window.__foundryCloudPush();   // sync to the user's cloud save (if logged in)
@@ -9023,7 +9035,7 @@ window.__sfx = (function () {
     state.seen = Date.now();   // reset so returning to the tab doesn't double-count
   }
   // flush last-seen when the tab is hidden/closed so offline time is accurate
-  function flush() { state.seen = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } }
+  function flush() { if (wiping) return; state.seen = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ } }
   // Coming back to the tab: gather everything earned while it was hidden/closed
   // (offline = not on the game tab), up to the offline-storage cap.
   function claimOffline() {
@@ -10720,9 +10732,13 @@ window.__sfx = (function () {
             '<button type="button" class="dev-btn rem" id="dev-cf-yes">🗑 Reset everything</button><button type="button" class="dev-btn add" id="dev-cf-no">✕ Cancel</button>';
           document.getElementById('dev-cf-no').addEventListener('click', function () { rbar.hidden = true; rbar.innerHTML = ''; });
           document.getElementById('dev-cf-yes').addEventListener('click', function () {
-            try { localStorage.removeItem(KEY); } catch (e) {}
-            try { localStorage.removeItem('ultron_floors_open_v1'); } catch (e) {}
-            try { localStorage.removeItem('ultron_hud_collapsed'); } catch (e) {}
+            // Stop every save path FIRST so the pending autosave and the
+            // pagehide/beforeunload flush can't write the old state back over the
+            // wipe (that was the bug: reset then reload restored the old account).
+            wiping = true;
+            if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+            [KEY, KEY + '_corrupt', SAVES_KEY, 'ultron_floors_open_v1', 'ultron_hud_collapsed']
+              .forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
             if (window.__sfx) window.__sfx('reboot'); gamePop('🗑 Game progress reset — reloading…', '#ff8098');
             setTimeout(function () { try { location.reload(); } catch (e) {} }, 600);
           });

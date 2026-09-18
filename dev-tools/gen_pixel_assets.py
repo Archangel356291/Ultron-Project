@@ -217,7 +217,7 @@ HEAD_TOP = 3.5  # grid rows of headroom above the helmet for crests/antennae
 CRESTS = ("crown", "plates", "antenna", "visor", "dome", "fin", "horns")
 
 
-def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DARK, bm=BODY_MID, bl=BODY_LIGHT, ultron=False):
+def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DARK, bm=BODY_MID, bl=BODY_LIGHT, ultron=False, stones=False):
     """pose: 'walk_a' | 'walk_b' (full body) or 'work' (seated at a desk, cut
     off below the chest -- the desk sprite covers the rest).
 
@@ -336,6 +336,16 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DA
         R(7.5, 10.4, 12.5, 15.2, PANEL, r=0.5)
         E(8.2, 11.0, 11.8, 14.6, eye)
         E(9.1, 11.9, 10.9, 13.7, (255, 255, 255, 235))
+
+    if stones:   # the six Infinity Stones set across Ultron's lower chest -- always clearly visible
+        stone_cols = [(255, 46, 46, 255), (255, 138, 30, 255), (255, 210, 30, 255),
+                      (51, 209, 122, 255), (61, 155, 255, 255), (162, 75, 255, 255)]
+        gy = 16.0
+        for si, sc in enumerate(stone_cols):
+            gx = 6.0 + si * 1.5
+            E(gx - 0.2, gy - 0.2, gx + 1.3, gy + 1.3, VOID)                       # dark socket rim -> set into the plate
+            E(gx, gy, gx + 1.1, gy + 1.1, sc)                                     # gem in its true colour
+            E(gx + 0.22, gy + 0.2, gx + 0.55, gy + 0.53, (255, 255, 255, 225))    # cut-gem highlight
 
     # arms
     aw = 3.2 if heavy else 2.2
@@ -808,7 +818,7 @@ def main():
     # platinum / weathered titanium with polished titanium plating and RED
     # eyes + core (owner request 2026-09-16).
     for pose in ("walk_a", "walk_b", "work"):
-        save(draw_robot(10, U_PLATE, pose, "ultron", eye=RED_BRIGHT, bd=U_GUNMETAL, bm=U_PLATINUM, bl=U_TITANIUM, ultron=True),
+        save(draw_robot(10, U_PLATE, pose, "ultron", eye=RED_BRIGHT, bd=U_GUNMETAL, bm=U_PLATINUM, bl=U_TITANIUM, ultron=True, stones=True),
              f"ultron_{pose}.png")
     for active in (False, True):
         save(draw_desk(280, 96, 124, 88, RED_BRIGHT, "core", active), f"desk_ultron_{'active' if active else 'idle'}.png")
