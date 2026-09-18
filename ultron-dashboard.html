@@ -6438,6 +6438,13 @@ function toggleReducedVisuals(el) {
     deskUltronIdle: loadImg('desk_ultron_idle.png'),
     deskUltronActive: loadImg('desk_ultron_active.png'),
     tubeRed: loadImg('tube_red.png'),
+    hero_cap: loadImg('hero_cap.png'),
+    hero_ironman: loadImg('hero_ironman.png'),
+    hero_thor: loadImg('hero_thor.png'),
+    hero_hulk: loadImg('hero_hulk.png'),
+    hero_panther: loadImg('hero_panther.png'),
+    hero_widow: loadImg('hero_widow.png'),
+    hero_vision: loadImg('hero_vision.png'),
   };
 
   // One desk per agent in the registry (the Agents card / /api/agents), in
@@ -6865,6 +6872,8 @@ function toggleReducedVisuals(el) {
   }
   setTimeout(startIronMan, 10000);   // first cameo shortly after load
   setInterval(startIronMan, 45000);  // then every 45s
+  // dev/test hook: force a specific hero cameo now (e.g. window.__spawnHero('thor'))
+  window.__spawnHero = function (kind) { if (typeof officeFloorY !== 'number') return; ironMan.phase = 'gone'; startIronMan(); ironMan.kind = (HEROES[kind] ? kind : ironMan.kind); imToast(HEROES[ironMan.kind].name); return ironMan.kind; };
   function stepIronMan(t, dt) {
     var im = ironMan; if (im.phase === 'gone') return;
     var target = Math.max(walkMinX + 60, walkX - 96);   // stand clear of Ultron -- heroes are double-size now
@@ -6903,9 +6912,17 @@ function toggleReducedVisuals(el) {
   function drawIronMan(t) {
     var im = ironMan; if (im.phase === 'gone') return;
     var h = HEROES[im.kind] || HEROES.ironman, B = h.body, T = h.trim, BM = h.beam;
-    var S = h.big ? 7.7 : 6.3, tw = h.big ? 6.3 : 5, fighting = im.phase === 'fight', firingBack = fighting && t < im.repulseOn;   // heroes bumped up a bit (5.6->6.3) so they read even clearer
+    var S = 6.3, tw = h.big ? 6.3 : 5, fighting = im.phase === 'fight', firingBack = fighting && t < im.repulseOn;   // single scale now; each hero's sheet sprite carries its own relative size
     ctx.save(); ctx.translate(im.x, im.y); ctx.scale(S, S); if (im.phase === 'toss') ctx.rotate(im.rot);
-    if (im.phase !== 'toss' && !h.mind) { ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0, 2, tw + 3, 2.2, 0, 0, 6.28); ctx.fill(); }
+    if (im.phase !== 'toss') { ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(0, 2, tw + 3, 2.2, 0, 0, 6.28); ctx.fill(); }
+    var heroSprite = IMG['hero_' + im.kind];
+    if (heroSprite && heroSprite.complete && heroSprite.naturalWidth) {
+      // draw the exact pixel-sheet hero, feet on the ground (y=2), centred; the
+      // signature attack beams below still fire from the same local positions.
+      var _u = 24 / 46, _lw = heroSprite.naturalWidth * _u, _lh = heroSprite.naturalHeight * _u;
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(heroSprite, -_lw / 2, 2 - _lh, _lw, _lh);
+    } else {
     if (h.cape) { ctx.fillStyle = h.cape; ctx.beginPath(); ctx.moveTo(-tw, -16); ctx.lineTo(tw, -16); ctx.lineTo(tw + 3.5, -0.5); ctx.lineTo(-tw - 3.5, -0.5); ctx.closePath(); ctx.fill(); }   // cape
     var legCol = im.kind === 'hulk' ? T : (im.kind === 'thor' ? '#4a4a52' : B);
     ctx.fillStyle = legCol; ctx.fillRect(-4, -6, 3.4, 6); ctx.fillRect(0.6, -6, 3.4, 6);                 // legs
@@ -6922,6 +6939,7 @@ function toggleReducedVisuals(el) {
     if (h.shield) { ctx.fillStyle = '#c0392b'; ctx.beginPath(); ctx.arc(-tw - 1.5, -11, 3.4, 0, 6.28); ctx.fill(); ctx.fillStyle = '#ecf0f1'; ctx.beginPath(); ctx.arc(-tw - 1.5, -11, 2, 0, 6.28); ctx.fill(); ctx.fillStyle = '#2b5cb8'; ctx.beginPath(); ctx.arc(-tw - 1.5, -11, 0.9, 0, 6.28); ctx.fill(); }   // Cap's shield on the arm
     if (h.hammer && !firingBack) { ctx.fillStyle = '#8b93a0'; ctx.fillRect(tw + 1, -16, 5, 3.4); ctx.fillStyle = '#6b4a2a'; ctx.fillRect(tw + 3, -12.6, 1.4, 4); }   // Mjolnir in Thor's hand
     drawHeroHead(im.kind, h, BM);
+    }
     ctx.restore();
     // Ultron's eye-lasers (red) streaking from his sprite to the hero
     var ub = lastCharBox, uex = ub ? ub.x + ub.w * 0.42 : walkX + 30, uey = ub ? ub.y + ub.h * 0.2 : officeFloorY - 120;
