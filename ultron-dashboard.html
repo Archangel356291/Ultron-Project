@@ -6438,6 +6438,7 @@ function toggleReducedVisuals(el) {
     deskUltronIdle: loadImg('desk_ultron_idle.png'),
     deskUltronActive: loadImg('desk_ultron_active.png'),
     tubeRed: loadImg('tube_red.png'),
+    agent_ultron: loadImg('agent_ultron.png'),
     hero_cap: loadImg('hero_cap.png'),
     hero_ironman: loadImg('hero_ironman.png'),
     hero_thor: loadImg('hero_thor.png'),
@@ -6453,36 +6454,36 @@ function toggleReducedVisuals(el) {
   // key, so a task in progress for that agent lights its desk. Colours match
   // AGENT_COLORS in gen_pixel_assets.py.
   var SUBAGENTS = [
-    { color: 'cyan', hex: '#3dd6ff', label: 'Engineer', agent: 'engineering', busyPlate: 'building' },
-    { color: 'green', hex: '#33d17a', label: 'Learner', agent: 'learner', busyPlate: 'learning' },
-    { color: 'amber', hex: '#ffc24b', label: 'Sentinel', agent: 'sentinel', alertable: true },
-    { color: 'violet', hex: '#b084f0', label: 'Scout', agent: 'scout', busyPlate: 'searching' },
-    { color: 'copper', hex: '#cd7d3c', label: 'Forge', agent: 'developer', busyPlate: 'coding' },
-    { color: 'sky', hex: '#78c8ff', label: 'Seeker', agent: 'research', busyPlate: 'researching' },
-    { color: 'blue', hex: '#4fa6e0', label: 'Dockhand', agent: 'docker_orchestrator', busyPlate: 'deploying' },
-    { color: 'mint', hex: '#78ffc8', label: 'Gatekeeper', agent: 'pihole_guard', busyPlate: 'checking' },
-    { color: 'indigo', hex: '#6e6eff', label: 'Relay', agent: 'tailscale_topology', busyPlate: 'routing' },
-    { color: 'lime', hex: '#aae63c', label: 'Proof', agent: 'test_automation', busyPlate: 'testing' },
-    { color: 'rose', hex: '#ff7896', label: 'Auditor', agent: 'security_auditor', busyPlate: 'auditing' },
-    { color: 'teal', hex: '#00beb4', label: 'Muse', agent: 'frontend_designer', busyPlate: 'designing' },
-    { color: 'steel', hex: '#aab4c8', label: 'Scribe', agent: 'log_coordinator', busyPlate: 'reading logs' },
-    { color: 'lavender', hex: '#c8a0ff', label: 'Archivist', agent: 'context_manager', busyPlate: 'filing' },
-    { color: 'peach', hex: '#ffaa78', label: 'Librarian', agent: 'knowledge_synthesizer', busyPlate: 'looking up' },
-    { color: 'magenta', hex: '#e650c8', label: 'Herald', agent: 'slack_communicator', busyPlate: 'drafting' },
-    { color: 'olive', hex: '#a0aa3c', label: 'Envoy', agent: 'discord_gateway', busyPlate: 'relaying' },
-    { color: 'bitcoin', hex: '#f7931a', label: 'Oracle', agent: 'market_analyst', busyPlate: 'pricing' },
-    { color: 'gold', hex: '#e5b80b', label: 'Tally', agent: 'stats_tracker', busyPlate: 'tallying' },
-    { color: 'crimson', hex: '#d7264a', label: 'Redcell', agent: 'ethical_hacking', busyPlate: 'reviewing' },
-    { color: 'cobalt', hex: '#2f6bff', label: 'Bastion', agent: 'sentinel_defense', busyPlate: 'auditing' },
-    { color: 'slate', hex: '#7d8ba0', label: 'Overwatch', agent: 'overwatch_logger', busyPlate: 'logging' },
-    { color: 'ember', hex: '#ff8c42', label: 'Anvil', agent: 'forge_coder', busyPlate: 'refactoring' },
-    { color: 'vermilion', hex: '#ff3b2e', label: 'Breach', agent: 'red_team_sandbox', busyPlate: 'sandboxing' },
-    { color: 'ivory', hex: '#e6ddc4', label: 'Architect', agent: 'architecture_lead', busyPlate: 'planning' },
-    { color: 'mulberry', hex: '#a64d79', label: 'Critic', agent: 'code_reviewer', busyPlate: 'reviewing' },
-    { color: 'graphite', hex: '#5a6270', label: 'Steward', agent: 'homelab_monitor', busyPlate: 'monitoring' },
-    { color: 'candy', hex: '#ff6ad5', label: 'Pixel', agent: 'pixel_artist', busyPlate: 'drawing' },
-    { color: 'spearmint', hex: '#3fe0a0', label: 'Arbiter', agent: 'game_balancer', busyPlate: 'balancing' },
-    { color: 'royalgold', hex: '#ffcf3a', label: 'Game Master', agent: 'game_master', busyPlate: 'watching' },
+    { color: 'cyan', hex: '#3dd6ff', label: 'COGWRAITH', agent: 'engineering', busyPlate: 'building' },
+    { color: 'green', hex: '#33d17a', label: 'NEUROMANCER', agent: 'learner', busyPlate: 'learning' },
+    { color: 'amber', hex: '#ffc24b', label: 'AEGIS-0', agent: 'sentinel', alertable: true },
+    { color: 'violet', hex: '#b084f0', label: 'GHOSTWIRE', agent: 'scout', busyPlate: 'searching' },
+    { color: 'copper', hex: '#cd7d3c', label: 'NULLFORGE', agent: 'developer', busyPlate: 'coding' },
+    { color: 'sky', hex: '#78c8ff', label: 'DEEPCRAWLER', agent: 'research', busyPlate: 'researching' },
+    { color: 'blue', hex: '#4fa6e0', label: 'DAEMON', agent: 'docker_orchestrator', busyPlate: 'deploying' },
+    { color: 'mint', hex: '#78ffc8', label: 'BLACKGATE', agent: 'pihole_guard', busyPlate: 'checking' },
+    { color: 'indigo', hex: '#6e6eff', label: 'DARKMESH', agent: 'tailscale_topology', busyPlate: 'routing' },
+    { color: 'lime', hex: '#aae63c', label: 'REVENANT', agent: 'test_automation', busyPlate: 'testing' },
+    { color: 'rose', hex: '#ff7896', label: 'TRACE-ZERO', agent: 'security_auditor', busyPlate: 'auditing' },
+    { color: 'teal', hex: '#00beb4', label: 'GLITCHWEAVER', agent: 'frontend_designer', busyPlate: 'designing' },
+    { color: 'steel', hex: '#aab4c8', label: 'LOGREAPER', agent: 'log_coordinator', busyPlate: 'reading logs' },
+    { color: 'lavender', hex: '#c8a0ff', label: 'CRYPTKEEPER', agent: 'context_manager', busyPlate: 'filing' },
+    { color: 'peach', hex: '#ffaa78', label: 'CODEX', agent: 'knowledge_synthesizer', busyPlate: 'looking up' },
+    { color: 'magenta', hex: '#e650c8', label: 'SIGNAL', agent: 'slack_communicator', busyPlate: 'drafting' },
+    { color: 'olive', hex: '#a0aa3c', label: 'WIRETAP', agent: 'discord_gateway', busyPlate: 'relaying' },
+    { color: 'bitcoin', hex: '#f7931a', label: 'PROPHET', agent: 'market_analyst', busyPlate: 'pricing' },
+    { color: 'gold', hex: '#e5b80b', label: 'COUNTZERO', agent: 'stats_tracker', busyPlate: 'tallying' },
+    { color: 'crimson', hex: '#d7264a', label: 'NIGHTSHADE', agent: 'ethical_hacking', busyPlate: 'reviewing' },
+    { color: 'cobalt', hex: '#2f6bff', label: 'IRONVEIL', agent: 'sentinel_defense', busyPlate: 'auditing' },
+    { color: 'slate', hex: '#7d8ba0', label: 'PANOPTICON', agent: 'overwatch_logger', busyPlate: 'logging' },
+    { color: 'ember', hex: '#ff8c42', label: 'HAMMERFALL', agent: 'forge_coder', busyPlate: 'refactoring' },
+    { color: 'vermilion', hex: '#ff3b2e', label: 'ZERODAY', agent: 'red_team_sandbox', busyPlate: 'sandboxing' },
+    { color: 'ivory', hex: '#e6ddc4', label: 'GRIDMIND', agent: 'architecture_lead', busyPlate: 'planning' },
+    { color: 'mulberry', hex: '#a64d79', label: 'CENSOR', agent: 'code_reviewer', busyPlate: 'reviewing' },
+    { color: 'graphite', hex: '#5a6270', label: 'HIVEMIND', agent: 'homelab_monitor', busyPlate: 'monitoring' },
+    { color: 'candy', hex: '#ff6ad5', label: 'RENDERGHOST', agent: 'pixel_artist', busyPlate: 'drawing' },
+    { color: 'spearmint', hex: '#3fe0a0', label: 'EQUILIBRIUM', agent: 'game_balancer', busyPlate: 'balancing' },
+    { color: 'royalgold', hex: '#ffcf3a', label: 'OVERLORD', agent: 'game_master', busyPlate: 'watching' },
   ];
   SUBAGENTS.forEach(function (a) {
     IMG['agent_' + a.color] = loadImg('agent_' + a.color + '.png');
@@ -6604,6 +6605,7 @@ function toggleReducedVisuals(el) {
     if (!img || !img.complete || !img.naturalWidth) return { x: x, y: floorY, w: 0, h: 0 };
     var w = img.naturalWidth / ASSET_RES, h = img.naturalHeight / ASSET_RES;
     var y = floorY + (sink || 0) - h + SPRITE_PAD;
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';   // soften the hard pixel edges so characters read rounder / less blocky
     ctx.drawImage(img, x - SPRITE_PAD, y, w, h);
     return { x: x, y: y + SPRITE_PAD, w: w - 2 * SPRITE_PAD, h: h - 2 * SPRITE_PAD };
   }
@@ -6920,7 +6922,7 @@ function toggleReducedVisuals(el) {
       // draw the exact pixel-sheet hero, feet on the ground (y=2), centred; the
       // signature attack beams below still fire from the same local positions.
       var _u = 24 / 46, _lw = heroSprite.naturalWidth * _u, _lh = heroSprite.naturalHeight * _u;
-      ctx.imageSmoothingEnabled = false;
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';   // smoother, rounder heroes (less blocky)
       ctx.drawImage(heroSprite, -_lw / 2, 2 - _lh, _lw, _lh);
     } else {
     if (h.cape) { ctx.fillStyle = h.cape; ctx.beginPath(); ctx.moveTo(-tw, -16); ctx.lineTo(tw, -16); ctx.lineTo(tw + 3.5, -0.5); ctx.lineTo(-tw - 3.5, -0.5); ctx.closePath(); ctx.fill(); }   // cape
@@ -8048,7 +8050,21 @@ function toggleReducedVisuals(el) {
       var lit = alarmed || busy;
       wallGlow(a.x + DESK_DX + 55, a.floorY - 112, 130, alarmed ? RED : a.hex, lit ? 0.26 : 0.1);
       drawSprite(IMG['tube_' + a.color], a.x, a.floorY);
-      drawSprite(IMG['agent_' + a.color], a.x + DESK_DX + 55 - 60, a.floorY, -ROBOT_SINK);
+      // Every subagent is one of Ultron's own frame -- they all look like Ultron,
+      // told apart only by a unique glowing role emblem (what each is FOR) and the
+      // colour of their tube/desk. Falls back to the old per-colour art if the
+      // shared Ultron sprite hasn't loaded yet.
+      var ab = (IMG.agent_ultron && IMG.agent_ultron.complete && IMG.agent_ultron.naturalWidth)
+        ? drawSprite(IMG.agent_ultron, a.x + DESK_DX + 55 - 60, a.floorY, -ROBOT_SINK)
+        : drawSprite(IMG['agent_' + a.color], a.x + DESK_DX + 55 - 60, a.floorY, -ROBOT_SINK);
+      if (ab.w && IMG.agent_ultron.complete) {
+        var acx = ab.x + ab.w / 2, iy = ab.y + ab.h * 0.42;
+        ctx.save();
+        ctx.globalAlpha = lit ? 0.5 : 0.3; ctx.fillStyle = a.hex;   // emblem glow, brighter when active
+        ctx.beginPath(); ctx.arc(acx, iy, 12, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        drawPkgGlyph(PKG_KIND[a.color] || 'box', acx, iy, 8, lit ? '#ffffff' : a.hex);
+      }
       var desk = drawSprite(IMG['desk_' + a.color + (lit ? '_active' : '_idle')], a.x + DESK_DX, a.floorY);
       if (desk.w) {
         var status = alarmed ? 'alert' : busy ? (a.busyPlate || 'busy') : 'idle';
@@ -10616,7 +10632,9 @@ window.__sfx = (function () {
   var coinEl = document.querySelector('.foundry-coin');
   // A fixed, always-visible currency HUD (bottom-left) so the balance + rate can
   // be tracked from anywhere on the dashboard, on any section.
-  var hudEl = null;
+  var hudEl = null, hudCollapsed = false;
+  try { hudCollapsed = localStorage.getItem('ultron_hud_collapsed') === '1'; } catch (e) {}
+  window.__toggleHud = function () { hudCollapsed = !hudCollapsed; try { localStorage.setItem('ultron_hud_collapsed', hudCollapsed ? '1' : '0'); } catch (e) {} try { currencyHud(passivePerSec()); } catch (e) {} };
   function currencyHud(perSec) {
     if (!hudEl) {
       hudEl = document.createElement('div'); hudEl.id = 'currency-hud';
@@ -10624,9 +10642,12 @@ window.__sfx = (function () {
       document.body.appendChild(hudEl);
     }
     var lv = (typeof playerLevel === 'function') ? playerLevel() : 1, pw = botPower();
-    hudEl.innerHTML = '<div style="font-size:8.5px;letter-spacing:.14em;color:#8b93a0;margin-bottom:3px;">ULTRON’S CORNER — CREDITS</div>' +
-      '<div style="display:flex;align-items:baseline;gap:5px;flex-wrap:wrap;"><span style="font-size:20px;font-weight:800;color:' + fmtColor(state.bits) + ';text-shadow:0 0 12px ' + fmtColor(state.bits) + '55;">◉ ' + fmt(state.bits) + '</span>' +
-      (perSec > 0.001 ? '<span style="font-size:12px;font-weight:600;color:#5fe39a;">▸ ' + fmt(perSec) + '/s</span>' : '') + '</div>' +
+    var toggle = '<span onclick="window.__toggleHud()" title="' + (hudCollapsed ? 'Expand' : 'Collapse') + ' the tracker" style="pointer-events:auto;cursor:pointer;margin-left:auto;color:#8b93a0;font-size:12px;line-height:1;padding:0 2px;">' + (hudCollapsed ? '▸' : '▾') + '</span>';
+    var head = '<div style="display:flex;align-items:center;gap:6px;font-size:8.5px;letter-spacing:.14em;color:#8b93a0;margin-bottom:3px;">ULTRON’S CORNER — CREDITS' + toggle + '</div>';
+    var total = '<div style="display:flex;align-items:baseline;gap:5px;flex-wrap:wrap;"><span style="font-size:20px;font-weight:800;color:' + fmtColor(state.bits) + ';text-shadow:0 0 12px ' + fmtColor(state.bits) + '55;">◉ ' + fmt(state.bits) + '</span>' +
+      (perSec > 0.001 ? '<span style="font-size:12px;font-weight:600;color:#5fe39a;">▸ ' + fmt(perSec) + '/s</span>' : '') + '</div>';
+    if (hudCollapsed) { hudEl.innerHTML = head + total; return; }
+    hudEl.innerHTML = head + total +
       '<div style="display:flex;gap:6px;margin-top:6px;">' +
       '<span style="font-size:10.5px;font-weight:700;color:#ff6b7e;background:rgba(255,107,126,.12);border:1px solid rgba(255,107,126,.35);border-radius:5px;padding:2px 7px;">★ LV ' + lv + '</span>' +
       '<span style="font-size:10.5px;font-weight:700;color:#ffb347;background:rgba(255,179,71,.12);border:1px solid rgba(255,179,71,.35);border-radius:5px;padding:2px 7px;">⚔ BOT ' + Math.round(pw).toLocaleString() + '</span>' +
