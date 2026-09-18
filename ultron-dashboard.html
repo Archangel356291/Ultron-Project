@@ -556,11 +556,14 @@
   .floor-sign{ display:inline-block; font-family:var(--font-display); font-weight:800; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:#dfe7f2;
     padding:4px 13px; margin-bottom:11px; border-radius:5px; border-left:3px solid #4f9fff;
     background:linear-gradient(180deg,#1d2129,#12151b); box-shadow:0 0 14px -4px rgba(120,170,255,.55), inset 0 1px 0 rgba(255,255,255,.08); }
-  /* each floor is a click-to-collapse room: click the sign to open/close it */
-  .game-floor > .floor-sign{ cursor:pointer; user-select:none; }
-  .game-floor > .floor-sign::after{ content:'▾'; margin-left:9px; color:#8aa0c0; font-size:10px; }
-  .game-floor.collapsed > .floor-sign::after{ content:'▸'; }
-  .game-floor.collapsed > .floor-sign{ margin-bottom:0; opacity:.9; }
+  /* each floor is a click-to-collapse room: click the sign to open/close it.
+     styled as a clean full-width "building directory" bar (app-store polish) */
+  .game-floor > .floor-sign{ cursor:pointer; user-select:none; display:flex; align-items:center; gap:9px; width:100%; box-sizing:border-box;
+    padding:9px 13px; font-size:12px; transition:box-shadow .18s ease, border-color .18s ease, background .18s ease; }
+  .game-floor > .floor-sign::after{ content:'▾'; margin-left:auto; color:#8aa0c0; font-size:11px; transition:transform .18s ease; }
+  .game-floor.collapsed > .floor-sign::after{ transform:rotate(-90deg); }
+  .game-floor > .floor-sign:hover{ border-left-color:#7fd0ff; box-shadow:0 0 18px -4px rgba(120,170,255,.7), inset 0 1px 0 rgba(255,255,255,.1); background:linear-gradient(180deg,#232833,#151922); }
+  .game-floor.collapsed > .floor-sign{ margin-bottom:0; opacity:.96; }
   .game-floor.collapsed > :not(.floor-sign):not(.floor-keep){ display:none !important; }
   /* the big section containers lose their own box borders and blend into the floor */
   .game-floor > .foundry, .game-floor > .refinery, .game-floor > .expedition, .game-floor > .codex-wrap,
@@ -6886,7 +6889,7 @@ function toggleReducedVisuals(el) {
     if (window.__foundryEarn) window.__foundryEarn(amt);   // ALWAYS credit currency (even off-screen -> no gap in the flow)
     if (!onScreen) return;                                  // off-screen: no coin sprite, no sfx (you're not looking)
     if (coins.length < 42) coins.push({ x: x + 6, y: y, vx: (Math.random() - 0.5) * 7, vy: -30 - Math.random() * 10, life: 0, ttl: 1.9, big: amt >= 1, amt: amt * (foundryCfg().mult || 1) });
-    if (window.__sfx) window.__sfx('coin');
+    if (window.__sfx && Math.random() < 0.18) window.__sfx('coin');   // throttled: many bots mint/sec -> only an occasional chime, not a rattle
   }
 
   function updateBays(t, dt) {
