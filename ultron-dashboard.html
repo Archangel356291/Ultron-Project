@@ -7469,15 +7469,78 @@ function toggleReducedVisuals(el) {
   // A solid dark-metal wall across the WHOLE upper office, covering the baked
   // window entirely (owner removed the window + world-domination plan) so all
   // the decorations sit on one clean centred wall.
+  // Per-planet reskin of Ultron's top-floor office: a wall tint + a panoramic
+  // station viewport running along the top of the wall (above the monitor/
+  // trophies) that looks out on the world you've travelled to. Earth = home
+  // base, so no window (the solid wall stays).
+  var PLANET_THEME = {
+    moon:    { wallTop: '#0c1017', wallBot: '#080b12', seam: 'rgba(150,190,255,0.02)', sky: ['#04070f', '#0a1424'], stars: '#dbe6ff', disc: '#3f74c8', discGlow: '#6fa8ff', ring: null, haze: null, dust: null },
+    venus:   { wallTop: '#171006', wallBot: '#0d0a05', seam: 'rgba(255,190,90,0.03)', sky: ['#3a2508', '#100a04'], stars: null, disc: '#e0a23c', discGlow: '#ffd27a', ring: null, haze: 'rgba(255,180,70,0.16)', dust: null },
+    mars:    { wallTop: '#170d0b', wallBot: '#0c0706', seam: 'rgba(255,120,80,0.03)', sky: ['#3a140c', '#120705'], stars: '#ffd8c8', disc: '#c0492e', discGlow: '#ff7a4d', ring: null, haze: null, dust: 'rgba(255,110,70,0.10)' },
+    jupiter: { wallTop: '#14100a', wallBot: '#0a0806', seam: 'rgba(255,200,140,0.03)', sky: ['#241a10', '#0e0a06'], stars: '#ffe9cf', disc: null, discGlow: null, ring: '#c9a878', bands: ['#b98b5e', '#d9b98a', '#8a6440'], haze: null, dust: null }
+  };
+  function planetTheme() { var p = window.__planet || 'earth'; return PLANET_THEME[p] || null; }
+  var _vpStars = null;
+  // A large panoramic station window that fills most of the office wall and looks
+  // out on the world Ultron has travelled to. Ultron's desk, monitor, trophies
+  // and the man himself all draw AFTER this, so they sit in front of the view --
+  // the classic command-deck-over-a-planet look. Earth = home base, no window.
+  function stationViewport(y0, y1) {
+    var th = planetTheme(); if (!th) return;
+    var vx = 8, vw = W - 16, vy = y0 + 5, vh = (y1 - y0) - 12;
+    ctx.save();
+    ctx.fillStyle = '#20252c'; ctx.fillRect(vx - 5, vy - 5, vw + 10, vh + 10);   // window frame
+    ctx.beginPath(); ctx.rect(vx, vy, vw, vh); ctx.clip();
+    var sg = ctx.createLinearGradient(0, vy, 0, vy + vh); sg.addColorStop(0, th.sky[0]); sg.addColorStop(1, th.sky[1]);
+    ctx.fillStyle = sg; ctx.fillRect(vx, vy, vw, vh);
+    if (th.bands) { for (var bi = 0; bi < 10; bi++) { ctx.globalAlpha = 0.32 - bi * 0.02; ctx.fillStyle = th.bands[bi % 3] || '#b98b5e'; ctx.fillRect(vx, vy + bi * (vh / 10), vw, vh / 20); } ctx.globalAlpha = 1; }
+    if (th.stars) {
+      if (!_vpStars) { _vpStars = []; for (var i = 0; i < 130; i++) _vpStars.push({ x: Math.random(), y: Math.random(), r: Math.random() < 0.14 ? 1.7 : 1.0, ph: Math.random() * 6.28 }); }
+      var tt = now();
+      for (var si = 0; si < _vpStars.length; si++) { var s = _vpStars[si]; ctx.globalAlpha = 0.3 + 0.5 * (0.5 + 0.5 * Math.sin(tt * 1.5 + s.ph)); ctx.fillStyle = th.stars; ctx.fillRect(vx + s.x * vw, vy + s.y * vh * 0.82, s.r, s.r); }
+      ctx.globalAlpha = 1;
+    }
+    if (th.haze) { var hg = ctx.createLinearGradient(0, vy, 0, vy + vh); hg.addColorStop(0, 'rgba(0,0,0,0)'); hg.addColorStop(0.6, th.haze); hg.addColorStop(1, th.haze); ctx.fillStyle = hg; ctx.fillRect(vx, vy, vw, vh); }
+    if (th.dust) { ctx.fillStyle = th.dust; ctx.fillRect(vx, vy, vw, vh); }
+    // the world outside: a big planet disc low in the window (only its upper arc shows)
+    if (th.disc) {
+      var dcx = vx + vw * 0.7, dcy = vy + vh + 30, dr = vh * 0.9;
+      ctx.fillStyle = th.discGlow; ctx.globalAlpha = 0.22; ctx.beginPath(); ctx.arc(dcx, dcy, dr + 14, 0, 6.28); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.fillStyle = th.disc; ctx.beginPath(); ctx.arc(dcx, dcy, dr, 0, 6.28); ctx.fill();
+      ctx.fillStyle = th.discGlow; ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.arc(dcx - dr * 0.36, dcy - dr * 0.34, dr * 0.55, 0, 6.28); ctx.fill(); ctx.globalAlpha = 1;   // lit limb
+      // surface mottling
+      ctx.fillStyle = 'rgba(0,0,0,0.14)'; for (var mi = 0; mi < 7; mi++) { var ma = -1.4 + mi * 0.4, mr = dr * (0.4 + (mi % 3) * 0.14); ctx.beginPath(); ctx.arc(dcx + Math.cos(ma) * mr, dcy - Math.abs(Math.sin(ma)) * mr, dr * 0.12, 0, 6.28); ctx.fill(); }
+    }
+    // Jupiter gas-giant body + ring
+    if (th.ring) {
+      var jx = vx + vw * 0.68, jy = vy + vh + 24, jr = vh * 0.95;
+      ctx.fillStyle = '#a9793f'; ctx.beginPath(); ctx.arc(jx, jy, jr, 0, 6.28); ctx.fill();
+      ctx.save(); ctx.beginPath(); ctx.arc(jx, jy, jr, 0, 6.28); ctx.clip();
+      for (var jb = 0; jb < 9; jb++) { ctx.globalAlpha = 0.45; ctx.fillStyle = jb % 2 ? '#c9a878' : '#7d5a36'; ctx.fillRect(jx - jr, jy - jr + jb * (jr / 6), jr * 2, jr / 12); }
+      ctx.globalAlpha = 1; ctx.restore();
+      ctx.strokeStyle = th.ring; ctx.lineWidth = 4; ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.ellipse(jx, jy - jr * 0.5, jr + 40, 16, -0.18, 0, 6.28); ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    // a passing supply shuttle for life
+    var shT = now() * 0.06 % 1, shx = vx + vw * (0.1 + shT * 0.8), shy = vy + vh * 0.22 + Math.sin(now() * 0.5) * 4;
+    ctx.fillStyle = '#3a4048'; ctx.fillRect(shx, shy, 9, 3); ctx.fillStyle = '#9fb0c8'; ctx.fillRect(shx + 8, shy, 2, 3);
+    ctx.fillStyle = Math.sin(now() * 6) > 0 ? '#ff6b5a' : '#5a2a24'; ctx.fillRect(shx - 1, shy + 1, 1.5, 1.5);
+    ctx.restore();
+    // mullions + frame edges over the glass
+    ctx.fillStyle = '#181c22';
+    for (var mx = vx + 160; mx < vx + vw; mx += 160) ctx.fillRect(mx, vy, 3, vh);
+    for (var my = vy + 90; my < vy + vh; my += 90) ctx.fillRect(vx, my, vw, 3);
+    ctx.fillStyle = '#3a4048'; ctx.fillRect(vx, vy - 1, vw, 2); ctx.fillRect(vx, vy + vh - 1, vw, 2);
+  }
   function drawOfficeWall(t) {
     var y0 = ROOF_H - 2, y1 = officeFloorY - 104;   // covers the baked window fully (top + bottom border), clear of the floor furniture
+    var th = planetTheme();
     var g = ctx.createLinearGradient(0, y0, 0, y1);
-    g.addColorStop(0, '#0e1116'); g.addColorStop(1, '#0a0c10');
+    g.addColorStop(0, th ? th.wallTop : '#0e1116'); g.addColorStop(1, th ? th.wallBot : '#0a0c10');
     ctx.fillStyle = g; ctx.fillRect(0, y0, W, y1 - y0);
     ctx.fillStyle = '#1a1f26'; ctx.fillRect(0, y0, W, 3);                    // ceiling trim
     ctx.fillStyle = '#070809'; ctx.fillRect(0, y1 - 3, W, 3);               // baseboard shadow
-    ctx.fillStyle = 'rgba(255,255,255,0.012)';                             // faint vertical panel seams
-    for (var sx = 40; sx < W; sx += 70) ctx.fillRect(sx, y0 + 3, 1, y1 - y0 - 6);
+    if (!th) { ctx.fillStyle = 'rgba(255,255,255,0.012)'; for (var sx = 40; sx < W; sx += 70) ctx.fillRect(sx, y0 + 3, 1, y1 - y0 - 6); }   // Earth: plain seams
+    stationViewport(y0, y1);                                                // per-planet window looking out on the world
   }
   function shelf(gapL, span, y) {
     ctx.fillStyle = M_GUN; ctx.fillRect(gapL + span * 0.03, y, span * 0.94, 5);
@@ -10093,7 +10156,7 @@ window.__sfx = (function () {
   function portalOpen() { return ((state.prestige && state.prestige.cores) || 0) >= 1; }
   function planetGlobalMult() { var P = PLANETS; if (!P) return 1; var pl = state.planets; if (!pl || !pl.unlocked) return 1; var m = 1; P.forEach(function (p) { if (!p.comingSoon && pl.unlocked[p.id]) m *= (1 + p.boost); }); return m; }
   function planetIncome() { var P = PLANETS; if (!P) return 0; var pl = state.planets; if (!pl || !pl.unlocked) return 0; var s = 0; P.forEach(function (p) { if (!p.comingSoon && pl.unlocked[p.id] && p.id !== pl.current) s += p.inc; }); return s; }   // planets you're NOT on keep earning
-  function applyPlanetTheme() { var pl = planetsInit(); document.body.className = document.body.className.replace(/\bplanet-\w+/g, '').trim(); document.body.classList.add('planet-' + pl.current); }
+  function applyPlanetTheme() { var pl = planetsInit(); document.body.className = document.body.className.replace(/\bplanet-\w+/g, '').trim(); document.body.classList.add('planet-' + pl.current); window.__planet = pl.current; }
   function renderPortal() {
     if (!portalEl) return;
     if (!portalOpen()) { portalEl.innerHTML = '<div class="pt-locked">🔒 The Portal Room powers up after your <b>first prestige</b>. Reboot once to tear open a rift to other worlds.</div>'; return; }
@@ -11386,6 +11449,7 @@ window.__sfx = (function () {
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
       renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); renderCodex();
+      applyPlanetTheme();   // restore the travelled-to planet's room reskin on load
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
