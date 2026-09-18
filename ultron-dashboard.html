@@ -6591,7 +6591,7 @@ function toggleReducedVisuals(el) {
     // Plates aim for ~10.5 CSS px whatever the room is scaled to.
     fontPx = Math.max(13, Math.min(24, 10.5 / scale));
 
-    liftX = W - LIFT_W - 14;
+    liftX = W - LIFT_W;                               // vertical lift/belt flush against the building's right wall (no gap)
     officeFloorY = ROOF_H + GROUND_WALL;              // Ultron's floor, at the TOP now
     storeyBaseY = ROOF_H + GROUND_H;                  // agent storeys begin below the office
     SUBAGENTS.forEach(function (a, i) {
