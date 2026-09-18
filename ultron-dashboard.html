@@ -1050,6 +1050,29 @@
   .cy-btn.can, .cy-sell.can, .cy-up.can{ cursor:pointer; border-color:var(--cc,#888); color:var(--text); }
   .cy-btn.can:hover, .cy-sell.can:hover, .cy-up.can:hover{ background:rgba(255,255,255,.05); }
   .cy-btn:disabled, .cy-sell:disabled, .cy-up:disabled{ opacity:.5; }
+  /* ---- Secret Mech Bay ---- */
+  .mechbay{ margin-top:10px; }
+  .mech-locked{ font-family:var(--font-mono); font-size:12px; line-height:1.6; color:#b9c6d6; padding:14px 16px; border:1px dashed rgba(127,155,216,.5); border-radius:10px; background:linear-gradient(180deg,rgba(58,77,122,.14),rgba(8,12,20,.2)); }
+  .mech-prog{ margin-top:8px; color:var(--text-faint); } .mech-locked b{ color:#cfe0f5; }
+  .mech-unlockbtn{ display:block; margin-top:12px; width:100%; padding:11px; border-radius:9px; border:1px solid #ffb020; background:rgba(255,176,32,.12); color:#ffd27a; cursor:pointer; font-family:var(--font-display); font-weight:800; font-size:13px; }
+  .mech-unlockbtn:hover{ background:rgba(255,176,32,.2); }
+  .mech-pad{ max-width:340px; margin:0 auto; text-align:center; padding:16px; border:1px solid rgba(255,60,70,.5); border-radius:12px; background:radial-gradient(circle at 50% 0,rgba(120,20,30,.3),rgba(8,8,12,.6)); }
+  .mech-warn{ font-family:var(--font-display); font-weight:900; font-size:18px; color:#ff3b4d; text-shadow:0 0 16px rgba(255,43,61,.8); line-height:1.2; animation:mech-warn-pulse 1s infinite alternate; } .mech-warn span{ font-size:12px; color:#ff8a96; font-weight:700; }
+  @keyframes mech-warn-pulse{ from{ opacity:.7; } to{ opacity:1; } }
+  .mech-hint{ font-family:var(--font-mono); font-size:10.5px; color:#9fb0c0; margin:8px 0; }
+  .mech-disp{ font-family:var(--font-mono); font-size:22px; letter-spacing:.3em; color:#ffd27a; margin:8px 0; }
+  .mech-keys{ display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+  .mech-key{ padding:12px 0; border-radius:8px; border:1px solid var(--line); background:#14171d; color:var(--text); font-family:var(--font-mono); font-size:16px; cursor:pointer; } .mech-key:hover{ background:#1c2129; } .mech-key.ent{ color:#33d17a; } .mech-key.clr{ color:#ff8098; }
+  .mech-msg{ font-family:var(--font-mono); font-size:11px; color:#ff6b7d; min-height:15px; margin:8px 0; }
+  .mech-exit{ width:100%; padding:9px; border-radius:8px; border:1px solid var(--line); background:transparent; color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:11px; } .mech-exit:hover{ background:rgba(255,255,255,.04); }
+  .mech-head{ font-family:var(--font-display); font-weight:800; font-size:13px; color:#7fd0ff; } .mech-sub{ font-family:var(--font-mono); font-size:10px; font-weight:400; color:var(--text-faint); } .mech-sub b{ color:#cfe6ff; }
+  .mech-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; margin-top:10px; }
+  .mech-slot{ border:1px solid var(--line); border-top:3px solid var(--mc,#4a515c); border-radius:9px; background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.18)); padding:10px 12px; min-height:120px; display:flex; flex-direction:column; }
+  .mech-slot-h{ display:flex; align-items:center; gap:8px; } .mech-ic{ font-size:20px; } .mech-nm{ font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text); }
+  .mech-slot-b{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); margin:8px 0; flex:1; } .mech-cur{ font-weight:700; }
+  .mech-craft{ padding:7px 8px; border-radius:7px; border:1px solid var(--line); background:var(--void); color:var(--text-dim); cursor:default; font-family:var(--font-mono); font-size:10px; }
+  .mech-craft.can{ cursor:pointer; border-color:var(--mc,#7fd0ff); color:var(--text); } .mech-craft.can:hover{ background:rgba(255,255,255,.05); } .mech-craft:disabled{ opacity:.5; }
+  .mech-maxed{ font-family:var(--font-mono); font-size:10px; color:#ff5a7a; text-align:center; padding:7px; }
   .gn-ic{ font-size:14px; flex-shrink:0; } .gn-msg{ line-height:1.4; }
   @keyframes gn-in{ from{ opacity:0; transform:translateX(30px); } } @keyframes gn-out{ to{ opacity:0; transform:translateX(30px); } }
   .brainlab{ margin-top:10px; padding:12px 14px; border:1px solid rgba(58,200,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(28,107,176,.14),rgba(8,20,36,.25)); }
@@ -2306,6 +2329,11 @@
           <!-- Codex -->
           <div class="game-floor"><div class="floor-sign">📖 Codex</div>
           <details class="codex-wrap"><summary>Enemies, loot, rarities &amp; bays &mdash; the game's database</summary><div id="codex"></div></details>
+          </div>
+
+          <!-- SECRET: Mech Bay — unlocks after every palette prestige tier is earned (Vibranium) -->
+          <div class="game-floor"><div class="floor-sign">🤖 Secret Mech Bay 🔒</div>
+          <div class="mechbay" id="mechbay"></div>
           </div>
 
           <div class="game-floor game-floor-base"><div class="floor-sign">♻️ Ultron's Prestige</div>
@@ -8252,7 +8280,7 @@ window.__sfx = (function () {
     }).join('');
     return '<div class="set-wrap"><div class="set-head">✦ Signature Gear Sets <span class="set-hint">— collect God-rarity pieces to raise your attributes (2/4/6/8/10)</span></div>' + rows + '</div>';
   }
-  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult() * stoneMasteryMult() * relicPowerMult() * armoryPowerMult(); }
+  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult() * stoneMasteryMult() * relicPowerMult() * armoryPowerMult() * mechMult(); }
   function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
 
   // ---- Refinery: an adamantium forge and a vibranium forge cast ingots onto
@@ -8406,7 +8434,7 @@ window.__sfx = (function () {
   // permanently multiplied -- the ultimate reward for the ultimate grind.
   function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
   var PROD_BOOST = 1.25;   // owner buff: a little more currency across every source (all income routes through globalMult)
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * cryptoMult() * PROD_BOOST; }
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * cryptoMult() * mechMult() * PROD_BOOST; }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -8578,7 +8606,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev; if (j.palette) state.palette = j.palette;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (j.mech) state.mech = j.mech; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev; if (j.palette) state.palette = j.palette;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -8598,7 +8626,8 @@ window.__sfx = (function () {
   if (!state.relics) state.relics = {};   // Relics & Artifacts earned
   if (!state.armory) state.armory = { cls: 'pistol', sel: {}, built: null, loadouts: {}, parts: [] };   // Armory Forge
   if (!state.brain) state.brain = { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {} };   // AI Brain Lab
-  if (!state.crypto) state.crypto = { unlocked: {}, bal: {}, up: {} };   // Crypto Mining Rig
+  if (!state.crypto) state.crypto = { unlocked: {}, bal: {}, up: {} };
+  if (!state.mech) state.mech = { unlocked: false, pinOk: false, parts: {} };   // Crypto Mining Rig
   if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
@@ -9160,7 +9189,7 @@ window.__sfx = (function () {
     state.roundStart = state.lifetime || 0;
     gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderProgression();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderProgression();
     if (window.__roomRelayout) window.__roomRelayout();
   }
   var stonelabEl = document.getElementById('stonelab');
@@ -9587,7 +9616,7 @@ window.__sfx = (function () {
     brainEl.querySelectorAll('[data-blbuy]').forEach(function (bt) { bt.addEventListener('click', function () { var m = BRAIN_MATS.filter(function (x) { return x.id === bt.dataset.blbuy; })[0]; if (!m) return; var cost = m.buy * 10; if (state.bits < cost) return; state.bits -= cost; brainInit().mats[m.id] += 10; if (window.__sfx) window.__sfx('press'); publish(); dirty = true; save(); renderBrain(); renderBalance(); }); });
     brainEl.querySelectorAll('[data-blc]').forEach(function (bt) { bt.addEventListener('click', function () { var comp = BRAIN_COMPONENTS.filter(function (x) { return x.id === bt.dataset.blc; })[0]; if (!comp || !brainCanBuild(comp)) return; var c = brainCompCost(comp); state.bits -= c.bits; var m = brainInit().mats; m.syn -= c.mats.syn; m.log -= c.mats.log; m.dat -= c.mats.dat; state.brain.comp[comp.id] = Math.min(BRAIN_RAR.length, brainTier(comp.id) + 1); var rn = BRAIN_RAR[state.brain.comp[comp.id] - 1].n; if (window.__sfx) window.__sfx('build'); gamePop('🧠 ' + comp.name + ' → ' + rn, '#7fd0ff'); addXp(60 * state.brain.comp[comp.id], 'Brain: ' + comp.name); publish(); dirty = true; save(); renderBrain(); renderBalance(); renderProgression(); }); });
     brainEl.querySelectorAll('[data-blinsp]').forEach(function (bt) { bt.addEventListener('click', function () { inspectBrainPart(bt.dataset.blinsp); }); });
-    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); });
+    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); });
   }
   // ---- Crypto Mining Rig: mine 6 real-world-flavoured coins, each with its own
   // strength + risk, then convert them to currency. Everything feeds the game
@@ -9657,6 +9686,96 @@ window.__sfx = (function () {
     cryptoEl.querySelectorAll('[data-cysell]').forEach(function (b) { b.addEventListener('click', function () { cryptoSell(b.dataset.cysell); }); });
     var sa = cryptoEl.querySelector('[data-cysellall]'); if (sa) sa.addEventListener('click', function () { CRYPTOS.forEach(function (x) { if (cryptoOwns(x.id) && (cryptoInit().bal[x.id] || 0) > 0) cryptoSell(x.id); }); });
   }
+
+  // ---- SECRET Mech Bay: unlocks only after every palette prestige tier is
+  // earned (Vibranium = prestige 5). Guarded behind the player's OWN pin. Build
+  // a mech from six body parts, each with rarity tiers on the game's scale. ----
+  var MECH_SLOTS = [
+    { id: 'head', name: 'Cortex Head', icon: '🧠' }, { id: 'torso', name: 'Core Torso', icon: '🛡️' },
+    { id: 'arms', name: 'Servo Arms', icon: '🦾' }, { id: 'legs', name: 'Piston Legs', icon: '🦿' },
+    { id: 'reactor', name: 'Arc Reactor', icon: '⚛️' }, { id: 'plating', name: 'Vibranium Plating', icon: '⬡' }
+  ];
+  var MECH_RAR = [
+    { n: 'Common', c: '#9aa2ae', sym: '●', pow: 1, lvl: 0, mult: 1 }, { n: 'Uncommon', c: '#33d17a', sym: '◆', pow: 2, lvl: 60, mult: 3 },
+    { n: 'Rare', c: '#3d9bff', sym: '◆', pow: 4, lvl: 120, mult: 8 }, { n: 'Epic', c: '#b084f0', sym: '★', pow: 8, lvl: 220, mult: 22 },
+    { n: 'Legendary', c: '#ff9d3c', sym: '★', pow: 16, lvl: 340, mult: 60 }, { n: 'Mythic', c: '#ff5a7a', sym: '✦', pow: 32, lvl: 460, mult: 160 }
+  ];
+  var MECH_BASE = 5e10;
+  var mechEl = document.getElementById('mechbay');
+  var mechPadBuf = null;   // null = pad closed (show unlock button); string = pin being entered
+  var mechMsg = '';        // transient pin-pad message (survives the pad re-render)
+  function mechInit() { state.mech = state.mech || { unlocked: false, pinOk: false, parts: {} }; if (!state.mech.parts) state.mech.parts = {}; return state.mech; }
+  function mechRevealable() { return prestigeCount() >= 5; }   // all six palette tiers earned
+  function mechPartRar(slot) { var v = mechInit().parts[slot]; return (typeof v === 'number') ? v : -1; }   // -1 = not built
+  function mechNextRar(slot) { return mechPartRar(slot) + 1; }
+  function mechPartCost(slot) { var r = mechNextRar(slot); if (r >= MECH_RAR.length) return null; return Math.ceil(MECH_BASE * MECH_RAR[r].mult); }
+  function mechComplete() { return MECH_SLOTS.every(function (s) { return mechPartRar(s.id) >= 0; }); }
+  function mechPower() { var p = 0; MECH_SLOTS.forEach(function (s) { var r = mechPartRar(s.id); if (r >= 0) p += MECH_RAR[r].pow; }); return p; }
+  function mechMult() { var M = MECH_SLOTS; if (!M) return 1; var m = state.mech; if (!m || !m.unlocked) return 1; return 1 + 0.01 * mechPower() * (mechComplete() ? 1.5 : 1); }
+  function playerPin() { try { var c = JSON.parse(localStorage.getItem('ultron_user_cred') || 'null'); if (c && c.pin) return String(c.pin); } catch (e) {} var a = (window.__GAME_ACCOUNTS || []).filter(function (x) { return x.pin; })[0]; return a ? String(a.pin) : ''; }
+  function renderMech() {
+    if (!mechEl) return; var m = mechInit();
+    if (!mechRevealable()) {
+      mechEl.innerHTML = '<div class="mech-locked">🔒 <b>Sealed vault.</b> Reach every colour-palette prestige tier — all the way to <b style="color:#7f9bd8">Vibranium</b> — to reveal what Ultron hides here.<div class="mech-prog">Palette tiers earned: <b>' + Math.min(6, prestigeCount()) + ' / 6</b> (prestige to advance)</div></div>';
+      return;
+    }
+    if (!m.unlocked) {
+      if (!m.pinOk && mechPadBuf === null) { mechEl.innerHTML = '<div class="mech-locked">🔓 A hidden bay hums behind the wall. <button type="button" class="mech-unlockbtn" data-mech="reveal">⚠ Unlock the Mech Bay</button></div>'; wireMech(); return; }
+      // pin pad (mechPadBuf is a string once the warning is accepted)
+      var dots = mechPadBuf ? mechPadBuf.replace(/./g, '•') : '– – – –';
+      var keys = ['1','2','3','4','5','6','7','8','9','clr','0','ent'].map(function (k) { return '<button type="button" class="mech-key' + (k === 'clr' ? ' clr' : k === 'ent' ? ' ent' : '') + '" data-mk="' + k + '">' + (k === 'clr' ? '⌫' : k === 'ent' ? '▶' : k) + '</button>'; }).join('');
+      mechEl.innerHTML = '<div class="mech-pad">' +
+        '<div class="mech-warn">PIN NUMBER REQUIRED!!!<br><span>— show me your credentials intruder…..</span></div>' +
+        '<div class="mech-hint">Hint: it\'s the PIN you set when you started the game.</div>' +
+        '<div class="mech-disp">' + dots + '</div><div class="mech-keys">' + keys + '</div>' +
+        '<div class="mech-msg" id="mech-msg">' + mechMsg + '</div>' +
+        '<button type="button" class="mech-exit" data-mech="exit">✕ Exit &amp; resume game</button></div>';
+      wireMech(); return;
+    }
+    // unlocked: the builder
+    var cards = MECH_SLOTS.map(function (s) {
+      var r = mechPartRar(s.id), cur = r >= 0 ? MECH_RAR[r] : null, nr = mechNextRar(s.id), next = nr < MECH_RAR.length ? MECH_RAR[nr] : null;
+      var cost = mechPartCost(s.id), lvlOk = next ? playerLevel() >= next.lvl : false, canBuy = next && cost != null && state.bits >= cost && lvlOk;
+      var line = cur ? '<span class="mech-cur" style="color:' + cur.c + '">' + cur.sym + ' ' + cur.n + '</span> · +' + cur.pow + ' pow' : '<span class="mech-cur" style="color:#7d8694">— empty —</span>';
+      var btn = next ? '<button type="button" class="mech-craft' + (canBuy ? ' can' : '') + '" data-mechbuy="' + s.id + '"' + (canBuy ? '' : ' disabled') + '>' + (cur ? 'Upgrade → ' : 'Build ') + next.n + (lvlOk ? '' : ' (Lv ' + next.lvl + ')') + ' · <span style="color:' + fmtColor(cost) + '">◉' + fmt(cost) + '</span></button>' : '<span class="mech-maxed">MYTHIC ✦ maxed</span>';
+      return '<div class="mech-slot" style="--mc:' + (cur ? cur.c : '#4a515c') + '"><div class="mech-slot-h"><span class="mech-ic">' + s.icon + '</span><span class="mech-nm">' + s.name + '</span></div><div class="mech-slot-b">' + line + '</div>' + btn + '</div>';
+    }).join('');
+    mechEl.innerHTML = '<div class="mech-head">🤖 Ultron\'s Secret Mech Bay <span class="mech-sub">— power <b>' + mechPower() + '</b> · ×' + mechMult().toFixed(2) + ' to income &amp; combat' + (mechComplete() ? ' · <b style="color:#5fe39a">FULL MECH ASSEMBLED (+50%)</b>' : ' · assemble all 6 parts for +50%') + '</span></div>' +
+      '<div class="mech-grid">' + cards + '</div>';
+    wireMech();
+  }
+  function wireMech() {
+    mechEl.querySelectorAll('[data-mech]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var a = b.dataset.mech;
+        if (a === 'reveal') { mechPadBuf = ''; renderMech(); }
+        else if (a === 'exit') { mechPadBuf = null; renderMech(); }
+      });
+    });
+    mechEl.querySelectorAll('[data-mk]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var k = b.dataset.mk;
+        if (k === 'clr') mechPadBuf = (mechPadBuf || '').slice(0, -1);
+        else if (k === 'ent') {
+          if ((mechPadBuf || '') === playerPin() && playerPin()) { state.mech.unlocked = true; state.mech.pinOk = true; mechPadBuf = null; mechMsg = ''; if (window.__sfx) window.__sfx('unlock'); gamePop('🤖 Mech Bay unlocked', '#7fd0ff'); addXp(1000, 'Secret: Mech Bay'); publish(); dirty = true; save(); renderMech(); if (window.__roomRelayout) window.__roomRelayout(); return; }
+          mechMsg = 'Wrong PIN. Intruder detected.'; if (window.__sfx) window.__sfx('die'); mechPadBuf = ''; renderMech();
+          return;
+        }
+        else if ((mechPadBuf || '').length < 12) { mechMsg = ''; mechPadBuf = (mechPadBuf || '') + k; }
+        renderMech();
+      });
+    });
+    mechEl.querySelectorAll('[data-mechbuy]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var slot = b.dataset.mechbuy, nr = mechNextRar(slot), cost = mechPartCost(slot);
+        if (nr >= MECH_RAR.length || cost == null || state.bits < cost || playerLevel() < MECH_RAR[nr].lvl) return;
+        state.bits -= cost; mechInit().parts[slot] = nr;
+        if (window.__sfx) window.__sfx('build'); gamePop('🤖 ' + slot + ' → ' + MECH_RAR[nr].n, MECH_RAR[nr].c);
+        addXp(200 * (nr + 1), 'Mech: ' + slot);
+        publish(); dirty = true; save(); renderMech(); renderBalance();
+      });
+    });
+  }
   function prestigePointsFor(roundGain, coresGained) { return Math.floor(Math.sqrt(Math.max(0, roundGain) / 6000)) + coresGained * 3; }
   function doReboot() {
     if (window.__sfx) window.__sfx('reboot');
@@ -9681,7 +9800,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -9995,7 +10114,22 @@ window.__sfx = (function () {
       '<div style="display:flex;gap:6px;margin-top:6px;">' +
       '<span style="font-size:10.5px;font-weight:700;color:#ff6b7e;background:rgba(255,107,126,.12);border:1px solid rgba(255,107,126,.35);border-radius:5px;padding:2px 7px;">★ LV ' + lv + '</span>' +
       '<span style="font-size:10.5px;font-weight:700;color:#ffb347;background:rgba(255,179,71,.12);border:1px solid rgba(255,179,71,.35);border-radius:5px;padding:2px 7px;">⚔ PWR ' + Math.round(pw).toLocaleString() + '</span>' +
-      '</div>';
+      '</div>' + credRowHtml();
+  }
+  // The player's own login (username + PIN, and password if set) kept in view by
+  // the currency panel so they never lose it -- masked with dots by default, an
+  // eye toggle right beside it reveals/hides it. Needed for the Mech Bay pin.
+  var credShown = false;
+  window.__toggleCred = function () { credShown = !credShown; try { currencyHud(passivePerSec()); } catch (e) {} };
+  function credRowHtml() {
+    var ci = null; try { ci = JSON.parse(localStorage.getItem('ultron_user_cred') || 'null'); } catch (e) {}
+    if (!ci || !ci.name) return '';
+    function m(v) { return credShown ? (v || '—') : (v ? String(v).replace(/./g, '•') : '—'); }
+    return '<div style="pointer-events:auto;display:flex;align-items:center;gap:8px;margin-top:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,.07);font-size:9.5px;color:#9fb0c0;">' +
+      '<span title="your username">👤 ' + esc(String(ci.name)) + '</span>' +
+      '<span title="your PIN">🔑 ' + m(ci.pin) + '</span>' +
+      (ci.pass ? '<span title="your password">🔒 ' + m(ci.pass) + '</span>' : '') +
+      '<span onclick="window.__toggleCred()" style="cursor:pointer;margin-left:auto;font-size:14px;line-height:1;" title="Show / hide your login">' + (credShown ? '👁️' : '🙈') + '</span></div>';
   }
   function renderBalance() {
     var perSec = passivePerSec();
@@ -10078,7 +10212,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); }
       dirty = false;
     }
   }, 500);
@@ -10698,7 +10832,7 @@ window.__sfx = (function () {
       if (j.gen) state.gen = j.gen;
       if (j.comp) state.comp = j.comp;
       if (j.genesis) state.genesis = j.genesis;
-      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto;
+      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (j.mech) state.mech = j.mech;
       if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
@@ -10721,10 +10855,11 @@ window.__sfx = (function () {
       if (!state.armory) state.armory = { cls: 'pistol', sel: {}, built: null, loadouts: {}, parts: [] };
       if (!state.brain) state.brain = { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {} };
       if (!state.crypto) state.crypto = { unlocked: {}, bal: {}, up: {} };
+  if (!state.mech) state.mech = { unlocked: false, pinOk: false, parts: {} };
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
