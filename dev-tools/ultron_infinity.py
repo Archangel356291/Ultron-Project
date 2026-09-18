@@ -83,29 +83,37 @@ def upgrade(fig):
                 if 0 <= x + dx < w and 0 <= y + dy < h:
                     px[x + dx, y + dy] = (c[0], c[1], c[2], 255)
 
+    def gem(x, y, c, rad):   # like dot() but only paints OVER the body, so a bigger gem never spills onto transparency
+        for dy in range(-rad, rad + 1):
+            for dx in range(-rad, rad + 1):
+                X, Y = x + dx, y + dy
+                if opaque(X, Y):
+                    px[X, Y] = (c[0], c[1], c[2], 255)
+
     # brow gem (mind stone) at head center, ~18% down
     cx = w // 2
     dot(cx, int(h * 0.16), (245, 60, 60), 1)
     dot(cx, int(h * 0.16) - 1, (255, 180, 180), 0)
 
-    # six Infinity Stones set in a row across the chest (~46% down) -- the signature
+    # six Infinity Stones set in a row across the chest (~46% down) -- the signature.
+    # Bigger + brighter so they read clearly: 5x5 gem, 3x3 bright core, white glint,
+    # and a wider colour glow ring around each (kept on the body via gem()/opaque()).
     cy = int(h * 0.46)
-    span = int(w * 0.52)
+    span = int(w * 0.56)
     x0 = cx - span // 2
     for i, col in enumerate(STONES):
         gx = x0 + int(i * span / 5)
         if opaque(gx, cy) or opaque(gx, cy + 1) or opaque(gx, cy - 1):
-            bright = (min(255, col[0] + 70), min(255, col[1] + 70), min(255, col[2] + 70))
-            dot(gx, cy, col, 1)          # 3x3 gem
-            dot(gx, cy, bright, 0)       # bright core
-            dot(gx, cy - 1, bright, 0)   # top glint
-            # a faint glow ring one px out (only over the body, not into transparency)
-            for ox, oy in ((2, 0), (-2, 0), (0, 2), (0, -2)):
+            bright = (min(255, col[0] + 80), min(255, col[1] + 80), min(255, col[2] + 80))
+            gem(gx, cy, col, 2)              # 5x5 gem
+            gem(gx, cy, bright, 1)           # 3x3 bright core
+            dot(gx, cy - 1, (255, 255, 255), 0)  # white top glint
+            for ox, oy in ((3, 0), (-3, 0), (0, 3), (0, -3), (2, 2), (-2, 2), (2, -2), (-2, -2)):
                 if opaque(gx + ox, cy + oy):
                     p = px[gx + ox, cy + oy]
-                    px[gx + ox, cy + oy] = (min(255, (p[0] + col[0]) // 2 + 30),
-                                            min(255, (p[1] + col[1]) // 2 + 30),
-                                            min(255, (p[2] + col[2]) // 2 + 30), 255)
+                    px[gx + ox, cy + oy] = (min(255, (p[0] + col[0]) // 2 + 40),
+                                            min(255, (p[1] + col[1]) // 2 + 40),
+                                            min(255, (p[2] + col[2]) // 2 + 40), 255)
 
     # gold trim on the shoulders (top corners of the torso band)
     gold = (232, 184, 40)

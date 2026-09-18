@@ -589,6 +589,11 @@
   .game-floor > .floor-sign:hover{ border-left-color:var(--red-bright,#7fd0ff); box-shadow:0 0 20px -3px var(--red-bright,#7fd0ff), inset 0 1px 0 rgba(255,255,255,.1); background:linear-gradient(180deg,#232833,#151922); }
   .game-floor.collapsed > .floor-sign{ margin-bottom:0; opacity:.96; }
   .game-floor.collapsed > :not(.floor-sign):not(.floor-keep){ display:none !important; }
+  /* level-locked floors: dimmed, non-expandable, with a "Lv N" badge on the sign */
+  .game-floor.floor-locked{ opacity:.5; }
+  .game-floor.floor-locked > .floor-sign{ cursor:not-allowed; }
+  .game-floor.floor-locked > .floor-sign:hover{ box-shadow:none; border-left-color:transparent; background:none; }
+  .game-floor .floor-lock{ color:#ff9db0; font-family:var(--font-mono); font-size:10px; font-weight:700; letter-spacing:.02em; }
   /* the big section containers lose their own box borders and blend into the floor */
   .game-floor > .foundry, .game-floor > .refinery, .game-floor > .expedition, .game-floor > .codex-wrap,
   .game-floor > .progression, .game-floor > .armory, .game-floor > .brainlab, .game-floor > .relics,
@@ -7633,38 +7638,46 @@ function toggleReducedVisuals(el) {
   // additively ('lighter') so it reads as emanating power, not washing the sprite.
   function drawUltronAlive(box, t) {
     if (!box || !box.w) return;
-    var cx = box.x + box.w / 2, headY = box.y + box.h * 0.20, chestY = box.y + box.h * 0.42;
+    var cx = box.x + box.w / 2, headY = box.y + box.h * 0.20;
+    // anatomically-correct heart: centre of the chest but tilted to the person's
+    // LEFT (their left = our right on a front-facing figure), upper-middle chest.
+    var heartX = cx + box.w * 0.10, heartY = box.y + box.h * 0.33;
     var charge = Math.max(0, Math.min(1, (foundryCfg().charge) || 0));
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    var beat = 0.5 + 0.5 * Math.sin(t * 2.4);   // heartbeat on the chest core
-    var cg = ctx.createRadialGradient(cx, chestY, 0, cx, chestY, 28);
-    cg.addColorStop(0, 'rgba(255,70,70,' + (0.22 + 0.24 * beat + 0.15 * charge) + ')'); cg.addColorStop(1, 'rgba(255,50,50,0)');
-    ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, chestY, 28, 0, Math.PI * 2); ctx.fill();
-    var ring = (t * 0.8) % 1;                                        // an energy ripple expands out of the core on each beat
+    var beat = Math.pow(0.5 + 0.5 * Math.sin(t * 2.4), 2);   // sharper heartbeat throb
+    var cg = ctx.createRadialGradient(heartX, heartY, 0, heartX, heartY, 26);
+    cg.addColorStop(0, 'rgba(255,70,70,' + (0.22 + 0.26 * beat + 0.15 * charge) + ')'); cg.addColorStop(1, 'rgba(255,50,50,0)');
+    ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(heartX, heartY, 26, 0, Math.PI * 2); ctx.fill();
+    var ring = (t * 0.8) % 1;                                        // ripple pulses out of the heart on each beat
     ctx.strokeStyle = 'rgba(255,90,90,' + (0.5 * (1 - ring)) + ')'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(cx, chestY, 6 + ring * 30, 0, Math.PI * 2); ctx.stroke();
-    var eyeP = 0.5 + 0.5 * Math.sin(t * 7.5 + Math.sin(t * 2.1));    // menacing eye flicker (faster)
+    ctx.beginPath(); ctx.arc(heartX, heartY, 6 + ring * 26, 0, Math.PI * 2); ctx.stroke();
+    var eyeP = 0.5 + 0.5 * Math.sin(t * 7.5 + Math.sin(t * 2.1));    // menacing eye flicker
     var eg = ctx.createRadialGradient(cx, headY, 0, cx, headY, 16);
     eg.addColorStop(0, 'rgba(255,60,60,' + (0.55 * eyeP) + ')'); eg.addColorStop(1, 'rgba(255,40,40,0)');
     ctx.fillStyle = eg; ctx.beginPath(); ctx.arc(cx, headY, 16, 0, Math.PI * 2); ctx.fill();
-    for (var i = 0; i < 7; i++) {                                    // more energy motes rising off him, a touch faster
+    for (var i = 0; i < 7; i++) {                                    // energy motes rising off him
       var ph = (t * 0.42 + i * 0.15) % 1;
       var mx = cx + Math.sin(i * 1.7 + t * 1.1) * box.w * 0.46, my = box.y + box.h - ph * box.h * 0.95;
       ctx.fillStyle = 'rgba(180,130,255,' + (Math.sin(ph * Math.PI) * 0.55) + ')';
       ctx.beginPath(); ctx.arc(mx, my, 1.7, 0, Math.PI * 2); ctx.fill();
     }
-    // occasional electric crackle around his frame (every ~3s, brief)
-    var sparkT = t % 3;
-    if (sparkT < 0.5) {
-      var sa = (0.5 - sparkT) * 1.4;
-      ctx.strokeStyle = 'rgba(150,210,255,' + sa + ')'; ctx.lineWidth = 1.3;
-      for (var s = 0; s < 3; s++) {
-        var a0 = (t * 9 + s * 2.1), rr = box.w * 0.5;
-        var x0 = cx + Math.cos(a0) * rr, y0 = chestY + Math.sin(a0) * rr * 0.9;
-        ctx.beginPath(); ctx.moveTo(x0, y0);
-        ctx.lineTo(x0 + Math.cos(a0 + 1.7) * 7, y0 + Math.sin(a0 + 1.7) * 7);
-        ctx.lineTo(x0 + Math.cos(a0 + 0.6) * 13, y0 + Math.sin(a0 + 0.6) * 13); ctx.stroke();
+    // electric crackle around his frame -- brighter, thicker, glowing, more arcs, more often
+    var sparkT = t % 2.4;
+    if (sparkT < 0.6) {
+      var sa = Math.min(1, (0.6 - sparkT) * 3);
+      ctx.shadowColor = 'rgba(150,220,255,0.95)'; ctx.shadowBlur = 9;
+      for (var s = 0; s < 5; s++) {
+        var a0 = (t * 11 + s * 1.6), rr = box.w * 0.46;
+        var x0 = cx + Math.cos(a0) * rr, y0 = heartY + Math.sin(a0) * rr * 0.95;
+        var x1 = x0 + Math.cos(a0 + 1.7) * 9, y1 = y0 + Math.sin(a0 + 1.7) * 9;
+        var x2 = x1 + Math.cos(a0 - 0.5) * 10, y2 = y1 + Math.sin(a0 - 0.5) * 10;
+        var x3 = x2 + Math.cos(a0 + 0.9) * 8, y3 = y2 + Math.sin(a0 + 0.9) * 8;
+        ctx.strokeStyle = 'rgba(120,200,255,' + sa + ')'; ctx.lineWidth = 3;      // blue glow body
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.stroke();
+        ctx.strokeStyle = 'rgba(240,250,255,' + sa + ')'; ctx.lineWidth = 1.3;    // white-hot core
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.stroke();
       }
+      ctx.shadowBlur = 0;
     }
     ctx.restore();
   }
@@ -7865,13 +7878,25 @@ function toggleReducedVisuals(el) {
     { name: 'Crimson Prime', d: '#401414', m: '#8a2a2a', l: '#e06060', accent: '#ff8080' },
   ];
   function bodySkin(i) { i = i || 0; return BODY_SKINS[((i % BODY_SKINS.length) + BODY_SKINS.length) % BODY_SKINS.length]; }
+  // High-tier prestige reward: once Ultron has banked enough Nanite Cores, his NEXT
+  // body in the tube becomes an UPGRADED Ultron look-alike (chrome + gold trim + red
+  // cape) that also gives better STARTING combat power each reboot. Cores are kept
+  // across reboots, so this is a lasting reward, not lost when his army falls.
+  var BODY_UPGRADE_AT = 3;   // Nanite Cores needed for the first upgraded chassis (visual gate; power bonus lives in the foundry module)
   function hexRgb(h) { h = h.replace('#', ''); if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2]; var n = parseInt(h, 16); return (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255); }
   function drawVibraniumBody(cx, bot, h, t, charge, cores, bs) {
     bs = bs || 1;   // body scale (bigger = closer to Ultron's own size)
     var sk = bodySkin((cores || 0) + 1);   // the tube holds the NEXT body
     var VB_D = sk.d, VB_M = sk.m, VB_L = sk.l;
+    var upgraded = ((cores || 0) + 1) >= BODY_UPGRADE_AT;   // NEXT body is the high-tier upgraded Ultron chassis
+    if (upgraded) { VB_D = '#33383f'; VB_M = '#9298a6'; VB_L = '#e8edf5'; sk = { d: VB_D, m: VB_M, l: VB_L, accent: '#ffe08a', name: 'Ultron Prime Chassis' }; }   // chrome + gold accent
     var feet = bot - 6, bh = h * 0.90, hip = feet - bh * 0.42, sh = feet - bh * 0.80, headTop = feet - bh;
     function X(o) { return cx + o * bs; }   // horizontal offsets scale with body size
+    if (upgraded) {   // red cape behind the upgraded Ultron look-alike
+      ctx.fillStyle = '#7a1620';
+      ctx.beginPath(); ctx.moveTo(X(-15), sh + 2); ctx.lineTo(X(15), sh + 2); ctx.lineTo(X(21), feet + 3); ctx.lineTo(X(-21), feet + 3); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#5a0f18'; ctx.fillRect(X(-2), sh + 2, 4 * bs, feet - sh);   // centre fold
+    }
     // legs
     ctx.fillStyle = VB_M; ctx.fillRect(X(-11), hip, 8 * bs, feet - hip); ctx.fillRect(X(3), hip, 8 * bs, feet - hip);
     ctx.fillStyle = VB_D; ctx.fillRect(X(-11), hip, 3 * bs, feet - hip); ctx.fillRect(X(3), hip, 3 * bs, feet - hip);
@@ -7896,6 +7921,13 @@ function toggleReducedVisuals(el) {
     ctx.strokeStyle = sk.accent; ctx.globalAlpha = 0.4; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(X(19), sh); ctx.lineTo(X(12), hip); ctx.lineTo(X(11), feet); ctx.stroke();
     ctx.globalAlpha = 1;
+    if (upgraded) {   // gold trim + grimace mark -> reads as the upgraded Ultron look-alike
+      ctx.fillStyle = '#ffd868';
+      ctx.fillRect(X(-19), sh, 38 * bs, 1.6);                       // gold collar across the shoulders
+      ctx.fillRect(X(-13), sh, 1.6, hip - sh); ctx.fillRect(X(11.4), sh, 1.6, hip - sh);   // gold torso trims
+      ctx.fillRect(X(-4), headTop + 12, 8 * bs, 1.4);              // gold grimace under the eyes
+      ctx.fillStyle = 'rgba(255,240,190,0.35)'; ctx.fillRect(X(-9), headTop, 3 * bs, sh - headTop);   // chrome sheen on the face
+    }
     // --- Infinity Stones set into the chest, a downward 3-2-1 chevron ---
     // All six are ALWAYS visible in their true colour (only slightly dimmed when
     // the power-core isn't charged); charge lights them one by one with a pulsing
@@ -7972,6 +8004,21 @@ function toggleReducedVisuals(el) {
     cg.addColorStop(0, 'rgba(170,140,255,' + (0.45 + 0.35 * charge) + ')'); cg.addColorStop(1, 'rgba(120,210,255,' + (0.12 + 0.15 * charge) + ')');   // brighter coolant, climbs with charge
     ctx.fillStyle = cg; ctx.fillRect(x0, fillY, w, bot - fillY);
     for (var b = 0; b < 6; b++) { var bx = x0 + 8 + ((b * 53) % (w - 16)); var span = Math.max(1, bot - fillY); var by = bot - ((t * (20 + b * 6) + b * 40) % span); ctx.fillStyle = 'rgba(180,210,255,0.5)'; ctx.beginPath(); ctx.arc(bx, by, 1.6, 0, Math.PI * 2); ctx.fill(); }
+    // live electricity arcing through the coolant -- reads as charged power, not just liquid
+    var fillH = Math.max(1, bot - fillY), arcN = 2 + Math.floor(charge * 3);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (var e = 0; e < arcN; e++) {
+      var ph = (t * 1.4 + e * 0.47) % 1;
+      if (ph < 0.4) {
+        var ex = x0 + 16 + ((e * 41 + Math.floor(t * 2.3 + e)) % Math.max(1, w - 32));
+        ctx.strokeStyle = 'rgba(205,238,255,' + (0.8 * (1 - ph / 0.4)) + ')'; ctx.lineWidth = 1.6;
+        ctx.shadowColor = '#bfe4ff'; ctx.shadowBlur = 7;
+        ctx.beginPath(); var yy = fillY, xx = ex; ctx.moveTo(xx, yy);
+        for (var seg = 1; seg <= 6; seg++) { yy = fillY + fillH * seg / 6; xx = ex + Math.sin(seg * 2.2 + t * 11 + e) * 9; ctx.lineTo(xx, yy); }
+        ctx.stroke();
+      }
+    }
+    ctx.shadowBlur = 0; ctx.restore();
     ctx.restore();
     drawVibraniumBody(cx, bot, h, t, charge, cores, 1.9);   // +50% -- fills the bigger tube
     ctx.strokeStyle = '#3a4056'; ctx.lineWidth = 2; roundRectPath(x0, top, w, h, 10); ctx.stroke();
@@ -8624,7 +8671,7 @@ window.__sfx = (function () {
     }).join('');
     return '<div class="set-wrap"><div class="set-head">✦ Signature Gear Sets <span class="set-hint">— collect God-rarity pieces to raise your attributes (2/4/6/8/10)</span></div>' + rows + '</div>';
   }
-  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult() * stoneMasteryMult() * relicPowerMult() * armoryPowerMult() * arsenalMult() * mechMult() * cyberMult() * combatSkillMult() * (1 + 0.25 * (ultronUpMult() - 1)) * planetGlobalMult() * agentBoost('combat'); }   // the bot shares 25% of Ultron's upgrade power
+  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult() * stoneMasteryMult() * relicPowerMult() * armoryPowerMult() * arsenalMult() * ultronBodyMult() * mechMult() * cyberMult() * combatSkillMult() * (1 + 0.25 * (ultronUpMult() - 1)) * planetGlobalMult() * agentBoost('combat'); }   // the bot shares 25% of Ultron's upgrade power
   function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
   // Ultron's OWN power level -- the game is about making HIM stronger, so this is
   // a single composite of his total strength (income + combat + prestige cores).
@@ -8752,6 +8799,10 @@ window.__sfx = (function () {
   // exponential cost/enemy curve -- a linear +10%/core would fall behind fast
   // and make prestige pointless. Core COUNT stays sqrt(lifetime) (see below).
   function coreMult() { return Math.pow(1.08, (state.prestige && state.prestige.cores) || 0); }
+  // Upgraded Ultron chassis -- a high-tier prestige reward (banked Nanite Cores are
+  // kept across reboots, so it's a permanent head start on Ultron's combat power).
+  function ultronBodyTier() { var c = (state.prestige && state.prestige.cores) || 0; return c >= 3 ? 1 + Math.floor((c - 3) / 3) : 0; }
+  function ultronBodyMult() { return 1 + 0.2 * ultronBodyTier(); }
   // ---- Prestige upgrade tree: each reboot mints POINTS (from the round's take)
   // that buy permanent, larger buffs across Character / Economy / Production. ----
   function pUp(id) { return (state.prestige && state.prestige.up && state.prestige.up[id]) || 0; }
@@ -12683,16 +12734,48 @@ window.__sfx = (function () {
   var KEY = 'ultron_floors_open_v1';
   function load() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } }
   function persist(arr) { try { localStorage.setItem(KEY, JSON.stringify(arr)); } catch (e) {} }
+  // Importance order + level-lock plan. Dev panel first (admin only), then the
+  // progression tracker, then each room in the order it matters to the economy /
+  // becomes available. The number is the player level the floor unlocks at.
+  var PLAN = [
+    ['#dev-floor', 0], ['#progression', 1], ['#foundry', 1], ['#ultron-up', 2],
+    ['#expedition', 3], ['#foundry-generators', 4], ['#refinery', 6], ['#botparts', 8],
+    ['#armory', 10], ['#arsenal', 12], ['#agents-panel', 14], ['#relics', 16],
+    ['#xpcrystal', 18], ['#brainlab', 20], ['#cyber', 22], ['#crypto', 24],
+    ['#portal', 26], ['#stonelab', 28], ['#cosmic', 32], ['#genesis', 36],
+    ['#mechbay', 40], ['#prestige', 30], ['#holiday', 5], ['#codex', 1]
+  ];
+  function curLevel() { try { return (window.__foundry && window.__foundry.xplevel) || 1; } catch (e) { return 1; } }
+  function applyLock(f) {
+    var need = +f.dataset.lockLvl || 0, sign = f.querySelector(':scope > .floor-sign'); if (!sign) return;
+    if (sign.dataset.orig == null) sign.dataset.orig = sign.innerHTML;
+    if (curLevel() < need) {
+      f.classList.add('floor-locked'); f.classList.add('collapsed');
+      sign.innerHTML = sign.dataset.orig + ' <span class="floor-lock">🔒 Lv ' + need + '</span>';
+    } else if (f.classList.contains('floor-locked')) {
+      f.classList.remove('floor-locked'); sign.innerHTML = sign.dataset.orig;
+    }
+  }
   function wire() {
     var building = document.querySelector('.game-building'); if (!building) return;
-    var floors = building.querySelectorAll(':scope > .game-floor');
-    var open = load();
+    // 1) reorder floors into the importance plan + tag each with its unlock level
+    PLAN.forEach(function (p) {
+      var el = building.querySelector(p[0]); if (!el) return;
+      var floor = el.classList && el.classList.contains('game-floor') ? el : el.closest('.game-floor');
+      if (!floor || floor.parentNode !== building) return;
+      floor.dataset.lockLvl = p[1];
+      building.appendChild(floor);   // processing PLAN in order => final DOM order == PLAN order
+    });
+    // 2) collapse wiring + level locks
+    var floors = building.querySelectorAll(':scope > .game-floor'), open = load();
     floors.forEach(function (f, i) {
       var sign = f.querySelector(':scope > .floor-sign'); if (!sign || f.dataset.fkey) return;
       var key = (sign.textContent.replace(/[^A-Za-z]/g, '').slice(0, 24) || 'floor') + i;
       f.dataset.fkey = key;
       if (open.indexOf(key) === -1) f.classList.add('collapsed');   // default: collapsed
+      applyLock(f);
       sign.addEventListener('click', function () {
+        if (f.classList.contains('floor-locked')) { if (window.__gamePop) window.__gamePop('🔒 Unlocks at level ' + (f.dataset.lockLvl || '?'), '#8fb0d8'); return; }
         f.classList.toggle('collapsed');
         var arr = load(), on = !f.classList.contains('collapsed');
         arr = arr.filter(function (k) { return k !== key; });
@@ -12701,6 +12784,10 @@ window.__sfx = (function () {
         if (!f.classList.contains('collapsed') && window.__roomRelayout) window.__roomRelayout();
       });
     });
+    // 3) re-check locks as the player levels up
+    window.__refreshFloorLocks = function () { floors.forEach(applyLock); };
+    var lastLvl = curLevel();
+    setInterval(function () { var l = curLevel(); if (l !== lastLvl) { lastLvl = l; window.__refreshFloorLocks(); } }, 1500);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
