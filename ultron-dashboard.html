@@ -1054,6 +1054,14 @@
   .ars-img{ max-width:100%; max-height:52px; image-rendering:pixelated; image-rendering:crisp-edges; filter:drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
   .ars-n{ font-family:var(--font-display); font-weight:700; font-size:11px; color:var(--text); line-height:1.15; }
   .ars-r{ font-family:var(--font-mono); font-size:9px; font-weight:700; margin-top:1px; }
+  .ars-forge{ width:100%; margin-top:5px; font-family:var(--font-display); font-weight:700; font-size:10px; padding:4px 5px; border-radius:5px; border:1px solid var(--gc); background:rgba(255,255,255,.04); color:var(--text-dim); cursor:pointer; }
+  .ars-forge.can{ color:var(--gc); background:linear-gradient(180deg,rgba(255,255,255,.05),transparent); }
+  .ars-forge.can:hover{ background:rgba(255,255,255,.1); }
+  .ars-forge:disabled{ opacity:.5; cursor:not-allowed; }
+  .ars-forge.owned{ border-style:solid; color:#8fe6b4; border-color:rgba(51,209,122,.6); background:rgba(51,209,122,.08); cursor:default; }
+  .ars-card.owned{ box-shadow:0 0 14px -4px var(--gc); }
+  .ars-card:not(.owned) .ars-img{ filter:grayscale(1) brightness(.6) drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
+  .ars-pow{ font-family:var(--font-mono); font-size:8.5px; color:#8fb0d8; margin-top:2px; }
   .part-inspect{ position:fixed; inset:0; z-index:1400; display:flex; align-items:center; justify-content:center; background:rgba(4,6,10,.72); padding:16px; }
   .pi-box{ width:min(440px,94vw); max-height:80vh; overflow:auto; background:linear-gradient(180deg,#12151b,#0b0d12); border:1px solid #2a3a55; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.6); padding:14px 16px; }
   .pi-h{ display:flex; align-items:center; justify-content:space-between; font-family:var(--font-display); font-weight:800; font-size:13px; color:#cfe0ff; margin-bottom:10px; }
@@ -8575,7 +8583,7 @@ window.__sfx = (function () {
     }).join('');
     return '<div class="set-wrap"><div class="set-head">✦ Signature Gear Sets <span class="set-hint">— collect God-rarity pieces to raise your attributes (2/4/6/8/10)</span></div>' + rows + '</div>';
   }
-  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult() * stoneMasteryMult() * relicPowerMult() * armoryPowerMult() * mechMult() * cyberMult() * combatSkillMult() * (1 + 0.25 * (ultronUpMult() - 1)) * planetGlobalMult() * agentBoost('combat'); }   // the bot shares 25% of Ultron's upgrade power
+  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult() * stoneMasteryMult() * relicPowerMult() * armoryPowerMult() * arsenalMult() * mechMult() * cyberMult() * combatSkillMult() * (1 + 0.25 * (ultronUpMult() - 1)) * planetGlobalMult() * agentBoost('combat'); }   // the bot shares 25% of Ultron's upgrade power
   function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
   // Ultron's OWN power level -- the game is about making HIM stronger, so this is
   // a single composite of his total strength (income + combat + prestige cores).
@@ -8927,7 +8935,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (j.mech) state.mech = j.mech; if (j.cyber) state.cyber = j.cyber; if (j.ultron) state.ultron = j.ultron; if (j.planets) state.planets = j.planets; if (j.agents) state.agents = j.agents; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev; if (j.palette) state.palette = j.palette;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.arsenal) state.arsenal = j.arsenal; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (j.mech) state.mech = j.mech; if (j.cyber) state.cyber = j.cyber; if (j.ultron) state.ultron = j.ultron; if (j.planets) state.planets = j.planets; if (j.agents) state.agents = j.agents; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev; if (j.palette) state.palette = j.palette;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -8946,6 +8954,7 @@ window.__sfx = (function () {
   if (!state.holiday) state.holiday = { events: {}, force: null, components: 0, jackpot: false, nextGuest: 0 };   // Holiday Events Calendar
   if (!state.relics) state.relics = {};   // Relics & Artifacts earned
   if (!state.armory) state.armory = { cls: 'pistol', sel: {}, built: null, loadouts: {}, parts: [] };   // Armory Forge
+  if (!state.arsenal) state.arsenal = { owned: {} };   // Arsenal: forged-weapon combat-power collection
   if (!state.brain) state.brain = { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {} };   // AI Brain Lab
   if (!state.crypto) state.crypto = { unlocked: {}, bal: {}, up: {} };
   if (!state.mech) state.mech = { unlocked: false, pinOk: false, parts: {} };
@@ -9932,18 +9941,43 @@ window.__sfx = (function () {
     { id: 'plz_cannon3', name: 'Rift Cannon', cls: 'Plasma Cannon', rarity: 'Legendary' }
   ];
   var GUN_ORDER = ['Signature', 'Pistol', 'SMG', 'Assault', 'Shotgun', 'Sniper', 'Heavy', 'Plasma Pistol', 'Plasma Rifle', 'Plasma Cannon'];
+  // Forging a weapon costs bits and grants PERMANENT combat power (weighted by
+  // rarity) -- the Arsenal is now a real power-collection sink, not just a gallery.
+  var GUN_W = { Common: 1, Uncommon: 2, Rare: 4, Epic: 9, Legendary: 20, Mythic: 45 };
+  var GUN_COST = { Common: 2e3, Uncommon: 2e4, Rare: 1.5e5, Epic: 1.2e6, Legendary: 1e7, Mythic: 8e7 };
+  function arsenalOwned() { state.arsenal = state.arsenal || { owned: {} }; if (!state.arsenal.owned) state.arsenal.owned = {}; return state.arsenal.owned; }
+  function arsenalWeight() { if (!GUNS) return 0; var o = arsenalOwned(), w = 0; GUNS.forEach(function (g) { if (o[g.id]) w += (GUN_W[g.rarity] || 1); }); return w; }   // GUNS assigned later in this IIFE; publish() may call this before then
+  function arsenalMult() { return 1 + 0.01 * arsenalWeight(); }   // +1% combat power per rarity-weight point forged (full vault ~ x5.3)
+  function forgeGun(id) {
+    var g = GUNS.filter(function (x) { return x.id === id; })[0]; if (!g) return;
+    var o = arsenalOwned(); if (o[id]) return;
+    var c = GUN_COST[g.rarity] || 1e4; if (state.bits < c) { gamePop('Need ' + fmt(c) + ' to forge', '#ff8098'); return; }
+    state.bits -= c; o[id] = 1;
+    if (window.__sfx) window.__sfx('unlock'); gamePop('🗄️ Forged ' + g.name + ' — +' + (GUN_W[g.rarity] || 1) + ' power', GUN_RAR[g.rarity]);
+    addXp(Math.round(20 + Math.log10(c) * 20), 'Forged ' + g.name);
+    publish(); dirty = true; save(); renderArsenal(); renderBalance(); if (typeof renderProgression === 'function') renderProgression();
+  }
+  window.__forgeGun = forgeGun;
   function renderArsenal() {
     if (!arsenalEl) return;
     var groups = {}; GUNS.forEach(function (g) { (groups[g.cls] = groups[g.cls] || []).push(g); });
-    var html = '<div class="ars-head">🗄️ Ultron’s Arsenal <span class="ars-sub">— every weapon in the vault, ' + GUNS.length + ' forged</span></div>';
+    var o = arsenalOwned(), nOwned = GUNS.filter(function (g) { return o[g.id]; }).length;
+    var html = '<div class="ars-head">🗄️ Ultron’s Arsenal <span class="ars-sub">— ' + nOwned + '/' + GUNS.length +
+      ' forged · Ultron combat ×' + arsenalMult().toFixed(2) + ' (forge weapons for permanent combat power)</span></div>';
     GUN_ORDER.forEach(function (cls) {
       var arr = groups[cls]; if (!arr) return;
       html += '<div class="ars-cls">' + cls + '</div><div class="ars-grid">' + arr.map(function (g) {
-        var col = GUN_RAR[g.rarity] || '#9aa2ae';
-        return '<div class="ars-card" style="--gc:' + col + '"><div class="ars-imgwrap"><img class="ars-img" src="/pixel-assets/gun_' + g.id + '.png?v=2" alt="' + esc(g.name) + '" loading="lazy"></div><div class="ars-n">' + esc(g.name) + '</div><div class="ars-r" style="color:' + col + '">' + g.rarity + '</div></div>';
+        var col = GUN_RAR[g.rarity] || '#9aa2ae', owned = !!o[g.id], cost = GUN_COST[g.rarity] || 1e4, can = !owned && state.bits >= cost;
+        var btn = owned
+          ? '<button class="ars-forge owned" disabled>✓ Forged</button>'
+          : '<button class="ars-forge' + (can ? ' can' : '') + '" data-gun="' + g.id + '"' + (can ? '' : ' disabled') + '>⚒ ' + fmt(cost) + '</button>';
+        return '<div class="ars-card' + (owned ? ' owned' : '') + '" style="--gc:' + col + '"><div class="ars-imgwrap"><img class="ars-img" src="/pixel-assets/gun_' + g.id + '.png?v=2" alt="' + esc(g.name) + '" loading="lazy"></div>' +
+          '<div class="ars-n">' + esc(g.name) + '</div><div class="ars-r" style="color:' + col + '">' + g.rarity + '</div>' +
+          '<div class="ars-pow">+' + (GUN_W[g.rarity] || 1) + ' power</div>' + btn + '</div>';
       }).join('') + '</div>';
     });
     arsenalEl.innerHTML = html;
+    arsenalEl.querySelectorAll('[data-gun]').forEach(function (b) { b.addEventListener('click', function () { forgeGun(b.dataset.gun); }); });
   }
   // ---- AI Brain Lab: custom-build Ultron's AI brain from real AI-architecture
   // components across 4 layers, using three new lab materials (Synapse Filaments,
@@ -11592,7 +11626,7 @@ window.__sfx = (function () {
       if (j.gen) state.gen = j.gen;
       if (j.comp) state.comp = j.comp;
       if (j.genesis) state.genesis = j.genesis;
-      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (j.mech) state.mech = j.mech; if (j.cyber) state.cyber = j.cyber; if (j.ultron) state.ultron = j.ultron; if (j.planets) state.planets = j.planets; if (j.agents) state.agents = j.agents;
+      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.arsenal) state.arsenal = j.arsenal; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (j.mech) state.mech = j.mech; if (j.cyber) state.cyber = j.cyber; if (j.ultron) state.ultron = j.ultron; if (j.planets) state.planets = j.planets; if (j.agents) state.agents = j.agents;
       if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
