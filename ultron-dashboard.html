@@ -827,7 +827,8 @@
   .sp-when{ color:var(--text-faint); }
   .sp-empty{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); padding:4px 2px; }
   /* Developer / Admin console (admin-only, above the XP bar) */
-  .dev-panel{ margin-top:10px; }
+  .dev-panel{ margin-top:6px; }
+  .dev-badge-row{ display:flex; align-items:center; gap:9px; margin-bottom:9px; flex-wrap:wrap; }
   .dev-details{ border:1px solid rgba(255,180,70,.5); border-radius:8px; background:linear-gradient(180deg,rgba(255,180,70,.08),transparent); padding:9px 11px; }
   .dev-details > summary{ cursor:pointer; font-family:var(--font-display); font-weight:800; font-size:12.5px; color:#ffce6a; list-style:none; display:flex; align-items:center; gap:8px; }
   .dev-details > summary::-webkit-details-marker{ display:none; }
@@ -2281,9 +2282,14 @@
             <div class="foundry-upgrades" id="foundry-upgrades"></div>
             <div class="foundry-bays-label">🤖 Production bays <span class="fbl-sub">— each floor's own crew, weapons &amp; armor</span></div>
             <div class="foundry-bays" id="foundry-bays"></div>
-            <div class="dev-panel" id="dev-panel" hidden></div>
             <div class="foundry-note">Every package shipped out and every robot that marches out mints bits — and it keeps minting while you're away. Currency evolves Bits → Bytes → Chits → Scrip → Nanits as it grows. Spend it on upgrades to run the line faster.</div>
           </div>
+          </div>
+
+          <!-- Developer / Admin console: its own dropdown floor, ADMIN-only (hidden
+               unless Archangel is signed in), directly below the assembly floor -->
+          <div class="game-floor" id="dev-floor" hidden><div class="floor-sign">🛠️ Developer / Admin Console</div>
+          <div class="dev-panel" id="dev-panel" hidden></div>
           </div>
 
           <!-- Passive reactors -->
@@ -10091,12 +10097,13 @@ window.__sfx = (function () {
   function devRefresh() { publish(); dirty = true; save(); renderBalance(); renderProgression(); renderStonelab(); renderGenesis(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout(); }
   function renderDevPanel() {
     if (!devPanelEl) return;
-    if (!devModeOn) { devPanelEl.hidden = true; devPanelEl.innerHTML = ''; return; }
+    var devFloor = document.getElementById('dev-floor');
+    if (!devModeOn) { devPanelEl.hidden = true; devPanelEl.innerHTML = ''; if (devFloor) devFloor.hidden = true; return; }
+    if (devFloor) devFloor.hidden = false;   // admin-only floor, its own dropdown tab below the assembly floor
     devPanelEl.hidden = false;
     var lvl = (state.prog && state.prog.level) || 1;
     devPanelEl.innerHTML =
-      '<details class="dev-details" open><summary>🛠 Developer / Admin Console <span class="dev-badge">ADMIN</span></summary>' +
-      '<div class="dev-note">Only you (admin/developer) can see this. Click to add or remove anything at will.</div>' +
+      '<div class="dev-badge-row"><span class="dev-badge">ADMIN</span> <span class="dev-note">Only you (admin/developer) can see this. Add or remove anything at will.</span></div>' +
       '<div class="dev-grid">' +
         '<div class="dev-group"><span class="dev-lbl">Currency</span><button type="button" class="dev-btn add" data-dev="cur" data-amt="1e12">+1 Nanit</button><button type="button" class="dev-btn add" data-dev="cur" data-amt="1e9">+1 Scrip</button><button type="button" class="dev-btn add" data-dev="cur" data-amt="1e6">+1 Chit</button><button type="button" class="dev-btn rem" data-dev="cur" data-amt="-1e9">−1 Scrip</button><button type="button" class="dev-btn rem" data-dev="curzero">Zero</button></div>' +
         '<div class="dev-group"><span class="dev-lbl">XP</span><button type="button" class="dev-btn add" data-dev="xp" data-amt="1000">+1k</button><button type="button" class="dev-btn add" data-dev="xp" data-amt="100000">+100k</button><button type="button" class="dev-btn add" data-dev="xp" data-amt="10000000">+10M</button></div>' +
@@ -10125,7 +10132,7 @@ window.__sfx = (function () {
           '<button type="button" class="dev-btn add" data-dev="gift" data-g="starter">Starter boost</button>' +
           '<input type="text" class="dev-num" id="dev-giftout" readonly placeholder="code appears here — copy &amp; share" style="min-width:150px;">' +
         '</div>' +
-      '</div><div class="dev-confirm" id="dev-confirm" hidden></div></details>';
+      '</div><div class="dev-confirm" id="dev-confirm" hidden></div>';
     function grantGear(forceMythic) {
       if (typeof makePart !== 'function' || typeof BASES === 'undefined') return;
       var slot = SLOTS[Math.floor(Math.random() * SLOTS.length)].id;
