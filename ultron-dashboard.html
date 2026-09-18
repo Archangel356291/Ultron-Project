@@ -8277,7 +8277,7 @@ window.__sfx = (function () {
   var SET_ATTR = { dominion: { str: 3, con: 3, dex: 2 }, genesis: { int: 3, wis: 2, cha: 2, str: 1, dex: 1, con: 1 } };
   function attrFromSets(id) { return (SET_ATTR.dominion[id] || 0) * setTier('dominion') + (SET_ATTR.genesis[id] || 0) * setTier('genesis'); }
   function attrMult() { return pct('attrp', 4) * xmul('attrm', 0.03); }   // Attribute Training (%) + Genetic Perfection (×) growth skills
-  function charAttr(id) { return Math.round((10 + 8 * pUp('a_' + id) + attrFromSets(id)) * attrMult()); }   // base 10 + prestige ranks + set grants, scaled
+  function charAttr(id) { return Math.round((10 + 8 * pUp('a_' + id) + attrFromSets(id) + 4 * skillLvl('sk_' + id)) * attrMult()); }   // base 10 + prestige ranks + set grants + the per-attribute skill, scaled
   // derived from the "modifier" (points over the base 10), small per-point, on-scale
   function attrCombatMult() { return (1 + 0.02 * (charAttr('str') - 10) + 0.015 * (charAttr('dex') - 10)) * (1 + 0.02 * (charAttr('con') - 10)) * (1 + 0.015 * (charAttr('wis') - 10)); }
   function attrXpMult() { return 1 + 0.015 * (charAttr('int') - 10); }
@@ -8489,6 +8489,7 @@ window.__sfx = (function () {
     { id: 'mfg', name: 'Manufacturing', icon: '🔧' },
     { id: 'combat', name: 'Combat Subsystems', icon: '⚔' },
     { id: 'growth', name: 'Progression & Economy', icon: '📈' },
+    { id: 'attr', name: 'Attribute Mastery', icon: '✦' },
   ];
   // Two knobs per stat, per the owner's spec: a linear "% boost" (additive,
   // predictable) and a "× multiplier" (compounding ~3%/lvl, follows the
@@ -8526,6 +8527,14 @@ window.__sfx = (function () {
     { id: 'attrm',     cat: 'growth',  name: 'Genetic Perfection',   max: 15, desc: function (l) { return '×' + Math.pow(1.03, l).toFixed(2) + ' attribute multiplier'; } },
     { id: 'psboost',   cat: 'growth',  name: 'Reactor Overcharge',   max: 30, desc: function (l) { return '+' + (6 * l) + '% passive income / second'; } },
     { id: 'psmult',    cat: 'growth',  name: 'Flux Capacitor',       max: 20, desc: function (l) { return '×' + Math.pow(1.04, l).toFixed(2) + ' passive-income multiplier'; } },
+    // One skill per character attribute (scales with the 500 level cap: +4 per
+    // level, up to +240 to a stat -- a serious long-game investment).
+    { id: 'sk_str',    cat: 'attr',    name: 'Strength Training',    max: 60, desc: function (l) { return '+' + (4 * l) + ' Strength (melee & physical power)'; } },
+    { id: 'sk_dex',    cat: 'attr',    name: 'Reflex Tuning',        max: 60, desc: function (l) { return '+' + (4 * l) + ' Dexterity (crit, accuracy & evasion)'; } },
+    { id: 'sk_con',    cat: 'attr',    name: 'Hull Reinforcement',   max: 60, desc: function (l) { return '+' + (4 * l) + ' Constitution (health & shields)'; } },
+    { id: 'sk_int',    cat: 'attr',    name: 'Neural Expansion',     max: 60, desc: function (l) { return '+' + (4 * l) + ' Intelligence (XP gain & tech power)'; } },
+    { id: 'sk_wis',    cat: 'attr',    name: 'Tactical Wisdom',      max: 60, desc: function (l) { return '+' + (4 * l) + ' Wisdom (defense & resistance)'; } },
+    { id: 'sk_cha',    cat: 'attr',    name: 'Overlord Presence',    max: 60, desc: function (l) { return '+' + (4 * l) + ' Charisma (income & loot fortune)'; } },
   ];
   // Milestone tiers: reaching one grants an immediate permanent +10% income
   // "mechanical evolution" bonus and a new title.
