@@ -1162,6 +1162,13 @@
   .bl-mat-n{ font-family:var(--font-mono); font-size:10px; margin-right:auto; } .bl-mat-n b{ color:var(--text); }
   .bl-buy{ padding:5px 9px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:9.5px; white-space:nowrap; }
   .bl-buy:hover{ background:rgba(255,255,255,.05); }
+  .bl-fab{ margin:2px 0 10px; padding:9px 11px; border:1px solid rgba(127,208,255,.35); border-radius:8px; background:linear-gradient(180deg,rgba(127,208,255,.07),rgba(127,208,255,.02)); }
+  .bl-fab-h{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:#bfe6ff; display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:7px; }
+  .bl-fab-r{ font-family:var(--font-mono); font-size:9.5px; font-weight:600; color:#5fe39a; }
+  .bl-fab-btns{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:7px; }
+  .bl-fabup{ padding:7px 9px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-faint); cursor:default; font-family:var(--font-mono); font-size:10px; white-space:nowrap; }
+  .bl-fabup.can{ cursor:pointer; border-color:#3ac8ff; color:#bfe6ff; } .bl-fabup.can:hover{ background:rgba(58,200,255,.12); }
+  .bl-fabup:disabled{ opacity:.55; }
   .bl-cat{ margin-top:8px; }
   .bl-cat-h{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:#8fd8ff; margin-bottom:5px; }
   .bl-comps{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:7px; }
@@ -1618,6 +1625,19 @@
   .exp-skin i{ position:absolute; left:50%; top:50%; width:8px; height:5px; margin:-2px 0 0 -4px; border-radius:2px; box-shadow:0 0 5px var(--sg); }
   .exp-skin.on{ border-color:var(--sg); box-shadow:0 0 0 2px var(--sg) inset, 0 0 7px -1px var(--sg); }
   .exp-builder{ margin-top:14px; }
+  .exp-partslink{ margin-top:12px; color:#cfe0f0; }
+  .exp-partslink b{ color:#ffd88a; }
+  /* Bot Parts Lab floor */
+  .botparts-locked{ padding:16px; color:var(--text-faint); font-family:var(--font-mono); font-size:12px; }
+  .botparts-top{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
+  .botparts-preview{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:8px; padding:10px 18px; border:1px solid var(--line); border-radius:10px; background:linear-gradient(180deg,#161b24,#0e1218); min-width:120px; }
+  .botparts-preview .exp-robot{ position:relative; width:72px; height:96px; }
+  .botparts-name{ font-family:var(--font-display); font-weight:700; font-size:12px; color:#dfe7f2; text-align:center; }
+  .botparts-stats{ flex:1 1 220px; display:flex; flex-wrap:wrap; gap:7px; align-content:flex-start; }
+  .botparts-stats-h{ flex:1 0 100%; font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; }
+  .bp-stat{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); background:var(--panel-raised); border:1px solid var(--line); border-radius:6px; padding:4px 9px; }
+  .bp-stat b{ color:#8fe6b4; }
+  .botparts-hint{ flex:1 0 100%; font-size:10.5px; color:var(--text-faint); margin-top:4px; }
   .exp-b-h{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; margin-bottom:7px; }
   .exp-presets{ display:flex; gap:6px; flex-wrap:wrap; }
   .exp-preset{ font-family:var(--font-display); font-weight:700; font-size:11.5px; padding:5px 11px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text); cursor:pointer; }
@@ -2344,6 +2364,11 @@
             <div class="exp-viewer-h" id="exp-viewer-h">&#9654; Live feed &mdash; your robot in the field</div>
             <canvas id="exp-viewer-canvas" aria-label="Live view of your custom robot fighting through its expedition"></canvas>
           </div>
+          </div>
+
+          <!-- Bot Parts Lab: the modular chassis builder, its own labeled floor -->
+          <div class="game-floor"><div class="floor-sign">🦾 Bot Parts Lab</div>
+          <div class="botparts" id="botparts"></div>
           </div>
 
           <!-- Cyber Division: hacking red-cell node network, near the adventure bot -->
@@ -9364,7 +9389,7 @@ window.__sfx = (function () {
     state.roundStart = state.lifetime || 0;
     gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderProgression();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); renderProgression();
     if (window.__roomRelayout) window.__roomRelayout();
   }
   var stonelabEl = document.getElementById('stonelab');
@@ -9749,7 +9774,11 @@ window.__sfx = (function () {
     '<g fill="#9becff" filter="url(#blglow)"><circle cx="50" cy="27" r="2.6"/><circle cx="104" cy="35" r="2.6"/><circle cx="67" cy="81" r="2.6"/><circle cx="90" cy="47" r="2.3"/></g>' +
     '<text x="140" y="93" text-anchor="end" font-family="sans-serif" font-size="8" font-weight="800" fill="#c8ecff" letter-spacing="1">BRAIN LAB</text></svg>';
   var brainEl = document.getElementById('brainlab');
-  function brainInit() { state.brain = state.brain || { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {}, banked: 0, built: 0 }; if (!state.brain.mats) state.brain.mats = { syn: 0, log: 0, dat: 0 }; if (!state.brain.comp) state.brain.comp = {}; if (typeof state.brain.banked !== 'number') state.brain.banked = 0; if (typeof state.brain.built !== 'number') state.brain.built = 0; return state.brain; }
+  function brainInit() { state.brain = state.brain || { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {}, banked: 0, built: 0 }; if (!state.brain.mats) state.brain.mats = { syn: 0, log: 0, dat: 0 }; if (!state.brain.comp) state.brain.comp = {}; if (typeof state.brain.banked !== 'number') state.brain.banked = 0; if (typeof state.brain.built !== 'number') state.brain.built = 0; if (typeof state.brain.spd !== 'number') state.brain.spd = 0; if (typeof state.brain.yld !== 'number') state.brain.yld = 0; return state.brain; }
+  // Fabricator upgrades: spd = how FAST parts/materials are produced, yld = how MANY per tick.
+  function brainSpd() { return (state.brain && state.brain.spd) || 0; }
+  function brainYld() { return (state.brain && state.brain.yld) || 0; }
+  function brainUpCost(kind) { var lv = kind === 'spd' ? brainSpd() : brainYld(); return Math.ceil(1.5e7 * Math.pow(1.75, lv)); }
   function brainCurrentCog() { if (typeof BRAIN_COMPONENTS === 'undefined' || !BRAIN_COMPONENTS) return 0; var s = 0; BRAIN_COMPONENTS.forEach(function (c) { s += brainCog(c.id); }); return s; }
   function brainUnlocked() { return !!(state.brain && state.brain.unlocked); }
   function brainTier(id) { return (state.brain && state.brain.comp && state.brain.comp[id]) || 0; }   // 0 = not built, 1..6 = Common..Mythic
@@ -9759,7 +9788,7 @@ window.__sfx = (function () {
   function brainMult() { return brainUnlocked() ? 1 + 0.02 * brainTotal() : 1; }
   function brainCompCost(comp) { var t = brainTier(comp.id), rar = BRAIN_RAR[Math.min(t, BRAIN_RAR.length - 1)], mats = {}; ['syn', 'log', 'dat'].forEach(function (k) { mats[k] = Math.ceil((comp.c[k] || 0) * rar.price); }); return { bits: Math.ceil(8e6 * rar.price), mats: mats }; }
   function brainCanBuild(comp) { if (brainMaxed(comp.id)) return false; var c = brainCompCost(comp), m = brainInit().mats; return state.bits >= c.bits && m.syn >= c.mats.syn && m.log >= c.mats.log && m.dat >= c.mats.dat; }
-  function brainGrowRate() { return 0.15 + 0.03 * brainTotal(); }
+  function brainGrowRate() { return (0.15 + 0.03 * brainTotal()) * (1 + 0.5 * brainSpd()) * (1 + 0.5 * brainYld()); }
   function renderBrain() {
     if (!brainEl) return;
     if (!brainUnlocked()) {
@@ -9784,14 +9813,21 @@ window.__sfx = (function () {
         return '<div class="bl-cat"><div class="bl-cat-h">' + cn + '</div><div class="bl-comps">' + comps + '</div></div>';
       }).join('');
       var finalize = brainCurrentCog() > 0 ? '<button type="button" class="bl-finalize" data-bl="finalize">🧠 Finalize this brain → bank +' + brainCurrentCog().toFixed(1) + ' cognition &amp; start a new custom brain (buffs stack)</button>' : '';
-      brainEl.innerHTML = '<div class="bl-head">🧠 AI Brain Lab <span class="bl-sub">— cognition ' + brainTotal().toFixed(1) + ' · ×' + brainMult().toFixed(2) + ' XP &amp; income · ' + b.built + ' brains banked · growing ' + brainGrowRate().toFixed(2) + ' mat/s</span></div>' +
-        diagram + '<div class="bl-mats">' + matChips + '</div>' + finalize + catHtml;
+      var gr = brainGrowRate(), spdC = brainUpCost('spd'), yldC = brainUpCost('yld'), canSpd = state.bits >= spdC, canYld = state.bits >= yldC;
+      var fab = '<div class="bl-fab"><div class="bl-fab-h">⚙ Material Fabricator <span class="bl-fab-r">producing ⌇' + gr.toFixed(2) + ' ◈' + (gr * 0.6).toFixed(2) + ' ◆' + (gr * 0.35).toFixed(2) + ' /s</span></div>' +
+        '<div class="bl-fab-btns">' +
+        '<button type="button" class="bl-fabup' + (canSpd ? ' can' : '') + '" data-blup="spd"' + (canSpd ? '' : ' disabled') + '>⏩ Speed Lv ' + brainSpd() + ' → +50% rate · <span style="color:' + fmtColor(spdC) + '">◉' + fmt(spdC) + '</span></button>' +
+        '<button type="button" class="bl-fabup' + (canYld ? ' can' : '') + '" data-blup="yld"' + (canYld ? '' : ' disabled') + '>📦 Yield Lv ' + brainYld() + ' → +50% output · <span style="color:' + fmtColor(yldC) + '">◉' + fmt(yldC) + '</span></button>' +
+        '</div></div>';
+      brainEl.innerHTML = '<div class="bl-head">🧠 AI Brain Lab <span class="bl-sub">— cognition ' + brainTotal().toFixed(1) + ' · ×' + brainMult().toFixed(2) + ' XP &amp; income · ' + b.built + ' brains banked · growing ' + gr.toFixed(2) + ' mat/s</span></div>' +
+        diagram + '<div class="bl-mats">' + matChips + '</div>' + fab + finalize + catHtml;
     }
     var u = brainEl.querySelector('[data-bl="unlock"]'); if (u) u.addEventListener('click', function () { if (state.bits < BRAINLAB_COST) return; state.bits -= BRAINLAB_COST; state.brain = { unlocked: true, mats: { syn: 5, log: 5, dat: 5 }, comp: {} }; if (window.__sfx) window.__sfx('unlock'); gamePop('🧠 AI Brain Lab online', '#7fd0ff'); addXp(400, 'Discovery: AI Brain Lab'); publish(); dirty = true; save(); renderBrain(); renderBalance(); });
     brainEl.querySelectorAll('[data-blbuy]').forEach(function (bt) { bt.addEventListener('click', function () { var m = BRAIN_MATS.filter(function (x) { return x.id === bt.dataset.blbuy; })[0]; if (!m) return; var cost = m.buy * 10; if (state.bits < cost) return; state.bits -= cost; brainInit().mats[m.id] += 10; if (window.__sfx) window.__sfx('press'); publish(); dirty = true; save(); renderBrain(); renderBalance(); }); });
+    brainEl.querySelectorAll('[data-blup]').forEach(function (bt) { bt.addEventListener('click', function () { var kind = bt.dataset.blup, cost = brainUpCost(kind); if (state.bits < cost) return; state.bits -= cost; var bb = brainInit(); bb[kind] = (bb[kind] || 0) + 1; if (window.__sfx) window.__sfx('upgrade'); gamePop('⚙ Fabricator ' + (kind === 'spd' ? 'speed' : 'yield') + ' Lv ' + bb[kind], '#7fd0ff'); publish(); dirty = true; save(); renderBrain(); renderBalance(); }); });
     brainEl.querySelectorAll('[data-blc]').forEach(function (bt) { bt.addEventListener('click', function () { var comp = BRAIN_COMPONENTS.filter(function (x) { return x.id === bt.dataset.blc; })[0]; if (!comp || !brainCanBuild(comp)) return; var c = brainCompCost(comp); state.bits -= c.bits; var m = brainInit().mats; m.syn -= c.mats.syn; m.log -= c.mats.log; m.dat -= c.mats.dat; state.brain.comp[comp.id] = Math.min(BRAIN_RAR.length, brainTier(comp.id) + 1); var rn = BRAIN_RAR[state.brain.comp[comp.id] - 1].n; if (window.__sfx) window.__sfx('build'); gamePop('🧠 ' + comp.name + ' → ' + rn, '#7fd0ff'); addXp(60 * state.brain.comp[comp.id], 'Brain: ' + comp.name); publish(); dirty = true; save(); renderBrain(); renderBalance(); renderProgression(); }); });
     brainEl.querySelectorAll('[data-blinsp]').forEach(function (bt) { bt.addEventListener('click', function () { inspectBrainPart(bt.dataset.blinsp); }); });
-    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); });
+    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); });
   }
   // ---- Crypto Mining Rig: mine 6 real-world-flavoured coins, each with its own
   // strength + risk, then convert them to currency. Everything feeds the game
@@ -10138,7 +10174,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderGenerators(); renderBays(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents();
+    renderBalance(); renderUpgrades(); renderGenerators(); renderBays(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -10502,7 +10538,7 @@ window.__sfx = (function () {
       '<span style="font-size:10.5px;font-weight:700;color:#ff6b7e;background:rgba(255,107,126,.12);border:1px solid rgba(255,107,126,.35);border-radius:5px;padding:2px 7px;">★ LV ' + lv + '</span>' +
       '<span style="font-size:10.5px;font-weight:700;color:#ffb347;background:rgba(255,179,71,.12);border:1px solid rgba(255,179,71,.35);border-radius:5px;padding:2px 7px;">⚔ BOT ' + Math.round(pw).toLocaleString() + '</span>' +
       '</div>' +
-      '<div style="display:flex;gap:6px;margin-top:6px;"><span style="font-size:11px;font-weight:800;color:#c78bff;background:linear-gradient(180deg,rgba(176,107,255,.2),rgba(120,60,220,.1));border:1px solid rgba(176,107,255,.5);border-radius:5px;padding:3px 9px;box-shadow:0 0 12px -4px #b06bff;">⚡ ULTRON POWER ' + ultronPower().toLocaleString() + '</span></div>' + cryptoRowHtml() + credRowHtml();
+      '<div style="display:flex;gap:6px;margin-top:6px;"><span style="font-size:11px;font-weight:800;color:#c78bff;background:linear-gradient(180deg,rgba(176,107,255,.2),rgba(120,60,220,.1));border:1px solid rgba(176,107,255,.5);border-radius:5px;padding:3px 9px;box-shadow:0 0 12px -4px #b06bff;">⚡ ULTRON POWER ' + ultronPower().toLocaleString() + '</span></div>' + cryptoRowHtml() + brainRowHtml() + credRowHtml();
   }
   // Crypto tracker in the currency panel: the mined balance of each coin you own.
   function cryptoRowHtml() {
@@ -10512,6 +10548,15 @@ window.__sfx = (function () {
     var hasBal = owned.some(function (x) { return ((c.bal && c.bal[x.id]) || 0) > 0; });
     var sellBtn = hasBal ? '<span onclick="window.__cryptoSellAll()" style="pointer-events:auto;cursor:pointer;color:#8fe6b4;border:1px solid rgba(95,227,154,.5);border-radius:5px;padding:1px 6px;font-size:9px;" title="Sell every mined coin for currency">💱 Sell all</span>' : '';
     return '<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,.07);font-family:ui-monospace,monospace;font-size:10px;font-weight:700;">' + chips + sellBtn + '</div>';
+  }
+  // Brain Lab material fabricator tracker: current syn/log/dat stock + live output rate.
+  function brainRowHtml() {
+    if (typeof brainUnlocked !== 'function' || !brainUnlocked()) return '';
+    var b = state.brain || {}, m = b.mats || { syn: 0, log: 0, dat: 0 }, gr = brainGrowRate();
+    var chips = '<span style="color:#7fd0ff;" title="Synapse Filaments">⌇ ' + fmtN(Math.floor(m.syn || 0)) + '</span>' +
+      '<span style="color:#8fe64b;" title="Logic Cores">◈ ' + fmtN(Math.floor(m.log || 0)) + '</span>' +
+      '<span style="color:#c07bff;" title="Data Crystals">◆ ' + fmtN(Math.floor(m.dat || 0)) + '</span>';
+    return '<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,.07);font-family:ui-monospace,monospace;font-size:10px;font-weight:700;"><span style="color:#8b93a0;font-weight:600;" title="Brain Lab material fabricator">🧠</span>' + chips + '<span style="color:#5fe39a;font-weight:600;" title="Materials produced per second">▸ ' + gr.toFixed(2) + '/s</span></div>';
   }
   // The player's own login (username + PIN, and password if set) kept in view by
   // the currency panel so they never lose it -- masked with dots by default, an
@@ -10609,7 +10654,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); }
       dirty = false;
     }
   }, 500);
@@ -10975,6 +11020,47 @@ window.__sfx = (function () {
       savedHtml + sections + '</div>';
   }
 
+  // ---- Bot Parts Lab: the chassis builder lifted into its own labeled floor.
+  // Shares state.adv.build with the Adventure bot, so edits here update the bot's
+  // look and its combat stats live. Shows a preview silhouette + a stat readout so
+  // you can see what each part does. ----
+  var botpartsEl = document.getElementById('botparts');
+  function renderBotParts() {
+    if (!botpartsEl) return;
+    var a = state.adv;
+    if (!a || !a.unlocked) { botpartsEl.innerHTML = '<div class="botparts-locked">🦾 Unlock the Adventure bot first (in the 🤖 Adventure floor) to start assembling parts.</div>'; return; }
+    a.build = a.build || {}; a.robot = a.robot || { color: '#ff3b3b', name: 'Ultron-Bot' };
+    var b = a.build, r = a.robot;
+    var cls = 'exp-robot core' + (LOOK_CORE[b.core] || 0) + ' legs' + (LOOK_LEGS[b.legs] || 0) + ' head' + (LOOK_HEAD[b.head] || 0);
+    var rs = robotStats(a.gear || {});
+    var picked = 0, total = 0; BUILD_SECTIONS.forEach(function (sec) { sec.cats.forEach(function (c) { total++; if (b[c[0]]) picked++; }); });
+    botpartsEl.innerHTML =
+      '<div class="botparts-top">' +
+        '<div class="botparts-preview"><div class="' + cls + '" style="--rc:' + r.color + '"><span class="exp-head"></span><span class="exp-eye"></span><span class="exp-body"></span><span class="exp-base"></span></div>' +
+          '<div class="botparts-name">' + esc(r.name || 'Ultron-Bot') + '</div></div>' +
+        '<div class="botparts-stats"><div class="botparts-stats-h">⚙ Assembly readout</div>' +
+          '<span class="bp-stat">Parts fitted <b>' + picked + '/' + total + '</b></span>' +
+          '<span class="bp-stat">⚔ Power <b>' + rs.power + '</b></span>' +
+          '<span class="bp-stat">♥ HP <b>' + rs.ehp + '</b></span>' +
+          '<span class="bp-stat">↯ DPS <b>' + rs.dps + '</b></span>' +
+          '<span class="bp-stat">FW <b>' + rs.firmware + '</b></span>' +
+          '<div class="botparts-hint">Every part you pick reshapes the bot above and feeds its combat sheet. Looted gear with stats snaps into the five slots in the Adventure floor.</div>' +
+        '</div>' +
+      '</div>' + renderBuilder(a);
+  }
+  if (botpartsEl) {
+    botpartsEl.addEventListener('click', function (e) {
+      var el = e.target.closest('[data-a]'); if (!el) return; var act = el.dataset.a, a = state.adv; if (!a) return; a.build = a.build || {};
+      if (act === 'preset') { var pr = PRESETS[el.dataset.v]; if (pr) { for (var k in pr) { if (k === '_color') a.robot.color = pr[k]; else a.build[k] = pr[k]; } dirty = true; save(); renderBotParts(); renderAdventure(); } }
+      else if (act === 'save-load') { var inp = botpartsEl.querySelector('.exp-ldname'); var nm = (inp && inp.value.trim()) || ('Build ' + (Object.keys(a.loadouts || {}).length + 1)); a.loadouts = a.loadouts || {}; a.loadouts[nm] = { build: Object.assign({}, a.build), color: a.robot.color }; dirty = true; save(); renderBotParts(); renderAdventure(); }
+      else if (act === 'load-ld') { var ld = (a.loadouts || {})[el.dataset.v]; if (ld) { a.build = Object.assign({}, ld.build); if (ld.color) a.robot.color = ld.color; dirty = true; save(); renderBotParts(); renderAdventure(); } }
+      else if (act === 'del-ld') { if (a.loadouts) { delete a.loadouts[el.dataset.v]; dirty = true; save(); renderBotParts(); } }
+    });
+    botpartsEl.addEventListener('change', function (e) {
+      var sel = e.target.closest('select[data-cat]'); if (!sel) return; var a = state.adv; if (!a) return; a.build = a.build || {}; a.build[sel.dataset.cat] = sel.value; dirty = true; save(); renderBotParts(); renderAdventure();
+    });
+  }
+
   // ---- Robot stats: maps the combat model to the owner's full attribute sheet
   // (Core / Technical / Resistances / Progression). Bay power + level feed in. ----
   function robotStats(gear) {
@@ -11152,7 +11238,7 @@ window.__sfx = (function () {
       '<label class="exp-lab">Skin</label><div class="exp-row">' + colorChips + '</div>' +
       '<label class="exp-lab">Region</label><div class="exp-row exp-regions">' + regionChips + '</div>' +
       '<div class="exp-hint">Design the look under Chassis Builder; looted parts (with stats) snap into the five slots below.</div></div></div>' +
-      advWrap('builder', '🔧 Chassis Builder — customise your bot', renderBuilder(a)) +
+      '<div class="exp-hint exp-partslink">🦾 Design this bot part-by-part in the <b>Bot Parts Lab</b> floor just below.</div>' +
       matBar + '<div class="exp-load">' + load + '</div>' + totHtml +
       advWrap('sys', '🤖 Robot systems — full attribute sheet', statsSheetHtml(gear)) +
       status + battleHtml + suggest + advWrap('log', '📜 Adventure log', advLog) + haul + advWrap('set', '✨ Signature gear sets', setBonusHtml()) +
@@ -11230,6 +11316,7 @@ window.__sfx = (function () {
   renderUltronUp();
   renderPortal();
   renderAgents();
+  renderBotParts();
   applyPlanetTheme();
   renderCodex();
   // size the room canvas to the loaded bay count -- without this a refresh
@@ -11286,7 +11373,7 @@ window.__sfx = (function () {
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
