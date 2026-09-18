@@ -1027,6 +1027,16 @@
   .arm-w-n{ flex:1; font-family:var(--font-mono); font-size:10.5px; color:var(--text); }
   .arm-w-b{ padding:5px 9px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:9.5px; }
   .arm-w-b:hover{ background:rgba(255,255,255,.05); }
+  /* Arsenal weapon vault */
+  .ars-head{ font-family:var(--font-display); font-weight:800; font-size:13px; color:#ffd88a; margin-bottom:8px; }
+  .ars-head .ars-sub{ font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); font-weight:400; }
+  .ars-cls{ font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:#8fb0d8; margin:12px 0 6px; border-left:2px solid #3a4c66; padding-left:7px; }
+  .ars-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(118px,1fr)); gap:8px; }
+  .ars-card{ border:1px solid var(--gc); border-radius:8px; background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.15)); padding:7px 8px; box-shadow:0 0 12px -5px var(--gc); }
+  .ars-imgwrap{ height:52px; display:flex; align-items:center; justify-content:center; margin-bottom:4px; }
+  .ars-img{ max-width:100%; max-height:52px; image-rendering:pixelated; image-rendering:crisp-edges; filter:drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
+  .ars-n{ font-family:var(--font-display); font-weight:700; font-size:11px; color:var(--text); line-height:1.15; }
+  .ars-r{ font-family:var(--font-mono); font-size:9px; font-weight:700; margin-top:1px; }
   .part-inspect{ position:fixed; inset:0; z-index:1400; display:flex; align-items:center; justify-content:center; background:rgba(4,6,10,.72); padding:16px; }
   .pi-box{ width:min(440px,94vw); max-height:80vh; overflow:auto; background:linear-gradient(180deg,#12151b,#0b0d12); border:1px solid #2a3a55; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.6); padding:14px 16px; }
   .pi-h{ display:flex; align-items:center; justify-content:space-between; font-family:var(--font-display); font-weight:800; font-size:13px; color:#cfe0ff; margin-bottom:10px; }
@@ -2440,6 +2450,11 @@
           <!-- Weapons rooms: Armory first ... ending with the mega weapon (Genesis) -->
           <div class="game-floor"><div class="floor-sign">🔫 Ultron's Armory</div>
           <div class="armory" id="armory"></div>
+          </div>
+
+          <!-- Arsenal: the full weapon vault, every gun as its own pixel sprite -->
+          <div class="game-floor"><div class="floor-sign">🗄️ Ultron's Arsenal</div>
+          <div class="arsenal" id="arsenal"></div>
           </div>
 
           <div class="game-floor"><div class="floor-sign">☠️ Genesis Cannon — Mega Weapon</div>
@@ -8597,12 +8612,12 @@ window.__sfx = (function () {
   // then upgrades for +25% output/level -- all on the same exponential scale.
   // Their output feeds the same passive/offline income path as everything else. ----
   var GENERATORS = [
-    { id: 0, name: 'Bit Trickle',     unlock: 200,     base: 0.9,   upBase: 60,      rate: 0.5 },
-    { id: 1, name: 'Data Spring',     unlock: 4000,    base: 7,     upBase: 1200,    rate: 0.5 },
-    { id: 2, name: 'Byte Fountain',   unlock: 80000,   base: 52,    upBase: 24000,   rate: 0.5 },
-    { id: 3, name: 'Chit Geyser',     unlock: 1.5e6,   base: 380,   upBase: 450000,  rate: 0.5 },
-    { id: 4, name: 'Scrip Cascade',   unlock: 3e7,     base: 2800,  upBase: 9e6,     rate: 0.5 },
-    { id: 5, name: 'Nanite Torrent',  unlock: 6e8,     base: 21000, upBase: 1.8e8,   rate: 0.5 },
+    { id: 0, name: 'Bit Trickle',     unlock: 200,     base: 2.3,    upBase: 60,      rate: 0.5 },
+    { id: 1, name: 'Data Spring',     unlock: 4000,    base: 18,     upBase: 1200,    rate: 0.5 },
+    { id: 2, name: 'Byte Fountain',   unlock: 80000,   base: 130,    upBase: 24000,   rate: 0.5 },
+    { id: 3, name: 'Chit Geyser',     unlock: 1.5e6,   base: 950,    upBase: 450000,  rate: 0.5 },
+    { id: 4, name: 'Scrip Cascade',   unlock: 3e7,     base: 7000,   upBase: 9e6,     rate: 0.5 },
+    { id: 5, name: 'Nanite Torrent',  unlock: 6e8,     base: 52000,  upBase: 1.8e8,   rate: 0.5 },
   ];
   function genLvl(id) { return (state.gen && state.gen.up && state.gen.up[id]) || 0; }
   function genUnlocked(id) { return !!(state.gen && state.gen.unlocked && state.gen.unlocked[id]); }
@@ -8612,7 +8627,7 @@ window.__sfx = (function () {
   // (Flux Capacitor). One helper for the whole passive/second stream so the live
   // tick, the HUD, renderBalance and offline accrual all agree.
   function psMult() { return pct('psboost', 6) * xmul('psmult', 0.04); }
-  var PS_BOOST = 1.5;   // owner buff: all passive per-second earners pay 1.5x what they otherwise would
+  var PS_BOOST = 2.25;   // owner buff: all passive per-second earners (reactors, refinery, vendor, planets) pay 2.25x -- lifts per-second income to match the boosted active economy
   function passivePerSec() { var f = window.__foundry || {}; return ((f.passive || 0) + refIncome() + genIncome() + vendorIncome() + planetIncome()) * globalMult() * idleBonus() * psMult() * PS_BOOST; }
   function genUpCost(g) { return Math.ceil(g.upBase * Math.pow(1.6, genLvl(g.id))); }
 
@@ -9486,7 +9501,7 @@ window.__sfx = (function () {
     state.roundStart = state.lifetime || 0;
     gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); renderProgression();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderArsenal(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); renderProgression();
     if (window.__roomRelayout) window.__roomRelayout();
   }
   var stonelabEl = document.getElementById('stonelab');
@@ -9836,6 +9851,49 @@ window.__sfx = (function () {
     var sb = armoryEl.querySelector('[data-arm="save"]'); if (sb) sb.addEventListener('click', function () { var nm = (document.getElementById('arm-lname').value || '').trim(); if (!nm) return; a.loadouts = a.loadouts || {}; a.loadouts[nm] = { cls: a.cls, sel: JSON.parse(JSON.stringify(a.sel)) }; save(); gamePop('💾 Loadout “' + nm + '” saved', '#8fd8ff'); renderArmory(); });
     armoryEl.querySelectorAll('[data-arml]').forEach(function (b) { b.addEventListener('click', function () { var lo = a.loadouts[b.dataset.arml]; if (!lo) return; a.cls = lo.cls; a.sel = JSON.parse(JSON.stringify(lo.sel)); save(); gamePop('📂 Loadout loaded', '#8fd8ff'); renderArmory(); }); });
   }
+  // ---- Arsenal: the weapon vault -- every gun in the game as its own pixel
+  // sprite, grouped by class and tinted by rarity. Original art (dev-tools/
+  // gen_guns.py); the sprites live in pixel-assets/gun_<id>.png. ----
+  var arsenalEl = document.getElementById('arsenal');
+  var GUN_RAR = { Common: '#9aa2ae', Uncommon: '#33d17a', Rare: '#3d9bff', Epic: '#b084f0', Legendary: '#ff9d3c', Mythic: '#ff5a7a' };
+  var GUNS = [
+    { id: 'sig_lance', name: 'Oxide Lance', cls: 'Signature', rarity: 'Mythic' },
+    { id: 'sig_blaster', name: 'Vibranium Blaster', cls: 'Signature', rarity: 'Legendary' },
+    { id: 'sig_scepter', name: 'Genesis Scepter', cls: 'Signature', rarity: 'Mythic' },
+    { id: 'bal_pistol', name: 'Sidewinder', cls: 'Pistol', rarity: 'Common' },
+    { id: 'bal_pistol2', name: 'Vandal', cls: 'Pistol', rarity: 'Uncommon' },
+    { id: 'bal_smg', name: 'Ripsaw SMG', cls: 'SMG', rarity: 'Uncommon' },
+    { id: 'bal_smg2', name: 'Static SMG', cls: 'SMG', rarity: 'Rare' },
+    { id: 'bal_rifle', name: 'Marauder', cls: 'Assault', rarity: 'Rare' },
+    { id: 'bal_rifle_w', name: 'Woodland AR', cls: 'Assault', rarity: 'Uncommon' },
+    { id: 'bal_shotgun', name: 'Breaker', cls: 'Shotgun', rarity: 'Rare' },
+    { id: 'bal_shotgun2', name: 'Thunderclap', cls: 'Shotgun', rarity: 'Epic' },
+    { id: 'bal_sniper', name: 'Longshot', cls: 'Sniper', rarity: 'Epic' },
+    { id: 'bal_sniper2', name: "Reaper's Eye", cls: 'Sniper', rarity: 'Legendary' },
+    { id: 'bal_heavy', name: 'Juggernaut', cls: 'Heavy', rarity: 'Epic' },
+    { id: 'bal_heavy2', name: 'Devastator', cls: 'Heavy', rarity: 'Legendary' },
+    { id: 'plz_pistol', name: 'Ion Sidearm', cls: 'Plasma Pistol', rarity: 'Uncommon' },
+    { id: 'plz_pistol2', name: 'Volt Sidearm', cls: 'Plasma Pistol', rarity: 'Rare' },
+    { id: 'plz_rifle', name: 'Pulse Rifle', cls: 'Plasma Rifle', rarity: 'Rare' },
+    { id: 'plz_rifle2', name: 'Neon Rifle', cls: 'Plasma Rifle', rarity: 'Epic' },
+    { id: 'plz_rifle3', name: 'Venom Rifle', cls: 'Plasma Rifle', rarity: 'Legendary' },
+    { id: 'plz_cannon', name: 'Arc Cannon', cls: 'Plasma Cannon', rarity: 'Epic' },
+    { id: 'plz_cannon2', name: 'Singularity Cannon', cls: 'Plasma Cannon', rarity: 'Mythic' }
+  ];
+  var GUN_ORDER = ['Signature', 'Pistol', 'SMG', 'Assault', 'Shotgun', 'Sniper', 'Heavy', 'Plasma Pistol', 'Plasma Rifle', 'Plasma Cannon'];
+  function renderArsenal() {
+    if (!arsenalEl) return;
+    var groups = {}; GUNS.forEach(function (g) { (groups[g.cls] = groups[g.cls] || []).push(g); });
+    var html = '<div class="ars-head">🗄️ Ultron’s Arsenal <span class="ars-sub">— every weapon in the vault, ' + GUNS.length + ' forged</span></div>';
+    GUN_ORDER.forEach(function (cls) {
+      var arr = groups[cls]; if (!arr) return;
+      html += '<div class="ars-cls">' + cls + '</div><div class="ars-grid">' + arr.map(function (g) {
+        var col = GUN_RAR[g.rarity] || '#9aa2ae';
+        return '<div class="ars-card" style="--gc:' + col + '"><div class="ars-imgwrap"><img class="ars-img" src="/pixel-assets/gun_' + g.id + '.png?v=2" alt="' + esc(g.name) + '" loading="lazy"></div><div class="ars-n">' + esc(g.name) + '</div><div class="ars-r" style="color:' + col + '">' + g.rarity + '</div></div>';
+      }).join('') + '</div>';
+    });
+    arsenalEl.innerHTML = html;
+  }
   // ---- AI Brain Lab: custom-build Ultron's AI brain from real AI-architecture
   // components across 4 layers, using three new lab materials (Synapse Filaments,
   // Logic Cores, Data Crystals) the lab grows over time + you synthesize with
@@ -9932,12 +9990,12 @@ window.__sfx = (function () {
   // portfolio multiplier (cryptoMult) folded into globalMult -- so crypto
   // synergises with the whole game rather than sitting off to the side. ----
   var CRYPTOS = [
-    { id: 'btc', sym: '₿', name: 'Bitcoin', col: '#f7931a', str: 'Ultimate digital store of value & institutional asset.', risk: 'High energy footprint; slower transactions.', unlock: 5e8, rate: 0.02, val: 9e8, trait: 'Highest sale value per coin (store of value).' },
-    { id: 'eth', sym: 'Ξ', name: 'Ethereum', col: '#8a92b2', str: 'Core infrastructure layer for smart contracts & dApps.', risk: 'Variable, sometimes expensive gas fees.', unlock: 2e9, rate: 0.08, val: 2.2e8, trait: '+8% mine rate to EVERY coin per coin you own (infrastructure).' },
-    { id: 'bnb', sym: '◈', name: 'BNB', col: '#f3ba2f', str: 'Native utility token powering the Binance ecosystem.', risk: 'High centralization risk (single entity).', unlock: 8e9, rate: 0.12, val: 1.1e8, trait: '−5% rig-upgrade cost per BNB rig level (utility).' },
-    { id: 'xrp', sym: '✕', name: 'XRP', col: '#25a768', str: 'Ultra-fast, low-cost cross-border banking payments.', risk: 'Long-term regulatory scrutiny.', unlock: 3e10, rate: 0.5, val: 3.5e7, trait: 'Fastest miner — many cheap coins.' },
-    { id: 'sol', sym: '◎', name: 'Solana', col: '#14f195', str: 'High-performance chain for fast, cheap dApps & memes.', risk: 'Occasional network stability issues / outages.', unlock: 1.2e11, rate: 0.9, val: 4e7, trait: 'Very high rate, but random short outages pause it.' },
-    { id: 'trx', sym: '⟁', name: 'TRON', col: '#eb0029', str: 'Leading network for global stablecoin (USDT) flow.', risk: 'Intense competition from L2s & Solana.', unlock: 5e11, rate: 0.35, val: 8e7, trait: '+4% sale value on ALL coins per TRX rig level (liquidity).' }
+    { id: 'btc', sym: '₿', name: 'Bitcoin', col: '#f7931a', str: 'Ultimate digital store of value & institutional asset.', risk: 'High energy footprint; slower transactions.', unlock: 3e9, rate: 0.02, val: 9e8, trait: 'Highest sale value per coin (store of value).' },
+    { id: 'eth', sym: 'Ξ', name: 'Ethereum', col: '#8a92b2', str: 'Core infrastructure layer for smart contracts & dApps.', risk: 'Variable, sometimes expensive gas fees.', unlock: 1.2e10, rate: 0.08, val: 2.2e8, trait: '+8% mine rate to EVERY coin per coin you own (infrastructure).' },
+    { id: 'bnb', sym: '◈', name: 'BNB', col: '#f3ba2f', str: 'Native utility token powering the Binance ecosystem.', risk: 'High centralization risk (single entity).', unlock: 5e10, rate: 0.12, val: 1.1e8, trait: '−5% rig-upgrade cost per BNB rig level (utility).' },
+    { id: 'xrp', sym: '✕', name: 'XRP', col: '#25a768', str: 'Ultra-fast, low-cost cross-border banking payments.', risk: 'Long-term regulatory scrutiny.', unlock: 1.8e11, rate: 0.5, val: 3.5e7, trait: 'Fastest miner — many cheap coins.' },
+    { id: 'sol', sym: '◎', name: 'Solana', col: '#14f195', str: 'High-performance chain for fast, cheap dApps & memes.', risk: 'Occasional network stability issues / outages.', unlock: 7e11, rate: 0.9, val: 4e7, trait: 'Very high rate, but random short outages pause it.' },
+    { id: 'trx', sym: '⟁', name: 'TRON', col: '#eb0029', str: 'Leading network for global stablecoin (USDT) flow.', risk: 'Intense competition from L2s & Solana.', unlock: 3e12, rate: 0.35, val: 8e7, trait: '+4% sale value on ALL coins per TRX rig level (liquidity).' }
   ];
   var cryptoEl = document.getElementById('crypto');
   function cryptoInit() { state.crypto = state.crypto || { unlocked: {}, bal: {}, up: {} }; var c = state.crypto; if (!c.unlocked) c.unlocked = {}; if (!c.bal) c.bal = {}; if (!c.up) c.up = {}; return c; }
@@ -9974,8 +10032,15 @@ window.__sfx = (function () {
     var sold = 0; CRYPTOS.forEach(function (x) { if (cryptoOwns(x.id) && (cryptoInit().bal[x.id] || 0) > 0) { cryptoSell(x.id); sold++; } });
     if (!sold) gamePop('No coins to sell yet', '#8b93a0');
   };
+  var CRYPTO_LVL = 100;   // crypto is a late-game system now -- it prints a lot, so it stays locked until you've built a real economy
   function renderCrypto() {
     if (!cryptoEl) return; var c = cryptoInit();
+    var lvl = (typeof playerLevel === 'function') ? playerLevel() : 1;
+    if (lvl < CRYPTO_LVL && cryptoOwnedCount() === 0) {   // gate the whole rig until mid/late game (players who already own a coin keep access)
+      cryptoEl.innerHTML = '<div class="cy-head">⛏️ Crypto Mining Rig <span class="cy-sub">— high-yield late-game economy</span></div>' +
+        '<div class="cy-locked" style="padding:14px;font-family:ui-monospace,monospace;font-size:12px;color:#8b93a0;">🔒 The mining rigs draw serious power — they unlock at <b style="color:#f7931a">Level ' + CRYPTO_LVL + '</b>. You are Level ' + lvl + '. Build your foundry, reactors and refinery first; crypto is meant to cap off a mature economy, not carry the early game.</div>';
+      return;
+    }
     var owned = cryptoOwnedCount(), sol = performance.now() / 1000 < solOutageUntil;
     var cards = CRYPTOS.map(function (x) {
       var own = cryptoOwns(x.id), bal = c.bal[x.id] || 0, lvl = cryptoUp(x.id);
@@ -10271,7 +10336,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderGenerators(); renderBays(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts();
+    renderBalance(); renderUpgrades(); renderGenerators(); renderBays(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderArsenal(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -10522,7 +10587,7 @@ window.__sfx = (function () {
     gamePop('◉ +1.5 Nanits — developer grant', '#ffcf5a');
     return true;
   };
-  function devRefresh() { publish(); dirty = true; save(); renderBalance(); renderProgression(); renderStonelab(); renderGenesis(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout(); }
+  function devRefresh() { publish(); dirty = true; save(); renderBalance(); renderProgression(); renderStonelab(); renderGenesis(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderArsenal(); renderBrain(); renderBays(); renderAdventure(); if (window.__roomRelayout) window.__roomRelayout(); }
   function renderDevPanel() {
     if (!devPanelEl) return;
     var devFloor = document.getElementById('dev-floor');
@@ -10560,6 +10625,7 @@ window.__sfx = (function () {
           '<button type="button" class="dev-btn add" data-dev="gift" data-g="starter">Starter boost</button>' +
           '<input type="text" class="dev-num" id="dev-giftout" readonly placeholder="code appears here — copy &amp; share" style="min-width:150px;">' +
         '</div>' +
+        '<div class="dev-group"><span class="dev-lbl">⚠ Danger — wipe this account’s game</span><button type="button" class="dev-btn rem" data-dev="resetdev">🗑 Reset game progress</button></div>' +
       '</div><div class="dev-confirm" id="dev-confirm" hidden></div>';
     function grantGear(forceMythic) {
       if (typeof makePart !== 'function' || typeof BASES === 'undefined') return;
@@ -10608,6 +10674,20 @@ window.__sfx = (function () {
           var code = ''; try { code = 'ULT-' + btoa(JSON.stringify(bundle)).replace(/=+$/, ''); } catch (e) {}
           var out = document.getElementById('dev-giftout'); if (out) { out.value = code; out.select && out.select(); try { document.execCommand('copy'); } catch (e) {} }
           gamePop('🎁 Gift code ready — copied, share it', '#8fe6b4'); return;
+        }
+        if (k === 'resetdev') {   // wipe this account's game save and reload fresh -- explicit confirm required
+          var rbar = document.getElementById('dev-confirm'); rbar.hidden = false;
+          rbar.innerHTML = '<span class="dev-cf-msg" style="color:#ff8098">⚠ Wipe ALL developer game progress and start fresh? This cannot be undone.</span>' +
+            '<button type="button" class="dev-btn rem" id="dev-cf-yes">🗑 Reset everything</button><button type="button" class="dev-btn add" id="dev-cf-no">✕ Cancel</button>';
+          document.getElementById('dev-cf-no').addEventListener('click', function () { rbar.hidden = true; rbar.innerHTML = ''; });
+          document.getElementById('dev-cf-yes').addEventListener('click', function () {
+            try { localStorage.removeItem(KEY); } catch (e) {}
+            try { localStorage.removeItem('ultron_floors_open_v1'); } catch (e) {}
+            try { localStorage.removeItem('ultron_hud_collapsed'); } catch (e) {}
+            if (window.__sfx) window.__sfx('reboot'); gamePop('🗑 Game progress reset — reloading…', '#ff8098');
+            setTimeout(function () { try { location.reload(); } catch (e) {} }, 600);
+          });
+          return;
         }
         if (k === 'cur') { state.bits = Math.max(0, state.bits + amt); if (amt > 0) state.lifetime = (state.lifetime || 0) + amt; gamePop('◉ ' + (amt >= 0 ? '+' : '−') + fmt(Math.abs(amt)), '#ffcf5a'); }
         else if (k === 'curzero') { state.bits = 0; gamePop('◉ currency zeroed', '#ff8098'); }
@@ -10716,7 +10796,7 @@ window.__sfx = (function () {
   ];
   function xpUp(id) { return (state.xpcore && state.xpcore.up && state.xpcore.up[id]) || 0; }
   function xpUpCost(u) { return Math.ceil(u.base * Math.pow(1.6, xpUp(u.id))); }
-  function xpcoreRate() { var base = (20 + playerLevel() * 5) * (1 + 1.0 * ((state.prestige && state.prestige.cores) || 0)); return base * (1 + 0.25 * xpUp('rate')) * Math.pow(1.06, xpUp('mult')) * (1 + 0.12 * xpUp('speed')) * (1 + 0.12 * xpUp('quality')) * (1 + 0.12 * xpUp('eff')) * 1.05; }   // XP/sec: +5% overall (lifts the starting amount AND scales every upgrade since it multiplies the whole formula)
+  function xpcoreRate() { var base = (20 + playerLevel() * 5) * (1 + 1.0 * ((state.prestige && state.prestige.cores) || 0)); return base * (1 + 0.25 * xpUp('rate')) * Math.pow(1.06, xpUp('mult')) * (1 + 0.12 * xpUp('speed')) * (1 + 0.12 * xpUp('quality')) * (1 + 0.12 * xpUp('eff')) * 1.05 * 0.85; }   // XP/sec: prior +5% curve, then a 15% overall reduction (×0.85) to rebalance the crystal vs the rest of the economy
   // ---- Infinity Stone Laboratory: forge ONE custom stone of a chosen aspect,
   // then evolve its tier for a growing, aspect-specific power boost. ----
   var STONE_ASPECTS = [
@@ -10768,7 +10848,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderArsenal(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); }
       dirty = false;
     }
   }, 500);
@@ -11431,6 +11511,7 @@ window.__sfx = (function () {
   renderPortal();
   renderAgents();
   renderBotParts();
+  renderArsenal();
   applyPlanetTheme();
   renderCodex();
   // size the room canvas to the loaded bay count -- without this a refresh
@@ -11487,7 +11568,7 @@ window.__sfx = (function () {
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderArsenal(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderAgents(); renderBotParts(); renderCodex();
       applyPlanetTheme();   // restore the travelled-to planet's room reskin on load
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
@@ -11540,7 +11621,7 @@ window.__sfx = (function () {
     for (var i = ingots.length - 1; i >= 0; i--) {
       var g = ingots[i]; g.x += sp * dt; var gm = mats[g.mi];
       if (g.stage === 'ore') {
-        if (gm && gm.sm && g.x >= xSm(g.mi)) { g.stage = 'ingot'; smeltFlash[g.mi] = t + 0.35; smeltSndTick = (smeltSndTick + 1) % 2; if (window.__sfx && smeltSndTick === 0) window.__sfx('press'); }   // sound on EVERY OTHER ingot -- cuts the refinery clatter roughly in half
+        if (gm && gm.sm && g.x >= xSm(g.mi)) { g.stage = 'ingot'; smeltFlash[g.mi] = t + 0.35; }   // ore -> ingot: visual flash only, no sound (refinery kept silent by request)
       }
       if (g.stage === 'ingot' && c.unlP && g.x >= pressX - 16) {
         ingots.splice(i, 1); pressFlash = t + 0.18;

@@ -1,0 +1,134 @@
+[
+ {
+  "id": "sig_lance",
+  "name": "Oxide Lance",
+  "cls": "Signature",
+  "rarity": "Mythic"
+ },
+ {
+  "id": "sig_blaster",
+  "name": "Vibranium Blaster",
+  "cls": "Signature",
+  "rarity": "Legendary"
+ },
+ {
+  "id": "sig_scepter",
+  "name": "Genesis Scepter",
+  "cls": "Signature",
+  "rarity": "Mythic"
+ },
+ {
+  "id": "bal_pistol",
+  "name": "Sidewinder",
+  "cls": "Pistol",
+  "rarity": "Common"
+ },
+ {
+  "id": "bal_pistol2",
+  "name": "Vandal",
+  "cls": "Pistol",
+  "rarity": "Uncommon"
+ },
+ {
+  "id": "bal_smg",
+  "name": "Ripsaw SMG",
+  "cls": "SMG",
+  "rarity": "Uncommon"
+ },
+ {
+  "id": "bal_smg2",
+  "name": "Static SMG",
+  "cls": "SMG",
+  "rarity": "Rare"
+ },
+ {
+  "id": "bal_rifle",
+  "name": "Marauder",
+  "cls": "Assault",
+  "rarity": "Rare"
+ },
+ {
+  "id": "bal_rifle_w",
+  "name": "Woodland AR",
+  "cls": "Assault",
+  "rarity": "Uncommon"
+ },
+ {
+  "id": "bal_shotgun",
+  "name": "Breaker",
+  "cls": "Shotgun",
+  "rarity": "Rare"
+ },
+ {
+  "id": "bal_shotgun2",
+  "name": "Thunderclap",
+  "cls": "Shotgun",
+  "rarity": "Epic"
+ },
+ {
+  "id": "bal_sniper",
+  "name": "Longshot",
+  "cls": "Sniper",
+  "rarity": "Epic"
+ },
+ {
+  "id": "bal_sniper2",
+  "name": "Reaper's Eye",
+  "cls": "Sniper",
+  "rarity": "Legendary"
+ },
+ {
+  "id": "bal_heavy",
+  "name": "Juggernaut",
+  "cls": "Heavy",
+  "rarity": "Epic"
+ },
+ {
+  "id": "bal_heavy2",
+  "name": "Devastator",
+  "cls": "Heavy",
+  "rarity": "Legendary"
+ },
+ {
+  "id": "plz_pistol",
+  "name": "Ion Sidearm",
+  "cls": "Plasma Pistol",
+  "rarity": "Uncommon"
+ },
+ {
+  "id": "plz_pistol2",
+  "name": "Volt Sidearm",
+  "cls": "Plasma Pistol",
+  "rarity": "Rare"
+ },
+ {
+  "id": "plz_rifle",
+  "name": "Pulse Rifle",
+  "cls": "Plasma Rifle",
+  "rarity": "Rare"
+ },
+ {
+  "id": "plz_rifle2",
+  "name": "Neon Rifle",
+  "cls": "Plasma Rifle",
+  "rarity": "Epic"
+ },
+ {
+  "id": "plz_rifle3",
+  "name": "Venom Rifle",
+  "cls": "Plasma Rifle",
+  "rarity": "Legendary"
+ },
+ {
+  "id": "plz_cannon",
+  "name": "Arc Cannon",
+  "cls": "Plasma Cannon",
+  "rarity": "Epic"
+ },
+ {
+  "id": "plz_cannon2",
+  "name": "Singularity Cannon",
+  "cls": "Plasma Cannon",
+  "rarity": "Mythic"
+ }
+]
