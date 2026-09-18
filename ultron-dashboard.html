@@ -1093,6 +1093,30 @@
   .cy-sel{ background:#14171d; border:1px solid var(--line); border-radius:6px; color:var(--text); font-family:var(--font-mono); font-size:10px; padding:4px 6px; }
   .cy-conns{ display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; } .cy-conn{ font-family:var(--font-mono); font-size:11px; color:#8fe6b4; border:1px solid rgba(95,227,154,.4); border-radius:5px; padding:2px 7px; cursor:pointer; } .cy-conn:hover{ background:rgba(95,227,154,.12); }
   .cy-hint{ font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-top:8px; }
+  /* ---- Ultron Core upgrades ---- */
+  .ultron-up{ margin-top:10px; }
+  .uc-head{ font-family:var(--font-display); font-weight:800; font-size:13px; color:#c78bff; } .uc-sub{ font-family:var(--font-mono); font-size:10px; font-weight:400; color:var(--text-faint); } .uc-sub b{ color:#e0b0ff; }
+  .uc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:8px; margin-top:9px; }
+  .uc-card{ border:1px solid rgba(176,107,255,.4); border-radius:9px; background:linear-gradient(180deg,rgba(120,80,220,.12),rgba(10,10,20,.2)); padding:9px 11px; }
+  .uc-h{ display:flex; align-items:center; gap:7px; } .uc-ic{ font-size:18px; } .uc-nm{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:var(--text); } .uc-lv{ margin-left:auto; font-family:var(--font-mono); font-size:9.5px; color:#0c0e13; background:#c78bff; border-radius:4px; padding:1px 6px; }
+  .uc-d{ font-family:var(--font-mono); font-size:10px; color:var(--text-dim); margin:6px 0; }
+  .uc-btn{ display:block; width:100%; padding:7px; border-radius:7px; border:1px solid rgba(176,107,255,.4); background:var(--void); color:var(--text-dim); cursor:default; font-family:var(--font-mono); font-size:10px; }
+  .uc-btn.can{ cursor:pointer; border-color:#c78bff; color:var(--text); } .uc-btn.can:hover{ background:rgba(176,107,255,.12); } .uc-btn:disabled{ opacity:.5; }
+  /* ---- Portal Room + planets ---- */
+  .portal{ margin-top:10px; }
+  .pt-locked{ font-family:var(--font-mono); font-size:12px; line-height:1.6; color:#b9c6d6; padding:14px 16px; border:1px dashed rgba(127,155,216,.5); border-radius:10px; } .pt-locked b{ color:#cfe0f5; }
+  .pt-head{ font-family:var(--font-display); font-weight:800; font-size:13px; color:#7fd0ff; } .pt-sub{ font-family:var(--font-mono); font-size:10px; font-weight:400; color:var(--text-faint); } .pt-sub b{ color:#cfe6ff; }
+  .pt-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; margin-top:9px; }
+  .pt-card{ border:1px solid var(--line); border-radius:10px; background:rgba(0,0,0,.2); padding:11px; text-align:center; } .pt-card.unl{ border-color:rgba(127,208,255,.4); } .pt-card.here{ border-color:#c78bff; box-shadow:0 0 14px -4px #b06bff; } .pt-card.soon{ opacity:.5; }
+  .pt-ic{ font-size:30px; line-height:1; } .pt-nm{ font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text); margin-top:5px; } .pt-here{ color:#c78bff; font-size:9px; }
+  .pt-d{ font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); margin:4px 0; line-height:1.4; } .pt-boost{ font-family:var(--font-mono); font-size:10px; color:#8fe6b4; margin:5px 0; }
+  .pt-btn{ width:100%; padding:7px; border-radius:7px; border:1px solid var(--line); background:var(--void); color:var(--text-dim); cursor:default; font-family:var(--font-mono); font-size:10px; } .pt-btn.can{ cursor:pointer; border-color:#7fd0ff; color:var(--text); } .pt-btn.can:hover{ background:rgba(255,255,255,.05); } .pt-btn:disabled{ opacity:.5; }
+  .pt-onworld{ font-family:var(--font-mono); font-size:9.5px; color:#c78bff; }
+  /* planet background themes behind the whole game */
+  body.planet-moon .game-building{ background:linear-gradient(180deg,#0c0f17,#070a12); }
+  body.planet-mars .game-building{ background:linear-gradient(180deg,#170d0b,#0c0706); }
+  body.planet-venus .game-building{ background:linear-gradient(180deg,#181206,#0d0a05); }
+  body.planet-jupiter .game-building{ background:linear-gradient(180deg,#14100a,#0a0806); }
   .gn-ic{ font-size:14px; flex-shrink:0; } .gn-msg{ line-height:1.4; }
   @keyframes gn-in{ from{ opacity:0; transform:translateX(30px); } } @keyframes gn-out{ to{ opacity:0; transform:translateX(30px); } }
   .brainlab{ margin-top:10px; padding:12px 14px; border:1px solid rgba(58,200,255,.4); border-radius:8px; background:linear-gradient(180deg,rgba(28,107,176,.14),rgba(8,20,36,.25)); }
@@ -2271,6 +2295,16 @@
           <!-- Progression tracker (HP / XP bars / skills) -->
           <div class="game-floor"><div class="floor-sign">📊 Progression &amp; Stats</div>
           <div class="progression" id="progression"></div>
+          </div>
+
+          <!-- Ultron Core: upgrade Ultron himself; 25% of his power flows to the bot -->
+          <div class="game-floor"><div class="floor-sign">⚡ Ultron Core</div>
+          <div class="ultron-up" id="ultron-up"></div>
+          </div>
+
+          <!-- Portal Room: unlocks after 1st prestige; travel between worlds -->
+          <div class="game-floor"><div class="floor-sign">🌀 Portal Room</div>
+          <div class="portal" id="portal"></div>
           </div>
 
           <!-- Adventure bot -->
@@ -8342,7 +8376,7 @@ window.__sfx = (function () {
     }).join('');
     return '<div class="set-wrap"><div class="set-head">✦ Signature Gear Sets <span class="set-hint">— collect God-rarity pieces to raise your attributes (2/4/6/8/10)</span></div>' + rows + '</div>';
   }
-  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult() * stoneMasteryMult() * relicPowerMult() * armoryPowerMult() * mechMult() * cyberMult() * combatSkillMult(); }
+  function combatPowerMult() { return (1 + 0.06 * skillLvl('combat') + 0.05 * skillLvl('ballistics') + 0.05 * skillLvl('quantum')) * bayPowerMult() * prestigeCharMult() * setBonusMult() * stonePowerMult() * cosmicCombatMult() * stoneMasteryMult() * relicPowerMult() * armoryPowerMult() * mechMult() * cyberMult() * combatSkillMult() * (1 + 0.25 * (ultronUpMult() - 1)) * planetGlobalMult(); }   // the bot shares 25% of Ultron's upgrade power
   function botPower() { var CB = window.Combat; if (!CB) return 0; return Math.round(CB.deriveStats((state.adv && state.adv.gear) || {}).power * combatPowerMult()); }
   // Ultron's OWN power level -- the game is about making HIM stronger, so this is
   // a single composite of his total strength (income + combat + prestige cores).
@@ -8424,7 +8458,7 @@ window.__sfx = (function () {
   // tick, the HUD, renderBalance and offline accrual all agree.
   function psMult() { return pct('psboost', 6) * xmul('psmult', 0.04); }
   var PS_BOOST = 1.5;   // owner buff: all passive per-second earners pay 1.5x what they otherwise would
-  function passivePerSec() { var f = window.__foundry || {}; return ((f.passive || 0) + refIncome() + genIncome() + vendorIncome()) * globalMult() * idleBonus() * psMult() * PS_BOOST; }
+  function passivePerSec() { var f = window.__foundry || {}; return ((f.passive || 0) + refIncome() + genIncome() + vendorIncome() + planetIncome()) * globalMult() * idleBonus() * psMult() * PS_BOOST; }
   function genUpCost(g) { return Math.ceil(g.upBase * Math.pow(1.6, genLvl(g.id))); }
 
   // ---- Auto-Vendor: unlocks automatically the moment you build your first
@@ -8500,7 +8534,7 @@ window.__sfx = (function () {
   function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
   var PROD_BOOST = 1.5625;   // owner buff: +25% faster production on top of the prior 1.25 (all income routes through globalMult)
   var VALUE_BOOST = 1.15;    // owner buff: +15% more value per unit of currency
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * cryptoMult() * mechMult() * PROD_BOOST * VALUE_BOOST; }
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * cryptoMult() * mechMult() * ultronUpMult() * planetGlobalMult() * PROD_BOOST * VALUE_BOOST; }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -8694,7 +8728,7 @@ window.__sfx = (function () {
       if (j && typeof j.bits === 'number' && j.epoch === RESET_EPOCH) {
         j = migrateSave(j);
         state.bits = j.bits; state.up = j.up || {}; state.seen = j.seen; state.ver = SAVE_VER;
-        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (j.mech) state.mech = j.mech; if (j.cyber) state.cyber = j.cyber; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev; if (j.palette) state.palette = j.palette;
+        if (j.loot) state.loot = j.loot; if (j.adv) state.adv = j.adv; if (j.ref) state.ref = j.ref; if (j.prestige) state.prestige = j.prestige; if (typeof j.lifetime === 'number') state.lifetime = j.lifetime; if (j.prog) state.prog = j.prog; if (j.mats) state.mats = j.mats; if (j.gen) state.gen = j.gen; if (j.comp) state.comp = j.comp; if (j.genesis) state.genesis = j.genesis; if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (j.mech) state.mech = j.mech; if (j.cyber) state.cyber = j.cyber; if (j.ultron) state.ultron = j.ultron; if (j.planets) state.planets = j.planets; if (typeof j.roundStart === 'number') state.roundStart = j.roundStart; if (typeof j.matsWipe === 'number') state.matsWipe = j.matsWipe; if (typeof j.devGrant === "number") state.devGrant = j.devGrant; if (typeof j.isDev === "number") state.isDev = j.isDev; if (j.palette) state.palette = j.palette;
       }  // else: missing/old epoch -> full reset (start fresh)
     }
   } catch (e) { /* private mode / disabled storage -- start fresh, never throw */ }
@@ -8716,7 +8750,9 @@ window.__sfx = (function () {
   if (!state.brain) state.brain = { unlocked: false, mats: { syn: 0, log: 0, dat: 0 }, comp: {} };   // AI Brain Lab
   if (!state.crypto) state.crypto = { unlocked: {}, bal: {}, up: {} };
   if (!state.mech) state.mech = { unlocked: false, pinOk: false, parts: {} };
-  if (!state.cyber) state.cyber = { nodes: {}, conns: [] };   // Crypto Mining Rig
+  if (!state.cyber) state.cyber = { nodes: {}, conns: [] };
+  if (!state.ultron) state.ultron = { up: {} };
+  if (!state.planets) state.planets = { current: "earth", unlocked: { earth: 1 }, bank: {} };   // Crypto Mining Rig
   if (!state.gen) state.gen = { unlocked: {}, up: {} };   // passive reactors above the assembly floors
   if (typeof state.lifetime !== 'number') state.lifetime = state.bits || 0;
   if (!state.prog) state.prog = { xp: 0, level: 1, pts: 0, skills: {} };
@@ -9294,7 +9330,7 @@ window.__sfx = (function () {
     state.roundStart = state.lifetime || 0;
     gamePop('☠ A NEW UNIVERSE — remade in Ultron’s image', '#ff2b3d');
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderProgression();
+    renderBalance(); renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderProgression();
     if (window.__roomRelayout) window.__roomRelayout();
   }
   var stonelabEl = document.getElementById('stonelab');
@@ -9721,7 +9757,7 @@ window.__sfx = (function () {
     brainEl.querySelectorAll('[data-blbuy]').forEach(function (bt) { bt.addEventListener('click', function () { var m = BRAIN_MATS.filter(function (x) { return x.id === bt.dataset.blbuy; })[0]; if (!m) return; var cost = m.buy * 10; if (state.bits < cost) return; state.bits -= cost; brainInit().mats[m.id] += 10; if (window.__sfx) window.__sfx('press'); publish(); dirty = true; save(); renderBrain(); renderBalance(); }); });
     brainEl.querySelectorAll('[data-blc]').forEach(function (bt) { bt.addEventListener('click', function () { var comp = BRAIN_COMPONENTS.filter(function (x) { return x.id === bt.dataset.blc; })[0]; if (!comp || !brainCanBuild(comp)) return; var c = brainCompCost(comp); state.bits -= c.bits; var m = brainInit().mats; m.syn -= c.mats.syn; m.log -= c.mats.log; m.dat -= c.mats.dat; state.brain.comp[comp.id] = Math.min(BRAIN_RAR.length, brainTier(comp.id) + 1); var rn = BRAIN_RAR[state.brain.comp[comp.id] - 1].n; if (window.__sfx) window.__sfx('build'); gamePop('🧠 ' + comp.name + ' → ' + rn, '#7fd0ff'); addXp(60 * state.brain.comp[comp.id], 'Brain: ' + comp.name); publish(); dirty = true; save(); renderBrain(); renderBalance(); renderProgression(); }); });
     brainEl.querySelectorAll('[data-blinsp]').forEach(function (bt) { bt.addEventListener('click', function () { inspectBrainPart(bt.dataset.blinsp); }); });
-    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); });
+    var fin = brainEl.querySelector('[data-bl="finalize"]'); if (fin) fin.addEventListener('click', function () { var cog = brainCurrentCog(); if (cog <= 0) return; state.brain.banked = (state.brain.banked || 0) + cog; state.brain.built = (state.brain.built || 0) + 1; state.brain.comp = {}; if (window.__sfx) window.__sfx('reboot'); gamePop('🧠 Brain #' + state.brain.built + ' finalized — +' + cog.toFixed(1) + ' cognition banked (stacks)', '#7fd0ff'); addXp(300, 'Brain finalized'); publish(); dirty = true; save(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); });
   }
   // ---- Crypto Mining Rig: mine 6 real-world-flavoured coins, each with its own
   // strength + risk, then convert them to currency. Everything feeds the game
@@ -9938,6 +9974,68 @@ window.__sfx = (function () {
     var cb = cyberEl.querySelector('[data-cyconn]'); if (cb) cb.addEventListener('click', function () { var a = document.getElementById('cy-a').value, bb = document.getElementById('cy-b').value; if (!a || !bb || a === bb) return; var k = cyConnKey(a, bb); if (cyberInit().conns.indexOf(k) >= 0) return; cyberInit().conns.push(k); if (window.__sfx) window.__sfx('reward'); gamePop('🔗 Nodes linked — more power', '#5fe39a'); publish(); dirty = true; save(); renderCyber(); });
     cyberEl.querySelectorAll('[data-cydis]').forEach(function (b) { b.addEventListener('click', function () { var k = b.dataset.cydis, c2 = cyberInit(); var i = c2.conns.indexOf(k); if (i >= 0) { c2.conns.splice(i, 1); publish(); dirty = true; save(); renderCyber(); } }); });
   }
+  // ---- Ultron Core: upgrade Ultron himself. He is the game's power house; his
+  // upgrades boost ALL income + power, and the adventure bot shares 25% of that
+  // boost (see combatPowerMult). ----
+  var ULTRON_UPS = [
+    { id: 'neural', name: 'Neural Core', ic: '🧠', base: 1e8, grow: 1.9, eff: function (l) { return 1 + 0.06 * l; }, desc: function (l) { return '+' + (6 * l) + '% all income & power'; } },
+    { id: 'reactor', name: 'Arc Overcharge', ic: '⚛️', base: 2.5e8, grow: 2.0, eff: function (l) { return 1 + 0.07 * l; }, desc: function (l) { return '+' + (7 * l) + '% power'; } },
+    { id: 'alloy', name: 'Adamantium Frame', ic: '🛡️', base: 5e8, grow: 2.05, eff: function (l) { return 1 + 0.05 * l; }, desc: function (l) { return '+' + (5 * l) + '% durability & power'; } },
+    { id: 'overmind', name: 'Overmind Protocol', ic: '👁️', base: 1e9, grow: 2.2, eff: function (l) { return Math.pow(1.05, l); }, desc: function (l) { return '×' + Math.pow(1.05, l).toFixed(2) + ' compounding all'; } },
+    { id: 'legion', name: 'Legion Uplink', ic: '📡', base: 2e9, grow: 2.1, eff: function (l) { return 1 + 0.08 * l; }, desc: function (l) { return '+' + (8 * l) + '% power'; } },
+    { id: 'ascend', name: 'Singularity Ascension', ic: '🌌', base: 1e10, grow: 2.4, eff: function (l) { return Math.pow(1.07, l); }, desc: function (l) { return '×' + Math.pow(1.07, l).toFixed(2) + ' compounding'; } }
+  ];
+  var ultronUpEl = document.getElementById('ultron-up');
+  function ultronUpInit() { state.ultron = state.ultron || { up: {} }; if (!state.ultron.up) state.ultron.up = {}; return state.ultron; }
+  function ultronUpLvl(id) { return ultronUpInit().up[id] || 0; }
+  function ultronUpCost(u) { return Math.ceil(u.base * Math.pow(u.grow, ultronUpLvl(u.id))); }
+  function ultronUpMult() { var U = ULTRON_UPS; if (!U) return 1; var m = 1; for (var i = 0; i < U.length; i++) m *= U[i].eff(ultronUpLvl(U[i].id)); return m; }
+  function renderUltronUp() {
+    if (!ultronUpEl) return;
+    var cards = ULTRON_UPS.map(function (u) { var l = ultronUpLvl(u.id), c = ultronUpCost(u), can = state.bits >= c; return '<div class="uc-card"><div class="uc-h"><span class="uc-ic">' + u.ic + '</span><span class="uc-nm">' + u.name + '</span><span class="uc-lv">Lv ' + l + '</span></div><div class="uc-d">' + u.desc(l) + '</div><button type="button" class="uc-btn' + (can ? ' can' : '') + '" data-ucup="' + u.id + '"' + (can ? '' : ' disabled') + '>Upgrade · <span style="color:' + fmtColor(c) + '">◉' + fmt(c) + '</span></button></div>'; }).join('');
+    ultronUpEl.innerHTML = '<div class="uc-head">⚡ Ultron Core <span class="uc-sub">— make Ultron stronger · ×' + ultronUpMult().toFixed(2) + ' all income &amp; power · the bot shares <b>25%</b> of it · ⚡ Ultron Power <b>' + ultronPower().toLocaleString() + '</b></span></div><div class="uc-grid">' + cards + '</div>';
+    ultronUpEl.querySelectorAll('[data-ucup]').forEach(function (b) { b.addEventListener('click', function () { var u = ULTRON_UPS.filter(function (x) { return x.id === b.dataset.ucup; })[0]; if (!u) return; var c = ultronUpCost(u); if (state.bits < c) return; state.bits -= c; ultronUpInit().up[u.id] = ultronUpLvl(u.id) + 1; if (window.__sfx) window.__sfx('upgrade'); gamePop('⚡ ' + u.name + ' → Lv ' + ultronUpLvl(u.id), '#c78bff'); addXp(100, 'Ultron: ' + u.name); publish(); dirty = true; save(); renderUltronUp(); renderBalance(); }); });
+  }
+
+  // ---- Portal Room + planets: unlocks after the 1st prestige. Travel to the
+  // Moon/Venus/Mars/Jupiter (space stations). Each unlocked planet gives a
+  // permanent all-around global booster and keeps earning currency even when
+  // you're not on it. ----
+  var PLANETS = [
+    { id: 'earth', name: 'Earth', ic: '🌍', lvl: 1, boost: 0, inc: 1, blurb: "Ultron's tower — home base." },
+    { id: 'moon', name: 'The Moon', ic: '🌙', lvl: 20, boost: 0.10, inc: 40, blurb: 'A lunar space station.' },
+    { id: 'venus', name: 'Venus', ic: '🟠', lvl: 60, boost: 0.20, inc: 220, blurb: 'A cloud station in the acid skies.' },
+    { id: 'mars', name: 'Mars', ic: '🔴', lvl: 120, boost: 0.35, inc: 1400, blurb: 'A red-dust orbital outpost.' },
+    { id: 'jupiter', name: 'Jupiter', ic: '🟤', lvl: 220, boost: 0.55, inc: 9000, blurb: 'A ring station over the gas giant.' },
+    { id: 'soon1', name: '???', ic: '🪐', comingSoon: true },
+    { id: 'soon2', name: '???', ic: '❔', comingSoon: true }
+  ];
+  var portalEl = document.getElementById('portal');
+  function planetsInit() { state.planets = state.planets || { current: 'earth', unlocked: { earth: 1 }, bank: {} }; if (!state.planets.unlocked) state.planets.unlocked = { earth: 1 }; if (!state.planets.current) state.planets.current = 'earth'; return state.planets; }
+  function pdef(id) { return PLANETS.filter(function (p) { return p.id === id; })[0]; }
+  function planetUnlocked(id) { return !!planetsInit().unlocked[id]; }
+  function portalOpen() { return ((state.prestige && state.prestige.cores) || 0) >= 1; }
+  function planetGlobalMult() { var P = PLANETS; if (!P) return 1; var pl = state.planets; if (!pl || !pl.unlocked) return 1; var m = 1; P.forEach(function (p) { if (!p.comingSoon && pl.unlocked[p.id]) m *= (1 + p.boost); }); return m; }
+  function planetIncome() { var P = PLANETS; if (!P) return 0; var pl = state.planets; if (!pl || !pl.unlocked) return 0; var s = 0; P.forEach(function (p) { if (!p.comingSoon && pl.unlocked[p.id] && p.id !== pl.current) s += p.inc; }); return s; }   // planets you're NOT on keep earning
+  function applyPlanetTheme() { var pl = planetsInit(); document.body.className = document.body.className.replace(/\bplanet-\w+/g, '').trim(); document.body.classList.add('planet-' + pl.current); }
+  function renderPortal() {
+    if (!portalEl) return;
+    if (!portalOpen()) { portalEl.innerHTML = '<div class="pt-locked">🔒 The Portal Room powers up after your <b>first prestige</b>. Reboot once to tear open a rift to other worlds.</div>'; return; }
+    var pl = planetsInit(), lv = playerLevel();
+    var cards = PLANETS.map(function (p) {
+      if (p.comingSoon) return '<div class="pt-card soon"><div class="pt-ic">' + p.ic + '</div><div class="pt-nm">Coming soon</div><div class="pt-d">A new world awaits…</div></div>';
+      var unl = planetUnlocked(p.id), here = pl.current === p.id, canUnlock = lv >= p.lvl;
+      var body = '<div class="pt-ic">' + p.ic + '</div><div class="pt-nm">' + p.name + (here ? ' · <span class="pt-here">HERE</span>' : '') + '</div><div class="pt-d">' + p.blurb + '</div>' +
+        '<div class="pt-boost">' + (p.boost > 0 ? '+' + Math.round(p.boost * 100) + '% all stats' : 'home') + (p.inc > 1 ? ' · ◉' + fmt(p.inc) + '/s off-world' : '') + '</div>';
+      if (!unl) body += '<button type="button" class="pt-btn' + (canUnlock ? ' can' : '') + '" data-punl="' + p.id + '"' + (canUnlock ? '' : ' disabled') + '>' + (canUnlock ? 'Unlock world' : 'Reach Lv ' + p.lvl) + '</button>';
+      else if (!here) body += '<button type="button" class="pt-btn can" data-ptravel="' + p.id + '">🌀 Travel here</button>';
+      else body += '<div class="pt-onworld">✔ current world</div>';
+      return '<div class="pt-card' + (unl ? ' unl' : '') + (here ? ' here' : '') + '">' + body + '</div>';
+    }).join('');
+    portalEl.innerHTML = '<div class="pt-head">🌀 Portal Room <span class="pt-sub">— on <b>' + (pdef(pl.current) || {}).name + '</b> · ×' + planetGlobalMult().toFixed(2) + ' global from worlds · other worlds earn ◉' + fmt(planetIncome()) + '/s</span></div><div class="pt-grid">' + cards + '</div>';
+    portalEl.querySelectorAll('[data-punl]').forEach(function (b) { b.addEventListener('click', function () { var p = pdef(b.dataset.punl); if (!p || planetUnlocked(p.id) || playerLevel() < p.lvl) return; planetsInit().unlocked[p.id] = 1; if (window.__sfx) window.__sfx('unlock'); gamePop('🌀 ' + p.name + ' unlocked — +' + Math.round(p.boost * 100) + '% global', '#7fd0ff'); addXp(500, 'World: ' + p.name); publish(); dirty = true; save(); renderPortal(); renderBalance(); }); });
+    portalEl.querySelectorAll('[data-ptravel]').forEach(function (b) { b.addEventListener('click', function () { var id = b.dataset.ptravel; if (!planetUnlocked(id)) return; planetsInit().current = id; applyPlanetTheme(); if (window.__sfx) window.__sfx('reboot'); gamePop('🌀 Arrived: ' + (pdef(id) || {}).name, '#c78bff'); publish(); dirty = true; save(); renderPortal(); }); });
+  }
   function prestigePointsFor(roundGain, coresGained) { return Math.floor(Math.sqrt(Math.max(0, roundGain) / 6000)) + coresGained * 3; }
   function doReboot() {
     if (window.__sfx) window.__sfx('reboot');
@@ -9964,7 +10062,7 @@ window.__sfx = (function () {
     if (window.__gamePop) gamePop('🦸 The Avengers unite and break Ultron — he falls, then rebuilds stronger.', '#ff5a7a');
     if (window.__ultronBroken) window.__ultronBroken();   // the room shows him repairing himself
     publish(); dirty = true; save();
-    renderBalance(); renderUpgrades(); renderGenerators(); renderBays(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber();
+    renderBalance(); renderUpgrades(); renderGenerators(); renderBays(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderAdventure(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal();
     if (window.__roomRelayout) window.__roomRelayout();
   }
 
@@ -10328,7 +10426,14 @@ window.__sfx = (function () {
       '<span style="font-size:10.5px;font-weight:700;color:#ff6b7e;background:rgba(255,107,126,.12);border:1px solid rgba(255,107,126,.35);border-radius:5px;padding:2px 7px;">★ LV ' + lv + '</span>' +
       '<span style="font-size:10.5px;font-weight:700;color:#ffb347;background:rgba(255,179,71,.12);border:1px solid rgba(255,179,71,.35);border-radius:5px;padding:2px 7px;">⚔ BOT ' + Math.round(pw).toLocaleString() + '</span>' +
       '</div>' +
-      '<div style="display:flex;gap:6px;margin-top:6px;"><span style="font-size:11px;font-weight:800;color:#c78bff;background:linear-gradient(180deg,rgba(176,107,255,.2),rgba(120,60,220,.1));border:1px solid rgba(176,107,255,.5);border-radius:5px;padding:3px 9px;box-shadow:0 0 12px -4px #b06bff;">⚡ ULTRON POWER ' + ultronPower().toLocaleString() + '</span></div>' + credRowHtml();
+      '<div style="display:flex;gap:6px;margin-top:6px;"><span style="font-size:11px;font-weight:800;color:#c78bff;background:linear-gradient(180deg,rgba(176,107,255,.2),rgba(120,60,220,.1));border:1px solid rgba(176,107,255,.5);border-radius:5px;padding:3px 9px;box-shadow:0 0 12px -4px #b06bff;">⚡ ULTRON POWER ' + ultronPower().toLocaleString() + '</span></div>' + cryptoRowHtml() + credRowHtml();
+  }
+  // Crypto tracker in the currency panel: the mined balance of each coin you own.
+  function cryptoRowHtml() {
+    var C = CRYPTOS; if (!C) return ''; var c = state.crypto; if (!c || !c.unlocked) return '';
+    var owned = CRYPTOS.filter(function (x) { return c.unlocked[x.id]; }); if (!owned.length) return '';
+    var chips = owned.map(function (x) { var bal = (c.bal && c.bal[x.id]) || 0; return '<span style="color:' + x.col + ';" title="' + x.name + '">' + x.sym + ' ' + (bal < 100 ? bal.toFixed(2) : fmt(bal)) + '</span>'; }).join('');
+    return '<div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,.07);font-family:ui-monospace,monospace;font-size:10px;font-weight:700;">' + chips + '</div>';
   }
   // The player's own login (username + PIN, and password if set) kept in view by
   // the currency panel so they never lose it -- masked with dots by default, an
@@ -10426,7 +10531,7 @@ window.__sfx = (function () {
       // The heavy panels rebuild lots of DOM + re-attach listeners, so only
       // refresh them ~every 1.5s (affordability doesn't change faster than the
       // eye tracks). Purchases still re-render them instantly on click.
-      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); }
+      if (++heavyTick >= 3) { heavyTick = 0; renderUpgrades(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); }
       dirty = false;
     }
   }, 500);
@@ -11042,6 +11147,9 @@ window.__sfx = (function () {
   renderXpCrystal();
   renderMech();
   renderCyber();
+  renderUltronUp();
+  renderPortal();
+  applyPlanetTheme();
   renderCodex();
   // size the room canvas to the loaded bay count -- without this a refresh
   // leaves the room laid out for 1 floor (published after the room's first
@@ -11066,7 +11174,7 @@ window.__sfx = (function () {
       if (j.gen) state.gen = j.gen;
       if (j.comp) state.comp = j.comp;
       if (j.genesis) state.genesis = j.genesis;
-      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (j.mech) state.mech = j.mech; if (j.cyber) state.cyber = j.cyber;
+      if (j.xpcore) state.xpcore = j.xpcore; if (j.stoneforge) state.stoneforge = j.stoneforge; if (j.cosmic) state.cosmic = j.cosmic; if (j.holiday) state.holiday = j.holiday; if (j.relics) state.relics = j.relics; if (j.armory) state.armory = j.armory; if (j.brain) state.brain = j.brain; if (j.crypto) state.crypto = j.crypto; if (j.mech) state.mech = j.mech; if (j.cyber) state.cyber = j.cyber; if (j.ultron) state.ultron = j.ultron; if (j.planets) state.planets = j.planets;
       if (typeof j.roundStart === 'number') state.roundStart = j.roundStart;
       if (typeof j.lifetime === 'number') state.lifetime = j.lifetime;
       if (j.prog) state.prog = j.prog;
@@ -11091,10 +11199,12 @@ window.__sfx = (function () {
       if (!state.crypto) state.crypto = { unlocked: {}, bal: {}, up: {} };
   if (!state.mech) state.mech = { unlocked: false, pinOk: false, parts: {} };
   if (!state.cyber) state.cyber = { nodes: {}, conns: [] };
+  if (!state.ultron) state.ultron = { up: {} };
+  if (!state.planets) state.planets = { current: "earth", unlocked: { earth: 1 }, bank: {} };
       if (typeof state.roundStart !== 'number') state.roundStart = state.lifetime || 0;
       publish();
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
-      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderCodex();
+      renderBalance(); renderUpgrades(); renderLoot(); renderAdventure(); renderRefinery(); renderPrestige(); renderPrestigeUpgrades(); renderGenerators(); renderPalettes(); renderGenesis(); renderStonelab(); renderCosmic(); renderHoliday(); renderRelics(); renderArmory(); renderBrain(); renderProgression(); renderCrypto(); renderXpCrystal(); renderMech(); renderCyber(); renderUltronUp(); renderPortal(); renderCodex();
       if (window.__roomRelayout) window.__roomRelayout();
       return true;
     } catch (e) { return false; }
