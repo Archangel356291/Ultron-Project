@@ -10266,7 +10266,7 @@ window.__sfx = (function () {
   ];
   function xpUp(id) { return (state.xpcore && state.xpcore.up && state.xpcore.up[id]) || 0; }
   function xpUpCost(u) { return Math.ceil(u.base * Math.pow(1.6, xpUp(u.id))); }
-  function xpcoreRate() { var base = (20 + playerLevel() * 5) * (1 + 1.0 * ((state.prestige && state.prestige.cores) || 0)); return base * (1 + 0.25 * xpUp('rate')) * Math.pow(1.06, xpUp('mult')) * (1 + 0.12 * xpUp('speed')) * (1 + 0.12 * xpUp('quality')) * (1 + 0.12 * xpUp('eff')); }   // XP/sec: level + cores, boosted by the crystal upgrades (rescaled for a much faster XP economy)
+  function xpcoreRate() { var base = (20 + playerLevel() * 5) * (1 + 1.0 * ((state.prestige && state.prestige.cores) || 0)); return base * (1 + 0.25 * xpUp('rate')) * Math.pow(1.06, xpUp('mult')) * (1 + 0.12 * xpUp('speed')) * (1 + 0.12 * xpUp('quality')) * (1 + 0.12 * xpUp('eff')) * 1.05; }   // XP/sec: +5% overall (lifts the starting amount AND scales every upgrade since it multiplies the whole formula)
   // ---- Infinity Stone Laboratory: forge ONE custom stone of a chosen aspect,
   // then evolve its tier for a growing, aspect-specific power boost. ----
   var STONE_ASPECTS = [
@@ -10556,7 +10556,7 @@ window.__sfx = (function () {
     if (battle && !battle.win) { a.suggestDismissed = false; a.failAt = Date.now(); }   // a fresh defeat re-shows the "how to raise power" guide
     if (window.__sfx) { if (battle && !battle.win) window.__sfx('die'); else if (isBoss || isDungeon) window.__sfx('boss'); else window.__sfx('reward'); }   // defeat / boss / haul, each its own sound
     var mult = battle ? battle.lootMult : 1;
-    var lootCount = Math.max(1, Math.round((isDungeon ? 3 + di : run.loot) * mult * 1.3));   // owner buff: ~30% more drops
+    var lootCount = Math.max(2, Math.round((isDungeon ? 3 + di : run.loot) * mult * 2.2));   // owner buff: far more drops (adventures 3x rewarding)
     var bonusIlvl = ilvl + (battle && battle.win ? 1 : 0) + 2;   // a win yields better loot; +2 nudges rarity up a little
     var out = [];
     for (var i = 0; i < lootCount; i++) out.push(rollLoot(bonusIlvl, isDungeon ? null : region.types));
@@ -10576,20 +10576,22 @@ window.__sfx = (function () {
     // per-kill bounty: every enemy the bot drops pays currency + salvage
     // materials (XP per kill is already granted by the addXp line below).
     var kills = battle ? battle.wavesCleared : 0, killGold = 0, killMats = { scrap: 0, alloy: 0, core: 0 };
+    var ADV_REWARD = 3;   // owner buff: adventures are 3x more rewarding (gold, materials + XP)
     if (kills > 0) {
       var zoneExp = Math.pow(1.18, isDungeon ? dungeonIlvl(di) : (region.ilvl || 0));
-      killGold = Math.round(kills * 12 * (1 + 0.5 * (a.dur || 0)) * (isBoss || isDungeon ? 2 : 1) * zoneExp * globalMult());
+      killGold = Math.round(kills * 12 * (1 + 0.5 * (a.dur || 0)) * (isBoss || isDungeon ? 2 : 1) * zoneExp * globalMult() * ADV_REWARD);
       state.bits += killGold; state.lifetime = (state.lifetime || 0) + killGold;
       var mtier = Math.min(6, 1 + Math.floor(ilvl / 4));
       for (var mk = 0; mk < kills; mk++) { var my = matYield(mtier); killMats.scrap += my.scrap; killMats.alloy += my.alloy; killMats.core += my.core; }
+      killMats.scrap = Math.round(killMats.scrap * ADV_REWARD); killMats.alloy = Math.round(killMats.alloy * ADV_REWARD); killMats.core = Math.round(killMats.core * ADV_REWARD);
       addMats(killMats);
     }
     a.lastEarn = { gold: killGold, mats: killMats, kills: kills };
     a.bossRun = 0; a.dungeonRun = 0;
-    a.inv = (a.inv || []).concat(out).slice(-40);
+    a.inv = (a.inv || []).concat(out).slice(-70);
     a.endsAt = 0; a.lastHaul = out;
     if (!(isDungeon && battle && battle.win))   // dungeon win already logged its big XP above
-      addXp((battle ? battle.wavesCleared * 12 + (battle.win ? 40 : 0) : 20) * (1 + 0.5 * (a.dur || 0)) * (isBoss || isDungeon ? 2 : 1) * Math.pow(1.28, isDungeon ? dungeonIlvl(di) : (region.ilvl || 0)), (isDungeon ? 'Vault: ' + dungeon.name : 'Expedition: ' + (region.name || 'run')));   // XP scales exponentially with zone to match the curve
+      addXp((battle ? battle.wavesCleared * 12 + (battle.win ? 40 : 0) : 20) * (1 + 0.5 * (a.dur || 0)) * (isBoss || isDungeon ? 2 : 1) * Math.pow(1.28, isDungeon ? dungeonIlvl(di) : (region.ilvl || 0)) * ADV_REWARD, (isDungeon ? 'Vault: ' + dungeon.name : 'Expedition: ' + (region.name || 'run')));   // 3x owner buff; XP scales exponentially with zone to match the curve
     dirty = true; save();
     return out;
   }
