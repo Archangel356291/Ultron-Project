@@ -1402,12 +1402,17 @@
   .attr-chip{ display:flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:10px; color:var(--text-dim); background:var(--void); border:1px solid var(--line); border-left-width:3px; border-radius:5px; padding:2px 8px; }
   .attr-ab{ font-weight:700; letter-spacing:.03em; }
   .attr-chip b{ color:var(--text); font-size:11px; }
-  /* modular robot preview: parts drive body / legs / head silhouettes */
-  .exp-robot{ width:66px; height:86px; }
-  .exp-head{ position:absolute; left:15px; right:15px; top:8px; height:16px; border-radius:5px 5px 0 0; background:linear-gradient(180deg,#b8b6ac,#86847a); }
-  .exp-eye{ position:absolute; left:23px; top:13px; width:20px; height:6px; border-radius:2px; background:var(--rc); box-shadow:0 0 8px var(--rc); }
-  .exp-body{ position:absolute; left:13px; right:13px; top:26px; height:34px; border-radius:4px; background:linear-gradient(180deg,#454b55,#2f343c); box-shadow:inset 0 0 0 1px rgba(255,255,255,.05); }
-  .exp-base{ position:absolute; left:15px; right:15px; bottom:8px; height:9px; background:#4a5058; border-radius:2px; }
+  /* modular robot preview: parts drive body / legs / head silhouettes -- larger + more detailed (owner request #27) */
+  .exp-robot{ width:88px; height:116px; }
+  .exp-head{ position:absolute; left:20px; right:20px; top:10px; height:22px; border-radius:6px 6px 0 0; background:linear-gradient(180deg,#c2c0b6,#86847a); box-shadow:inset 0 1px 0 rgba(255,255,255,.25); }
+  .exp-build .exp-head::before{ content:''; position:absolute; left:50%; top:-8px; width:2px; height:8px; margin-left:-1px; background:#9aa0a8; }               /* antenna mast */
+  .exp-build .exp-head::after{ content:''; position:absolute; left:50%; top:-12px; width:5px; height:5px; margin-left:-2.5px; border-radius:50%; background:var(--rc); box-shadow:0 0 7px var(--rc); }  /* antenna beacon */
+  .exp-eye{ position:absolute; left:30px; top:18px; width:28px; height:8px; border-radius:2px; background:var(--rc); box-shadow:0 0 10px var(--rc); }
+  .exp-body{ position:absolute; left:17px; right:17px; top:35px; height:46px; border-radius:5px; background:linear-gradient(180deg,#4b515c,#2f343c); box-shadow:inset 0 0 0 1px rgba(255,255,255,.06); }
+  .exp-build .exp-body::before{ content:''; position:absolute; left:50%; top:12px; width:11px; height:11px; margin-left:-5.5px; border-radius:50%; background:radial-gradient(circle,#fff,var(--rc) 60%,transparent); box-shadow:0 0 9px var(--rc); z-index:2; }   /* chest arc-reactor */
+  .exp-build .exp-robot::before{ content:''; position:absolute; left:6px; top:40px; width:9px; height:32px; border-radius:4px; background:linear-gradient(180deg,#3c414a,#23272d); }   /* left shoulder/arm */
+  .exp-build .exp-robot::after{ content:''; position:absolute; right:6px; top:40px; width:9px; height:32px; border-radius:4px; background:linear-gradient(180deg,#3c414a,#23272d); }  /* right shoulder/arm */
+  .exp-base{ position:absolute; left:20px; right:20px; bottom:10px; height:12px; background:#4a5058; border-radius:2px; }
   /* Core Chassis */
   .exp-robot.core1 .exp-body{ left:9px; right:9px; height:38px; background:linear-gradient(180deg,#565d68,#343a42); }
   .exp-robot.core2 .exp-body{ left:17px; right:17px; background:repeating-linear-gradient(90deg,#3b414a 0 5px,#2a2f36 5px 8px); }
@@ -1486,6 +1491,12 @@
   .exp-suggest{ margin-top:9px; padding:9px 11px; border:1px solid rgba(255,90,110,.45); border-radius:8px; background:rgba(255,90,110,.07); }
   .exp-suggest-h{ font-family:var(--font-display); font-weight:800; font-size:12px; color:#ff8fa0; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .exp-suggest-x{ border:1px solid rgba(255,90,110,.5); background:transparent; color:#ff8fa0; border-radius:5px; cursor:pointer; font-size:11px; padding:1px 7px; line-height:1.4; } .exp-suggest-x:hover{ background:rgba(255,90,110,.15); }
+  .exp-sec{ margin:8px 0; border:1px solid var(--line); border-radius:8px; background:var(--void); }
+  .exp-sec > .exp-sec-sum{ cursor:pointer; list-style:none; padding:8px 11px; font-family:var(--font-display); font-weight:700; font-size:12px; color:var(--text-dim); position:relative; padding-right:26px; }
+  .exp-sec > .exp-sec-sum::-webkit-details-marker{ display:none; }
+  .exp-sec > .exp-sec-sum::after{ content:'▸'; position:absolute; right:11px; top:8px; color:var(--text-faint); }
+  .exp-sec[open] > .exp-sec-sum{ color:var(--text); border-bottom:1px solid var(--line); } .exp-sec[open] > .exp-sec-sum::after{ content:'▾'; }
+  .exp-sec > :not(.exp-sec-sum){ padding:0 11px 10px; } .exp-sec > .exp-builder, .exp-sec > .stats-sheet{ padding-top:10px; }
   .exp-suggest ul{ margin:0; padding-left:18px; font-family:var(--font-mono); font-size:11px; color:var(--text-dim); line-height:1.55; }
   .exp-log{ margin-top:9px; padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:var(--void); }
   .exp-log-h{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:#9fb4d0; margin-bottom:5px; }
@@ -1511,6 +1522,11 @@
   .xpcore-btn.can:hover{ background:rgba(143,230,75,.16); }
   .xpcore-btn:disabled{ opacity:.6; }
   .xpcore-on{ margin:6px 0; font-family:var(--font-mono); font-size:11px; color:#aef07a; background:rgba(143,230,75,.08); border:1px solid rgba(143,230,75,.3); border-radius:7px; padding:8px 11px; }
+  /* Optional boss challenges (progression) */
+  .boss-panel{ margin:9px 0; padding:10px 12px; border:1px solid rgba(255,90,110,.4); border-radius:9px; background:linear-gradient(180deg,rgba(255,90,110,.09),rgba(20,8,12,.2)); }
+  .boss-panel.locked, .boss-panel.done{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); } .boss-panel b{ color:#ffb0bb; }
+  .boss-h{ font-family:var(--font-display); font-weight:800; font-size:12px; color:#ff8fa0; margin-bottom:7px; } .boss-sub{ font-family:var(--font-mono); font-size:9.5px; font-weight:400; color:var(--text-faint); }
+  .boss-btn{ display:block; width:100%; margin-top:6px; padding:9px 11px; border-radius:7px; border:1px solid rgba(255,90,110,.5); background:rgba(255,90,110,.1); color:#ffd0d6; cursor:pointer; font-family:var(--font-mono); font-size:11px; text-align:left; } .boss-btn:hover{ background:rgba(255,90,110,.2); } .boss-btn b{ color:#fff; }
   .xpu-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:6px; margin:2px 0 8px; }
   .xpu-btn{ display:flex; flex-direction:column; gap:2px; padding:7px 9px; border:1px solid var(--line); border-radius:7px; background:var(--panel-raised); color:var(--text-faint); cursor:default; text-align:left; }
   .xpu-btn.can{ cursor:pointer; border-color:#8fe64b; color:#cfe0a0; } .xpu-btn.can:hover{ background:rgba(143,230,75,.12); }
@@ -2251,6 +2267,7 @@
               <span class="foundry-bal-hint">Currency &amp; /s tracked in the fixed panel (bottom-left)</span>
               <button type="button" class="game-save-btn" id="game-save-btn" title="Save all game progress now">💾 Save</button>
               <button type="button" class="game-load-btn" id="game-load-btn" title="Load your highest-level save from the cloud">📂 Load</button>
+              <button type="button" class="game-load-btn" id="game-redeem-btn" title="Redeem a gift code from another player">🎁 Redeem</button>
               <button type="button" class="sfx-btn" id="sfx-toggle" title="Game sound effects" aria-label="Toggle game sound">🔊</button>
               <div class="game-pops" id="game-pops"></div>
             </div>
@@ -7099,7 +7116,10 @@ function toggleReducedVisuals(el) {
     caption('out', outX - 2, floor - doorH - 10);
 
     var tier = foundryCfg().tier || 1;
-    bay.marchers.forEach(function (m) { drawMarcher(m, t, style, 6.4 * (style.sizeMul || 1), tier); });   // doubled + per-archetype size
+    // #14 perf: the full crew still marches + mints (income unchanged), but only
+    // draw up to 10 sprites per bay so late-game floors (up to 20x20) don't lag.
+    var drawN = Math.min(bay.marchers.length, 10);
+    for (var mdi = 0; mdi < drawN; mdi++) drawMarcher(bay.marchers[mdi], t, style, 6.4 * (style.sizeMul || 1), tier);
 
     if (t < bay.sayUntil && bay.marchers.length) {
       var bx = bayMusterX() + (perBayCap() - 1) * 31, by = floor - 22 * 6.4 - 16;
@@ -7929,6 +7949,13 @@ function toggleReducedVisuals(el) {
   // ---- run loop ----
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var laidOut = false, onScreen = true, lastFrameT = 0, staticQueued = false;
+  // AFK power-save: after a few minutes with no input, drop the room to a low
+  // frame rate to save battery (the economy keeps ticking on the 500ms loop and
+  // in updateBays). Any tap/key/scroll wakes it back to full speed. (#28)
+  var lastActivity = Date.now();
+  function markActive() { lastActivity = Date.now(); if (window.__afk) { window.__afk = false; } }
+  ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(function (ev) { window.addEventListener(ev, markActive, { passive: true }); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) markActive(); });
 
   // Reduced motion: no loop, just a redraw whenever something real changes.
   function requestStatic() {
@@ -7960,8 +7987,10 @@ function toggleReducedVisuals(el) {
       updateCoins(odt);
       return;
     }
-    if (t - lastFrameT < 1 / 31) return;   // ~30fps is plenty for this
-    var dt = Math.min(t - lastFrameT, 0.25);
+    var afk = (Date.now() - lastActivity > 180000);   // 3 min idle -> power-save
+    window.__afk = afk;
+    if (t - lastFrameT < (afk ? 0.24 : 1 / 31)) return;   // AFK: ~4fps to save battery; else ~30fps
+    var dt = Math.min(t - lastFrameT, afk ? 0.5 : 0.25);
     lastFrameT = t;
     if (!laidOut && !(laidOut = layout())) return;
     stepWalk(t);
@@ -8855,6 +8884,22 @@ window.__sfx = (function () {
     gamePop('✔ Game saved (' + fmtWhen(state.savedAt) + ')', '#5fe39a'); if (window.__sfx) window.__sfx('unlock');
   }
   (function () { var b = document.getElementById('game-save-btn'); if (b) b.addEventListener('click', saveNow); })();
+  // Redeem a gift code another player generated in their dev panel (#1).
+  window.__redeemGift = function (code) {
+    if (!code) return false;
+    try {
+      var b64 = String(code).trim().replace(/^ULT-/, ''); while (b64.length % 4) b64 += '=';
+      var g = JSON.parse(atob(b64)); if (!g || g.v !== 1) return false;
+      if (g.bits) { state.bits += g.bits; state.lifetime = (state.lifetime || 0) + g.bits; }
+      if (g.mats) { state.mats = state.mats || { scrap: 0, alloy: 0, core: 0 }; ['scrap', 'alloy', 'core'].forEach(function (m) { state.mats[m] = (state.mats[m] || 0) + g.mats; }); }
+      if (g.comp) { state.comp = state.comp || { chip: 0, cpu: 0, gpu: 0, ram: 0 }; ['chip', 'cpu', 'gpu', 'ram'].forEach(function (c) { state.comp[c] = (state.comp[c] || 0) + g.comp; }); }
+      if (g.xp) addXp(g.xp, 'Gift code');
+      if (window.__sfx) window.__sfx('reward'); gamePop('🎁 Gift redeemed!', '#8fe6b4');
+      publish(); dirty = true; save(); renderBalance(); if (typeof devRefresh === 'function') devRefresh();
+      return true;
+    } catch (e) { return false; }
+  };
+  (function () { var b = document.getElementById('game-redeem-btn'); if (b) b.addEventListener('click', function () { var c = window.prompt('Paste a gift code:'); if (c && !window.__redeemGift(c)) gamePop('Invalid or used gift code', '#ff8098'); }); })();
   // The Load picker: pick a timestamped local save, or the highest-level cloud save.
   var pickerEl = document.getElementById('save-picker');
   window.__foundryToggleLoad = function () { if (!pickerEl) return; if (pickerEl.hidden) { renderSavePicker(); pickerEl.hidden = false; } else { pickerEl.hidden = true; } };
@@ -9909,6 +9954,35 @@ window.__sfx = (function () {
     f.style.background = h > 0.5 ? 'linear-gradient(90deg,#33d17a,#7fffb0)' : h > 0.22 ? 'linear-gradient(90deg,#ffc24b,#ffe08a)' : 'linear-gradient(90deg,#ff5a5a,#ff9090)';
     var lbl = document.getElementById('hp-bar-lbl'); if (lbl && lbl.dataset.ehp) { var ehp = +lbl.dataset.ehp; lbl.textContent = '♥ HP ' + Math.round(h * ehp) + ' / ' + ehp + ' (' + Math.round(h * 100) + '%)'; }
   }, 300);
+  // ---- Optional Boss Challenges: every 10 levels an optional boss appears
+  // under the progression tab; beating it drops level-scaled gear + XP + bits. ----
+  function bossReq(L) { return Math.round(60 * Math.pow(L, 1.62)); }
+  function bossWinChance(L) { var p = botPower(); var b = bossReq(L); if (p + b <= 0) return 0.5; return Math.max(0.05, Math.min(0.95, p / (p + b))); }
+  function bossOpen() { var lv = playerLevel(), done = (state.prog && state.prog.bosses) || {}, out = []; for (var L = 10; L <= lv && out.length < 3; L += 10) if (!done[L]) out.push(L); return out; }
+  function bossRarityFor(L) { return L >= 400 ? 'Legendary' : L >= 250 ? 'Epic' : L >= 120 ? 'Rare' : L >= 50 ? 'Uncommon' : 'Common'; }
+  function fightBoss(L) {
+    state.prog = state.prog || {}; state.prog.bosses = state.prog.bosses || {};
+    if (state.prog.bosses[L]) return;
+    var win = Math.random() < bossWinChance(L);
+    if (win) {
+      state.prog.bosses[L] = 1;
+      var xpR = Math.max(50, Math.round(xpForLevel(L) * 0.5)); addXp(xpR, 'Boss Lv ' + L);
+      var goldR = Math.ceil(2e6 * Math.pow(1.9, L / 10) * globalMult()); state.bits += goldR; state.lifetime = (state.lifetime || 0) + goldR;
+      var drops = 1 + Math.floor(L / 100);   // more drops at higher levels
+      if (state.adv) { state.adv.inv = state.adv.inv || []; for (var d = 0; d < drops; d++) { try { var it = rollLoot(L, null); if (it) state.adv.inv.push(it); } catch (e) {} } state.adv.inv = state.adv.inv.slice(-60); }
+      if (window.__sfx) window.__sfx('boss'); gamePop('☠ Level ' + L + ' Boss DOWN! +' + drops + ' gear · ◉' + fmt(goldR) + ' · ' + xpR + ' XP', '#ffd24b');
+    } else {
+      if (window.__sfx) window.__sfx('die'); gamePop('☠ The Level ' + L + ' Boss repelled you — grow stronger and retry.', '#ff6b7d');
+    }
+    publish(); dirty = true; save(); renderProgression(); renderBalance(); if (typeof renderAdventure === 'function') renderAdventure();
+  }
+  function bossPanelHtml() {
+    var lv = playerLevel(); if (lv < 10) return '<div class="boss-panel locked">☠ Optional boss challenges appear every 10 levels — first one at <b>Level 10</b>.</div>';
+    var avail = bossOpen();
+    if (!avail.length) return '<div class="boss-panel done">☠ Every available boss is cleared — next challenge at <b>Level ' + (Math.floor(lv / 10) * 10 + 10) + '</b>.</div>';
+    return '<div class="boss-panel"><div class="boss-h">☠ Optional Boss Challenges <span class="boss-sub">— beat them for level-scaled gear, XP &amp; currency</span></div>' +
+      avail.map(function (L) { var ch = Math.round(bossWinChance(L) * 100); return '<button type="button" class="boss-btn" data-boss="' + L + '"><b>Level ' + L + ' Boss</b> · ' + bossRarityFor(L) + '-tier reward · win chance ~' + ch + '%</button>'; }).join('') + '</div>';
+  }
   function renderProgression() {
     if (!progEl) return;
     var pr = state.prog || { xp: 0, level: 1, pts: 0, skills: {} };
@@ -9930,6 +10004,7 @@ window.__sfx = (function () {
       (nextTier ? '<span class="prog-tier-next">next: ' + nextTier.name + ' @ Lv ' + nextTier.min + '</span>' : '<span class="prog-tier-next">max tier</span>') + '</div>' +
       '<div class="prog-bar"><i style="width:' + (pr.level >= LEVEL_CAP ? 100 : pct) + '%"></i></div>' +
       '<div class="prog-xp">' + (pr.level >= LEVEL_CAP ? 'MAX LEVEL ★' : Math.floor(pr.xp) + ' / ' + need + ' XP') + '</div>' +
+      bossPanelHtml() +
       (function () { var rs = robotStats((state.adv && state.adv.gear) || {}), hpf = (typeof window.__botHp === 'number' ? window.__botHp : 1); window.__botMaxHp = rs.ehp; return '<div class="hp-bar" title="Adventure bot health"><i id="hp-bar-fill" style="width:' + Math.round(hpf * 100) + '%"></i><span class="hp-bar-lbl" id="hp-bar-lbl" data-ehp="' + rs.ehp + '">♥ HP ' + Math.round(hpf * rs.ehp) + ' / ' + rs.ehp + ' (' + Math.round(hpf * 100) + '%)</span></div>'; })() +
       (function () { var rs = robotStats((state.adv && state.adv.gear) || {}); return '<details class="prog-sys" data-dk="stats"' + (progOpen.stats ? ' open' : '') + '><summary>⚔ Stats — combat totals</summary><div class="prog-stats"><span>⚔ Power <b>' + rs.power + '</b></span><span>♥ HP <b>' + rs.ehp + '</b></span><span>↯ DPS <b>' + rs.dps + '</b></span><span>FW <b>' + rs.firmware + '</b></span></div></details>'; })() +
       '<details class="prog-sys" data-dk="talents"' + (progOpen.talents ? ' open' : '') + '><summary>✦ Talents — core attributes</summary>' + attrHtml() + '<div class="attr-head">Loot rarity tiers</div>' + rarityLegendHtml() + '</details>' +
@@ -9948,6 +10023,7 @@ window.__sfx = (function () {
       '<details class="prog-sys" data-dk="skills"' + (progOpen.skills ? ' open' : '') + '><summary>🌟 Skills — spend points to upgrade</summary>' + cats + '</details>';
     renderXpLog();
     progEl.querySelectorAll('details[data-dk]').forEach(function (d) { d.addEventListener('toggle', function () { progOpen[d.dataset.dk] = d.open; }); });
+    progEl.querySelectorAll('[data-boss]').forEach(function (b) { b.addEventListener('click', function () { fightBoss(+b.dataset.boss); }); });
     progEl.querySelectorAll('[data-skill]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var sk = SKILLS.filter(function (x) { return x.id === btn.dataset.skill; })[0];
@@ -10039,6 +10115,13 @@ window.__sfx = (function () {
           '<button type="button" class="dev-btn add" data-dev="custom" data-sign="1">+ Add</button>' +
           '<button type="button" class="dev-btn rem" data-dev="custom" data-sign="-1">− Remove</button>' +
         '</div>' +
+        '<div class="dev-group dev-custom"><span class="dev-lbl">🎁 Gift code — give OTHER users what you can give yourself</span>' +
+          '<button type="button" class="dev-btn add" data-dev="gift" data-g="nanit">+3 Nanits</button>' +
+          '<button type="button" class="dev-btn add" data-dev="gift" data-g="mats">Materials pack</button>' +
+          '<button type="button" class="dev-btn add" data-dev="gift" data-g="parts">Parts pack</button>' +
+          '<button type="button" class="dev-btn add" data-dev="gift" data-g="starter">Starter boost</button>' +
+          '<input type="text" class="dev-num" id="dev-giftout" readonly placeholder="code appears here — copy &amp; share" style="min-width:150px;">' +
+        '</div>' +
       '</div><div class="dev-confirm" id="dev-confirm" hidden></div></details>';
     function grantGear(forceMythic) {
       if (typeof makePart !== 'function' || typeof BASES === 'undefined') return;
@@ -10077,6 +10160,16 @@ window.__sfx = (function () {
           document.getElementById('dev-cf-no').addEventListener('click', function () { cbar.hidden = true; cbar.innerHTML = ''; });
           document.getElementById('dev-cf-yes').addEventListener('click', function () { applyResource(target, delta); cbar.hidden = true; cbar.innerHTML = ''; if (window.__sfx) window.__sfx('upgrade'); devRefresh(); renderDevPanel(); });
           return;
+        }
+        if (k === 'gift') {   // generate a shareable gift code (no state change to the dev)
+          var g = b.dataset.g, bundle = { v: 1 };
+          if (g === 'nanit') bundle.bits = 3e12;
+          else if (g === 'mats') bundle.mats = 5000;
+          else if (g === 'parts') bundle.comp = 500;
+          else if (g === 'starter') { bundle.bits = 5e8; bundle.mats = 2000; bundle.xp = 5000; }
+          var code = ''; try { code = 'ULT-' + btoa(JSON.stringify(bundle)).replace(/=+$/, ''); } catch (e) {}
+          var out = document.getElementById('dev-giftout'); if (out) { out.value = code; out.select && out.select(); try { document.execCommand('copy'); } catch (e) {} }
+          gamePop('🎁 Gift code ready — copied, share it', '#8fe6b4'); return;
         }
         if (k === 'cur') { state.bits = Math.max(0, state.bits + amt); if (amt > 0) state.lifetime = (state.lifetime || 0) + amt; gamePop('◉ ' + (amt >= 0 ? '+' : '−') + fmt(Math.abs(amt)), '#ffcf5a'); }
         else if (k === 'curzero') { state.bits = 0; gamePop('◉ currency zeroed', '#ff8098'); }
@@ -10623,6 +10716,8 @@ window.__sfx = (function () {
 
   var expEl = document.getElementById('expedition');
   var invOpen = false;   // remember whether the inventory panel is expanded across re-renders
+  var advOpen = { builder: false, sys: false, log: false, set: false };   // collapse state for the adventure sub-tabs (start collapsed)
+  function advWrap(key, title, html) { if (!html) return ''; return '<details class="exp-sec" data-ao="' + key + '"' + (advOpen[key] ? ' open' : '') + '><summary class="exp-sec-sum">' + title + '</summary>' + html + '</details>'; }
   function renderAdventure() {
     if (!expEl) return;
     var a = state.adv, now = Date.now();
@@ -10743,14 +10838,15 @@ window.__sfx = (function () {
       '<label class="exp-lab">Skin</label><div class="exp-row">' + colorChips + '</div>' +
       '<label class="exp-lab">Region</label><div class="exp-row exp-regions">' + regionChips + '</div>' +
       '<div class="exp-hint">Design the look under Chassis Builder; looted parts (with stats) snap into the five slots below.</div></div></div>' +
-      renderBuilder(a) +
+      advWrap('builder', '🔧 Chassis Builder — customise your bot', renderBuilder(a)) +
       matBar + '<div class="exp-load">' + load + '</div>' + totHtml +
-      statsSheetHtml(gear) +
-      status + battleHtml + suggest + advLog + haul + setBonusHtml() +
+      advWrap('sys', '🤖 Robot systems — full attribute sheet', statsSheetHtml(gear)) +
+      status + battleHtml + suggest + advWrap('log', '📜 Adventure log', advLog) + haul + advWrap('set', '✨ Signature gear sets', setBonusHtml()) +
       (inv ? '<details class="exp-inv-wrap"' + (invOpen ? ' open' : '') + '><summary class="exp-inv-sum">\ud83c\udf92 Inventory (' + (a.inv || []).length + ') \u2014 tap to ' + (invOpen ? 'collapse' : 'expand') + ', press Equip on a part</summary>' +
         '<div class="exp-inv-h"><button type="button" class="exp-selljunk" data-a="sell-junk">Sell all Common</button><button type="button" class="exp-selljunk" data-a="salvage-junk">Salvage all Common</button><button type="button" class="exp-selljunk" data-a="sell-all">Sell all</button><button type="button" class="exp-selljunk" data-a="salvage-all">Salvage all</button></div>' +
         '<div class="exp-inv">' + inv + '</div></details>' : '');
     var iw = expEl.querySelector('.exp-inv-wrap'); if (iw) iw.addEventListener('toggle', function () { invOpen = iw.open; });   // remember collapse state
+    expEl.querySelectorAll('details[data-ao]').forEach(function (d) { d.addEventListener('toggle', function () { advOpen[d.dataset.ao] = d.open; }); });   // remember adventure sub-tab collapse state
     var reg = REGIONS[a.region || 0] || REGIONS[0];   // live combat viewer: on while a run is out
     window.__advView = { active: away, color: (r && r.color) || '#ff3b3b', ground: reg.color || '#00e5ff', label: runLabel };
     var vwrap = document.getElementById('exp-viewer-wrap'); if (vwrap) vwrap.hidden = !away;
