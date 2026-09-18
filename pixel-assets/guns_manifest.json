@@ -130,5 +130,53 @@
   "name": "Singularity Cannon",
   "cls": "Plasma Cannon",
   "rarity": "Mythic"
+ },
+ {
+  "id": "bal_pistol3",
+  "name": "Hornet",
+  "cls": "Pistol",
+  "rarity": "Rare"
+ },
+ {
+  "id": "bal_smg3",
+  "name": "Wraith SMG",
+  "cls": "SMG",
+  "rarity": "Epic"
+ },
+ {
+  "id": "bal_rifle2",
+  "name": "Ravager",
+  "cls": "Assault",
+  "rarity": "Epic"
+ },
+ {
+  "id": "bal_shotgun3",
+  "name": "Sawed-Off",
+  "cls": "Shotgun",
+  "rarity": "Uncommon"
+ },
+ {
+  "id": "bal_sniper3",
+  "name": "Void Lance",
+  "cls": "Sniper",
+  "rarity": "Mythic"
+ },
+ {
+  "id": "bal_heavy3",
+  "name": "Annihilator",
+  "cls": "Heavy",
+  "rarity": "Mythic"
+ },
+ {
+  "id": "plz_pistol3",
+  "name": "Nova Sidearm",
+  "cls": "Plasma Pistol",
+  "rarity": "Epic"
+ },
+ {
+  "id": "plz_cannon3",
+  "name": "Rift Cannon",
+  "cls": "Plasma Cannon",
+  "rarity": "Legendary"
  }
 ]

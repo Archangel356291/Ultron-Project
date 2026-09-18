@@ -1027,6 +1027,8 @@
   .arm-w-n{ flex:1; font-family:var(--font-mono); font-size:10.5px; color:var(--text); }
   .arm-w-b{ padding:5px 9px; border-radius:6px; border:1px solid var(--line); background:var(--panel-raised); color:var(--text-dim); cursor:pointer; font-family:var(--font-mono); font-size:9.5px; }
   .arm-w-b:hover{ background:rgba(255,255,255,.05); }
+  .arm-partimg-wrap{ height:40px; display:flex; align-items:center; justify-content:center; margin:2px 0 5px; background:radial-gradient(circle at 50% 60%,rgba(255,255,255,.05),transparent 70%); }
+  .arm-partimg{ max-height:38px; max-width:90%; image-rendering:pixelated; image-rendering:crisp-edges; filter:drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
   /* Arsenal weapon vault */
   .ars-head{ font-family:var(--font-display); font-weight:800; font-size:13px; color:#ffd88a; margin-bottom:8px; }
   .ars-head .ars-sub{ font-family:var(--font-mono); font-size:9.5px; color:var(--text-faint); font-weight:400; }
@@ -9814,6 +9816,7 @@ window.__sfx = (function () {
     var groups = WEAPON_GROUPS.map(function (g) {
       var sv = a.sel[g.id], req = partLvlReq(g, sv.o, sv.r), ok = lvl >= req, owns = ownsPart(g.id, sv.o, sv.r), price = partPrice(g, sv.o, sv.r), rar = WEAPON_RAR[sv.r];
       return '<div class="arm-grp" style="--gr:' + rar.col + '"><div class="arm-gh">' + g.name + '</div>' +
+        '<div class="arm-partimg-wrap"><img class="arm-partimg" src="/pixel-assets/part_' + g.id + '_' + sv.o + '.png?v=2" alt="' + esc(optName(g.opts[sv.o])) + '" loading="lazy"></div>' +
         '<div class="arm-pick"><button type="button" class="arm-cyc" data-armo="' + g.id + '" data-d="-1">◀</button><span class="arm-opt insp" data-arminsp="' + g.id + ':' + sv.o + '" title="Tap for rarity / stats / cost / unlock">' + optName(g.opts[sv.o]) + ' ⓘ</span><button type="button" class="arm-cyc" data-armo="' + g.id + '" data-d="1">▶</button></div>' +
         '<div class="arm-pick"><button type="button" class="arm-cyc" data-armr="' + g.id + '" data-d="-1">◀</button><span class="arm-rar" style="color:' + rar.col + '">' + rar.n + '</span><button type="button" class="arm-cyc" data-armr="' + g.id + '" data-d="1">▶</button></div>' +
         '<div class="arm-meta">' + (owns ? '<span class="arm-own">✓ owned</span>' : ok ? '<span>◉' + fmt(price) + '</span>' : '<span class="arm-lk">🔒 Lv' + req + '</span>') + '</div></div>';
@@ -9878,7 +9881,15 @@ window.__sfx = (function () {
     { id: 'plz_rifle2', name: 'Neon Rifle', cls: 'Plasma Rifle', rarity: 'Epic' },
     { id: 'plz_rifle3', name: 'Venom Rifle', cls: 'Plasma Rifle', rarity: 'Legendary' },
     { id: 'plz_cannon', name: 'Arc Cannon', cls: 'Plasma Cannon', rarity: 'Epic' },
-    { id: 'plz_cannon2', name: 'Singularity Cannon', cls: 'Plasma Cannon', rarity: 'Mythic' }
+    { id: 'plz_cannon2', name: 'Singularity Cannon', cls: 'Plasma Cannon', rarity: 'Mythic' },
+    { id: 'bal_pistol3', name: 'Hornet', cls: 'Pistol', rarity: 'Rare' },
+    { id: 'bal_smg3', name: 'Wraith SMG', cls: 'SMG', rarity: 'Epic' },
+    { id: 'bal_rifle2', name: 'Ravager', cls: 'Assault', rarity: 'Epic' },
+    { id: 'bal_shotgun3', name: 'Sawed-Off', cls: 'Shotgun', rarity: 'Uncommon' },
+    { id: 'bal_sniper3', name: 'Void Lance', cls: 'Sniper', rarity: 'Mythic' },
+    { id: 'bal_heavy3', name: 'Annihilator', cls: 'Heavy', rarity: 'Mythic' },
+    { id: 'plz_pistol3', name: 'Nova Sidearm', cls: 'Plasma Pistol', rarity: 'Epic' },
+    { id: 'plz_cannon3', name: 'Rift Cannon', cls: 'Plasma Cannon', rarity: 'Legendary' }
   ];
   var GUN_ORDER = ['Signature', 'Pistol', 'SMG', 'Assault', 'Shotgun', 'Sniper', 'Heavy', 'Plasma Pistol', 'Plasma Rifle', 'Plasma Cannon'];
   function renderArsenal() {

@@ -204,6 +204,113 @@ def signature(kind, accent):
     return img
 
 
+# ---------- weapon PARTS (custom-build section) ----------
+# accent brightens with the option index (more advanced = more energy)
+PART_AC = [(150, 160, 174), (90, 220, 255), (90, 150, 255), (176, 132, 240), (255, 184, 60)]
+
+
+def pac(oi):
+    return PART_AC[min(oi, len(PART_AC) - 1)] + (255,)
+
+
+def part_chassis(oi):
+    ac = pac(oi); img = new(22, 15); d = ImageDraw.Draw(img)
+    rect(d, 3, 4, 14, 7, STEEL); rect(d, 3, 4, 14, 1, STEEL_L)      # receiver body
+    rect(d, 5, 11, 5, 3, STEEL_D)                                    # trigger housing
+    rect(d, 15, 6, 4, 3, STEEL_D)                                    # ejection port
+    if oi == 0: rect(d, 6, 6, 8, 1, STEEL_D)
+    elif oi == 1:
+        for x in (5, 8, 11, 14): rect(d, x, 5, 1, 5, STEEL_L)        # rail slots
+    else:
+        energy(d, 6, 6, 8, 3, ac)                                    # containment core
+        if oi >= 3: energy(d, 8, 3, 4, 2, ac)                        # top vent glow
+    return img
+
+
+def part_barrel(oi):
+    ac = pac(oi); img = new(26, 11); d = ImageDraw.Draw(img)
+    if oi == 4:                                                      # gatling rotary cluster
+        for yy in (2, 5, 8): rect(d, 3, yy, 18, 2, STEEL_D)
+        rect(d, 1, 2, 3, 8, STEEL)
+        return img
+    rect(d, 2, 4, 20, 3, STEEL_D); rect(d, 2, 4, 20, 1, STEEL_L)     # base barrel
+    if oi == 1: rect(d, 2, 3, 9, 5, STEEL); energy(d, 20, 4, 4, 3, ac)   # short + emitter cell
+    elif oi == 2:
+        for x in (5, 9, 13, 17): rect(d, x, 2, 2, 7, ac)            # EM coils
+    elif oi == 3:
+        energy(d, 20, 2, 5, 6, ac)                                  # focusing lens
+    return img
+
+
+def part_power(oi):
+    ac = pac(max(1, oi)); img = new(15, 17); d = ImageDraw.Draw(img)
+    if oi == 0:
+        rect(d, 4, 3, 7, 12, STEEL); rect(d, 4, 3, 7, 1, STEEL_L)
+        for yy in (6, 9, 12): rect(d, 4, yy, 7, 1, STEEL_D)         # slug clip ribs
+    elif oi == 1:
+        rect(d, 4, 2, 7, 13, STEEL_D); energy(d, 5, 4, 5, 9, ac)     # gas canister
+        rect(d, 5, 1, 5, 2, STEEL)
+    elif oi == 2:
+        rect(d, 3, 4, 9, 10, STEEL); energy(d, 4, 6, 7, 4, ac); rect(d, 6, 2, 4, 2, STEEL_D)  # battery
+    else:
+        rect(d, 3, 3, 9, 11, DARK)
+        energy(d, 5, 5, 6, 6, ac); px(d, 7, 7, (255, 255, 255))     # singularity cell
+    return img
+
+
+def part_stock(oi):
+    ac = pac(oi); img = new(22, 13); d = ImageDraw.Draw(img)
+    if oi == 0:
+        rect(d, 6, 4, 6, 8, STEEL_D); rect(d, 6, 4, 6, 1, STEEL_L)  # pistol grip
+    elif oi == 1:
+        rect(d, 2, 5, 14, 3, STEEL); rect(d, 2, 5, 4, 3, STEEL_D)   # collapsible
+        rect(d, 15, 4, 3, 5, STEEL_D)
+    elif oi == 2:
+        rect(d, 2, 4, 15, 6, STEEL_D); rect(d, 2, 4, 15, 1, STEEL_L)
+        for x in (4, 6, 8): rect(d, x, 5, 1, 4, ac)                 # shock spring
+    else:
+        rect(d, 2, 4, 15, 6, STEEL)
+        for x in (4, 7, 10, 13): rect(d, x, 5, 1, 4, ac)            # smart-link circuits
+        energy(d, 14, 5, 2, 2, ac)
+    return img
+
+
+def part_optic(oi):
+    ac = pac(oi + 1); img = new(20, 12); d = ImageDraw.Draw(img)
+    if oi == 0:
+        rect(d, 6, 4, 8, 4, STEEL_D); rect(d, 5, 8, 10, 1, STEEL_D)  # red-dot base
+        energy(d, 9, 5, 2, 2, (255, 60, 60, 255))
+    elif oi == 1:
+        rect(d, 4, 4, 12, 4, STEEL); rect(d, 4, 8, 12, 1, STEEL_D)
+        for x in (6, 9, 12): rect(d, x, 5, 1, 2, ac)                # HUD ticks
+    else:
+        rect(d, 3, 4, 13, 4, STEEL_D); rect(d, 3, 8, 13, 1, STEEL_D)
+        energy(d, 14, 4, 4, 4, ac)                                  # thermal lens
+    return img
+
+
+def part_aux(oi):
+    ac = pac(oi + 1); img = new(16, 15); d = ImageDraw.Draw(img)
+    if oi == 0:                                                     # cooling loop (square ring)
+        rect(d, 4, 3, 8, 8, ac); rect(d, 6, 5, 4, 4, (0, 0, 0, 0))
+        rect(d, 6, 5, 4, 4, DARK)
+    elif oi == 1:                                                   # vibro-bayonet
+        d.polygon([(3 * U, 11 * U), (5 * U, 11 * U), (12 * U, 2 * U), (10 * U, 2 * U)], fill=STEEL_L)
+        rect(d, 3, 10, 4, 3, STEEL_D)
+    elif oi == 2:                                                   # micro-grapnel hook
+        rect(d, 7, 3, 2, 8, STEEL); rect(d, 5, 10, 6, 2, STEEL)
+        rect(d, 4, 8, 2, 3, ac); rect(d, 10, 8, 2, 3, ac)
+    else:                                                           # EMP suppressor
+        rect(d, 5, 4, 6, 8, STEEL_D); energy(d, 6, 5, 4, 6, ac)
+        rect(d, 3, 7, 2, 2, ac); rect(d, 11, 7, 2, 2, ac)          # pulse rings
+    return img
+
+
+PART_BUILDERS = {"chassis": part_chassis, "barrel": part_barrel, "power": part_power,
+                 "stock": part_stock, "optic": part_optic, "aux": part_aux}
+PART_COUNTS = {"chassis": 4, "barrel": 5, "power": 4, "stock": 4, "optic": 3, "aux": 4}
+
+
 # rarity accent palette (matches the game's ladder)
 RAR = {
     "Common": (150, 160, 174), "Uncommon": (51, 209, 122), "Rare": (61, 155, 255),
@@ -237,6 +344,15 @@ ARSENAL = [
     ("plz_rifle3", "Venom Rifle", "Plasma Rifle", ("pr", None), "Legendary"),
     ("plz_cannon", "Arc Cannon", "Plasma Cannon", ("pc", None), "Epic"),
     ("plz_cannon2", "Singularity Cannon", "Plasma Cannon", ("pc", None), "Mythic"),
+    # second wave -- same rough designs, new names / rarities
+    ("bal_pistol3", "Hornet", "Pistol", ("pistol", None), "Rare"),
+    ("bal_smg3", "Wraith SMG", "SMG", ("smg", None), "Epic"),
+    ("bal_rifle2", "Ravager", "Assault", ("rifle", False), "Epic"),
+    ("bal_shotgun3", "Sawed-Off", "Shotgun", ("shotgun", None), "Uncommon"),
+    ("bal_sniper3", "Void Lance", "Sniper", ("sniper", None), "Mythic"),
+    ("bal_heavy3", "Annihilator", "Heavy", ("heavy", None), "Mythic"),
+    ("plz_pistol3", "Nova Sidearm", "Plasma Pistol", ("pp", None), "Epic"),
+    ("plz_cannon3", "Rift Cannon", "Plasma Cannon", ("pc", None), "Legendary"),
 ]
 
 BUILDERS = {
@@ -265,6 +381,12 @@ def main():
         manifest.append({"id": gid, "name": name, "cls": cls, "rarity": rar})
     with open(os.path.join(ASSETS, "guns_manifest.json"), "w") as f:
         json.dump(manifest, f, indent=1)
+    # weapon PARTS for the custom-build section: one icon per group + option index
+    for gid, n in PART_COUNTS.items():
+        for oi in range(n):
+            pimg = outline(PART_BUILDERS[gid](oi))
+            pimg.save(os.path.join(ASSETS, "part_%s_%d.png" % (gid, oi)))
+    print("wrote %d part icons" % sum(PART_COUNTS.values()))
     # contact sheet for review
     cols = 5
     cw = max(i["id"] and 200 for i in manifest) or 200
