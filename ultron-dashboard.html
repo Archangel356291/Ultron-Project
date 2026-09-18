@@ -7628,6 +7628,30 @@ function toggleReducedVisuals(el) {
     decorAt(gapL + span * 0.5, b2, function () { orb(gapL + span * 0.5, y2, t); });
     decorAt(gapL + span * 0.78, b2, function () { eyeOfAgamotto(gapL + span * 0.78, y2, t); });
   }
+  // Keep the office Ultron feeling ALIVE even while idle: a breathing chest core,
+  // flickering red eyes, and violet energy motes rising off his frame. Drawn
+  // additively ('lighter') so it reads as emanating power, not washing the sprite.
+  function drawUltronAlive(box, t) {
+    if (!box || !box.w) return;
+    var cx = box.x + box.w / 2, headY = box.y + box.h * 0.20, chestY = box.y + box.h * 0.42;
+    var charge = Math.max(0, Math.min(1, (foundryCfg().charge) || 0));
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    var beat = 0.5 + 0.5 * Math.sin(t * 2.2);   // slow heartbeat on the chest core
+    var cg = ctx.createRadialGradient(cx, chestY, 0, cx, chestY, 26);
+    cg.addColorStop(0, 'rgba(255,70,70,' + (0.2 + 0.2 * beat + 0.15 * charge) + ')'); cg.addColorStop(1, 'rgba(255,50,50,0)');
+    ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, chestY, 26, 0, Math.PI * 2); ctx.fill();
+    var eyeP = 0.55 + 0.45 * Math.sin(t * 6.5 + Math.sin(t * 1.7));   // menacing eye flicker
+    var eg = ctx.createRadialGradient(cx, headY, 0, cx, headY, 15);
+    eg.addColorStop(0, 'rgba(255,60,60,' + (0.5 * eyeP) + ')'); eg.addColorStop(1, 'rgba(255,40,40,0)');
+    ctx.fillStyle = eg; ctx.beginPath(); ctx.arc(cx, headY, 15, 0, Math.PI * 2); ctx.fill();
+    for (var i = 0; i < 4; i++) {                                    // energy motes rising off him
+      var ph = (t * 0.32 + i * 0.27) % 1;
+      var mx = cx + Math.sin(i * 2.1 + t * 0.8) * box.w * 0.42, my = box.y + box.h - ph * box.h * 0.92;
+      ctx.fillStyle = 'rgba(180,130,255,' + (Math.sin(ph * Math.PI) * 0.5) + ')';
+      ctx.beginPath(); ctx.arc(mx, my, 1.6, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  }
   // Wanda (Scarlet Witch) and her brother (Quicksilver) sit on a couch in the
   // office, awaiting Ultron's next command.
   function drawSeated(cx, cy, coat, hair, t, sc) {
@@ -8136,9 +8160,9 @@ function toggleReducedVisuals(el) {
     var working = charMode === 'sit';
     drawOfficeWall(t);  // solid backdrop wall FIRST -- hides the baked window; everything else draws on top
     drawWallMonitor(t);                                   // BTC / memory / health, on the wall
-    wallGlow(uDeskX + 85, officeFloorY - 180, 220, RED, working ? 0.24 : 0.1);
+    wallGlow(uDeskX + 85, officeFloorY - 180, 220, RED, (working ? 0.2 : 0.09) + (working ? 0.06 * (0.5 + 0.5 * Math.sin(t * 2.2)) : 0));   // breathing backdrop aura
     drawSprite(IMG.tubeRed, uTubeX, officeFloorY);
-    if (working) lastCharBox = drawSprite(IMG.ultronWork, uDeskX + 85 - 100, officeFloorY, -U_ROBOT_SINK);
+    if (working) lastCharBox = drawSprite(IMG.ultronWork, uDeskX + 85 - 100, officeFloorY, -U_ROBOT_SINK + Math.sin(t * 1.5) * 1.3 - 1.3);   // gentle breathing float
     var uDesk = drawSprite(IMG[(working || t < deskFlashUntil) ? 'deskUltronActive' : 'deskUltronIdle'], uDeskX, officeFloorY);
     if (uDesk.w) {
       plate('Ultron', heroState, uDeskX + 9, officeFloorY - U_DESK_H + 34, U_DESK_W - 18, U_DESK_H - 44, '#ff6b6b', '#e8e6e0');
@@ -8151,6 +8175,7 @@ function toggleReducedVisuals(el) {
     var uCores = foundryCfg().cores || 0;   // each prestige, Ultron wears the tube's last body -> a growing accent aura
     if (uCores > 0) { var usk = bodySkin(uCores), ux = working ? (uDeskX + 85 - 56) : (walkX + 44); wallGlow(ux, officeFloorY - 74, 92, usk.accent, 0.13 + Math.min(0.16, uCores * 0.02)); }
     if (!working) lastCharBox = drawSprite(walkFrameToggle ? IMG.ultronWalkB : IMG.ultronWalkA, walkX, officeFloorY + 4);
+    drawUltronAlive(lastCharBox, t);   // breathing core, flickering eyes, energy motes -- keeps him alive
     drawTwinsWalking(t);   // Wanda & Pietro on patrol across the office
     drawUltronRepair(t);   // just after a prestige: Ultron rebuilds himself, stronger
     drawIronMan(t);   // recurring gag: the intruder Ultron is beating up / tossing out

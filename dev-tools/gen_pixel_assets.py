@@ -817,9 +817,12 @@ def main():
     # -- both about double the previous pass. His body is gunmetal / dark
     # platinum / weathered titanium with polished titanium plating and RED
     # eyes + core (owner request 2026-09-16).
-    for pose in ("walk_a", "walk_b", "work"):
-        save(draw_robot(10, U_PLATE, pose, "ultron", eye=RED_BRIGHT, bd=U_GUNMETAL, bm=U_PLATINUM, bl=U_TITANIUM, ultron=True, stones=True),
-             f"ultron_{pose}.png")
+    # NOTE: the office Ultron sprites (ultron_work/walk_a/walk_b.png) are OWNED BY
+    # dev-tools/ultron_infinity.py now -- his newer Infinity-Stone form (chrome +
+    # red cape + chest stones), built from the pixel reference. Do NOT regenerate
+    # them here; the boxy draw_robot below is kept only as the fallback/agent base.
+    # (Re-running this file used to clobber the good Infinity sprites.)
+    #   To rebuild Ultron:  python dev-tools/ultron_infinity.py
     for active in (False, True):
         save(draw_desk(280, 96, 124, 88, RED_BRIGHT, "core", active), f"desk_ultron_{'active' if active else 'idle'}.png")
     save(draw_tube(64, 280, RED_BRIGHT), "tube_red.png")
