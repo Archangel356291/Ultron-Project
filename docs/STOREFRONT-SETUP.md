@@ -93,3 +93,39 @@ results, it doesn't replace these tools.
 - `GET /api/me/keys` / `POST /api/me/keys` `{name,value}` — your private key vault
 
 All require your Bearer token; keys are per-user and encrypted at rest.
+
+---
+
+## Candles on Shopify (POD) — supplier & compliance notes
+
+Candles can run through the **same** Shopify store as your other POD items — you
+just need a supplier whose catalog includes candles:
+- **Printify** — widest candle network (soy blends, glass jars, sizes).
+- **Gooten** — amber/frosted glass and ceramic vessels, multiple scents.
+
+Both install from the Shopify App Store and push products with one click.
+
+**Design the label:** make the artwork in Canva/Illustrator to the supplier's
+exact template (a 9oz jar is often a ~3"×3" label area). Candles sell on *vibe* —
+lean into cohesive collections: minimalist/"cozy" names ("Sunday Read", "Rainy
+Day") or gift/humor lines.
+
+**Compliance & logistics (don't skip):**
+- **Safety labels** — burnable candles legally need fire-hazard / wick-trim
+  warnings on the base. Reputable suppliers (e.g. Printify) attach these; verify
+  it in the product description.
+- **Weight-based shipping** — glass is heavy and fragile; set a shipping profile
+  in Shopify so shipping cost doesn't eat your margin.
+- **Automatic fulfillment** — in the POD app, set order approval to *Automatic*
+  so a sale auto-routes to the supplier and ships without you touching it.
+
+**Before you sell:** order 2–3 **samples** to check scent throw, wax shrinkage,
+and label clarity. Never sell a candle blind. Market with short-form video (show
+the candle glowing / the funny label) since scent can't travel through a screen,
+and raise average order value by **bundling** candles with mugs/blankets/totes.
+
+In Odin's Eye: **LEITMADR** (Sourcing Hall) drafts a supplier shortlist,
+**LISTAMADR** (Design Smithy) drafts label concepts, **SPAMADR** (Market Watch)
+scouts trending scents/themes, **KAUPMADR** writes the listings, and
+**SKATTMADR** logs every sale + tax to the ledger. You approve, publish, and keep
+the money.
