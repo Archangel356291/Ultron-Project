@@ -731,6 +731,13 @@
   .sf-toggle-lg .sw{ width:38px; height:20px; border-radius:20px; background:#3a2c18; position:relative; transition:background .2s; }
   .sf-toggle-lg .sw i{ position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#8a7a5a; transition:left .2s; }
   .sf-toggle-lg.on .sw{ background:#3f7a4a; } .sf-toggle-lg.on .sw i{ left:20px; background:#dfffe6; }
+  .sf-keys{ margin:10px 0; padding:10px 11px; background:#241a10; border:1px solid #6a4526; border-radius:8px; }
+  .sf-keys-h span{ color:#8a93a3; font-size:10.5px; }
+  .sf-key-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-top:7px; font-size:11.5px; color:#d8c49a; }
+  .sf-key-row .kl i.ok{ color:#5fe39a; font-style:normal; } .sf-key-row .kl i.no{ color:#d9a05a; font-style:normal; }
+  .sf-key-row .ke{ display:flex; gap:5px; }
+  .sf-key-row input{ background:#120d07; border:1px solid #3a2c18; color:#e8dcc0; border-radius:6px; padding:4px 7px; font-size:11.5px; width:150px; }
+  .sf-key-row button{ padding:4px 9px; border-radius:6px; border:1px solid #cfa23c; background:#3a2c16; color:#ffe6a0; cursor:pointer; font-size:11px; }
 
 .set-row{ display:flex; align-items:center; gap:7px; padding:4px 0; flex-wrap:wrap; }
 
@@ -5771,7 +5778,7 @@ function toggleReducedVisuals(el) {
     }
     decoSpots.push({ f: cart, x: MARGIN + 74, y: gateY - 10 });
     var sfDx = Math.min(170, W / 2 - MARGIN - 64), sfY = gateY - 6;
-    decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'trade-post', 'ETSY / SHOPIFY', 'pod'); }, x: midX - sfDx, y: sfY, anim: true });
+    decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'trade-post', 'SHOPIFY', 'pod'); }, x: midX - sfDx, y: sfY, anim: true });
     decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'dropship-docks', 'AI DROPSHIP', 'dropship'); }, x: midX + sfDx, y: sfY, anim: true });
   }
   var VILLAGE_NAME = 'TRYGGVANGR';
@@ -5909,7 +5916,7 @@ function toggleReducedVisuals(el) {
     caption(on ? 'OPEN \u00b7 tap to manage' : 'closed \u00b7 tap to open', cx, footY + 30, on ? '#9fe6b6' : '#b9a988');
     hover(label, cx, y + h / 2, w / 2 + 6,
       '<b style="color:#e6c766">' + label + (on ? ' \u2014 <span style="color:#5fe39a">ACTIVE</span>' : ' \u2014 off') + '</b><br><span class="rt-enl">' +
-      (kind === 'dropship' ? 'AI dropshipping storefront' : 'Etsy / Shopify print-on-demand storefront') + '. Tap to open its ledger, toggle it on/off, and record or view sales.</span>',
+      (kind === 'dropship' ? 'AI dropshipping storefront' : 'Shopify print-on-demand & dropship storefront') + '. Tap to open its ledger, toggle it on/off, and record or view sales.</span>',
       function () { if (window.__openStorefrontPanel) window.__openStorefrontPanel(id); });
   }
   function drawScene(t) {
@@ -6526,9 +6533,9 @@ function toggleReducedVisuals(el) {
     Array.prototype.forEach.call(tabs.querySelectorAll('.sf-tab'), function (el) { el.onclick = function () { state.active = el.getAttribute('data-id'); renderPanel(); }; });
     var s = state.list.find(function (x) { return x.id === state.active; }); if (!s) { body.innerHTML = '<div class="sf-note">Sign in as admin to manage storefronts.</div>'; return; }
     var pod = s.platform !== 'ai_dropship';
-    var plat = pod ? 'Etsy / Shopify (print-on-demand)' : 'AI Dropshipping';
+    var plat = pod ? 'Shopify (print-on-demand & dropship)' : 'AI Dropshipping';
     var connect = pod
-      ? 'Connect Etsy and/or Shopify + Printful/Printify with <b>your own</b> API keys. The AI drafts designs &amp; listings and syncs orders here \u2014 payouts land in <b>your</b> bank via the platform; the AI never holds funds.'
+      ? 'Connect <b>your own</b> Shopify store (+ Printful/Printify for POD) with the keys below. The AI drafts listings &amp; SEO copy and syncs orders here \u2014 payouts land in <b>your</b> bank via Shopify; the AI never holds funds.'
       : 'Connect a Shopify store + a supplier (AliExpress / CJ / Spocket) with <b>your own</b> API keys. The AI curates products, drafts listings and routes orders \u2014 you approve pricing; the AI never holds funds.';
     body.innerHTML =
       '<div class="sf-toggle-lg' + (s.active ? ' on' : '') + '" id="sf-tg"><span class="sw"><i></i></span> Storefront is <b>' + (s.active ? 'ACTIVE' : 'off') + '</b></div>' +
@@ -6537,11 +6544,13 @@ function toggleReducedVisuals(el) {
       '<div class="sf-stat"><div class="k">Revenue</div><div class="v">' + money(s.revenue) + '</div></div>' +
       '<div class="sf-stat"><div class="k">Tax collected</div><div class="v">' + money(s.tax) + '</div></div></div>' +
       '<div class="sf-note">' + connect + '<br>Every sale is logged to <code>' + esc(state.ledgerDir || 'the ledger folder') + '</code> (per-store CSV + a master JSONL).</div>' +
+      '<div class="sf-keys" id="sf-keys"></div>' +
       '<div class="sf-form"><input id="sf-item" placeholder="item"><input id="sf-sub" placeholder="subtotal" type="number" step="0.01"><input id="sf-rate" placeholder="tax %" type="number" step="0.01"><button id="sf-add">Record sale</button></div>' +
       '<div id="sf-recent"></div>';
     document.getElementById('sf-tg').onclick = function () { toggle(s.id); };
     document.getElementById('sf-add').onclick = function () { recordSale(s.id); };
     loadRecent(s.id);
+    loadKeys(s.platform);
   }
   async function loadRecent(id) {
     var box = document.getElementById('sf-recent'); if (!box || !window.__apiGet) return;
@@ -6559,6 +6568,29 @@ function toggleReducedVisuals(el) {
     var rate = parseFloat(document.getElementById('sf-rate').value || '0');
     try { await window.__apiPost('/api/storefronts/' + id + '/sales', { item: item, subtotal: sub, tax_rate: rate, source: 'manual' }); await load(); loadRecent(id); }
     catch (e) { alert('Recording a sale needs admin sign-in.'); }
+  }
+  function keySlots(platform) {
+    var b = [['SHOPIFY_STORE', 'Shopify store domain (xxx.myshopify.com)'], ['SHOPIFY_ADMIN_TOKEN', 'Shopify Admin API access token']];
+    if (platform === 'ai_dropship') b = b.concat([['DROPSHIP_API_KEY', 'Dropship tool API key (AutoDS / DSers)']]);
+    return b;
+  }
+  async function loadKeys(platform) {
+    var box = document.getElementById('sf-keys'); if (!box || !window.__apiGet) return;
+    var set = {};
+    try { var d = await window.__apiGet('/api/me/keys'); if (!d.vault) { box.innerHTML = '<b>Your API keys</b> \u2014 the key vault is unavailable on the server.'; return; } (d.keys || []).forEach(function (k) { set[k.name] = true; }); }
+    catch (e) { box.innerHTML = '<b>Your API keys</b> \u2014 sign in to manage your own keys.'; return; }
+    box.innerHTML = '<div class="sf-keys-h"><b>Your API keys</b> <span>private to you \u00b7 encrypted \u00b7 never shared with other users or the owner</span></div>' +
+      keySlots(platform).map(function (sl) {
+        return '<div class="sf-key-row"><span class="kl">' + esc(sl[1]) + ' ' + (set[sl[0]] ? '<i class="ok">\u2714 set</i>' : '<i class="no">not set</i>') + '</span>' +
+          '<span class="ke"><input type="password" data-k="' + sl[0] + '" placeholder="paste value"><button data-save="' + sl[0] + '">Save</button>' + (set[sl[0]] ? '<button data-clear="' + sl[0] + '">clear</button>' : '') + '</span></div>';
+      }).join('');
+    Array.prototype.forEach.call(box.querySelectorAll('button[data-save]'), function (btn) { btn.onclick = function () { var n = btn.getAttribute('data-save'); saveKey(n, box.querySelector('input[data-k="' + n + '"]').value, platform); }; });
+    Array.prototype.forEach.call(box.querySelectorAll('button[data-clear]'), function (btn) { btn.onclick = function () { saveKey(btn.getAttribute('data-clear'), '', platform); }; });
+  }
+  async function saveKey(name, value, platform) {
+    if (!window.__apiPost) return;
+    try { await window.__apiPost('/api/me/keys', { name: name, value: value }); loadKeys(platform); }
+    catch (e) { alert('Saving a key needs you to be signed in.'); }
   }
   document.getElementById('sf-ledger-btn').onclick = function () { openPanel(); };
   document.getElementById('sf-x').onclick = function () { panel.hidden = true; };

@@ -6,3 +6,5 @@ WMI==1.5.1; platform_system=="Windows"
 # The container's server (see gunicorn.conf.py). Does not run on Windows, where
 # local development keeps using `python app.py`.
 gunicorn>=23.0,<24.0; platform_system!="Windows"
+# Per-user API-key vault: encryption at rest (Fernet).
+cryptography>=42,<44

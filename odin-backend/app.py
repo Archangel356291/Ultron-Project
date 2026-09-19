@@ -85,6 +85,7 @@ import csv
 import hmac
 import io
 import hashlib
+import base64
 import json
 import os
 import platform
@@ -427,10 +428,21 @@ def _init_db():
                 source TEXT NOT NULL DEFAULT 'manual'
             )
         """)
-        # Seed two opt-in print-on-demand storefronts, OFF by default (the owner
-        # flips them on from the village toggle once real platform keys are set).
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS user_settings (
+                user_id TEXT NOT NULL,
+                key_name TEXT NOT NULL,
+                value_enc TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                PRIMARY KEY (user_id, key_name)
+            )
+        """)
+        # Etsy dropped by owner request -> the POD storefront is Shopify-only now.
+        conn.execute("UPDATE storefronts SET platform='shopify' WHERE platform='etsy_shopify'")
+        # Seed two opt-in storefronts, OFF by default (the owner flips them on from
+        # the village toggle once real platform keys are set).
         if conn.execute("SELECT COUNT(*) FROM storefronts").fetchone()[0] == 0:
-            for _sid, _name, _plat in (("trade-post", "Trade Post", "etsy_shopify"), ("dropship-docks", "Dropship Docks", "ai_dropship")):
+            for _sid, _name, _plat in (("trade-post", "Trade Post", "shopify"), ("dropship-docks", "Dropship Docks", "ai_dropship")):
                 conn.execute("INSERT INTO storefronts (id, name, platform, active, created_at) VALUES (?,?,?,0,?)",
                              (_sid, _name, _plat, time.strftime("%Y-%m-%dT%H:%M:%S")))
         conn.commit()
@@ -6434,9 +6446,9 @@ def record_storefront_sale(storefront_id, body):
         _write_ledger_files(row)
         log_activity("storefront_sale", "Sale on %s" % storefront_id,
                      "%s x%d = %.2f %s (tax %.2f)" % (item, qty, total / 100, currency, tax / 100))
-        sale = {"storefront_id": storefront_id, "ts": ts, "order_id": order_id, "item": item, "qty": qty,
-                "subtotal": round(subtotal / 100, 2), "tax": round(tax / 100, 2), "total": round(total / 100, 2),
-                "currency": currency, "tax_rate": tax_rate, "source": source}
+        sale = {"storefront_id": storefront_id, "ts": ts, "order_id": order_id, "item": item, "qty": qty,
+                "subtotal": round(subtotal / 100, 2), "tax": round(tax / 100, 2), "total": round(total / 100, 2),
+                "currency": currency, "tax_rate": tax_rate, "source": source}
         return {"ok": True, "sale": sale}
     finally:
         conn.close()
@@ -6506,6 +6518,115 @@ def api_storefront_sales(storefront_id):
 def api_storefront_active(storefront_id):
     body = request.get_json(silent=True) or {}
     return jsonify(set_storefront_active(storefront_id, bool(body.get("active"))))
+
+
+# ---------------------------------------------------------------------------
+# Per-user API-key vault (multi-tenant). Every signed-in user stores their OWN
+# keys (Anthropic, Shopify, dropship supplier, ...) encrypted at rest and
+# namespaced to their identity. Non-owner users NEVER receive the owner's env
+# keys -- isolation is enforced in get_user_key(). This is what lets Odin's Eye
+# be published for other people's homelabs: they bring their own keys.
+# ---------------------------------------------------------------------------
+try:
+    from cryptography.fernet import Fernet as _Fernet
+    _VAULT_SEED = (os.environ.get("ODIN_GRAPH_ENCRYPTION_KEY") or os.environ.get("ODIN_API_TOKEN") or "odins-eye-vault").encode()
+    _VAULT = _Fernet(base64.urlsafe_b64encode(hashlib.sha256(_VAULT_SEED).digest()))
+except Exception:
+    _VAULT = None  # cryptography missing -> vault refuses to store (fails closed)
+
+
+def _vault_enc(v):
+    if _VAULT is None:
+        return None
+    return _VAULT.encrypt(v.encode()).decode()
+
+
+def _vault_dec(v):
+    if _VAULT is None:
+        return None
+    try:
+        return _VAULT.decrypt(v.encode()).decode()
+    except Exception:
+        return None
+
+
+def _current_identity():
+    """A per-user namespace: 'owner' for the admin, 'beta:<name>' for a beta
+    user. None if unauthenticated. Keys never cross identities."""
+    role = getattr(g, "role", None)
+    beta = getattr(g, "beta_name", None)
+    if role == "admin":
+        return "owner"
+    if role == "beta" and beta:
+        return "beta:" + str(beta)
+    return None
+
+
+def set_user_key(name, value):
+    ident = _current_identity()
+    if not ident:
+        return {"error": "unauthorized"}
+    name = str(name).strip()[:64]
+    if not name:
+        return {"error": "name required"}
+    conn = _get_db_connection()
+    try:
+        if value:
+            enc = _vault_enc(str(value))
+            if enc is None:
+                return {"error": "vault unavailable (cryptography not installed)"}
+            conn.execute(
+                "INSERT INTO user_settings (user_id, key_name, value_enc, updated_at) VALUES (?,?,?,?) "
+                "ON CONFLICT(user_id, key_name) DO UPDATE SET value_enc=excluded.value_enc, updated_at=excluded.updated_at",
+                (ident, name, enc, time.strftime("%Y-%m-%dT%H:%M:%S")))
+        else:
+            conn.execute("DELETE FROM user_settings WHERE user_id=? AND key_name=?", (ident, name))
+        conn.commit()
+        return {"ok": True, "name": name, "set": bool(value)}
+    finally:
+        conn.close()
+
+
+def list_user_keys():
+    ident = _current_identity()
+    if not ident:
+        return {"error": "unauthorized"}
+    conn = _get_db_connection()
+    try:
+        rows = conn.execute("SELECT key_name, updated_at FROM user_settings WHERE user_id=? ORDER BY key_name", (ident,)).fetchall()
+        # Only which keys are set -- values are NEVER returned to the client.
+        return {"identity": ident, "vault": _VAULT is not None,
+                "keys": [{"name": r["key_name"], "set": True, "updated_at": r["updated_at"]} for r in rows]}
+    finally:
+        conn.close()
+
+
+def get_user_key(name):
+    """The CALLER's own stored key. Only the owner falls back to the process
+    env var; other users never receive the owner's keys."""
+    ident = _current_identity()
+    if ident:
+        conn = _get_db_connection()
+        try:
+            row = conn.execute("SELECT value_enc FROM user_settings WHERE user_id=? AND key_name=?", (ident, name)).fetchone()
+        finally:
+            conn.close()
+        if row:
+            v = _vault_dec(row["value_enc"])
+            if v:
+                return v
+    if ident == "owner":
+        return os.environ.get(name)
+    return None
+
+
+@app.route("/api/me/keys", methods=["GET", "PUT", "POST"])
+@require_role
+def api_me_keys():
+    if request.method in ("PUT", "POST"):
+        body = request.get_json(silent=True) or {}
+        return jsonify(set_user_key(body.get("name"), body.get("value")))
+    return jsonify(list_user_keys())
 
 
 if __name__ == "__main__":
