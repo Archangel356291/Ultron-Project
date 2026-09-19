@@ -1221,7 +1221,7 @@
 <body>
 <div id="login-gate">
   <div class="card gate-card">
-    <div class="gate-title">ODIN</div>
+    <div class="gate-title">ODIN’S EYE</div>
     <div class="gate-sub">Sign in to continue</div>
     <div class="conn-row">
       <div class="conn-field">
@@ -1304,7 +1304,7 @@
     <nav id="nav">
       <div class="nav-item active" data-section="ultron-core" data-role="admin">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><polygon points="12,2.5 21,7.5 21,16.5 12,21.5 3,16.5 3,7.5"/><circle cx="12" cy="12" r="3.2"/></svg>
-        <span class="nav-text"><span class="label">Odin</span><span class="nav-sub">The Village</span></span>
+        <span class="nav-text"><span class="label">Valhalla</span><span class="nav-sub">Drengskapr’s hall</span></span>
       </div>
       <div class="nav-item" data-section="ultron-designs" data-role="admin">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M4 21V10l8-6 8 6v11"/><path d="M9 21v-7h6v7"/><path d="M9 10h.01M15 10h.01"/></svg>
@@ -1364,8 +1364,8 @@
       <section class="section active" id="sec-ultron-core">
         <div class="hero-panel">
           <div class="hero-head">
-            <div class="eyebrow"><span class="bolt"></span><span>ODIN'S CORNER</span><span class="bolt r"></span></div>
-            <div class="sub">His office up top, his agents below, and the line in the basement that builds more.</div>
+            <div class="eyebrow"><span class="bolt"></span><span>VALHALLA</span><span class="bolt r"></span></div>
+            <div class="sub">Tryggvangr — the village of Odin’s Eye. Jarl Drengskapr rules from the hall; his agents work their trades below.</div>
           </div>
 
           <div class="sf-bar" id="sf-bar" hidden>
@@ -1580,7 +1580,7 @@
                 <div class="core-status-dot" id="core-status-dot"></div>
                 <div>
                   <div class="core-status-title" id="core-status-title">STANDING BY</div>
-                  <div class="core-status-sub">Odin core</div>
+                  <div class="core-status-sub">Drengskapr</div>
                 </div>
               </div>
               <div class="hud-row"><span class="k">Mode</span><span class="v" id="core-mode">standby</span></div>
@@ -1878,7 +1878,7 @@
             </div>
             <div id="sentinel-findings" style="margin-top:10px;"></div>
             <div style="font-size:11.5px; color:var(--text-faint); margin-top:10px; line-height:1.5;">
-              Checks sign-in lockouts and repeated failed sign-ins, containers that aren't running, and critical CVEs from the last scan. Read-only, no LLM — new and cleared findings land in the activity feed and light Sentinel's desk in Odin's corner.
+              Checks sign-in lockouts and repeated failed sign-ins, containers that aren't running, and critical CVEs from the last scan. Read-only, no LLM — new and cleared findings land in the activity feed and light Sentinel’s desk in Valhalla.
             </div>
           </div>
         </div>
@@ -2344,7 +2344,7 @@
     const label = presenceState === 'alert' ? PRESENCE_LABELS.alert
       : ok ? PRESENCE_LABELS[presenceState] || 'online' : 'standing by';
     const heroTitle = document.getElementById('hero-title');
-    if (heroTitle) heroTitle.textContent = 'ODIN ' + label.toUpperCase();
+    if (heroTitle) heroTitle.textContent = 'DRENGSKAPR ' + label.toUpperCase();
     const coreTitle = document.getElementById('core-status-title');
     if (coreTitle) coreTitle.textContent = label.toUpperCase();
     const foot = document.getElementById('presence-foot');
@@ -4101,7 +4101,7 @@
       div.className = 'msg ultron' + (opts.isError ? ' err' : '') + (opts.thinking ? ' thinking' : '');
       const who = document.createElement('div');
       who.className = 'who';
-      who.textContent = 'ODIN';
+      who.textContent = 'DRENGSKAPR';
       div.appendChild(who);
       if (opts.thinking) {
         const dots = document.createElement('span');
@@ -4512,7 +4512,7 @@
     const byCategory = {};
     cats.forEach(function (c) { byCategory[c] = BRAIN_TOOLS.filter(function (t) { return t.category === c; }); });
     const nodes = [{
-      id: 'hub', label: 'ODIN', kind: 'hub', category: 'hub', r: 16,
+      id: 'hub', label: 'DRENGSKAPR', kind: 'hub', category: 'hub', r: 16,
       desc: 'The voice, not the mission — see "Who he is" below.',
     }];
     cats.forEach(function (cat, ci) {
@@ -5503,8 +5503,8 @@ function toggleReducedVisuals(el) {
     var thinking = odinState === 'thinking' || odinState === 'responding' || odinState === 'speaking' || odinState === 'alert';
     lastCharBox = { x: cx, y: footY + (thinking ? -6 : 2) - 40, w: 40, h: 40 };
     if (thinking) drawOdin(cx, footY + 4, true, t); else drawOdin(cx + Math.sin(t * 0.6) * 26, footY + 4, false, t);
-    caption('ODIN’S HALL', cx, footY + 22, P.goldL);
-    hover('Odin', cx, footY - 26, 40, '<b style="color:#e6c766">Odin, the All-Father</b><br><span class="rt-enl">The heart of the stead. He takes the high seat to think, and paces the yard when all is quiet.</span>');
+    caption('DRENGSKAPR’S HALL', cx, footY + 22, P.goldL);
+    hover('Drengskapr', cx, footY - 26, 40, '<b style="color:#e6c766">Jarl Drengskapr</b><br><span class="rt-enl">The AI who rules Tryggvangr from the hall — the conversational core. He takes the high seat to think, and paces the yard when all is quiet.</span>');
   }
   function dragonHead(x, y, dir) {
     ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1);
@@ -5717,63 +5717,7 @@ function toggleReducedVisuals(el) {
   }
   function caption(text, cx, y, color) { setFont(fontPx * 0.72, true); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = 'rgba(20,18,14,0.55)'; ctx.fillText(text, cx, y + 1); ctx.fillStyle = color || '#efe6d2'; ctx.fillText(text, cx, y); }
 
-  // ---------------------------------------------------------------- creatures
-  var CREATURES = {
-    draugr: { name: 'a Draugr', body: '#5c6b52', eye: '#8fe64b' },
-    troll: { name: 'a Mountain Troll', body: '#6b6270', eye: '#ffd24b', big: true },
-    jotunn: { name: 'a Frost Jotunn', body: '#6f93b0', eye: '#bfeaff', big: true },
-    wolf: { name: 'Fenrir’s Whelp', body: '#4a4e57', eye: '#ff7a3c' },
-    valkyrie: { name: 'a Valkyrie', body: '#c9ccd4', eye: '#ffe08a', wings: true },
-    serpent: { name: 'a Spawn of Jormungandr', body: '#3f7a5a', eye: '#c9ff6a' }
-  };
-  var CREATURE_KINDS = Object.keys(CREATURES);
-  var beast = { phase: 'gone', kind: 'draugr', x: 0, y: 0, t: 0 };
-  function creatureToast(name) {
-    var el = document.getElementById('im-toast');
-    if (!el) { el = document.createElement('div'); el.id = 'im-toast'; el.style.cssText = 'position:fixed; top:14px; right:14px; z-index:99999; background:#1a1714; border:1px solid #cfa23c; color:#f0e6cf; font:12px/1.45 ui-monospace,monospace; padding:9px 13px; border-radius:7px; box-shadow:0 8px 24px -6px rgba(0,0,0,.75); cursor:pointer; max-width:260px; transition:opacity .3s;'; el.addEventListener('click', function () { var c = document.getElementById('pixel-room-canvas'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); }); document.body.appendChild(el); }
-    el.innerHTML = '⚔️ <b>' + (name || 'A beast') + ' prowls the village bounds!</b><br>The wardens have the watch — click to look 👀';
-    el.style.opacity = '1'; el.style.display = 'block';
-    clearTimeout(el._t); el._t = setTimeout(function () { el.style.opacity = '0'; setTimeout(function () { el.style.display = 'none'; }, 300); }, 6000);
-  }
-  function startBeast() {
-    if (beast.phase !== 'gone' || H < 200) return;
-    beast.kind = CREATURE_KINDS[Math.floor(Math.random() * CREATURE_KINDS.length)];
-    beast.phase = 'in'; beast.t = 0; beast.x = -30; beast.y = gateY - 30;
-    creatureToast(CREATURES[beast.kind].name);
-  }
-  setTimeout(startBeast, 12000); setInterval(startBeast, 48000);
-  window.__spawnHero = function (kind) { beast.phase = 'gone'; startBeast(); if (CREATURES[kind]) { beast.kind = kind; creatureToast(CREATURES[kind].name); } return beast.kind; };   // kept name for dev hook
-  window.__spawnCreature = window.__spawnHero;
-  function stepBeast(dt) {
-    var b = beast; if (b.phase === 'gone') return; b.t += dt;
-    var midX = W / 2;
-    if (b.phase === 'in') { b.x += 70 * dt; if (b.x >= midX - 40) { b.phase = 'hold'; b.hold = 0; } }
-    else if (b.phase === 'hold') { b.hold += dt; if (b.hold > 3) b.phase = 'out'; }
-    else { b.x += 90 * dt; if (b.x > W + 40) b.phase = 'gone'; }
-  }
-  function drawBeast() {
-    var b = beast; if (b.phase === 'gone') return;
-    var c = CREATURES[b.kind], s = c.big ? 3.4 : 2.4, x = b.x, y = b.y, t = b.t;
-    ctx.save(); ctx.translate(x, y);
-    ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(0, 0, 8 * s, 2.6 * s, 0, 0, 7); ctx.fill();
-    if (b.kind === 'wolf' || b.kind === 'serpent') {
-      ctx.fillStyle = c.body; roundRect(-9 * s, -6 * s, 18 * s, 5 * s, 2 * s); ctx.fill();
-      ctx.beginPath(); ctx.arc(8 * s, -6 * s, 3.2 * s, 0, 7); ctx.fill();
-      if (b.kind === 'wolf') { ctx.beginPath(); ctx.moveTo(6 * s, -9 * s); ctx.lineTo(7.6 * s, -12 * s); ctx.lineTo(9 * s, -9 * s); ctx.closePath(); ctx.fill(); }
-      ctx.fillStyle = c.eye; ctx.fillRect(9 * s, -7 * s, 1.6 * s, 1.2 * s);
-      ctx.strokeStyle = c.body; ctx.lineWidth = 2 * s; for (var lg = -6; lg <= 6; lg += 4) { ctx.beginPath(); ctx.moveTo(lg * s, -1.5 * s); ctx.lineTo(lg * s + Math.sin(t * 8 + lg) * 1.5 * s, 0); ctx.stroke(); }
-    } else {
-      ctx.fillStyle = c.body; roundRect(-6 * s, -13 * s, 12 * s, 12 * s, 3 * s); ctx.fill();
-      ctx.fillStyle = shade(c.body, 0.2); roundRect(-6 * s, -13 * s, 3 * s, 12 * s, 2 * s); ctx.fill();
-      ctx.fillStyle = c.body; roundRect(-4.4 * s, -19 * s, 8.8 * s, 7 * s, 3 * s); ctx.fill();
-      ctx.fillStyle = c.eye; ctx.fillRect(-3 * s, -16 * s, 1.8 * s, 1.6 * s); ctx.fillRect(1.2 * s, -16 * s, 1.8 * s, 1.6 * s);
-      ctx.fillStyle = '#20242b'; ctx.fillRect(-2.4 * s, -12 * s, 5 * s, 1.6 * s);   // maw
-      // arms
-      ctx.fillStyle = c.body; ctx.fillRect(-9 * s, -12 * s, 3 * s, 8 * s); ctx.fillRect(6 * s, -12 * s, 3 * s, 8 * s);
-      if (c.wings) { ctx.fillStyle = '#eef1f6'; for (var wg = -1; wg <= 1; wg += 2) { ctx.beginPath(); ctx.moveTo(wg * 5 * s, -14 * s); ctx.lineTo(wg * 13 * s, -20 * s + Math.sin(t * 6) * 2 * s); ctx.lineTo(wg * 6 * s, -8 * s); ctx.closePath(); ctx.fill(); } }
-    }
-    ctx.restore();
-  }
+  // (random monster spawns + their toast notifications removed by owner request)
 
   // ---------------------------------------------------------------- villager sim
   function stepVillagers(dt) {
@@ -5983,7 +5927,6 @@ function toggleReducedVisuals(el) {
     for (var ci = 0; ci < 3; ci++) chicken(W / 2 + 120 + ci * 22 + Math.sin(t * 0.7 + ci) * 16, topBand + 96 + Math.cos(t * 0.5 + ci) * 8, t);
     barrels(W - MARGIN - 46, topBand - 24); hay(W - MARGIN - 60, gateY - 12);
     drawVillagers(t);
-    drawBeast();
     fence();
     drawNameBanner(t);
     positionBubble();
@@ -6036,7 +5979,7 @@ function toggleReducedVisuals(el) {
     var t = now(), dt = Math.min(0.05, t - lastT); lastT = t;
     var afk = Date.now() - lastActivity > 180000;
     if (afk && Math.floor(t * 6) % 3) { }   // throttle when idle: skip 2/3 frames
-    stepVillagers(dt); stepBeast(dt);
+    stepVillagers(dt);
     drawScene(t);
   }
 
@@ -6059,7 +6002,7 @@ function toggleReducedVisuals(el) {
         '<span class="ar-badges">' + enl.map(function (e, i) { return '<span class="ar-badge' + (i ? ' lab' : '') + '">' + e + '</span>'; }).join('') + '</span></div>';
     };
     rosterEl.innerHTML =
-      card('ODIN', '#e6c766', 'All-Father — the conversational core & orchestration', ['Odin’s Eye'].concat(LABS)) +
+      card('DRENGSKAPR', '#e6c766', 'The Jarl — conversational core & orchestration', ['Odin’s Eye'].concat(LABS)) +
       SUBAGENTS.map(function (a) { return card(a.label, a.hex, AGENT_ROLE[a.agent] || '', agentEnlistments(a.agent)); }).join('') +
       '<div class="ar-note">Hover or tap a Viking (or their hut) for their trade and oaths. Lab-sworn Vikings (the Ethical Lab and the Hack Lab share one war-band) observe a lab only after a portal login, and act only under a <code>/lab-enlist</code> grant — otherwise watch-only.</div>';
   }
@@ -6071,7 +6014,7 @@ function toggleReducedVisuals(el) {
   else { window.addEventListener('resize', function () { laidOut = layout(); decoSpots = []; forceDraw(); }); }
   if (window.IntersectionObserver) { new IntersectionObserver(function (entries) { var vis = entries[entries.length - 1].isIntersecting; if (vis && !onScreen) { onScreen = true; forceDraw(); } else onScreen = vis; }).observe(wrap); }
 
-  if (prefersReducedMotion) { requestStatic(); setInterval(function () { stepVillagers(0.5); stepBeast(0.5); requestStatic(); }, 600); }
+  if (prefersReducedMotion) { requestStatic(); setInterval(function () { stepVillagers(0.5); requestStatic(); }, 600); }
   else { frame(); }
 })();
 </script>
