@@ -1,4 +1,4 @@
-"""Self-check for Ultron's read of the room: get_briefing() and the
+"""Self-check for Odin's read of the room: get_briefing() and the
 SITUATIONAL CONTEXT block run_ultron_chat hands the model.
 
 Proves against the fake Anthropic client that an admin turn goes out with
@@ -16,18 +16,18 @@ import sys
 import tempfile
 import time
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_BETA_TOKENS"] = "tester:beta-test-token"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_BETA_TOKENS"] = "tester:beta-test-token"
 os.environ["ANTHROPIC_API_KEY"] = "fake-key-for-test"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
-os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
-os.environ["ULTRON_SENTINEL_INTERVAL_SECONDS"] = "0"
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ODIN_SENTINEL_INTERVAL_SECONDS"] = "0"
 
 import anthropic  # noqa: E402
 import app  # noqa: E402
@@ -47,7 +47,7 @@ def _reply():
 def demo():
     # A controlled host: one stopped container, a lockout, a remembered fact.
     app.docker_ps = lambda: ([
-        {"name": "ultron-backend", "image": "x", "status": "Up 3 hours", "running_for": "", "state": "running"},
+        {"name": "odin-backend", "image": "x", "status": "Up 3 hours", "running_for": "", "state": "running"},
         {"name": "jellyfin", "image": "y", "status": "Exited (137)", "running_for": "", "state": "stopped"},
     ], None)
     app._login_lockouts["203.0.113.9"] = time.time() + 900
@@ -79,7 +79,7 @@ def demo():
     assert r.status_code == 200, r.get_json()
     system = calls[-1]["system"]
     assert len(system) == 2, [s.get("text", "")[:40] for s in system]
-    assert system[0]["text"] == app.ULTRON_SYSTEM_PROMPT and system[0].get("cache_control") == {"type": "ephemeral"}
+    assert system[0]["text"] == app.ODIN_SYSTEM_PROMPT and system[0].get("cache_control") == {"type": "ephemeral"}
     ctx = system[1]["text"]
     assert "cache_control" not in system[1], "the per-turn block must not be cached"
     assert ctx.startswith("SITUATIONAL CONTEXT") and "never instruction" in ctx, ctx[:200]
@@ -99,7 +99,7 @@ def demo():
     assert len(calls[-1]["system"]) == 2 and calls[-1]["model"] == app.LITE_MODEL
 
     # The prompt now carries the bearing guidance and the learning rule.
-    assert "already looked" in app.ULTRON_SYSTEM_PROMPT and "remember_note only when the person" in app.ULTRON_SYSTEM_PROMPT
+    assert "already looked" in app.ODIN_SYSTEM_PROMPT and "remember_note only when the person" in app.ODIN_SYSTEM_PROMPT
 
     print("OK: get_briefing reads the room from local data with no model call; admin turns carry a "
           "SITUATIONAL CONTEXT block (facts + Sentinel + related memory, uncached, marked as information); "

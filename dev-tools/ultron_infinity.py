@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Upgrade Ultron's sprites to his Infinity-Stone form (ref: infinity ultron.jpg):
-the same recognizable Ultron, but chromed to bright silver/titanium, a red gem on
+"""Upgrade Odin's sprites to his Infinity-Stone form (ref: infinity ultron.jpg):
+the same recognizable Odin, but chromed to bright silver/titanium, a red gem on
 the brow, the six Infinity Stones set across his chest, gold trim and a red cape.
 
 Starts from the pixel reference figure, recolors, paints the stones/cape, then fits
@@ -90,7 +90,7 @@ def upgrade(fig):
                 if opaque(X, Y):
                     px[X, Y] = (c[0], c[1], c[2], 255)
 
-    # ---- Infinity Stones, arranged like Ultron wears them: MIND on the forehead,
+    # ---- Infinity Stones, arranged like Odin wears them: MIND on the forehead,
     #      a pair (+ a lower centre core) on the chest, and one set into each hand. ----
     cx = w // 2
 

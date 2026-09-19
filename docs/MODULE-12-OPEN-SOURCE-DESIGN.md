@@ -1,4 +1,4 @@
-# Open-sourcing Ultron (Module 12) — v1
+# Open-sourcing Odin (Module 12) — v1
 
 The roadmap's own gate for this module: *"last, only once Module 3, 4,
 and 9 are solid"* — confirmed true (`GIT-SECRET-AUDIT.md`, this module's
@@ -14,7 +14,7 @@ from the roadmap, in order:
   still classifies and encrypts private nodes; `graphify-out/private-nodes.enc.json`
   stays gitignored (never committed even encrypted, per Module 9's own
   rule). Unaffected by Module 10's refactor — the classification logic
-  moved to `ultron-backend/graph_schema_shared.py`, not its behavior.
+  moved to `odin-backend/graph_schema_shared.py`, not its behavior.
 
 ## 37. Pick a license
 
@@ -35,8 +35,8 @@ personal/network-identifying content that gitleaks would never catch:
 
 | File | What was exposed | Fix |
 |---|---|---|
-| `ultron-backend/PI-SETUP.md` | The real Windows username (`C:\Users\redacted-user\...`), three real device hostnames (`pc-device-name`, `phone-device-name`, `phone2-device-name`), the real Tailscale account handle (`Archangel356291@`), and a real SSH public key tied to real infrastructure | All replaced with generic placeholders (`C:\Users\<you>\...`, "your other devices," a placeholder key format) |
-| `ultron-backend/BETA-LAUNCH-CHECKLIST.md` | The real hostname + real tailnet ID (`pc-device-name.tailXXXX.ts.net`) in a historical test-log entry | Replaced with the same placeholder pattern `REMOTE-ACCESS.md` already used (`your-pc-name.tailXXXX.ts.net`) |
+| `odin-backend/PI-SETUP.md` | The real Windows username (`C:\Users\redacted-user\...`), three real device hostnames (`pc-device-name`, `phone-device-name`, `phone2-device-name`), the real Tailscale account handle (`Archangel356291@`), and a real SSH public key tied to real infrastructure | All replaced with generic placeholders (`C:\Users\<you>\...`, "your other devices," a placeholder key format) |
+| `odin-backend/BETA-LAUNCH-CHECKLIST.md` | The real hostname + real tailnet ID (`pc-device-name.tailXXXX.ts.net`) in a historical test-log entry | Replaced with the same placeholder pattern `REMOTE-ACCESS.md` already used (`your-pc-name.tailXXXX.ts.net`) |
 | `.githooks/pre-commit` | The real Windows username hardcoded into the gitleaks-binary fallback path | Changed to `$HOME`-relative — also just a correctness fix, since a hardcoded username breaks the hook for anyone else who clones this repo |
 | `graphify-out/.graphify_python` | A machine-local sidecar (graphify's own skill writes it) containing the real username in an absolute interpreter path — and meaningless to anyone else regardless, since it points at *this* machine's own Python install | Untracked (`git rm --cached`) and added to `.gitignore` — same category as `.env`, local environment state that was never a deliverable |
 
@@ -47,7 +47,7 @@ sweep didn't flag it.
 **What was checked and found clean:** dollar amounts across every `.md`
 file (all `$1.00` hits are the designed, public beta-spend-cap feature,
 not real financial data — see `BETA-TESTERS.md`); IP addresses (the one
-hit, `192.168.1.50` in `ultron-backend/README.md`, is a standard
+hit, `192.168.1.50` in `odin-backend/README.md`, is a standard
 RFC1918 documentation example, same category as gitleaks' own allowlisted
 AWS example key); no real names beyond the GitHub handles already
 public in this repo's commit history and contributor credits.

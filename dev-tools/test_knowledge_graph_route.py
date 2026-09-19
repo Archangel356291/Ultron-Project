@@ -3,7 +3,7 @@
 
 Proves the real mechanism, not just that the route exists: it actually
 reads graphify-out/graph.json (real vault data, not a fabricated demo
-set), merges in Ultron's own runtime memory graph via the exact same
+set), merges in Odin's own runtime memory graph via the exact same
 _notes_as_graph() helper recall_related_notes already uses, the size
 limit keeps the highest-degree nodes (not an arbitrary prefix), and the
 route stays admin-only.
@@ -16,14 +16,14 @@ import os
 import sys
 import tempfile
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
 
 import app  # noqa: E402
 
@@ -42,7 +42,7 @@ def demo_real_vault_data():
         assert is_memory or n["id"] in real_ids, f"node {n['id']!r} traces to neither the vault graph nor memory"
     print(f"OK: get_knowledge_graph() returns {result['stats']['node_count']} real nodes "
           f"({result['stats']['link_count']} links, {result['stats']['clusters']} clusters) -- "
-          f"every id traces to graphify-out/graph.json or Ultron's own memory graph, none fabricated.")
+          f"every id traces to graphify-out/graph.json or Odin's own memory graph, none fabricated.")
 
 
 def demo_memory_merge():

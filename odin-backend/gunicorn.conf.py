@@ -28,7 +28,7 @@ errorlog = "-"
 # Same rule as app._resolve_ssl_context (kept in step by
 # dev-tools/test_tls_fallback.py): TLS only when both the certificate and the
 # key are configured, otherwise plain HTTP rather than a half-configured state.
-_cert = (os.environ.get("ULTRON_TLS_CERT") or "").strip()
-_key = (os.environ.get("ULTRON_TLS_KEY") or "").strip()
+_cert = (os.environ.get("ODIN_TLS_CERT") or "").strip()
+_key = (os.environ.get("ODIN_TLS_KEY") or "").strip()
 if _cert and _key:
     certfile, keyfile = _cert, _key

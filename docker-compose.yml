@@ -1,35 +1,35 @@
 services:
-  ultron-backend:
+  odin-backend:
     build:
       context: .
-      dockerfile: ultron-backend/Dockerfile
-    container_name: ultron-backend
+      dockerfile: odin-backend/Dockerfile
+    container_name: odin-backend
     restart: unless-stopped
     ports:
       # Tailnet + this machine only -- never the Wi-Fi/LAN. The tailnet IP is
       # host-specific, so it comes from the untracked .env.
-      - "${ULTRON_BIND_IP:?Add ULTRON_BIND_IP to .env (output of: tailscale ip -4)}:5000:5000"
+      - "${ODIN_BIND_IP:?Add ODIN_BIND_IP to .env (output of: tailscale ip -4)}:5000:5000"
       - "127.0.0.1:5000:5000"
     env_file:
       - .env
     environment:
-      - ULTRON_DB_PATH=/data/ultron.db
+      - ODIN_DB_PATH=/data/odin.db
       # Activity/chat/metrics timestamps are written with the container's
       # clock; without this they were UTC while everything else on the
       # dashboard (and the Pi-hole/Jellyfin stacks) is local time.
       - TZ=America/Los_Angeles
       # Real TLS cert issued by `tailscale cert` for this device's
       # *.ts.net name (owner-requested 2026-09-16) -- see the tls/
-      # volume mount below and ultron-backend/tls/README.md for how to
+      # volume mount below and odin-backend/tls/README.md for how to
       # (re)generate it. Empty/missing files fall back to plain HTTP,
       # per app.py's own check.
-      - ULTRON_TLS_CERT=/app/tls/ultron.crt
-      - ULTRON_TLS_KEY=/app/tls/ultron.key
+      - ODIN_TLS_CERT=/app/tls/odin.crt
+      - ODIN_TLS_KEY=/app/tls/odin.key
       # The Storage panel, get_storage_usage and the briefing read these
       # paths -- the host's real drives, bind-mounted read-only below.
       # Without this the container reported its own virtual disk as
       # "root" (1 TB, 1% used) while D: alone is 4 TB.
-      - ULTRON_STORAGE_MOUNTS=C:=/host/c,D:=/host/d
+      - ODIN_STORAGE_MOUNTS=C:=/host/c,D:=/host/d
     volumes:
       # Host drives, read-only, so disk usage is the owner's actual C: and
       # D: (shutil.disk_usage on a bind mount reports the underlying
@@ -37,22 +37,22 @@ services:
       # disk_usage() on these paths.
       - "C:\\:/host/c:ro"
       - "D:\\:/host/d:ro"
-      # Ultron's learned/gathered data (trades, memory notes, evolution
-      # ideas, metrics history, activity log -- everything in ultron.db)
+      # Odin's learned/gathered data (trades, memory notes, evolution
+      # ideas, metrics history, activity log -- everything in odin.db)
       # lives on the host at a real, browsable path instead of inside
       # Docker's own hidden volume storage. Host-specific, so it's a
       # variable sourced from the untracked .env (set
-      # ULTRON_DATA_DIR there) rather than hardcoded here -- this repo
+      # ODIN_DATA_DIR there) rather than hardcoded here -- this repo
       # is public, and other clones won't have this exact path.
-      - "${ULTRON_DATA_DIR}:/data"
+      - "${ODIN_DATA_DIR}:/data"
       # The built offline APK (private, secret-free), read-only, so the phone
       # can download it over the tailnet from /download/ultrons-corner.apk.
       - "C:\\Ultron Project\\Ultrons APK Game\\apk:/apk:ro"
       # Host-issued TLS material, gitignored/dockerignored (never baked
       # into the image or committed) -- read-only, this container only
       # ever reads it.
-      - "./ultron-backend/tls:/app/tls:ro"
-      # Lets Ultron see/manage sibling containers on the host (docker_ps,
+      - "./odin-backend/tls:/app/tls:ro"
+      # Lets Odin see/manage sibling containers on the host (docker_ps,
       # docker_stats, CVE scan, deploy-container). Whoever can write to
       # this socket has root-equivalent power over the whole Docker host —
       # that's inherent to the socket, not something a non-root container
@@ -73,29 +73,29 @@ services:
     labels:
       autoheal: "true"
     networks:
-      - ultron
+      - odin
 
-  ultron-discord-bot:
+  odin-discord-bot:
     build:
-      context: ultron-discord-bot
-    container_name: ultron-discord-bot
+      context: odin-discord-bot
+    container_name: odin-discord-bot
     restart: unless-stopped
     env_file:
       - .env
     environment:
       # https, not http, since the backend now serves TLS-only on this
-      # port (ULTRON_TLS_CERT/KEY above) -- see bot.py's setup_hook for
+      # port (ODIN_TLS_CERT/KEY above) -- see bot.py's setup_hook for
       # why this connection skips cert-hostname verification.
-      - ULTRON_BACKEND_URL=https://ultron-backend:5000
+      - ODIN_BACKEND_URL=https://odin-backend:5000
       - TZ=America/Los_Angeles
     depends_on:
-      ultron-backend:
+      odin-backend:
         condition: service_healthy
     # Healthy = the bot wrote its heartbeat file in the last two minutes,
     # which it only does while its Discord gateway connection is alive
     # (see _heartbeat_loop in bot.py).
     healthcheck:
-      test: ["CMD", "python", "-c", "import os,sys,time; sys.exit(0 if time.time()-os.path.getmtime('/tmp/ultron-bot-heartbeat')<120 else 1)"]
+      test: ["CMD", "python", "-c", "import os,sys,time; sys.exit(0 if time.time()-os.path.getmtime('/tmp/odin-bot-heartbeat')<120 else 1)"]
       interval: 30s
       timeout: 10s
       start_period: 40s
@@ -103,18 +103,18 @@ services:
     labels:
       autoheal: "true"
     networks:
-      - ultron
+      - odin
 
   # Scout's search engine (owner-approved 2026-09-16): a private, self-hosted
   # SearXNG the backend's web_search chat tool queries. Free, no account,
   # no per-query cost. Deliberately NOT published on any host port -- only
-  # ultron-backend can reach it, over the ultron network, so it is never a
+  # odin-backend can reach it, over the odin network, so it is never a
   # search box exposed to the LAN or the tailnet. settings.yml enables the
   # JSON format the tool needs and turns the rate limiter off (it would
   # otherwise want a Valkey/Redis container for one internal caller).
   searxng:
     image: searxng/searxng:latest
-    container_name: ultron-searxng
+    container_name: odin-searxng
     restart: unless-stopped
     environment:
       - SEARXNG_BASE_URL=http://searxng:8080/
@@ -131,8 +131,8 @@ services:
     labels:
       autoheal: "true"
     networks:
-      - ultron
+      - odin
 
 networks:
-  ultron:
+  odin:
     driver: bridge

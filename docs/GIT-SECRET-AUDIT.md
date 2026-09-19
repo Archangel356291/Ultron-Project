@@ -22,7 +22,7 @@ secret-shaped slipped past the heuristics without matching a pattern):
 - `git log --all --full-history --diff-filter=A -- .env` → **empty**. `.env`
   was never committed, at any point in this repo's history.
 - `git log --all --full-history --diff-filter=A -- "*.db" "*.db*"` → **empty**.
-  `ultron.db` (holds trade/financial records) was never committed.
+  `odin.db` (holds trade/financial records) was never committed.
 - Searched every filename ever added, for anything credential-shaped
   (`.env`, `credential`, `secret`, `.pem`, `.key`, `id_rsa`, `id_ed25519`) →
   one hit, an Obsidian vault note *about* a historical bug

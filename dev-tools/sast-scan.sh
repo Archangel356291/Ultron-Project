@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Sandboxed static analysis for Ultron (Auditor's runtime half).
+# Sandboxed static analysis for Odin (Auditor's runtime half).
 #
 # Runs three open-source scanners against this repository, each inside a
 # throwaway container with the repo mounted READ-ONLY -- nothing executes on
 # the host, nothing can write back, no network is needed after the images
 # are pulled:
 #   gitleaks  -- secrets in the working tree (the pre-commit hook covers commits)
-#   bandit    -- Python security issues (ultron-backend, ultron-discord-bot)
+#   bandit    -- Python security issues (odin-backend, odin-discord-bot)
 #   semgrep   -- multi-language rules (p/ci: secrets, injection, crypto, ...)
 # Prints a short summary per tool and writes full JSON reports to
 # dev-tools/sast-reports/ (gitignored). Exit code 0 = clean, 1 = findings.
@@ -37,7 +37,7 @@ fi
 if run bandit; then
   echo "== bandit (python)"
   docker run --rm -v "$REPO:/src:ro" -v "$OUT:/out" ghcr.io/pycqa/bandit/bandit:latest \
-    -q -r /src/ultron-backend/app.py /src/ultron-backend/graph_schema_shared.py /src/ultron-discord-bot/bot.py \
+    -q -r /src/odin-backend/app.py /src/odin-backend/graph_schema_shared.py /src/odin-discord-bot/bot.py \
     -f json -o /out/bandit.json >/dev/null 2>&1
   python - "$OUT/bandit.json" <<'EOF' || status=1
 import json, sys, collections

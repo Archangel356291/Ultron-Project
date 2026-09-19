@@ -3,11 +3,11 @@
 A living checklist for taking the offline Android build from **"good personal
 build"** to a **full, store-grade release**. Two columns:
 
-- **Now** = state of the current build (`update-apk.ps1` → `apk/Ultrons-Corner-*.apk`).
+- **Now** = state of the current build (`update-apk.ps1` → `apk/Odins-Corner-*.apk`).
 - **Full launch** = what a real store submission (Google Play) additionally needs.
 
 Audited 2026-09-17 against `Ultrons APK Game/apk-build/android/` (Capacitor project)
-and `ultron-dashboard.html`. Status legend: ✅ done · 🟡 partial · ❌ gap · ⬜ needs a physical device.
+and `odin-dashboard.html`. Status legend: ✅ done · 🟡 partial · ❌ gap · ⬜ needs a physical device.
 
 ---
 

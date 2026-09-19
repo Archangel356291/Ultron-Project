@@ -1,5 +1,5 @@
 # Build context here is this directory (docker-compose.yml ->
-# ultron-discord-bot service), and its Dockerfile does "COPY . ." — a
+# odin-discord-bot service), and its Dockerfile does "COPY . ." — a
 # broad copy, so unlike the backend's this file is the only thing keeping
 # stray local files (a .env someone drops here for local testing, venv/,
 # __pycache__/) out of the image.

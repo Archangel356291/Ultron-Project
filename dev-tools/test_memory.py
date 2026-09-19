@@ -1,4 +1,4 @@
-"""Self-check for Ultron's memory-notes feature (remember_note / recall_notes).
+"""Self-check for Odin's memory-notes feature (remember_note / recall_notes).
 
 Proves the actual mechanisms, not just that the functions exist: real SQLite
 via a temp DB, the per-note length cap, the row-count cap (oldest trimmed
@@ -12,14 +12,14 @@ import os
 import sys
 import tempfile
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)   # 'import anthropic' inside app.py resolves to the fake
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"  # deterministic note counts below
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"  # deterministic note counts below
 
 import app  # noqa: E402
 
@@ -126,7 +126,7 @@ def demo_trend_distillation():
 
     print("OK: distill_activity_trends ignores one-offs, summarizes real recurrence, dedups "
           "identical reruns, still saves genuine changes, and its background scheduler stayed "
-          "off (ULTRON_DISABLE_MEMORY_TRENDS=1).")
+          "off (ODIN_DISABLE_MEMORY_TRENDS=1).")
 
 
 if __name__ == "__main__":

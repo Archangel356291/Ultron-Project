@@ -1,5 +1,5 @@
 /*
- * Ultron pixel-game — deterministic auto-battler (idle-RPG combat model).
+ * Odin pixel-game — deterministic auto-battler (idle-RPG combat model).
  * Pure, dependency-free, UMD (browser global `Combat` + node require).
  *
  * Turns an equipped loadout (the 5 Expedition slots) into a combat outcome

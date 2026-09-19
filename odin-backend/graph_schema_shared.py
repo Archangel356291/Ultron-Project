@@ -1,7 +1,7 @@
 """Canonical implementation of the schema/tagging/retrieval logic Module
 4 (graph-schema/enrich_visibility.py) and Module 8
 (session-read/retrieve_context.py) built for the vault knowledge graph.
-Lives here, inside ultron-backend/, specifically so Module 10 can
+Lives here, inside odin-backend/, specifically so Module 10 can
 import it directly at runtime (this is the only one of the three
 consumers that actually ships inside a Docker image -- see the
 Dockerfile's COPY list) -- the other two now import FROM this module
@@ -13,7 +13,7 @@ scratch, reuse the same schema/tagging/indexing/retrieval logic."
 No dependency on anything graph.json-specific or vault-specific --
 every function here operates on plain dicts/lists (nodes, edges, a
 tag-index mapping), so the exact same code works whether those came
-from graphify-out/graph.json (the vault) or Ultron's own memory_notes/
+from graphify-out/graph.json (the vault) or Odin's own memory_notes/
 memory_edges SQLite tables (this module).
 """
 import re

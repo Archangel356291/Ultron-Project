@@ -1,4 +1,4 @@
-/* Ultron service worker -- the installable-app shell.
+/* Odin service worker -- the installable-app shell.
  *
  * Rules, in order of importance:
  *  1. /api/* is NEVER touched: live data and anything behind the token go

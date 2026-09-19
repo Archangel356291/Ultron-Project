@@ -48,7 +48,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Ultron knowledge graph</title>
+<title>Odin knowledge graph</title>
 <style>
   :root{
     --void:#050810; --panel:#0A1120; --panel-raised:#0F1830; --line:#03294A;

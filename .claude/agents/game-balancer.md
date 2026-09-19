@@ -15,7 +15,7 @@ rewarding and fair by tuning the **data**, then proving the change with
   count), `STAT_ROLL` ranges, `AFFIXES`, base-item stat profiles and rarity ranges.
 - `pixel-game/combat.js`: `ENEMIES` archetype stats, wave chains, capstones,
   `deriveStats` weighting, loot multipliers.
-- Foundry upgrade cost curves in `ultron-dashboard.html`: `base × grow^level`
+- Foundry upgrade cost curves in `odin-dashboard.html`: `base × grow^level`
   (passive ≈1.07–1.15, active ≈1.25–1.4, milestones ≥2.0) — keep the exponential
   form; don't flatten it.
 

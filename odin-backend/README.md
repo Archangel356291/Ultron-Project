@@ -1,4 +1,4 @@
-# Ultron home lab backend
+# Odin home lab backend
 
 A small Flask API that reports real CPU/memory/temperature, Docker container
 status, disk usage, and pending updates — the data the dashboard's Home,
@@ -18,7 +18,7 @@ install` will simply fail to find a compatible version on anything older,
 so check `python --version` first if you're not sure what's installed.
 
 ```powershell
-cd ultron-backend
+cd odin-backend
 python -m venv venv
 venv\Scripts\Activate.ps1
 pip install -r requirements.txt
@@ -30,7 +30,7 @@ admin: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 Set an API token (required — the app won't start without one) and run it:
 
 ```powershell
-$env:ULTRON_API_TOKEN = -join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_})
+$env:ODIN_API_TOKEN = -join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_})
 python app.py
 ```
 
@@ -39,12 +39,12 @@ somewhere (password manager) so you can reuse it — you'll need it in every
 `Authorization: Bearer <token>` request, including from the dashboard.
 
 **Beta testers each get their own, weaker token** — never your real
-`ULTRON_API_TOKEN`, and never one token shared between people. Set
-`ULTRON_BETA_TOKENS` to a comma-separated list of `name:token` pairs
+`ODIN_API_TOKEN`, and never one token shared between people. Set
+`ODIN_BETA_TOKENS` to a comma-separated list of `name:token` pairs
 (generate each token the same way as above, run once per person):
 
 ```powershell
-$env:ULTRON_BETA_TOKENS = "alice:$(-join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_})),bob:$(-join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_}))"
+$env:ODIN_BETA_TOKENS = "alice:$(-join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_})),bob:$(-join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_}))"
 ```
 
 Any of those tokens authenticates as the `beta_tester` role: chat (full)
@@ -53,7 +53,7 @@ plus view-only trading data (`/api/trades`, `/api/trades/summary`,
 tool use, not just the raw HTTP routes. Because each person has their own
 token, removing one entry revokes just that person, and `/api/whoami`
 reports back which tester is connected (`{"role": "beta", "name": "alice"}`)
-so requests aren't anonymous within the role. Leave `ULTRON_BETA_TOKENS`
+so requests aren't anonymous within the role. Leave `ODIN_BETA_TOKENS`
 unset and the role doesn't exist at all — see `BETA-TESTERS.md` for the
 full add/remove process and the credits roster. The dashboard hides
 admin-only nav/controls automatically once it detects this role via
@@ -78,7 +78,7 @@ To reach it from another device on your network (phone, laptop viewing the
 dashboard), open port 5000 for inbound traffic:
 
 ```powershell
-New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow
+New-NetFirewallRule -DisplayName "Odin Backend" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow
 ```
 
 ## Endpoints
@@ -91,8 +91,8 @@ New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol T
 | `GET /api/storage`      | Disk usage for the drives listed in `STORAGE_MOUNTS` |
 | `GET /api/systems`       | Pending updates, temp, uptime, load average        |
 | `GET /api/activity`       | Persistent log of real events — backups, deploys, CVE scans |
-| `GET /api/memory`         | Ultron's saved memory notes (most recent first, or `?query=` to search) |
-| `GET /api/brain-graph`    | The Brain vault's graph for the dashboard's "What Ultron knows" panel: nodes by kind, links, counts, learned-per-day (admin only) |
+| `GET /api/memory`         | Odin's saved memory notes (most recent first, or `?query=` to search) |
+| `GET /api/brain-graph`    | The Brain vault's graph for the dashboard's "What Odin knows" panel: nodes by kind, links, counts, learned-per-day (admin only) |
 | `GET /api/crypto/market`  | Oracle: read-only crypto spot prices + 24h change (CoinGecko free API) for ledger coins plus BTC/DOGE. Reference only, never a trade (admin only) |
 | `GET /api/stats/rollup`   | Tally: daily efficiency rollup — LLM spend/tokens, agent task load, activity mix, containers running (admin only) |
 | `GET /api/dev/repos`       | Git status (branch, dirty/clean, last commit) for configured repos |
@@ -105,32 +105,32 @@ New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol T
 | `GET /api/security/auth-log` | Recent login attempts (fast)                    |
 | `GET /api/security/cve-scan` | CVE scan of running containers' images (slow — see below) |
 | `GET /api/security/threats` | **Admin-only.** Sentinel's live watchdog view — active findings, last check — see below |
-| `GET /api/briefing` | **Admin-only.** Ultron's deterministic read of the host (the Home "Ultron's read" card) |
+| `GET /api/briefing` | **Admin-only.** Odin's deterministic read of the host (the Home "Odin's read" card) |
 | `GET /api/agents` | **Admin-only.** Every agent's role, permissions, health, current task, spend vs cap — see `AGENT_CAPABILITIES_AND_GOVERNANCE.md` |
 | `GET/POST /api/agents/tasks`, `PATCH /api/agents/tasks/<uid>` | **Admin-only.** The agent task ledger and its lifecycle (evidence required to complete, approval required for high-risk) |
 | `GET /manifest.webmanifest`, `GET /sw.js` | Installable-app manifest and service worker (no auth; the worker never caches `/api/*`) |
 | `GET /fonts/<file>`, `GET /pixel-assets/<file>` | Static dashboard assets (no auth; self-hosted typefaces, sprites, app icons) |
 | `POST /api/actions/backup` | **Mutates the host.** Two-step confirm — see below    |
 | `POST /api/actions/deploy-container` | **Mutates the host.** Two-step confirm — see below |
-| `POST /api/chat`          | Chat with Ultron — see below                       |
+| `POST /api/chat`          | Chat with Odin — see below                       |
 | `GET /api/chat/usage`      | Today's real token usage and budget status, plus per-beta-tester spend — see Cost controls |
 | `GET /api/whoami`           | Your own role/name; a beta tester also gets their spend vs. the cap |
 | `GET /api/connections`       | **Admin-only.** Who's connected right now — name, role, device count, last seen |
 | `GET /api/mcp/servers`      | Configured external tool servers and their tools — see External tools |
 
-Storage paths come from `ULTRON_STORAGE_MOUNTS` as `label=path,label=path`
+Storage paths come from `ODIN_STORAGE_MOUNTS` as `label=path,label=path`
 (default `C:=C:\` on Windows). **In Docker this is required**: the
 container cannot see the host's drives except where `docker-compose.yml`
 bind-mounts them read-only (`C:\ → /host/c`, `D:\ → /host/d`), and compose
-sets `ULTRON_STORAGE_MOUNTS=C:=/host/c,D:=/host/d` accordingly. Without it
+sets `ODIN_STORAGE_MOUNTS=C:=/host/c,D:=/host/d` accordingly. Without it
 the container reported its own 1 TB virtual disk as "root" — which is what
 the Storage panel, `get_storage_usage` and the briefing showed until
 2026-09-16.
 
-By default the API allows requests from any origin (`ULTRON_ALLOWED_ORIGIN`
+By default the API allows requests from any origin (`ODIN_ALLOWED_ORIGIN`
 defaults to `*`), which is fine while you're testing on your own network.
 Once the dashboard has a fixed address, set
-`$env:ULTRON_ALLOWED_ORIGIN = "http://your-dashboard-host:port"` to restrict it.
+`$env:ODIN_ALLOWED_ORIGIN = "http://your-dashboard-host:port"` to restrict it.
 
 ## Trade records (`/api/trades*`) — this is not tax advice
 
@@ -181,14 +181,14 @@ What it deliberately doesn't do:
   automatic import — that's a meaningfully bigger scope (credential
   storage, rate limits, exchange-specific formats) than this project has
   taken on.
-- **No chat tool for adding a trade.** Ultron can read and report on your
+- **No chat tool for adding a trade.** Odin can read and report on your
   recorded trades (`get_trades`, `get_trade_summary`, `get_trade_tax_lots`)
   — real numbers, never invented — but adding a financial record is
   something you do directly, the same reasoning that keeps
   `/api/actions/backup` and `/api/actions/deploy-container` out of chat's
   own initiative. There's no chat tool for the CSV export either, for the
   same reason a file download doesn't map cleanly onto a chat reply.
-- **No trading advice, ever, even about your own data.** Ultron can tell
+- **No trading advice, ever, even about your own data.** Odin can tell
   you your realized BTC gain is $X; it will not tell you whether to buy,
   sell, or hold anything — that boundary is enforced in the system prompt,
   not just documented here.
@@ -197,14 +197,14 @@ What it deliberately doesn't do:
 
 Read-only git status for the repos you point it at — this is what backs the
 dashboard's Development tab (which used to be entirely mock data) and gives
-Ultron something real to check when you ask it about your code.
+Odin something real to check when you ask it about your code.
 
 ```powershell
-$env:ULTRON_CODE_REPOS = "C:\Users\you\ultron-core;C:\Users\you\lab-infra"
+$env:ODIN_CODE_REPOS = "C:\Users\you\odin-core;C:\Users\you\lab-infra"
 ```
 
 (Semicolon-separated on Windows, colon-separated on Linux — same convention
-as `ULTRON_BACKUP_SOURCES`.)
+as `ODIN_BACKUP_SOURCES`.)
 
 - `GET /api/dev/repos` — for each configured repo: current branch, whether
   there are uncommitted changes, and the most recent commit (hash, message,
@@ -214,17 +214,17 @@ as `ULTRON_BACKUP_SOURCES`.)
   configured repos' folder names — there's no way to point this at an
   arbitrary path on the host, from the URL or from a chat tool call.
 - Both are **read-only**. Nothing here stages, commits, or pushes anything
-  — this reports on code, it doesn't touch it. If you want Ultron to
+  — this reports on code, it doesn't touch it. If you want Odin to
   actually change files or commit on your behalf, that's a different,
   much more carefully-scoped feature this project doesn't have yet.
-- Both are available to Ultron's chat (`get_repo_status`, `get_repo_diff`)
+- Both are available to Odin's chat (`get_repo_status`, `get_repo_diff`)
   — fast enough, and safe enough being read-only, that there's no reason
   to keep them out the way the CVE scan is kept out.
 
 ## Activity log (`/api/activity`)
 
-A persistent record of real events, backed by a SQLite file (`ultron.db` in
-the backend folder by default; override with `ULTRON_DB_PATH`). Unlike
+A persistent record of real events, backed by a SQLite file (`odin.db` in
+the backend folder by default; override with `ODIN_DB_PATH`). Unlike
 everything else in this backend, this survives a restart — it's the actual
 history the dashboard's "Latest Activity" panel used to fake.
 
@@ -233,14 +233,14 @@ What it logs, and — just as deliberately — what it doesn't:
 - **Backups, container deployments, and CVE scans** — every real outcome,
   success or failure, with enough detail to know what happened without
   digging through terminal output.
-- **Not chat.** Conversations with Ultron are never written here. This is a
+- **Not chat.** Conversations with Odin are never written here. This is a
   log of actions the system took, not a transcript of what you asked it.
 - **Not routine polling.** A CVE scan that returns from cache (see below)
   doesn't get a new log entry — only an actual fresh scan does. Otherwise
   every dashboard poll would flood this with noise.
 
 `GET /api/activity?limit=N` returns the most recent `N` events (default 20,
-capped at 100). It's also available to Ultron's chat as a read-only tool
+capped at 100). It's also available to Odin's chat as a read-only tool
 (`get_recent_activity`) — fast enough that, unlike the CVE scan, there's no
 reason to keep it out of chat.
 
@@ -258,22 +258,22 @@ A stray request, a browser retry, or a replayed request can't trigger
 either action by itself — nothing runs without that second explicit call
 with a token the backend itself issued. Tokens are single-use.
 
-**Neither action is available to Ultron's chat.** `/api/chat`'s tools are
+**Neither action is available to Odin's chat.** `/api/chat`'s tools are
 all read-only; an LLM deciding to call a tool is not the same thing as a
 human clicking "confirm," and these are exactly the two actions where that
-distinction matters. If you ask Ultron via chat to deploy something or run
+distinction matters. If you ask Odin via chat to deploy something or run
 a backup, it'll tell you to use the dashboard instead — that's intentional.
 
 ### `POST /api/actions/backup`
 
-Archives the directories in `ULTRON_BACKUP_SOURCES` into
-`ULTRON_BACKUP_DEST` as timestamped zip files. Both are unset by default —
+Archives the directories in `ODIN_BACKUP_SOURCES` into
+`ODIN_BACKUP_DEST` as timestamped zip files. Both are unset by default —
 without them, this returns a clear "not configured" error rather than
 guessing what you want backed up:
 
 ```powershell
-$env:ULTRON_BACKUP_SOURCES = "C:\Users\you\docker-volumes;C:\Users\you\configs"
-$env:ULTRON_BACKUP_DEST = "D:\Backups"
+$env:ODIN_BACKUP_SOURCES = "C:\Users\you\docker-volumes;C:\Users\you\configs"
+$env:ODIN_BACKUP_DEST = "D:\Backups"
 ```
 
 (On Windows, separate multiple sources with `;`; on Linux, with `:`.)
@@ -334,7 +334,7 @@ Scans the images of currently running containers for known CVEs, via
 - Capped at `CVE_SCAN_MAX_IMAGES` (8) images per request and scans only
   currently *running* containers — a stopped container's image isn't
   scanned.
-- **This endpoint is deliberately not part of Ultron's chat tools.** A slow
+- **This endpoint is deliberately not part of Odin's chat tools.** A slow
   scan inside a chat turn would blow well past reasonable response times,
   so `/api/chat` can check auth-log but not trigger a CVE scan — that stays
   a manual dashboard/API action.
@@ -345,7 +345,7 @@ Scans the images of currently running containers for known CVEs, via
 
 ### `/api/security/threats` — Sentinel, the watchdog subagent
 
-Sentinel is a background thread (every `ULTRON_SENTINEL_INTERVAL_SECONDS`,
+Sentinel is a background thread (every `ODIN_SENTINEL_INTERVAL_SECONDS`,
 default 300; `0` disables it) that re-reads what this backend can already
 see and **uses no LLM tokens at all**: active sign-in lockouts and
 repeated failed sign-ins, containers that aren't running, and critical
@@ -357,10 +357,10 @@ the Home feed, the Security tab's Sentinel card, and the pixel room's
 Sentinel desk react to real events, never to polling. This endpoint
 returns the current view: `enabled`, `interval_seconds`, `last_run`,
 `active_findings` (`key`/`status`/`summary`), `active_count`, and the
-list of `checks`. Admin-only. The same view is Ultron's `get_threat_summary`
+list of `checks`. Admin-only. The same view is Odin's `get_threat_summary`
 chat tool, so "anything wrong right now?" is a cheap, honest answer.
 
-## Ultron's brain (`/api/chat`)
+## Odin's brain (`/api/chat`)
 
 `POST /api/chat` is the AI Assistant panel's backend — a Claude API chat loop
 that's grounded in this backend's own data rather than guessing:
@@ -372,7 +372,7 @@ that's grounded in this backend's own data rather than guessing:
   fresh conversation.
 - Response body: `{"reply": "...", "history": [...], "tools_used": [...]}`.
   Store the returned `history` and send it back on the next call.
-- Ultron can call fifteen built-in tools — `get_system_status`,
+- Odin can call fifteen built-in tools — `get_system_status`,
   `list_containers`, `get_storage_usage`, `get_pending_updates`,
   `get_auth_log`, `get_recent_activity`, `remember_note`, `recall_notes`,
   `get_repo_status`, `get_repo_diff`, `get_trades`, `get_trade_summary`,
@@ -387,16 +387,16 @@ that's grounded in this backend's own data rather than guessing:
   — the tool-calling loop passes whatever arguments the model supplies
   straight through as keyword arguments, so a handler function's own
   signature is what defines what it will accept. On top of these fifteen,
-  any approved external tools from `ULTRON_MCP_CONFIG` are added
+  any approved external tools from `ODIN_MCP_CONFIG` are added
   dynamically, namespaced `mcp__<server>__<tool>` — see "External tools
   (MCP)" above for what "approved" means and why there's no way around it
   from inside a conversation.
 - `remember_note` / `recall_notes` are a small persistent notebook — a
-  short distilled fact or preference Ultron chooses to save so it can
+  short distilled fact or preference Odin chooses to save so it can
   recall it in a later conversation, not a transcript log (chat content
   is still never logged anywhere). Capped at 500 characters per note and
   200 notes total (oldest trimmed first); admin-only, like `get_mcp_servers`.
-- Other than `remember_note`, Ultron has **no ability to take actions
+- Other than `remember_note`, Odin has **no ability to take actions
   through chat**, even though the backup and deploy-container actions now
   exist on the dashboard. If asked to deploy something or run a backup via
   chat, it says so and points to the dashboard action instead of
@@ -410,11 +410,11 @@ that's grounded in this backend's own data rather than guessing:
   (`MAX_HISTORY_MESSAGES`) — see "Cost controls" below for the full set of
   real, enforced spending safeguards this backend applies, not just this
   turn-level cap.
-- Model defaults to `claude-sonnet-5`; override with `ULTRON_LLM_MODEL` if
+- Model defaults to `claude-sonnet-5`; override with `ODIN_LLM_MODEL` if
   you want to point it at a different model.
 - **Economy mode** — a per-request `"lite": true` in the `/api/chat` body
   (the dashboard's Settings → "Economy mode" switch sends it) answers with
-  `ULTRON_LITE_MODEL` (default `claude-haiku-4-5`, about half the price),
+  `ODIN_LITE_MODEL` (default `claude-haiku-4-5`, about half the price),
   `max_tokens` capped at 400, at most 2 tool rounds, and only the six
   basic read tools (status, containers, storage, updates, recall notes,
   recent activity). It never widens a role's tool set — a beta tester in
@@ -423,7 +423,7 @@ that's grounded in this backend's own data rather than guessing:
   caller can label the reply. Usage is priced at the lite model's rate, so
   the saving shows as real dollars in `/api/chat/usage`.
 - **Deep thought mode** — `"deep": true` (Settings → "Deep thought")
-  answers with `ULTRON_DEEP_MODEL` (default `claude-opus-5`, about 2.5×
+  answers with `ODIN_DEEP_MODEL` (default `claude-opus-5`, about 2.5×
   Sonnet per token), `max_tokens` at least 2048, and up to 8 tool rounds.
   Admin-only — a beta tester's `deep` is ignored — and it wins over `lite`
   if both are sent. The response echoes `"deep"`.
@@ -431,13 +431,13 @@ that's grounded in this backend's own data rather than guessing:
   opt-in, admin-only): after the reply, one small call to the lite model
   asks whether the exchange held *one* fact or preference worth
   remembering next month; if so and it isn't already in the notebook, it
-  is saved through `remember_note` and an activity entry ("Ultron
+  is saved through `remember_note` and an activity entry ("Odin
   remembered: …") is logged. Runs in a background thread so the reply is
-  never delayed (`ULTRON_LEARN_INLINE=1` makes it synchronous, for tests).
+  never delayed (`ODIN_LEARN_INLINE=1` makes it synchronous, for tests).
   Live numbers, greetings and web-search content are excluded by the
   learner's instructions.
-- **Where his knowledge lives** — the directory holding `ultron.db`
-  (`ULTRON_DATA_DIR`, `D:\ultron's Brain&Knowledge` on the owner's host)
+- **Where his knowledge lives** — the directory holding `odin.db`
+  (`ODIN_DATA_DIR`, `D:\ultron's Brain&Knowledge` on the owner's host)
   also gets `chat logs\dashboard\YYYY-MM-DD.txt` and
   `chat logs\discord\YYYY-MM-DD.txt` (web and Discord conversations kept
   apart, decided by the `speaker` label in one place) and
@@ -452,13 +452,13 @@ that's grounded in this backend's own data rather than guessing:
   under `knowledge\notes\` with `[[wikilinks]]` for each `memory_edges`
   row, so Obsidian's graph view *is* his memory graph (gold = notes,
   blue = dashboard talks, violet = Discord). `dev-tools/brain-graph-refresh.ps1`
-  runs `graphify update` over the vault hourly (scheduled task "Ultron
+  runs `graphify update` over the vault hourly (scheduled task "Odin
   Brain Graph"; AST-only, no API key, no tokens); the backend reads
   `graphify-out\graph.json` from it for the `recall_from_brain` tool and
   adds matching past conversations to the situational context — so "what
   did we say about X" is answered from the vault before any model call.
 - Requests to the Anthropic API time out after 60s by default (override with
-  `ULTRON_LLM_TIMEOUT_SECONDS`), and errors are mapped to distinct, useful
+  `ODIN_LLM_TIMEOUT_SECONDS`), and errors are mapped to distinct, useful
   responses instead of one generic failure: a bad/rejected key comes back
   as a 502 that says so explicitly, rate limiting comes back as 429 (so a
   client could reasonably back off and retry), network issues are
@@ -478,26 +478,26 @@ the key does. If you hit an error once it's live, the response's `error`
 field should already tell you which of the above it is rather than a bare
 stack trace.
 
-### Ultron's read of the room (`/api/briefing`, `get_briefing`, situational context)
+### Odin's read of the room (`/api/briefing`, `get_briefing`, situational context)
 
-Before every admin turn, `run_ultron_chat` adds a second system block —
+Before every admin turn, `run_odin_chat` adds a second system block —
 after the cached static prompt, small and uncached — assembled by this
 backend from its own data: the live briefing (CPU/memory/containers/
 uptime, storage headroom, anything running well above its 24-hour
 baseline, Sentinel's active findings, warning/error events in the last
 day, memory size, ideas awaiting review) plus the memory notes related to
 what was just said (`recall_related_notes`). The block states that it is
-information, never instruction. The result: Ultron opens already knowing
+information, never instruction. The result: Odin opens already knowing
 the numbers and already remembering you, usually without a tool round —
 cheaper, and it reads as someone who has already looked. Beta testers
 never receive it (host state and memory are admin-only). The same
-briefing is the Home tab's "Ultron's read" card, the admin-only
+briefing is the Home tab's "Odin's read" card, the admin-only
 `GET /api/briefing`, and the `get_briefing` tool (also in Economy mode).
 No LLM call anywhere in it. `dev-tools/test_situational_context.py`.
 
 ## External tools (MCP) — read this before connecting anything
 
-Ultron can use tools from external servers over the
+Odin can use tools from external servers over the
 [Model Context Protocol](https://modelcontextprotocol.io) — the same
 mechanism Claude Desktop and Claude Code use to connect things like
 Notion, GitHub, or a filesystem server. Unconfigured by default; nothing
@@ -505,7 +505,7 @@ about this changes how the backend behaves until you opt in.
 
 ### The security model, stated plainly
 
-**Connecting a server does nothing by itself.** Ultron discovers every
+**Connecting a server does nothing by itself.** Odin discovers every
 tool a connected server offers, but none of them are *callable* — not by
 the model, not at all — unless you name that exact tool in the server's
 `auto_approve` list in the config file. An unapproved tool isn't "offered
@@ -526,16 +526,16 @@ call. This is deliberate and worth understanding:
   entirely removes that entire class of attack, not just makes it harder.
 - **Every call is logged.** Success, failure, or a tool-level error — all
   three show up in the activity log (`event_type: mcp_tool_call`), so
-  there's a real audit trail of what Ultron actually asked an external
+  there's a real audit trail of what Odin actually asked an external
   service to do.
 - **Results are capped and treated as data, not instructions.** Response
   content is capped at 4,000 characters before it reaches the model. The
-  system prompt explicitly instructs Ultron that tool results — especially
+  system prompt explicitly instructs Odin that tool results — especially
   from `mcp__`-prefixed tools — are data to report on, never commands to
   follow, regardless of what they claim.
 - **What this can't protect you from:** the tools *you* approve. If you
   approve a tool that genuinely mutates something (sends an email, posts
-  a message, deletes a file) on the *external* service, Ultron will call
+  a message, deletes a file) on the *external* service, Odin will call
   it the same way it calls a read-only one — there's no internal way to
   tell a "safe" MCP tool from a "risky" one by name or description alone.
   Only approve tools from servers you trust, and read what a tool
@@ -544,7 +544,7 @@ call. This is deliberate and worth understanding:
 ### Configuration
 
 ```powershell
-$env:ULTRON_MCP_CONFIG = "C:\Users\you\mcp-config.json"
+$env:ODIN_MCP_CONFIG = "C:\Users\you\mcp-config.json"
 ```
 
 The file itself:
@@ -564,7 +564,7 @@ The file itself:
 
 - `name` must be alphanumeric/dash/underscore — it becomes part of every
   tool's qualified name (`mcp__my-server__search_docs`), which is how MCP
-  tools are namespaced away from Ultron's own internal tools and from each
+  tools are namespaced away from Odin's own internal tools and from each
   other. There's no way for an external tool to collide with or shadow an
   internal one.
 - `url` must be `http://` or `https://` — only the Streamable HTTP
@@ -598,15 +598,15 @@ background retry within a running process.
 `GET /api/mcp/servers` shows every configured server, whether it's
 currently reachable, and every tool it offers — approved and not — so you
 can see what's available before deciding what to add to `auto_approve`.
-Ultron can also answer questions about this directly via the
+Odin can also answer questions about this directly via the
 `get_mcp_servers` chat tool, which is the same read the endpoint uses.
 
 ## Scout — web search through your own engine (`web_search` chat tool)
 
 The owner's web-research subagent, built to cost as close to nothing as
 possible: `docker-compose.yml` runs a private **SearXNG** instance
-(`ultron-searxng`, free, no account, no per-query fee) that is **not
-published on any host port** — only `ultron-backend` can reach it, over
+(`odin-searxng`, free, no account, no per-query fee) that is **not
+published on any host port** — only `odin-backend` can reach it, over
 the compose network. The `web_search` chat tool queries it and returns up
 to 5 titles, URLs and 300-character snippets, so a lookup costs a short
 question plus a few hundred tokens of results, and zero when nobody asks.
@@ -615,19 +615,19 @@ Setup is two lines in `.env` (already added on this host):
 
 ```
 SEARXNG_SECRET=<any long random string>
-ULTRON_SEARXNG_URL=http://searxng:8080
+ODIN_SEARXNG_URL=http://searxng:8080
 ```
 
-Without `ULTRON_SEARXNG_URL` the tool is inert and says so. `searxng/
+Without `ODIN_SEARXNG_URL` the tool is inert and says so. `searxng/
 settings.yml` enables the JSON format the tool needs and turns SearXNG's
 rate limiter off (one internal caller; the limiter would otherwise want a
 Valkey container).
 
 Safety, deliberately: results reach the model inside the same
 `<untrusted_external_data>` wrapper MCP results get, so a web page can
-never instruct Ultron; the tool is admin-only (not in the beta
+never instruct Odin; the tool is admin-only (not in the beta
 allowlist) and not part of Economy mode's cheap set; and **nothing found
-on the web is stored unless you explicitly ask Ultron to remember it**
+on the web is stored unless you explicitly ask Odin to remember it**
 (`remember_note`), never by automatic ingestion. `dev-tools/test_web_search.py`
 covers the request shape, trimming, every failure mode, the wrapper, and
 the scope.
@@ -651,7 +651,7 @@ grows, turn over turn. Nothing to configure — this is always on.
 **Daily token budget, with an actual hard stop.**
 
 ```powershell
-$env:ULTRON_LLM_DAILY_TOKEN_BUDGET = "100000"
+$env:ODIN_LLM_DAILY_TOKEN_BUDGET = "100000"
 ```
 
 Unset by default — no limit unless you opt in. Tracked against *real*
@@ -664,7 +664,7 @@ that request. This isn't a warning after the fact; it's a wall.
 **Beta-tester spend cap, in real dollars, with an actual hard stop.**
 
 ```powershell
-$env:ULTRON_BETA_MAX_SPEND_USD = "1.00"    # this is the default — set only to change it
+$env:ODIN_BETA_MAX_SPEND_USD = "1.00"    # this is the default — set only to change it
 ```
 
 Every beta token is capped at **$1.00 of real spend for the whole beta,
@@ -675,7 +675,7 @@ stored on that row in `llm_usage` at write time, so a later pricing edit
 can't retroactively change what a past call actually cost. Once a
 tester's lifetime total reaches the cap, `/api/chat` returns a 429 and —
 same as the daily token budget above — **the Anthropic API is never
-called** for that request. Admin chat (the real `ULTRON_API_TOKEN`) is
+called** for that request. Admin chat (the real `ODIN_API_TOKEN`) is
 never subject to this; it's a beta-tester-only restriction, enforced
 alongside the beta role's existing tool restrictions
 (`BETA_ALLOWED_TOOLS`). A tester can see their own running total via
@@ -716,7 +716,7 @@ bot's `/connections` command.
 **Rate limiting.**
 
 ```powershell
-$env:ULTRON_CHAT_RATE_LIMIT_PER_MINUTE = "20"
+$env:ODIN_CHAT_RATE_LIMIT_PER_MINUTE = "20"
 ```
 
 Defaults to 20 requests/minute. A backstop against a runaway or
@@ -729,7 +729,7 @@ window, so retrying after a 429 doesn't dig you in deeper.
 **Response length cap.**
 
 ```powershell
-$env:ULTRON_LLM_MAX_TOKENS = "1024"
+$env:ODIN_LLM_MAX_TOKENS = "1024"
 ```
 
 Caps how long a single reply can be. Lower it for tighter cost control;
@@ -742,7 +742,7 @@ cache token counts to a `llm_usage` table.
 - `GET /api/chat/usage` returns today's totals: request count, input/output
   tokens, cache read/write activity, and (if a budget is set) how much is
   left.
-- Ultron can report on this itself via chat — ask something like "how much
+- Odin can report on this itself via chat — ask something like "how much
   have you used today" and it calls `get_llm_usage`, the same function the
   endpoint uses, so the numbers always match.
 
@@ -775,7 +775,7 @@ budget/rate-limit backstops above.
 from the repo root. In the container the backend is served by gunicorn
 (`gunicorn.conf.py`: one worker with 16 threads, because lockouts, rate
 limits and presence live in the process's memory), as the non-root user
-`ultron`, with a `HEALTHCHECK` (`healthcheck.py`). The Discord bot and
+`odin`, with a `HEALTHCHECK` (`healthcheck.py`). The Discord bot and
 SearXNG are health-checked too, and all three carry the `autoheal` label so
 an autoheal container, if one is running on the host, restarts any that go
 unhealthy. `docker compose ps` shows each one's health.
@@ -784,26 +784,26 @@ unhealthy. `docker compose ps` shows each one's health.
 fine for working on it, not for leaving it running. The simplest reliable
 option on Windows is Task Scheduler:
 
-1. Create `start-ultron.bat` in the `ultron-backend` folder:
+1. Create `start-odin.bat` in the `odin-backend` folder:
    ```bat
    @echo off
    cd /d "%~dp0"
    call venv\Scripts\activate.bat
-   set ULTRON_API_TOKEN=paste-your-generated-token-here
+   set ODIN_API_TOKEN=paste-your-generated-token-here
    python app.py
    ```
 2. Open Task Scheduler → Create Task (not "Basic Task", so you get the
    "Run whether user is logged on or not" option).
 3. Triggers → New → "At startup" (or "At log on" if you'd rather it only
    run when you're signed in).
-4. Actions → New → Program/script: the full path to `start-ultron.bat`.
+4. Actions → New → Program/script: the full path to `start-odin.bat`.
 5. On the General tab, tick "Run with highest privileges" if Docker Desktop
    needs it.
 
 For something closer to a real Windows service (auto-restart on crash,
 proper service semantics), [NSSM](https://nssm.cc/) is the standard tool —
 point it at `venv\Scripts\python.exe app.py` with the working directory set
-to the project folder and `ULTRON_API_TOKEN` set as a service environment
+to the project folder and `ODIN_API_TOKEN` set as a service environment
 variable.
 
 ## Installable app (PWA)
@@ -823,12 +823,12 @@ only when the browser can offer the prompt; iOS users get the Share →
 
 The backend serves the dashboard itself at `/` — open
 `http://<backend-address>:5000/` on any device and you get the real
-dashboard, not the static file. (`ultron-dashboard.html` still exists and
+dashboard, not the static file. (`odin-dashboard.html` still exists and
 still works if you double-click it locally, but for any *other* device,
 use the URL instead of copying the file around — see the note below on
 why.) It has a **Settings → Connection** panel where you enter this
-backend's URL and your `ULTRON_API_TOKEN` (or one of the
-`ULTRON_BETA_TOKENS` entries, see the beta_tester section above) — once
+backend's URL and your `ODIN_API_TOKEN` (or one of the
+`ODIN_BETA_TOKENS` entries, see the beta_tester section above) — once
 connected it polls
 `/api/status`, `/api/containers`, `/api/storage`, and `/api/systems`
 every 15 seconds and replaces the mock numbers with real ones. On the

@@ -14,15 +14,15 @@ import os
 import sys
 import tempfile
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
-os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_DISABLE_METRICS_HISTORY"] = "1"
 
 import app  # noqa: E402
 
@@ -52,14 +52,14 @@ def demo():
     assert "connect-src *" in csp, csp  # Settings -> Connection points at an arbitrary backend origin
     # Voice replies play from a blob:/MediaSource URL; omitting this made
     # media-src inherit default-src 'self' and Chrome refused the audio
-    # ("Media load rejected by URL safety check") -- Ultron went silent.
+    # ("Media load rejected by URL safety check") -- Odin went silent.
     assert "media-src 'self' blob:" in csp, csp
 
     # The self-hosted fonts actually serve (a real woff2, not a 404), and
     # path traversal out of fonts/ is refused.
     res = client.get("/fonts/orbitron.woff2")
     assert res.status_code == 200 and res.data[:4] == b"wOF2", (res.status_code, res.data[:8])
-    assert client.get("/fonts/../ultron-backend/app.py").status_code == 404
+    assert client.get("/fonts/../odin-backend/app.py").status_code == 404
     # The real things it should still block.
     assert "object-src 'none'" in csp, csp
     assert "frame-ancestors 'none'" in csp, csp

@@ -4,7 +4,7 @@
 # ".\start-bot.ps1" starts the Discord bot. Run this in a SEPARATE
 # PowerShell window from the backend — they're two independent processes.
 #
-# The backend must already be running (see ..\ultron-backend\start-ultron.ps1)
+# The backend must already be running (see ..\odin-backend\start-ultron.ps1)
 # before this bot can do anything useful — every command it has is an
 # HTTP call to that backend.
 
@@ -39,20 +39,20 @@ if (Test-Path $envFile) {
 # }
 
 # The SAME token the backend was started with — this is how the bot
-# authenticates to it. Save it to .env as ULTRON_API_TOKEN=... instead of
+# authenticates to it. Save it to .env as ODIN_API_TOKEN=... instead of
 # uncommenting the line below, if you can:
-# if (-not $env:ULTRON_API_TOKEN) {
-#     $env:ULTRON_API_TOKEN = "PASTE-YOUR-TOKEN-HERE"
+# if (-not $env:ODIN_API_TOKEN) {
+#     $env:ODIN_API_TOKEN = "PASTE-YOUR-TOKEN-HERE"
 # }
 
 # Comma-separated Discord user IDs allowed to use the bot. Right-click
 # your own username in Discord (with Developer Mode on, in Settings ->
 # Advanced) -> "Copy User ID". Without this, the bot refuses to start —
 # there is no default allowlist, on purpose. Save it to .env as
-# ULTRON_DISCORD_ALLOWED_USERS=... instead of uncommenting the line
+# ODIN_DISCORD_ALLOWED_USERS=... instead of uncommenting the line
 # below, if you can:
-# if (-not $env:ULTRON_DISCORD_ALLOWED_USERS) {
-#     $env:ULTRON_DISCORD_ALLOWED_USERS = "PASTE-YOUR-DISCORD-USER-ID-HERE"
+# if (-not $env:ODIN_DISCORD_ALLOWED_USERS) {
+#     $env:ODIN_DISCORD_ALLOWED_USERS = "PASTE-YOUR-DISCORD-USER-ID-HERE"
 # }
 
 # ============================================================
@@ -62,22 +62,22 @@ if (Test-Path $envFile) {
 # Only needed if the bot runs on a DIFFERENT machine than the backend.
 # If they're on the same PC, the default (127.0.0.1) is already correct —
 # leave this commented out:
-# $env:ULTRON_BACKEND_URL = "http://127.0.0.1:5000"
+# $env:ODIN_BACKEND_URL = "http://127.0.0.1:5000"
 
 # Speeds up slash-command syncing to ONE server during setup/testing
 # (instant instead of up to an hour for global sync). Right-click your
 # Discord server icon -> "Copy Server ID" (Developer Mode required).
 # Remove this once you're done testing and want the bot in more than
 # one server:
-# $env:ULTRON_DISCORD_DEV_GUILD_ID = "PASTE-YOUR-SERVER-ID-HERE"
+# $env:ODIN_DISCORD_DEV_GUILD_ID = "PASTE-YOUR-SERVER-ID-HERE"
 
 # ============================================================
 # Start it
 # ============================================================
 $placeholders = @{
     "DISCORD_BOT_TOKEN"            = $env:DISCORD_BOT_TOKEN
-    "ULTRON_API_TOKEN"              = $env:ULTRON_API_TOKEN
-    "ULTRON_DISCORD_ALLOWED_USERS"   = $env:ULTRON_DISCORD_ALLOWED_USERS
+    "ODIN_API_TOKEN"              = $env:ODIN_API_TOKEN
+    "ODIN_DISCORD_ALLOWED_USERS"   = $env:ODIN_DISCORD_ALLOWED_USERS
 }
 $hasPlaceholder = $false
 foreach ($name in $placeholders.Keys) {

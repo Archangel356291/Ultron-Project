@@ -12,10 +12,10 @@ Run standalone from anywhere:
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend"))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs"))
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
 
 import app  # noqa: E402
 
@@ -26,16 +26,16 @@ def demo():
     assert app._resolve_ssl_context("", "") is None
 
     # Only one set -> still plain HTTP, not a broken half-state.
-    assert app._resolve_ssl_context("/app/tls/ultron.crt", None) is None
-    assert app._resolve_ssl_context(None, "/app/tls/ultron.key") is None
-    assert app._resolve_ssl_context("/app/tls/ultron.crt", "") is None
+    assert app._resolve_ssl_context("/app/tls/odin.crt", None) is None
+    assert app._resolve_ssl_context(None, "/app/tls/odin.key") is None
+    assert app._resolve_ssl_context("/app/tls/odin.crt", "") is None
 
     # Both set -> the (cert, key) tuple Flask's ssl_context expects, whitespace stripped.
-    assert app._resolve_ssl_context("/app/tls/ultron.crt", "/app/tls/ultron.key") == (
-        "/app/tls/ultron.crt", "/app/tls/ultron.key",
+    assert app._resolve_ssl_context("/app/tls/odin.crt", "/app/tls/odin.key") == (
+        "/app/tls/odin.crt", "/app/tls/odin.key",
     )
-    assert app._resolve_ssl_context("  /app/tls/ultron.crt  ", "  /app/tls/ultron.key  ") == (
-        "/app/tls/ultron.crt", "/app/tls/ultron.key",
+    assert app._resolve_ssl_context("  /app/tls/odin.crt  ", "  /app/tls/odin.key  ") == (
+        "/app/tls/odin.crt", "/app/tls/odin.key",
     )
 
     # The container is served by gunicorn, whose config file restates the
@@ -45,7 +45,7 @@ def demo():
     import runpy
     conf_path = os.path.join(os.path.dirname(os.path.abspath(app.__file__)), "gunicorn.conf.py")
     for cert, key in ((None, None), ("/c.crt", None), (None, "/k.key"), ("/c.crt", ""), ("  /c.crt ", " /k.key  ")):
-        for name, value in (("ULTRON_TLS_CERT", cert), ("ULTRON_TLS_KEY", key)):
+        for name, value in (("ODIN_TLS_CERT", cert), ("ODIN_TLS_KEY", key)):
             if value is None:
                 os.environ.pop(name, None)
             else:
@@ -55,8 +55,8 @@ def demo():
         got = (conf["certfile"], conf["keyfile"]) if "certfile" in conf else None
         assert got == expected, (cert, key, got, expected)
         assert conf["workers"] == 1 and conf["worker_class"] == "gthread" and conf["threads"] >= 8, conf["workers"]
-    os.environ.pop("ULTRON_TLS_CERT", None)
-    os.environ.pop("ULTRON_TLS_KEY", None)
+    os.environ.pop("ODIN_TLS_CERT", None)
+    os.environ.pop("ODIN_TLS_KEY", None)
 
     print("OK: _resolve_ssl_context only enables TLS when both cert and key are configured, "
           "falls back to plain HTTP for any other combination, and strips whitespace; "

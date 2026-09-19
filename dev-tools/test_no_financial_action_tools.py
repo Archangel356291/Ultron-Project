@@ -1,9 +1,9 @@
-"""Module 11: the permanent, not training-wheels, rule -- Ultron never
+"""Module 11: the permanent, not training-wheels, rule -- Odin never
 executes a real trade or financial action, full stop. Unlike Module 7's
 human-review gate (explicitly expected to relax after 10-20 trusted
 sessions), this one doesn't have a sunset condition.
 
-The system prompt says this now (see ULTRON_SYSTEM_PROMPT's "Hard
+The system prompt says this now (see ODIN_SYSTEM_PROMPT's "Hard
 limits" section), but a prompt is not enforcement -- this test is the
 actual enforcement's regression guard: it fails loudly the moment
 anyone ever adds a tool capable of executing a financial action,
@@ -20,14 +20,14 @@ import re
 import sys
 import tempfile
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
 
 import app  # noqa: E402
 
@@ -67,7 +67,7 @@ def demo():
         for kw in _ACTION_KEYWORDS:
             assert kw not in lowered, (
                 f"tool {name!r} matches financial-action keyword {kw!r} -- Module 11's rule is "
-                f"that Ultron has NO tool that executes a trade or financial action, permanently. "
+                f"that Odin has NO tool that executes a trade or financial action, permanently. "
                 f"If this is real and deliberate, it needs a human-confirmed dashboard action-token "
                 f"flow (like /api/actions/backup and /api/actions/deploy-container already use), "
                 f"never a bare chat-callable tool -- and this test needs to be consciously updated "
@@ -84,7 +84,7 @@ def demo():
 
     # The system prompt itself states this rule -- a lightweight check
     # that the actual guidance text hasn't been quietly removed.
-    prompt = app.ULTRON_SYSTEM_PROMPT.lower()
+    prompt = app.ODIN_SYSTEM_PROMPT.lower()
     assert "no tool that executes a trade or any financial action" in prompt, (
         "the permanent financial-action rule's own sentence seems to have been edited out "
         "of the system prompt -- Module 11 requires this stated explicitly, not just enforced "

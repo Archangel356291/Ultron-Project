@@ -16,14 +16,14 @@ import os
 import sys
 import tempfile
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
 
 import app  # noqa: E402
 
@@ -57,10 +57,10 @@ def demo():
     # the repo entirely). Flask/Werkzeug's own routing normalizes this
     # before send_from_directory ever sees it -- assert the real behavior,
     # not just trust that it's "supposed to" be safe.
-    res5 = client.get("/three-pipeline/../ultron-backend/app.py")
+    res5 = client.get("/three-pipeline/../odin-backend/app.py")
     assert res5.status_code in (403, 404), \
         f"path traversal should be refused, got {res5.status_code}"
-    res6 = client.get("/three-pipeline/..%2f..%2fultron-backend%2fapp.py")
+    res6 = client.get("/three-pipeline/..%2f..%2fodin-backend%2fapp.py")
     assert res6.status_code in (403, 404), \
         f"encoded path traversal should be refused, got {res6.status_code}"
 

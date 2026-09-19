@@ -1,9 +1,9 @@
-"""Generates original pixel-art PNG sprites/backdrop for the Ultron tab's
+"""Generates original pixel-art PNG sprites/backdrop for the Odin tab's
 pixel-companion scene (dashboard, Ultron's Corner). Style/palette inspired
 by two reference images the owner supplied (a red/gunmetal armored robot
 portrait, and a teal-lit isometric sci-fi control room) -- NOT traced or
 copied from either, since the character reference is itself modeled on
-Marvel's copyrighted Ultron design. This draws an original silhouette
+Marvel's copyrighted Odin design. This draws an original silhouette
 (angular gunmetal armor, glowing red core/joints, a crested head) built
 from primitive shapes, matching the reference's palette and general
 proportions rather than reproducing its actual artwork. Same principle
@@ -22,7 +22,7 @@ source photos referenced above were only ever shared in chat, never saved
 to this repo, so they aren't available to re-check against here.
 
 Run to (re)generate everything directly into ../pixel-assets/, which
-ultron-backend/app.py serves at /pixel-assets/<file> (same pattern as
+odin-backend/app.py serves at /pixel-assets/<file> (same pattern as
 /three-pipeline/<file>):
     python dev-tools/gen_pixel_assets.py
 """
@@ -37,13 +37,13 @@ os.makedirs(OUT_DIR, exist_ok=True)
 # Metallic pass (2026-09-16, owner: "make all metal items and characters
 # metallic"): the shared armour/structure tones are cooled and brightened into
 # brushed gunmetal/steel so every agent, desk, tube and the room backgrounds
-# read as metal. Ultron gets his own gunmetal/platinum/titanium override in
+# read as metal. Odin gets his own gunmetal/platinum/titanium override in
 # main(). Keep these in step with the dashboard's canvas metals.
 BODY_DARK = (34, 38, 44, 255)     # cool dark steel
 BODY_MID = (64, 70, 80, 255)      # gunmetal
 BODY_LIGHT = (112, 120, 133, 255) # brushed steel highlight
 STEEL = (170, 178, 190, 255)      # bright steel
-# Ultron's own metallic body (his specific request): gunmetal gray, dark
+# Odin's own metallic body (his specific request): gunmetal gray, dark
 # platinum, weathered titanium -- with red eyes/core (RED_BRIGHT below).
 U_GUNMETAL = (48, 53, 61, 255)
 U_PLATINUM = (98, 105, 116, 255)
@@ -66,7 +66,7 @@ AMBER = (255, 194, 75, 255)
 VIOLET = (176, 132, 240, 255)
 # The ten specialists added 2026-09-16 (see AGENT_REGISTRY in app.py and the
 # SUBAGENTS table in ultron-dashboard.html) -- each its own colour so the
-# room reads at a glance. Deliberately away from Ultron's red and Sentinel's
+# room reads at a glance. Deliberately away from Odin's red and Sentinel's
 # amber.
 AGENT_COLORS = {
     "cyan": CYAN, "green": GREEN, "amber": AMBER, "violet": VIOLET,
@@ -208,7 +208,7 @@ class Sheet:
 
 
 # ---- characters ------------------------------------------------------------
-# One robot, drawn on a 20-wide grid of `u` room units per cell. Ultron and
+# One robot, drawn on a 20-wide grid of `u` room units per cell. Odin and
 # every agent share the armoured vocabulary (so they read as one family); what
 # tells them apart is colour, the crest on the helmet, the build, and the
 # emblem on the monitor beside them. Original silhouette -- see the module
@@ -222,7 +222,7 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DA
     off below the chest -- the desk sprite covers the rest).
 
     `eye`/`bd`/`bm`/`bl` override the eye-glow and the three body tones for a
-    character with its own palette (Ultron: a metallic gunmetal/platinum/
+    character with its own palette (Odin: a metallic gunmetal/platinum/
     titanium body with red eyes); default to the shared armour so every agent
     is unchanged."""
     eye = eye or accent
@@ -271,7 +271,7 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DA
         E(ex - 0.55, 6.0, ex + 0.65, 6.8, shade(eye, 1.5))
         E(ex - 0.15, 6.1, ex + 0.35, 6.55, (255, 240, 225, 235))
     if ultron:
-        # iconic Ultron grimace: a wide metal maw crossed by vertical struts
+        # iconic Odin grimace: a wide metal maw crossed by vertical struts
         # (clenched teeth-bars), corners pulled down into a permanent frown.
         P([(6.5, 6.95), (13.5, 6.95), (13.0, 8.4), (7.0, 8.4)], dark)
         for sx in (7.3, 8.2, 9.1, 10.0, 10.9, 11.8, 12.7):
@@ -308,8 +308,8 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DA
     elif crest == "horns":   # two swept horns: the guards
         P([(6.2, 1.4), (5.0, -2.2), (7.8, 0.2)], accent)
         P([(13.8, 1.4), (15.0, -2.2), (12.2, 0.2)], accent)
-    elif crest == "ultron":  # sleek Ultron head -- a low center ridge to a soft
-        # point + small angular temple plates; NO crown (the real Ultron look)
+    elif crest == "ultron":  # sleek Odin head -- a low center ridge to a soft
+        # point + small angular temple plates; NO crown (the real Odin look)
         P([(8.5, 0.7), (10.0, -1.6), (11.5, 0.7)], shade(bm, 1.2))
         P([(9.3, 0.3), (10.0, -1.6), (10.0, 0.5)], shade(bm, 1.4))
         P([(5.6, 2.4), (5.0, 0.5), (6.5, 1.7)], shade(bm, 1.1))
@@ -337,7 +337,7 @@ def draw_robot(u, accent, pose, crest="crown", heavy=False, eye=None, bd=BODY_DA
         E(8.2, 11.0, 11.8, 14.6, eye)
         E(9.1, 11.9, 10.9, 13.7, (255, 255, 255, 235))
 
-    if stones:   # the six Infinity Stones set across Ultron's lower chest -- always clearly visible
+    if stones:   # the six Infinity Stones set across Odin's lower chest -- always clearly visible
         stone_cols = [(255, 46, 46, 255), (255, 138, 30, 255), (255, 210, 30, 255),
                       (51, 209, 122, 255), (61, 155, 255, 255), (162, 75, 255, 255)]
         gy = 16.0
@@ -551,7 +551,7 @@ def draw_tube(w, h, accent):
 
 
 # ---- the building ----------------------------------------------------------
-# The room is a cutaway tower: a ground floor (Ultron's office) and as many
+# The room is a cutaway tower: a ground floor (Odin's office) and as many
 # agent storeys as the screen width needs. Each is one 1280-unit-wide strip
 # the dashboard crops to its layout width, so nothing here may depend on the
 # right-hand end being visible. Walls stay quiet on purpose -- the colour in
@@ -722,7 +722,7 @@ def draw_server_rack(s, x0, y0, w, h):
 def draw_ground():
     s = _wall(STOREY_W, GROUND_H, GROUND_WALL)
     draw_skyline(s, 214, 70, 300, 190)
-    # two wall consoles between the window and Ultron's desk
+    # two wall consoles between the window and Odin's desk
     for cx, cw, ch, seed in ((566, 96, 118, 11), (684, 78, 100, 23)):
         random.seed(seed)
         s.rect(cx, 66, cx + cw, 66 + ch, fill=PANEL_RAISED, r=3)
@@ -813,23 +813,23 @@ AGENT_LOOKS = {
 
 
 def main():
-    # Ultron: 10 room units per grid cell (200 wide), the agents 6 (120 wide)
+    # Odin: 10 room units per grid cell (200 wide), the agents 6 (120 wide)
     # -- both about double the previous pass. His body is gunmetal / dark
     # platinum / weathered titanium with polished titanium plating and RED
     # eyes + core (owner request 2026-09-16).
-    # NOTE: the office Ultron sprites (ultron_work/walk_a/walk_b.png) are OWNED BY
+    # NOTE: the office Odin sprites (ultron_work/walk_a/walk_b.png) are OWNED BY
     # dev-tools/ultron_infinity.py now -- his newer Infinity-Stone form (chrome +
     # red cape + chest stones), built from the pixel reference. Do NOT regenerate
     # them here; the boxy draw_robot below is kept only as the fallback/agent base.
     # (Re-running this file used to clobber the good Infinity sprites.)
-    #   To rebuild Ultron:  python dev-tools/ultron_infinity.py
+    #   To rebuild Odin:  python dev-tools/ultron_infinity.py
     for active in (False, True):
         save(draw_desk(280, 96, 124, 88, RED_BRIGHT, "core", active), f"desk_ultron_{'active' if active else 'idle'}.png")
     save(draw_tube(64, 280, RED_BRIGHT), "tube_red.png")
 
     for name, color in AGENT_COLORS.items():
         crest, emblem = AGENT_LOOKS[name]
-        # Each agent is a copy of Ultron: his gunmetal/platinum/titanium body +
+        # Each agent is a copy of Odin: his gunmetal/platinum/titanium body +
         # iconic grimace, but tinted in the agent's own accent (faceplate, eyes,
         # core, crest) with its role crest + monitor emblem as the unique bit.
         save(draw_robot(6, color, "work", crest, heavy=(name == "amber"), eye=color,

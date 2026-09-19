@@ -1,6 +1,6 @@
-# Testing Ultron — a quick guide
+# Testing Odin — a quick guide
 
-Thanks for helping test Ultron! This walks you through getting connected
+Thanks for helping test Odin! This walks you through getting connected
 and what you can actually do once you're in. Should take about 5
 minutes.
 
@@ -9,12 +9,12 @@ minutes.
 - **A link and a token** — the person who invited you will send you both.
   Keep the token private, like a password; it's yours alone.
 - **The Tailscale app** on whatever device you're using (phone, laptop,
-  tablet) — this is what lets your device securely reach Ultron without
+  tablet) — this is what lets your device securely reach Odin without
   it being exposed to the whole internet. Install it from your device's
   app store, or [tailscale.com/download](https://tailscale.com/download)
   on a computer.
 - An invite to join the tailnet — you'll get this from whoever's hosting
-  Ultron, separately from the link/token above. Accept it in the
+  Odin, separately from the link/token above. Accept it in the
   Tailscale app.
 
 ## Step 1 — Connect Tailscale
@@ -23,7 +23,7 @@ Open the Tailscale app, sign in (or accept the invite you were sent), and
 confirm it shows **Connected**. That's it for this step — no further
 setup needed here.
 
-## Step 2 — Open Ultron
+## Step 2 — Open Odin
 
 In a normal browser tab (Chrome, Safari, whatever you'd normally use), go
 to the link you were given. It'll look something like:
@@ -32,7 +32,7 @@ to the link you were given. It'll look something like:
 http://<some-name>.<random-letters>.ts.net:5000/
 ```
 
-You should see the Ultron dashboard load, showing sample/placeholder data
+You should see the Odin dashboard load, showing sample/placeholder data
 at first — that's expected, you're not connected yet.
 
 ## Step 3 — Connect with your token
@@ -56,7 +56,7 @@ know.
 As a beta tester, you get a deliberately limited view — this is by
 design, not a bug:
 
-- **AI Assistant** — chat with Ultron. Ask it questions, have a
+- **AI Assistant** — chat with Odin. Ask it questions, have a
   conversation. This is the main thing to test.
 - **Crypto & Markets** — you can *see* trade history and price info, but
   can't add, edit, or delete anything, and there's no export button.
@@ -97,7 +97,7 @@ If anything feels broken, confusing, or just off, say so — including:
 
 - Error messages, especially the exact wording
 - Anything that seems slow or hangs
-- Ultron answering with information it shouldn't have access to (this
+- Odin answering with information it shouldn't have access to (this
   one's important — flag it right away)
 - Anything in the interface that looks wrong, cut off, or doesn't work
   the way you'd expect

@@ -7,17 +7,17 @@ FROM python:3.12-slim
 COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
 
 WORKDIR /app
-COPY ultron-backend/requirements.txt ultron-backend/requirements.txt
-RUN pip install --no-cache-dir -r ultron-backend/requirements.txt
+COPY odin-backend/requirements.txt odin-backend/requirements.txt
+RUN pip install --no-cache-dir -r odin-backend/requirements.txt
 
-COPY ultron-backend/ ultron-backend/
+COPY odin-backend/ odin-backend/
 COPY ultron-dashboard.html ultron-dashboard.html
 # Installable-app service worker, served (versioned) by /sw.js in app.py.
 COPY sw.js sw.js
 # Module 13: vendored Three.js + the built hero-head .glb, served by the new
 # /three-pipeline/<file> route in app.py.
 COPY three-pipeline/ three-pipeline/
-# Pixel-art sprites/backdrop for the Ultron tab, served by /pixel-assets/<file>.
+# Pixel-art sprites/backdrop for the Odin tab, served by /pixel-assets/<file>.
 COPY pixel-assets/ pixel-assets/
 # Self-hosted dashboard typefaces (OFL), served by /fonts/<file>.
 COPY fonts/ fonts/
@@ -31,10 +31,10 @@ COPY graphify-out/graph.json graphify-out/graph.json
 # /data mount. The Docker socket is the one thing a plain user cannot open;
 # docker-compose.yml grants that through group_add rather than by keeping
 # root (see the note there).
-RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin ultron
-USER ultron
+RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin odin
+USER odin
 
-WORKDIR /app/ultron-backend
+WORKDIR /app/odin-backend
 EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=25s --retries=3 CMD ["python", "healthcheck.py"]
 # gunicorn, not `python app.py` (Flask's development server) -- see

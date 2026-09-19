@@ -45,20 +45,20 @@ def demo():
     graph = {
         "nodes": [
             {"id": "n_public_code", "label": "get_system_status", "file_type": "code",
-             "source_file": "ultron-backend/app.py", "community_name": "Backend REST Routes"},
+             "source_file": "odin-backend/app.py", "community_name": "Backend REST Routes"},
             {"id": "n_private_tailscale", "label": "Tailscale Remote Access", "file_type": "document",
-             "source_file": "ultron-backend/REMOTE-ACCESS.md", "community_name": "Beta Program & Tailscale Docs"},
+             "source_file": "odin-backend/REMOTE-ACCESS.md", "community_name": "Beta Program & Tailscale Docs"},
             {"id": "n_private_ip", "label": "Pi network address 192.168.1.50", "file_type": "concept",
-             "source_file": "ultron-backend/PI-SETUP.md", "community_name": "Pi Setup"},
+             "source_file": "odin-backend/PI-SETUP.md", "community_name": "Pi Setup"},
         ],
         "links": [],
         "hyperedges": [],
     }
     _write(paths["graph_path"], graph)
     manifest = {
-        "ultron-backend/app.py": {"mtime": 1000.0},
-        "ultron-backend/REMOTE-ACCESS.md": {"mtime": 2000.0},
-        "ultron-backend/PI-SETUP.md": {"mtime": 3000.0},
+        "odin-backend/app.py": {"mtime": 1000.0},
+        "odin-backend/REMOTE-ACCESS.md": {"mtime": 2000.0},
+        "odin-backend/PI-SETUP.md": {"mtime": 3000.0},
     }
     _write(paths["manifest_path"], manifest)
 
@@ -90,7 +90,7 @@ def demo():
     key = ev._get_or_create_key(paths["env_path"], paths["private_store_path"], quiet=True)
     recovered = ev.decrypt_private_node("n_private_tailscale", key=key, private_store_path=paths["private_store_path"])
     assert recovered["label"] == "Tailscale Remote Access", recovered
-    assert recovered["source_file"] == "ultron-backend/REMOTE-ACCESS.md", recovered
+    assert recovered["source_file"] == "odin-backend/REMOTE-ACCESS.md", recovered
 
     # Wrong key must fail, not silently return garbage.
     wrong_key = Fernet.generate_key()
@@ -131,7 +131,7 @@ def demo():
     )
 
     # Bump the source file's mtime and rerun: date_updated moves, date_created still doesn't.
-    manifest["ultron-backend/app.py"]["mtime"] = 9999.0
+    manifest["odin-backend/app.py"]["mtime"] = 9999.0
     _write(paths["manifest_path"], manifest)
     ev.enrich(**paths)
     result3 = json.loads(paths["graph_path"].read_text(encoding="utf-8"))

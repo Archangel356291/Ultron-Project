@@ -14,7 +14,7 @@ tonight's modules:
 - **The real data**: `graphify-out/graph.json` (Module 4) — 543 real
   nodes, 859 real edges, 62 real clusters, extracted from this actual
   codebase (code/document/rationale/concept), already privacy-redacted
-  (85 nodes stubbed to `"[private]"`). Plus Ultron's own runtime memory
+  (85 nodes stubbed to `"[private]"`). Plus Odin's own runtime memory
   graph (Module 10's `memory_notes`/`memory_edges`, via the exact same
   `_notes_as_graph()` helper `recall_related_notes` already uses).
 - **The rendering library**: `three-pipeline/vendor/3d-force-graph.min.js`
@@ -57,7 +57,7 @@ a Raspberry Pi 400), `cooldownTicks` set finite (not infinite — the
 layout settles once and the physics simulation stops, shorter under
 `prefers-reduced-motion`/Reduced Visual Mode). Node color by category,
 node size by connection count (`nodeVal`), hover highlights direct
-neighbors and dims the rest, click opens an Ultron-styled inspector
+neighbors and dims the rest, click opens an Odin-styled inspector
 panel (never a browser alert/modal) with real fields — type,
 visibility, cluster, relationship count, last updated. Search dims
 non-matching nodes rather than hiding them, same technique the
@@ -67,7 +67,7 @@ list of categories that may not exist in the data.
 
 The AI-core connection (step 13) is a plain CSS gradient line between
 the hero panel and this section — deliberately not "highlight nodes
-when Ultron is thinking," since that would imply specific memory access
+when Odin is thinking," since that would imply specific memory access
 that isn't real. A thematic connector, not a fabricated data-driven
 effect.
 

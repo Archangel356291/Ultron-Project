@@ -1,6 +1,6 @@
 # Raspberry Pi setup — getting it reachable, phase 1
 
-This is step one of "let Ultron reach into the home lab on the Pi": get
+This is step one of "let Odin reach into the home lab on the Pi": get
 the Pi itself flashed, on the same Tailscale tailnet as the Cyberpower
 PC, SSH-reachable with a key (no password guessing), and running Docker.
 **This document stops there.** Nothing in `app.py`, the dashboard, or
@@ -13,7 +13,7 @@ step against what you actually see, don't assume it's exactly right.
 ## Why this order
 
 The Pi currently doesn't exist on the network at all — no IP, no SSH, no
-way for this PC (or Ultron) to reach it. Everything below fixes exactly
+way for this PC (or Odin) to reach it. Everything below fixes exactly
 that, in the order that makes each later step possible:
 
 1. Flash the SD card with SSH and your Tailscale-account SSH key already
@@ -32,8 +32,8 @@ Pi — not your personal SSH key, not shared with anything else, so it can
 be revoked independently later if needed:
 
 ```
-C:\Users\<you>\.ssh\ultron_pi_ed25519       (private key — stays on this PC)
-C:\Users\<you>\.ssh\ultron_pi_ed25519.pub   (public key — goes on the Pi)
+C:\Users\<you>\.ssh\odin_pi_ed25519       (private key — stays on this PC)
+C:\Users\<you>\.ssh\odin_pi_ed25519.pub   (public key — goes on the Pi)
 ```
 
 Public key (paste this into the Imager in step 2 — copy it exactly, one
@@ -41,7 +41,7 @@ line, no wrapping; yours will look like this, a different random string
 after `ssh-ed25519`):
 
 ```
-ssh-ed25519 AAAA...<your generated key>... ultron-pc-to-pi
+ssh-ed25519 AAAA...<your generated key>... odin-pc-to-pi
 ```
 
 Raspberry Pi Imager is already installed on this PC (`v2.0.11.1`, via
@@ -61,12 +61,12 @@ winget) — no separate download needed.
 6. Click the **gear icon** (or `Ctrl+Shift+X`) for **Advanced options**
    before writing — this is the step that makes the Pi reachable on
    first boot instead of needing a monitor/keyboard:
-   - **Set hostname**: `ultron-pi` (or any name that matches whatever
+   - **Set hostname**: `odin-pi` (or any name that matches whatever
      naming pattern your other devices already use on the tailnet).
    - **Enable SSH** → **Allow public-key authentication only** (not
      password) → paste the public key from section 0 above.
    - **Set username and password**: pick a username (e.g. your own
-     name, or `ultron`). A password is still asked for even with
+     name, or `odin`). A password is still asked for even with
      key-only SSH enabled — Imager requires one; it just won't be
      usable for SSH login since public-key-only is selected above.
    - **Configure wireless LAN**: fill in your Wi-Fi SSID/password and
@@ -84,7 +84,7 @@ winget) — no separate download needed.
    first boot.
 2. From this PC (PowerShell or the terminal here):
    ```powershell
-   ssh -i C:\Users\<you>\.ssh\ultron_pi_ed25519 <username>@ultron-pi.local
+   ssh -i C:\Users\<you>\.ssh\odin_pi_ed25519 <username>@odin-pi.local
    ```
    Replace `<username>` with whatever you set in step 1. Raspberry Pi OS
    ships with mDNS (Avahi) enabled by default, so `<hostname>.local`
@@ -126,13 +126,13 @@ Confirm it worked — from this PC:
 tailscale status
 ```
 
-You should now see the Pi (`ultron-pi`) alongside your other devices.
+You should now see the Pi (`odin-pi`) alongside your other devices.
 Then confirm the SSH key still works **over Tailscale specifically**
 (not just the LAN — this is the whole point, reachability from
 anywhere):
 
 ```powershell
-ssh -i C:\Users\<you>\.ssh\ultron_pi_ed25519 <username>@ultron-pi
+ssh -i C:\Users\<you>\.ssh\odin_pi_ed25519 <username>@odin-pi
 ```
 
 (MagicDNS resolves the bare Tailscale hostname once both devices are on
@@ -162,7 +162,7 @@ docker run hello-world
 
 At the end of this: the Pi is flashed, key-only SSH reachable both on
 the LAN and over Tailscale from anywhere, fully updated, and running
-Docker — a real second host Ultron can eventually target, not a
+Docker — a real second host Odin can eventually target, not a
 hypothetical one.
 
 **Not done here, and deliberately not guessed at:** any code change to

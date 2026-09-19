@@ -1,4 +1,4 @@
-# Ultron AI Dashboard — Design Specification (from reference image)
+# Odin AI Dashboard — Design Specification (from reference image)
 
 **Status (2026-09-13): mostly historical.** This document predates the
 "consolidate project files into git-tracked repo folder" commit and had
@@ -8,7 +8,7 @@ get lost again. Its recommendations were independently re-derived and
 acted on during the same day's dashboard visual-match pass (chamfered
 corners, status/activity icon badges, orb-as-CSS-glow, header
 user/status cluster, footer divider marks — all match what's now in
-`ultron-dashboard.html`), with one exception: its one specific,
+`odin-dashboard.html`), with one exception: its one specific,
 actionable finding — darken `--line` toward `#03294A` — hadn't been
 applied yet and is now fixed. Kept as a record of the original pixel
 analysis, not as an open task list.
@@ -22,8 +22,8 @@ sci-fi UI has soft edges and bloom effects that genuinely limit how
 precisely a single "true" color can be pinned down in some spots.
 
 **Important context: a working implementation of this exact reference
-already exists** — `ultron-dashboard.html` in this project, built and
-live-wired against the real Ultron backend across the whole preceding
+already exists** — `odin-dashboard.html` in this project, built and
+live-wired against the real Odin backend across the whole preceding
 build. This document is written to do two things: (1) stand alone as a
 from-scratch spec if you want to rebuild, and (2) call out the specific,
 verified differences between the reference image and what's currently
@@ -90,7 +90,7 @@ value.
   effect achieving the same *impression* is the reasonable target, which
   is what the existing implementation already does), and two short word
   columns flanking the orb (LEARN / ADAPT / SOLVE / EVOLVE on the right).
-- **Talk-to-Ultron input bar**: a bordered box below the hero, with a
+- **Talk-to-Odin input bar**: a bordered box below the hero, with a
   waveform icon + "TALK TO ULTRON" label, a text input with placeholder
   text, a circular mic button, and a filled amber send button. Below the
   input, a row of mode-select pills (General / Code / Home Lab /
@@ -132,7 +132,7 @@ value.
 ## Recommended next step
 
 Given a tested, live-wired implementation already exists: open
-`ultron-dashboard.html`, locate the `--line` CSS variable (and confirm
+`odin-dashboard.html`, locate the `--line` CSS variable (and confirm
 it's the single source of truth for border colors across the stylesheet,
 which it should be given the project's established one-variable-per-role
 convention), and darken it toward `#03294A`. Then do a side-by-side visual

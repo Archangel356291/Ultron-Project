@@ -1,16 +1,16 @@
-# SearXNG settings for Ultron's Scout (web_search chat tool). Everything not
+# SearXNG settings for Odin's Scout (web_search chat tool). Everything not
 # listed here comes from SearXNG's own defaults. The secret key is supplied
 # by the SEARXNG_SECRET environment variable (see docker-compose.yml), never
 # written into this file.
 use_default_settings: true
 
 general:
-  instance_name: "Ultron Scout"
+  instance_name: "Odin Scout"
   debug: false
   enable_metrics: false
 
 server:
-  # Single internal caller (ultron-backend) on a private Docker network --
+  # Single internal caller (odin-backend) on a private Docker network --
   # the limiter would only add a Valkey dependency for nothing.
   limiter: false
   image_proxy: false

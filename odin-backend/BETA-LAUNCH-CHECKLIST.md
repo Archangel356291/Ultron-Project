@@ -5,8 +5,8 @@
 Core backend + dashboard + chat + voice, verified against a real running
 instance (not just "should work"):
 
-- Backend boots clean via `start-ultron.ps1`, secrets auto-loaded from
-  `.env`, real `ULTRON_API_TOKEN` + `ANTHROPIC_API_KEY` in place
+- Backend boots clean via `start-odin.ps1`, secrets auto-loaded from
+  `.env`, real `ODIN_API_TOKEN` + `ANTHROPIC_API_KEY` in place
 - Auth gating confirmed (401 with no/wrong token, 200 with the right one)
 - Dashboard connects and shows real data, not mock — CPU/memory/status
 - AI Assistant chat verified end-to-end: real tool calls
@@ -35,7 +35,7 @@ input) plus view-only trading data (`/api/trades`, `/api/trades/summary`,
 enforced at the Flask route level *and* inside chat's own tool-use loop
 (the tool schemas offered to the model are filtered by role, so chat can't
 be used to route around the same boundary). See `README.md`'s auth section
-and `start-ultron.ps1`'s `ULTRON_BETA_TOKENS` block (originally a single
+and `start-odin.ps1`'s `ODIN_BETA_TOKENS` block (originally a single
 shared token; see `BETA-TESTERS.md` for the per-tester version this
 became on 2026-09-13).
 
@@ -53,9 +53,9 @@ First real beta_tester run, on this Windows machine (no Pi, no networking
 — same device, `http://127.0.0.1:5000`), superseding the "not verified
 end-to-end" gap above:
 
-- Real `ULTRON_BETA_TOKEN` generated and added to `.env`.
-- Backend launched via `start-ultron.ps1` with real secrets (not test
-  tokens) — real `ANTHROPIC_API_KEY`, real `ultron.db`.
+- Real `ODIN_BETA_TOKEN` generated and added to `.env`.
+- Backend launched via `start-odin.ps1` with real secrets (not test
+  tokens) — real `ANTHROPIC_API_KEY`, real `odin.db`.
 - Chat verified end-to-end with the beta token: real Claude reply, real
   `get_trades` tool call, and — asked directly for system/CPU info, which
   is out of beta scope — it correctly reported that tool isn't available
@@ -66,7 +66,7 @@ end-to-end" gap above:
   add-trade form and no export buttons; Settings shows Connection and
   Preferences only, Usage & Cost Controls and External Tools (MCP) both
   hidden.
-- `run-beta.ps1` added alongside `start-ultron.ps1` — same startup, but
+- `run-beta.ps1` added alongside `start-odin.ps1` — same startup, but
   activates the venv itself first, for launching from a non-interactive
   context.
 
@@ -97,7 +97,7 @@ different account) still isn't covered by `autogroup:self` — they'd need
 an explicit invite/share, or the original public-URL-via-Funnel plan,
 which is still waiting on the Pi.
 
-Not yet done: actually opening `ultron-dashboard.html` on the phone
+Not yet done: actually opening `odin-dashboard.html` on the phone
 itself and connecting through the UI (only the raw API was hit from the
 phone; the full dashboard-as-beta_tester walkthrough was verified locally
 on this PC, not yet repeated on a second device).
@@ -114,12 +114,12 @@ both fixed:
   with no useful error beyond "could not reach backend" even though the
   backend was reachable (confirmed by navigating the same URL directly).
   Fixed by adding an unauthenticated `GET /` route to `app.py` that
-  serves `ultron-dashboard.html` from the backend itself — same origin as
+  serves `odin-dashboard.html` from the backend itself — same origin as
   the API, no CORS/file-origin issues, and no more transferring the file
   to every device that wants to use it. Safe to serve unauthenticated:
   the file has no secrets baked in, same as handing someone the file
   directly.
-- **Both tokens rotated** (`ULTRON_API_TOKEN` and `ULTRON_BETA_TOKEN`)
+- **Both tokens rotated** (`ODIN_API_TOKEN` and `ODIN_BETA_TOKEN`)
   after having been typed into chat multiple times during setup —
   current values live only in `.env`, never in this file or git history.
 
@@ -134,7 +134,7 @@ Tailscale (cellular, Wi-Fi off):**
   between sessions — expected, not a bug).
 
 Backend stopped after this test (not left running). To relaunch:
-`run-beta.ps1` from `ultron-backend/`, same as documented above.
+`run-beta.ps1` from `odin-backend/`, same as documented above.
 
 ## Discord bot: set up, invited, and verified live (2026-09-13)
 
@@ -149,7 +149,7 @@ bot token that had been sitting in `.env` was under the wrong key name.
   its own application ID (fetched live via the Discord API, not typed by
   hand) with the permissions it actually needs: view channels, send
   messages, embed links, attach files (for `/export`), read history.
-- Set `ULTRON_DISCORD_DEV_GUILD_ID` to that server so all 15 slash
+- Set `ODIN_DISCORD_DEV_GUILD_ID` to that server so all 15 slash
   commands sync instantly instead of waiting up to an hour for global
   sync — confirmed synced via the Discord API.
 - A human ran `/status` and `/ask` for real in Discord; cross-checked
@@ -190,12 +190,12 @@ in `app.run()` was enough on its own:
 deliberate, documented, cost-control features, not bugs, but they're
 *shared across everyone*, not per-tester:
 
-- **Chat rate limit**: `ULTRON_CHAT_RATE_LIMIT_PER_MINUTE`, defaults to
+- **Chat rate limit**: `ODIN_CHAT_RATE_LIMIT_PER_MINUTE`, defaults to
   20/minute *total*, across admin and every beta tester combined. A
   handful of people chatting actively at once can trip this faster than
   one person testing alone would expect.
-- **Daily token budget**: `ULTRON_LLM_DAILY_TOKEN_BUDGET`, set to 50,000
-  in `start-ultron.ps1` (active by default), also a *combined* ceiling
+- **Daily token budget**: `ODIN_LLM_DAILY_TOKEN_BUDGET`, set to 50,000
+  in `start-odin.ps1` (active by default), also a *combined* ceiling
   for the whole day, not per-tester.
 
 Neither was changed — the right value depends on how many testers you
@@ -204,14 +204,14 @@ it is: budget roughly a few thousand tokens per tester per short
 conversation, so for N simultaneous testers doing real testing, a daily
 budget in the tens-of-thousands-times-N range is more realistic than the
 single-user 50k default. Both are one-line edits in
-`ultron-backend/start-ultron.ps1`.
+`odin-backend/start-odin.ps1`.
 
 **A third cost control, added since — but per-tester, not shared:**
-`ULTRON_BETA_MAX_SPEND_USD` caps each beta tester at $1.00 of real spend
+`ODIN_BETA_MAX_SPEND_USD` caps each beta tester at $1.00 of real spend
 for their whole time testing (default, one-line override in `.env`).
 Unlike the two above, this doesn't get tighter as tester count grows —
 each person gets their own $1.00, independent of everyone else's. See
-`ultron-backend/BETA-TESTERS.md`'s "Spend cap" section and the backend
+`odin-backend/BETA-TESTERS.md`'s "Spend cap" section and the backend
 README's Cost controls for the enforcement details.
 
 ## Final pre-launch check (2026-09-13)
@@ -231,7 +231,7 @@ from earlier passes:
 - Secrets: swept git-tracked files for every real token/key value
   currently in use — none found. `.env` remains correctly gitignored.
 
-**The one real gap before a live multi-tester beta:** `ULTRON_BETA_TOKENS`
+**The one real gap before a live multi-tester beta:** `ODIN_BETA_TOKENS`
 is currently unset in `.env` — the `beta_tester` role doesn't exist yet.
 This is expected, not a bug (the roster in `BETA-TESTERS.md` is still
 empty), but it's the one concrete step left: once you have a real
@@ -261,7 +261,7 @@ module's own design doc rather than re-summarized here:
   (`visibility` itself matching as a keyword) caught and fixed
 - **9** — automated backup + genuinely verified restore (a real
   filename-collision bug at second-precision timestamps, fixed)
-- **10** — Ultron's own runtime knowledge graph (`memory_notes`/
+- **10** — Odin's own runtime knowledge graph (`memory_notes`/
   `memory_edges`), reusing Module 4/8's schema and retrieval logic
   rather than reimplementing it
 - **11** — the permanent financial-action boundary, with its own
@@ -288,7 +288,7 @@ test checkpoint re-run clean after each one, `git status` clean and
 **Status: stable, verified, and current as of this entry.** No open
 regressions, no known-broken functionality. The one still-open beta
 item is unchanged from the "Final pre-launch check" entry above —
-`ULTRON_BETA_TOKENS` stays unset until there's a real tester to onboard,
+`ODIN_BETA_TOKENS` stays unset until there's a real tester to onboard,
 by design, not an oversight.
 
 ---
@@ -320,16 +320,16 @@ working beta running today — those are all later, optional steps.
 Two folders and one standalone file:
 
 ```
-C:\Ultron\
-  ultron-backend\          <- app.py, README.md, REMOTE-ACCESS.md, requirements.txt, get-tailscale-address.ps1
-  ultron-discord-bot\      <- bot.py, README.md, requirements.txt (skip if not using Discord)
-  ultron-dashboard.html    <- open this directly in a browser, no server needed for the file itself
+C:\Odin\
+  odin-backend\          <- app.py, README.md, REMOTE-ACCESS.md, requirements.txt, get-tailscale-address.ps1
+  odin-discord-bot\      <- bot.py, README.md, requirements.txt (skip if not using Discord)
+  odin-dashboard.html    <- open this directly in a browser, no server needed for the file itself
 ```
 
 ## 2. Backend — minimum to get running
 
 ```powershell
-cd C:\Ultron\ultron-backend
+cd C:\Odin\odin-backend
 python -m venv venv
 venv\Scripts\Activate.ps1
 pip install -r requirements.txt
@@ -342,11 +342,11 @@ Two environment variables matter for a first run — one is **required**,
 one you'll almost certainly want:
 
 ```powershell
-$env:ULTRON_API_TOKEN = -join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_})
+$env:ODIN_API_TOKEN = -join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_})
 $env:ANTHROPIC_API_KEY = "sk-ant-..."
 ```
 
-- `ULTRON_API_TOKEN` — **required**. The app refuses to start without it.
+- `ODIN_API_TOKEN` — **required**. The app refuses to start without it.
   This is the bearer token every client (dashboard, bot) needs to talk to
   the backend. Save it in a password manager — you'll need it again in
   step 5, and every time you restart the backend in a new PowerShell
@@ -360,14 +360,14 @@ $env:ANTHROPIC_API_KEY = "sk-ant-..."
 ## 3. Use the startup script instead of retyping env vars every time
 
 Retyping a dozen `$env:X = "..."` lines every session is exactly the kind
-of thing that gets skipped or fat-fingered. `start-ultron.ps1` (in this
+of thing that gets skipped or fat-fingered. `start-odin.ps1` (in this
 same folder) has every environment variable this backend reads, commented
 with what it does, required ones un-commented with a placeholder, optional
 ones commented out. Open it once, fill in what you want, save it, and
 from then on:
 
 ```powershell
-.\start-ultron.ps1
+.\start-odin.ps1
 ```
 
 is the entire startup process. Section 8 below is the guide to which
@@ -376,7 +376,7 @@ optional lines in that script are worth turning on for your beta.
 ## 4. Windows Firewall — so the dashboard and phone can actually reach it
 
 ```powershell
-New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow
+New-NetFirewallRule -DisplayName "Odin Backend" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow
 ```
 
 One rule, run once. Needed even for same-machine dashboard access if
@@ -386,7 +386,7 @@ now rather than debug a "why won't it connect" later.
 ## 5. Start it and verify it's actually alive
 
 ```powershell
-.\start-ultron.ps1
+.\start-odin.ps1
 ```
 
 (or `python app.py` if you skipped step 3). You should see it print that
@@ -404,13 +404,13 @@ running it for a Python traceback before anything else.
 
 The backend serves the dashboard itself now — for any device other than
 the one running the backend, just visit its URL in a browser rather than
-copying `ultron-dashboard.html` around: opening it as a local file breaks
+copying `odin-dashboard.html` around: opening it as a local file breaks
 the Connect button on mobile browsers (confirmed on Android Chrome), so
 the URL is the reliable path for anything but quick local testing on the
 host machine itself, where double-clicking the file still works fine.
 
 - Same machine: `http://127.0.0.1:5000/` (or double-click
-  `ultron-dashboard.html` directly, either works here)
+  `odin-dashboard.html` directly, either works here)
 - Another device on the same Wi-Fi: `http://<your-LAN-IP>:5000/` (found
   via `ipconfig`)
 
@@ -418,7 +418,7 @@ Go to **Settings → Connection**, enter:
 
 - Backend URL: the same address you just opened (drop the trailing
   `/api/...` if your browser added one)
-- API token: the `ULTRON_API_TOKEN` value from step 2
+- API token: the `ODIN_API_TOKEN` value from step 2
 
 Click Connect. The mock numbers across every panel should start being
 replaced by real ones within about 15 seconds.
@@ -438,7 +438,7 @@ part of the system, not just "does the page load":
 4. **Settings → Usage & cost controls** shows the request you just made in
    step 2 — confirms real token tracking is working.
 5. **Try a backup preview** (Home Lab → Backup, if you've set
-   `ULTRON_BACKUP_SOURCES`/`DEST`) — click "Preview backup" and confirm it
+   `ODIN_BACKUP_SOURCES`/`DEST`) — click "Preview backup" and confirm it
    shows real source/destination info. **Don't click Confirm** unless you
    actually want a real backup to run — this is exactly the two-step
    design working as intended.
@@ -453,16 +453,16 @@ loaded."
 
 ## 8. Optional features — what's worth turning on now vs. later
 
-Everything here is a line in `start-ultron.ps1` you can uncomment. None of
+Everything here is a line in `start-odin.ps1` you can uncomment. None of
 it is required to start testing.
 
 | Feature | Env var(s) | Worth it now? |
 |---|---|---|
-| Backups (dashboard/chat can preview+run) | `ULTRON_BACKUP_SOURCES`, `ULTRON_BACKUP_DEST` | Yes, if you have something worth backing up — low risk, two-step confirm |
-| Development tab (real git status) | `ULTRON_CODE_REPOS` | Yes, if you have local repos — quick to set up, no downside |
-| Daily token budget (hard spend cap) | `ULTRON_LLM_DAILY_TOKEN_BUDGET` | Worth setting during beta specifically — a real ceiling while you're finding out how much you actually use |
-| Chat rate limit | `ULTRON_CHAT_RATE_LIMIT_PER_MINUTE` | Already on by default (20/min) — only touch this if you hit it |
-| External tools (MCP) | `ULTRON_MCP_CONFIG` | Later — only if you have a specific MCP server in mind; read the backend README's "External tools (MCP)" section first, this is the one with real security implications |
+| Backups (dashboard/chat can preview+run) | `ODIN_BACKUP_SOURCES`, `ODIN_BACKUP_DEST` | Yes, if you have something worth backing up — low risk, two-step confirm |
+| Development tab (real git status) | `ODIN_CODE_REPOS` | Yes, if you have local repos — quick to set up, no downside |
+| Daily token budget (hard spend cap) | `ODIN_LLM_DAILY_TOKEN_BUDGET` | Worth setting during beta specifically — a real ceiling while you're finding out how much you actually use |
+| Chat rate limit | `ODIN_CHAT_RATE_LIMIT_PER_MINUTE` | Already on by default (20/min) — only touch this if you hit it |
+| External tools (MCP) | `ODIN_MCP_CONFIG` | Later — only if you have a specific MCP server in mind; read the backend README's "External tools (MCP)" section first, this is the one with real security implications |
 | Discord bot | separate folder, see below | Whenever you want remote control — not required for the dashboard beta |
 
 ## 9. Optional: the Discord bot
@@ -470,18 +470,18 @@ it is required to start testing.
 Separate process, separate folder:
 
 ```powershell
-cd C:\Ultron\ultron-discord-bot
+cd C:\Odin\odin-discord-bot
 python -m venv venv
 venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
 Fill in `start-bot.ps1` the same way as the backend's script — it needs
-the **same** `ULTRON_API_TOKEN` from step 2, plus a Discord bot token and
+the **same** `ODIN_API_TOKEN` from step 2, plus a Discord bot token and
 your Discord user ID (comma-separated if more than one person should have
 access). All three are required; the bot refuses to start without them.
 Full setup (creating the Discord application, inviting the bot to a
-server) is in `ultron-discord-bot/README.md`.
+server) is in `odin-discord-bot/README.md`.
 
 ## 10. Optional: remote access and always-on
 
@@ -504,7 +504,7 @@ PC with a PowerShell window open:
   manual "Scan now" button, never automatic — that's deliberate, not
   something that got missed.
 - **Backup and deploy-container never run without you clicking Confirm**
-  on the actual preview — if you ask Ultron via chat to do either, it will
+  on the actual preview — if you ask Odin via chat to do either, it will
   tell you to use the dashboard instead. That's the security boundary
   working, not a missing feature.
 - **A closed PowerShell window stops the backend** unless you've set up

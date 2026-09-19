@@ -2,7 +2,7 @@
 SearXNG.
 
 Proves the mechanism without a real search engine: the tool is inert and
-says so when ULTRON_SEARXNG_URL is unset; with it set, it sends the JSON
+says so when ODIN_SEARXNG_URL is unset; with it set, it sends the JSON
 request SearXNG expects, trims results to the configured count and
 snippet length, and degrades to clear errors on HTTP/network/non-JSON
 failures. And the part that matters for safety: when the model uses it
@@ -20,18 +20,18 @@ import sys
 import tempfile
 import urllib.error
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
 os.environ["ANTHROPIC_API_KEY"] = "fake-key-for-test"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
-os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
-os.environ["ULTRON_SENTINEL_INTERVAL_SECONDS"] = "0"
-os.environ.pop("ULTRON_SEARXNG_URL", None)
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ODIN_SENTINEL_INTERVAL_SECONDS"] = "0"
+os.environ.pop("ODIN_SEARXNG_URL", None)
 
 import anthropic  # noqa: E402
 import app  # noqa: E402
@@ -52,7 +52,7 @@ def demo():
     # Inert until configured -- and the message says what to set.
     assert app.SEARXNG_URL == ""
     r = app.web_search(query="anything")
-    assert "not configured" in r["error"] and "ULTRON_SEARXNG_URL" in r["error"], r
+    assert "not configured" in r["error"] and "ODIN_SEARXNG_URL" in r["error"], r
 
     # Configured: the request SearXNG needs, results trimmed.
     app.SEARXNG_URL = "http://searxng:8080"
@@ -123,7 +123,7 @@ def demo():
     assert "web_search" not in app.LITE_ALLOWED_TOOLS
     assert "web_search" in app.TOOL_DISPATCH and any(t["name"] == "web_search" for t in app.TOOLS)
 
-    print("OK: web_search is inert until ULTRON_SEARXNG_URL is set, sends SearXNG's JSON request, trims "
+    print("OK: web_search is inert until ODIN_SEARXNG_URL is set, sends SearXNG's JSON request, trims "
           "results/snippets, degrades to clear errors, reaches the model wrapped as untrusted external "
           "data, and stays out of the beta and Economy tool sets.")
 

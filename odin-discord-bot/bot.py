@@ -1,5 +1,5 @@
 """
-Ultron Discord bot — a thin remote-control surface for the existing backend.
+Odin Discord bot — a thin remote-control surface for the existing backend.
 
 This bot does not talk to the host directly and does not duplicate any
 monitoring or action logic. Every command is an HTTP call to the same
@@ -21,8 +21,8 @@ Commands:
     /export                  -> GET /api/trades/export (CSV file attachment — transactions or tax-lots)
     /backup                 -> POST /api/actions/backup — MUTATES THE HOST, see below
     /deploy                -> POST /api/actions/deploy-container — MUTATES THE HOST, see below
-    /ask <message>           -> POST /api/chat (routes through Ultron's LLM brain)
-    /forget                    -> clears your chat history with Ultron
+    /ask <message>           -> POST /api/chat (routes through Odin's LLM brain)
+    /forget                    -> clears your chat history with Odin
 
 /backup and /deploy use the exact same preview-then-confirm flow as the
 backend and dashboard: running the command shows what would happen as a
@@ -40,7 +40,7 @@ API, not something this bot exposes — same reasoning that keeps /backup and
 
 Security:
     Every command checks the calling user's Discord ID against
-    ULTRON_DISCORD_ALLOWED_USERS before doing anything. Without that
+    ODIN_DISCORD_ALLOWED_USERS before doing anything. Without that
     allowlist, anyone who can see the bot in a server could query or
     control a home lab — this is a remote-control surface, and it's
     scoped tightly on purpose. The Confirm/Cancel buttons on /backup and
@@ -49,9 +49,9 @@ Security:
 Run:
     pip install -r requirements.txt
     $env:DISCORD_BOT_TOKEN = "..."
-    $env:ULTRON_BACKEND_URL = "http://127.0.0.1:5000"
-    $env:ULTRON_API_TOKEN = "same token the backend was started with"
-    $env:ULTRON_DISCORD_ALLOWED_USERS = "123456789012345678,987654321098765432"
+    $env:ODIN_BACKEND_URL = "http://127.0.0.1:5000"
+    $env:ODIN_API_TOKEN = "same token the backend was started with"
+    $env:ODIN_DISCORD_ALLOWED_USERS = "123456789012345678,987654321098765432"
     python bot.py
 """
 
@@ -72,8 +72,8 @@ from discord.ext import commands
 # configuration
 # --------------------------------------------------------------------------
 DISCORD_BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
-BACKEND_URL = os.environ.get("ULTRON_BACKEND_URL", "http://127.0.0.1:5000")
-API_TOKEN = os.environ.get("ULTRON_API_TOKEN")
+BACKEND_URL = os.environ.get("ODIN_BACKEND_URL", "http://127.0.0.1:5000")
+API_TOKEN = os.environ.get("ODIN_API_TOKEN")
 def _parse_allowed_users(raw):
     ids = set()
     for part in raw.split(","):
@@ -82,7 +82,7 @@ def _parse_allowed_users(raw):
             continue
         if not part.isdigit():
             sys.exit(
-                f"ULTRON_DISCORD_ALLOWED_USERS contains a non-numeric entry: '{part}'.\n"
+                f"ODIN_DISCORD_ALLOWED_USERS contains a non-numeric entry: '{part}'.\n"
                 "Discord user IDs are numeric (right-click a user with Developer Mode "
                 "on -> Copy User ID)."
             )
@@ -90,11 +90,11 @@ def _parse_allowed_users(raw):
     return ids
 
 
-ALLOWED_USER_IDS = _parse_allowed_users(os.environ.get("ULTRON_DISCORD_ALLOWED_USERS", ""))
+ALLOWED_USER_IDS = _parse_allowed_users(os.environ.get("ODIN_DISCORD_ALLOWED_USERS", ""))
 # Optional: sync slash commands to one guild only, for instant availability
 # while testing. Leave unset to sync globally (takes up to an hour to
 # propagate the first time, per Discord's own behavior).
-DEV_GUILD_ID = os.environ.get("ULTRON_DISCORD_DEV_GUILD_ID")
+DEV_GUILD_ID = os.environ.get("ODIN_DISCORD_DEV_GUILD_ID")
 
 if not DISCORD_BOT_TOKEN:
     sys.exit(
@@ -103,12 +103,12 @@ if not DISCORD_BOT_TOKEN:
     )
 if not API_TOKEN:
     sys.exit(
-        "ULTRON_API_TOKEN is not set. Refusing to start with no backend auth.\n"
+        "ODIN_API_TOKEN is not set. Refusing to start with no backend auth.\n"
         "Use the same token the backend (app.py) was started with."
     )
 if not ALLOWED_USER_IDS:
     sys.exit(
-        "ULTRON_DISCORD_ALLOWED_USERS is not set. Refusing to start with no\n"
+        "ODIN_DISCORD_ALLOWED_USERS is not set. Refusing to start with no\n"
         "allowlist — without it, anyone who can message this bot could query\n"
         "or control your home lab. Set it to a comma-separated list of\n"
         "Discord user IDs (right-click a user in Discord with Developer Mode\n"
@@ -149,7 +149,7 @@ def format_status_embed(data):
 
 def format_threats_embed(data):
     """Sentinel's live view (GET /api/security/threats) -- same numbers as
-    the dashboard's Security-tab card and Ultron's get_threat_summary tool."""
+    the dashboard's Security-tab card and Odin's get_threat_summary tool."""
     findings = data.get("active_findings") or []
     color = ERROR_COLOR if any(f.get("status") == "error" for f in findings) else BRAND_COLOR
     embed = discord.Embed(title="Sentinel — security watchdog", color=color)
@@ -157,7 +157,7 @@ def format_threats_embed(data):
         interval = int(data.get("interval_seconds") or 0)
         watching = f"every {interval // 60} min" if interval >= 60 else f"every {interval}s"
     else:
-        watching = "disabled (ULTRON_SENTINEL_INTERVAL_SECONDS=0)"
+        watching = "disabled (ODIN_SENTINEL_INTERVAL_SECONDS=0)"
     embed.add_field(name="Watching", value=watching, inline=True)
     embed.add_field(name="Last check", value=(data.get("last_run") or "not yet").replace("T", " "), inline=True)
     embed.add_field(name="Active findings", value=str(len(findings)) if findings else "none", inline=True)
@@ -319,7 +319,7 @@ def format_usage_embed(data):
 
     budget = data.get("daily_budget")
     if budget is None:
-        embed.set_footer(text="No daily budget configured (ULTRON_LLM_DAILY_TOKEN_BUDGET unset — no limit).")
+        embed.set_footer(text="No daily budget configured (ODIN_LLM_DAILY_TOKEN_BUDGET unset — no limit).")
     else:
         total = data.get("total_tokens", 0)
         pct = (total / budget * 100) if budget else 0
@@ -338,7 +338,7 @@ def format_mcp_servers_embed(data):
     servers = data.get("servers", [])
     embed = discord.Embed(title="External Tools (MCP)", color=BRAND_COLOR)
     if not servers:
-        embed.description = "No external tool servers configured (ULTRON_MCP_CONFIG unset)."
+        embed.description = "No external tool servers configured (ODIN_MCP_CONFIG unset)."
         return embed
     for s in servers:
         status = "🟢 reachable" if s.get("reachable") else "🔴 unreachable"
@@ -379,12 +379,12 @@ def format_connections_embed(data):
 
 
 def format_error_embed(message):
-    embed = discord.Embed(title="Ultron", description=message, color=ERROR_COLOR)
+    embed = discord.Embed(title="Odin", description=message, color=ERROR_COLOR)
     return embed
 
 
 def format_chat_embed(reply, tools_used):
-    embed = discord.Embed(title="Ultron", description=reply[:4000], color=BRAND_COLOR)
+    embed = discord.Embed(title="Odin", description=reply[:4000], color=BRAND_COLOR)
     if tools_used:
         embed.set_footer(text="checked: " + ", ".join(sorted(set(tools_used))))
     return embed
@@ -404,7 +404,7 @@ async def backend_get(session, path):
     try:
         async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=15)) as resp:
             if resp.status == 401:
-                raise BackendError("The backend rejected this token. Check ULTRON_API_TOKEN.")
+                raise BackendError("The backend rejected this token. Check ODIN_API_TOKEN.")
             if resp.status >= 400:
                 # the backend always returns a JSON {"error": "..."} body on
                 # failure — parse it out instead of showing the raw response
@@ -431,7 +431,7 @@ async def backend_chat(session, message, history, speaker=None):
         body["speaker"] = speaker
     try:
         # Chat can take a while (LLM + tool calls) — give it real room, matching
-        # the backend's own ULTRON_LLM_TIMEOUT_SECONDS default of 60s.
+        # the backend's own ODIN_LLM_TIMEOUT_SECONDS default of 60s.
         async with session.post(url, headers=headers, json=body, timeout=aiohttp.ClientTimeout(total=75)) as resp:
             data = await resp.json()
             if resp.status != 200:
@@ -457,7 +457,7 @@ async def backend_post(session, path, body):
         async with session.post(url, headers=headers, json=body, timeout=aiohttp.ClientTimeout(total=130)) as resp:
             data = await resp.json()
             if resp.status == 401:
-                raise BackendError("The backend rejected this token. Check ULTRON_API_TOKEN.")
+                raise BackendError("The backend rejected this token. Check ODIN_API_TOKEN.")
             if resp.status >= 400:
                 raise BackendError(data.get("error", f"backend returned {resp.status}"))
             return data
@@ -478,7 +478,7 @@ async def backend_get_csv(session, path):
     try:
         async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=30)) as resp:
             if resp.status == 401:
-                raise BackendError("The backend rejected this token. Check ULTRON_API_TOKEN.")
+                raise BackendError("The backend rejected this token. Check ODIN_API_TOKEN.")
             if resp.status >= 400:
                 # every error path on this endpoint returns JSON, same as the rest of the API
                 data = await resp.json()
@@ -537,7 +537,7 @@ def format_deploy_result_embed(result):
 # --------------------------------------------------------------------------
 # bot wiring
 # --------------------------------------------------------------------------
-class UltronBot(commands.Bot):
+class OdinBot(commands.Bot):
     def __init__(self):
         # Slash commands only (bot.tree.command) -- no @bot.command prefix
         # commands exist, so there's nothing to read message content for.
@@ -569,9 +569,9 @@ class UltronBot(commands.Bot):
         # This session is used exclusively for backend_*() calls to
         # BACKEND_URL (the internal Docker service, never an external
         # host) -- see every self.http_session use in this file. Once
-        # the backend serves TLS (ULTRON_TLS_CERT/KEY, owner-requested
+        # the backend serves TLS (ODIN_TLS_CERT/KEY, owner-requested
         # 2026-09-16), that cert is issued for this device's *.ts.net
-        # name, not the Docker-internal hostname "ultron-backend" this
+        # name, not the Docker-internal hostname "odin-backend" this
         # session actually connects to, so hostname verification would
         # always fail here even though the connection is genuinely to
         # the right, trusted service -- it's on a private bridge network
@@ -609,9 +609,9 @@ class UltronBot(commands.Bot):
         await super().close()
 
 
-HEARTBEAT_PATH = os.environ.get("ULTRON_BOT_HEARTBEAT", "/tmp/ultron-bot-heartbeat")
+HEARTBEAT_PATH = os.environ.get("ODIN_BOT_HEARTBEAT", "/tmp/odin-bot-heartbeat")
 
-bot = UltronBot()
+bot = OdinBot()
 
 # Slightly under the backend's own 300s (5 min) confirmation-token TTL, so
 # the Discord button disables itself right around when the token would
@@ -686,12 +686,12 @@ async def require_auth(interaction):
 
 @bot.event
 async def on_ready():
-    print(f"Ultron bot online as {bot.user} (id={bot.user.id})")
+    print(f"Odin bot online as {bot.user} (id={bot.user.id})")
     print(f"Backend: {BACKEND_URL}")
     print(f"Allowlisted users: {len(ALLOWED_USER_IDS)}")
 
 
-@bot.tree.command(name="status", description="Get Ultron's current system status")
+@bot.tree.command(name="status", description="Get Odin's current system status")
 async def status_command(interaction: discord.Interaction):
     if not await require_auth(interaction):
         return
@@ -814,7 +814,7 @@ async def usage_command(interaction: discord.Interaction):
         await interaction.followup.send(embed=format_error_embed(str(e)))
 
 
-@bot.tree.command(name="connections", description="Who's currently connected to Ultron (people and device count)")
+@bot.tree.command(name="connections", description="Who's currently connected to Odin (people and device count)")
 async def connections_command(interaction: discord.Interaction):
     if not await require_auth(interaction):
         return
@@ -924,8 +924,8 @@ async def deploy_command(interaction: discord.Interaction, image: str, name: str
     view.message = msg
 
 
-@app_commands.describe(message="What do you want to ask Ultron?")
-@bot.tree.command(name="ask", description="Ask Ultron a question (routes through the LLM, checks real data)")
+@app_commands.describe(message="What do you want to ask Odin?")
+@bot.tree.command(name="ask", description="Ask Odin a question (routes through the LLM, checks real data)")
 async def ask_command(interaction: discord.Interaction, message: str):
     if not await require_auth(interaction):
         return
@@ -947,7 +947,7 @@ async def ask_command(interaction: discord.Interaction, message: str):
             await interaction.followup.send(embed=format_error_embed(str(e)))
 
 
-@bot.tree.command(name="forget", description="Clear your conversation history with Ultron")
+@bot.tree.command(name="forget", description="Clear your conversation history with Odin")
 async def forget_command(interaction: discord.Interaction):
     if not await require_auth(interaction):
         return

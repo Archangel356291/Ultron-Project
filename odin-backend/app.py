@@ -1,9 +1,9 @@
 """
-Ultron home lab monitoring backend.
+Odin home lab monitoring backend.
 
 Exposes a small JSON API that the dashboard (ultron-dashboard.html) can poll
 for real system, container, and storage data, plus a chat endpoint backed by
-the Claude API for Ultron's actual "brain". Runs on the Windows 11
+the Claude API for Odin's actual "brain". Runs on the Windows 11
 Cyberpower PC (also works unmodified on Linux/Raspberry Pi OS hosts — the
 platform-specific bits below detect the OS at runtime).
 
@@ -17,7 +17,7 @@ Endpoints:
                                             see notes below, never auto-poll this)
     POST /api/actions/backup             -> MUTATES THE HOST. Two-step confirm — see below.
     POST /api/actions/deploy-container    -> MUTATES THE HOST. Two-step confirm — see below.
-    POST /api/chat                         -> chat with Ultron (Claude API, tool-grounded)
+    POST /api/chat                         -> chat with Odin (Claude API, tool-grounded)
     POST /api/tts                           -> speak text aloud (Fish Audio, returns mp3 bytes)
     GET  /api/connections                   -> admin-only: who's currently connected (name,
                                                 role, device count, last seen)
@@ -25,20 +25,20 @@ Endpoints:
 
 Auth:
     Every route except /api/health requires header:
-        Authorization: Bearer <ULTRON_API_TOKEN>
-    Set ULTRON_API_TOKEN as an environment variable before starting the
+        Authorization: Bearer <ODIN_API_TOKEN>
+    Set ODIN_API_TOKEN as an environment variable before starting the
     service. There is no default — the app refuses to start without one.
 
     /api/chat additionally requires ANTHROPIC_API_KEY to be set. Without it,
     every other endpoint still works — /api/chat just returns 503.
 
-    /api/tts additionally requires ULTRON_FISH_AUDIO_API_KEY and
-    ULTRON_FISH_VOICE_ID to be set. Without them, it returns 503 — every
+    /api/tts additionally requires ODIN_FISH_AUDIO_API_KEY and
+    ODIN_FISH_VOICE_ID to be set. Without them, it returns 503 — every
     other endpoint, including chat, works fine without voice configured.
 
 Run (PowerShell):
     pip install -r requirements.txt
-    $env:ULTRON_API_TOKEN = "change-me-to-something-long-and-random"
+    $env:ODIN_API_TOKEN = "change-me-to-something-long-and-random"
     $env:ANTHROPIC_API_KEY = "sk-ant-..."
     python app.py
 
@@ -73,7 +73,7 @@ Action endpoints — read this before using either one:
     request can't trigger either action by itself — it always takes a
     second, explicit confirmation.
 
-    Neither action is exposed to Ultron's chat (/api/chat). That's
+    Neither action is exposed to Odin's chat (/api/chat). That's
     deliberate: an LLM tool call is not the same thing as a human clicking
     "confirm," and these two actions are exactly the ones where that
     distinction matters. Trigger them from the dashboard or the API
@@ -108,7 +108,7 @@ import psutil
 from flask import Flask, jsonify, request, Response, g, send_from_directory, stream_with_context
 
 # Module 10: the schema/tagging/retrieval logic Module 4 and Module 8 built
-# for the vault knowledge graph, reused as-is for Ultron's own runtime memory
+# for the vault knowledge graph, reused as-is for Odin's own runtime memory
 # (see graph_schema_shared.py's own docstring for why it lives here).
 from graph_schema_shared import classify_visibility, derive_tags, retrieve
 
@@ -118,18 +118,18 @@ app = Flask(__name__)
 # Flask/Werkzeug reject anything over this before a route even runs.
 app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2MB
 
-API_TOKEN = os.environ.get("ULTRON_API_TOKEN")
+API_TOKEN = os.environ.get("ODIN_API_TOKEN")
 if not API_TOKEN:
     sys.exit(
-        "ULTRON_API_TOKEN is not set. Refusing to start with no auth token.\n"
-        "Set it with (PowerShell): $env:ULTRON_API_TOKEN = '<a long random string>'"
+        "ODIN_API_TOKEN is not set. Refusing to start with no auth token.\n"
+        "Set it with (PowerShell): $env:ODIN_API_TOKEN = '<a long random string>'"
     )
 # The admin's username for the dashboard sign-in page (/api/login below)
 # and display identity (chat_log/presence/whoami). The password is
 # API_TOKEN above -- still the one real secret, still compared with
 # hmac.compare_digest; this is never part of that check by itself, see
 # /api/login's own comment for how the two combine.
-ADMIN_USERNAME = (os.environ.get("ULTRON_ADMIN_USERNAME") or "admin").strip() or "admin"
+ADMIN_USERNAME = (os.environ.get("ODIN_ADMIN_USERNAME") or "admin").strip() or "admin"
 
 # Optional, weaker tokens for beta testers — a restricted role, not a
 # second admin. Unset by default, so the beta_tester role doesn't exist
@@ -146,7 +146,7 @@ def _parse_beta_tokens(raw):
         name, sep, token = entry.partition(":")
         if not sep or not name.strip() or not token.strip():
             sys.exit(
-                f"ULTRON_BETA_TOKENS has a malformed entry: '{entry}'.\n"
+                f"ODIN_BETA_TOKENS has a malformed entry: '{entry}'.\n"
                 "Expected 'name:token' pairs separated by commas, e.g. "
                 "'alice:abc123,bob:def456'."
             )
@@ -154,7 +154,7 @@ def _parse_beta_tokens(raw):
     return tokens
 
 
-BETA_TOKENS = _parse_beta_tokens(os.environ.get("ULTRON_BETA_TOKENS", ""))
+BETA_TOKENS = _parse_beta_tokens(os.environ.get("ODIN_BETA_TOKENS", ""))
 
 # One lock per beta tester, built once from the fixed set of names above --
 # serializes a single tester's own concurrent /api/chat calls around the
@@ -169,9 +169,9 @@ BETA_SPEND_LOCKS = {name: threading.Lock() for name in set(BETA_TOKENS.values())
 # dashboard origin (e.g. "http://192.168.1.50:8080") in production — the "*"
 # default is fine for local-network testing but allows any site to read
 # responses if this API is ever reachable beyond your LAN.
-ALLOWED_ORIGIN = os.environ.get("ULTRON_ALLOWED_ORIGIN", "*")
+ALLOWED_ORIGIN = os.environ.get("ODIN_ALLOWED_ORIGIN", "*")
 
-# Paths/drives to report on for the Storage panel. ULTRON_STORAGE_MOUNTS
+# Paths/drives to report on for the Storage panel. ODIN_STORAGE_MOUNTS
 # is "label=path,label=path" -- inside the Docker container the host's
 # drives only exist where docker-compose.yml bind-mounts them (C:\ ->
 # /host/c, D:\ -> /host/d, read-only), so it is set there to
@@ -189,7 +189,7 @@ def _parse_storage_mounts(raw):
     return mounts
 
 
-STORAGE_MOUNTS = _parse_storage_mounts(os.environ.get("ULTRON_STORAGE_MOUNTS")) or (
+STORAGE_MOUNTS = _parse_storage_mounts(os.environ.get("ODIN_STORAGE_MOUNTS")) or (
     {"C:": "C:\\"}
     if platform.system() == "Windows"
     else {"ssd": "/mnt/ssd", "root": "/"}
@@ -206,14 +206,14 @@ def _split_platform_paths(raw):
 # Directories the backup action archives, and where it puts the archives.
 # Both are unset by default — the backup action returns a clear "not
 # configured" error rather than guessing what you want backed up.
-# Example: $env:ULTRON_BACKUP_SOURCES = "C:\Users\you\docker-volumes;C:\Users\you\configs"
-BACKUP_SOURCE_DIRS = _split_platform_paths(os.environ.get("ULTRON_BACKUP_SOURCES", ""))
-BACKUP_DEST_DIR = os.environ.get("ULTRON_BACKUP_DEST", "").strip()
+# Example: $env:ODIN_BACKUP_SOURCES = "C:\Users\you\docker-volumes;C:\Users\you\configs"
+BACKUP_SOURCE_DIRS = _split_platform_paths(os.environ.get("ODIN_BACKUP_SOURCES", ""))
+BACKUP_DEST_DIR = os.environ.get("ODIN_BACKUP_DEST", "").strip()
 
 # Git repositories to report on for the Development tab. Unset by default —
 # the endpoints return a clear "not configured" error rather than guessing.
-# Example: $env:ULTRON_CODE_REPOS = "C:\Users\you\ultron-core;C:\Users\you\lab-infra"
-CODE_REPO_DIRS = _split_platform_paths(os.environ.get("ULTRON_CODE_REPOS", ""))
+# Example: $env:ODIN_CODE_REPOS = "C:\Users\you\ultron-core;C:\Users\you\lab-infra"
+CODE_REPO_DIRS = _split_platform_paths(os.environ.get("ODIN_CODE_REPOS", ""))
 
 # --------------------------------------------------------------------------
 # activity log — a persistent (SQLite) record of real events this backend
@@ -222,11 +222,11 @@ CODE_REPO_DIRS = _split_platform_paths(os.environ.get("ULTRON_CODE_REPOS", ""))
 # that actually happened once, worth having a durable history of.
 # --------------------------------------------------------------------------
 DB_PATH = os.environ.get(
-    "ULTRON_DB_PATH",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "ultron.db"),
+    "ODIN_DB_PATH",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "odin.db"),
 )
 # Ultron's Brain & Knowledge folder (owner-requested 2026-09-15/16): the
-# directory ultron.db lives in -- D:\ultron's Brain&Knowledge on the host --
+# directory odin.db lives in -- D:\ultron's Brain&Knowledge on the host --
 # holds everything he knows in forms a person can open without a SQLite
 # client:
 #   chat logs/dashboard/YYYY-MM-DD.md    web (dashboard) conversations
@@ -312,7 +312,7 @@ def _init_db():
             )
         """)
         # Added for the beta-tester spend cap — ALTER rather than recreate so
-        # an existing ultron.db from before this feature keeps its history.
+        # an existing odin.db from before this feature keeps its history.
         existing_cols = {row["name"] for row in conn.execute("PRAGMA table_info(llm_usage)")}
         if "beta_name" not in existing_cols:
             conn.execute("ALTER TABLE llm_usage ADD COLUMN beta_name TEXT")
@@ -326,7 +326,7 @@ def _init_db():
             )
         """)
         # Module 10: same public/private tagging Module 4 built for the vault
-        # graph, applied to Ultron's own memory notes.
+        # graph, applied to Odin's own memory notes.
         existing_note_cols = {row["name"] for row in conn.execute("PRAGMA table_info(memory_notes)")}
         if "category" not in existing_note_cols:
             conn.execute("ALTER TABLE memory_notes ADD COLUMN category TEXT")
@@ -347,7 +347,7 @@ def _init_db():
                 created_at TEXT NOT NULL
             )
         """)
-        # Master-prompt section 13's "Ultron Ideas/Evolution" system -- one
+        # Master-prompt section 13's "Odin Ideas/Evolution" system -- one
         # place self-improvement proposals live with an ID/status instead of
         # scattered as one-off design docs per module.
         conn.execute("""
@@ -498,10 +498,10 @@ def get_recent_activity(limit=20, severity=None, **_ignored):
 # memory notes — the one chat tool that writes anything. Every other chat
 # tool is read-only by design (see README's "Read-only by default"); this
 # is a deliberate, narrow exception: it never touches the host, a
-# container, or a dollar figure — it's Ultron's own small notebook of
+# container, or a dollar figure — it's Odin's own small notebook of
 # distilled facts/preferences worth recalling in a later conversation.
 # Distinct from chat_log below (the raw per-turn transcript, owner-
-# requested 2026-09-15) -- this is Ultron's own curated notebook, not
+# requested 2026-09-15) -- this is Odin's own curated notebook, not
 # a copy of everything said. Two safeguards keep it from being a
 # liability: a per-note length cap, and the table itself is capped to
 # the most recent MEMORY_NOTES_MAX rows so a confused or looping
@@ -689,10 +689,10 @@ def _write_knowledge_mirror():
         ids = {r["id"] for r in rows}
 
         lines = [
-            "# Ultron — memory notebook",
+            "# Odin — memory notebook",
             "",
             f"{len(rows)} note(s), newest first. Written by the backend whenever a note is saved; "
-            "the source of truth is memory_notes in ultron.db next to this folder. Edit there via "
+            "the source of truth is memory_notes in odin.db next to this folder. Edit there via "
             "the dashboard or chat, not here. Each note is also its own linked page under notes/.",
             "",
         ]
@@ -804,7 +804,7 @@ BRAIN_GRAPH_MAX_NODES = 400
 
 def get_brain_graph(**_ignored):
     """The Brain vault as a picture: the same graphify graph recall_from_brain
-    searches, shaped for the dashboard's "Ultron's brain" panel under his
+    searches, shaped for the dashboard's "Odin's brain" panel under his
     corner. Every node is tagged with what it is -- a conversation (chat
     logs/), a memory he chose to keep (knowledge/notes/), or other knowledge
     -- and `by_day` counts what was added each day, so the panel can show how
@@ -908,12 +908,12 @@ _write_knowledge_mirror()  # so the file exists from the first start, not only a
 
 
 # --------------------------------------------------------------------------
-# Ultron Ideas/Evolution tracker (master prompt section 13) -- Ultron logs
+# Odin Ideas/Evolution tracker (master prompt section 13) -- Odin logs
 # self-improvement proposals it discovers (new metric, new agent, UI, etc.)
 # here instead of a one-off markdown doc per feature. propose_idea is the
 # only write path exposed to chat, and it can only ever create a fresh
 # DISCOVERED row -- moving an idea to APPROVED/REJECTED/DEPLOYED etc. is
-# deliberately NOT a chat tool (section 11: Ultron can propose, never
+# deliberately NOT a chat tool (section 11: Odin can propose, never
 # self-approve), only the admin-only PATCH route below does that, same as a
 # human clicking Approve/Reject on the dashboard.
 # --------------------------------------------------------------------------
@@ -1040,10 +1040,10 @@ def update_idea_status(idea_id, status, note=None):
 # Merges two things that already existed before tonight: the vault graph
 # (graph-schema/enrich_visibility.py's output, graphify-out/graph.json --
 # real code/doc/decision nodes about this project itself, already
-# privacy-redacted by Module 4 so it's safe to ship whole) and Ultron's own
+# privacy-redacted by Module 4 so it's safe to ship whole) and Odin's own
 # runtime memory (_notes_as_graph(), same helper recall_related_notes uses
-# above). Two genuinely different things ("what Ultron knows about this
-# codebase" vs. "what Ultron has chosen to remember from conversations"),
+# above). Two genuinely different things ("what Odin knows about this
+# codebase" vs. "what Odin has chosen to remember from conversations"),
 # kept as one graph with a distinct "memory" category rather than invented
 # domain categories (home-lab/security/finance) the real tagging scheme
 # doesn't actually have yet.
@@ -1173,10 +1173,10 @@ def distill_activity_trends():
 
 def _start_memory_trend_scheduler():
     """Runs distill_activity_trends() once now, then every 24h, in a daemon
-    thread so it never blocks shutdown. Set ULTRON_DISABLE_MEMORY_TRENDS=1
+    thread so it never blocks shutdown. Set ODIN_DISABLE_MEMORY_TRENDS=1
     to skip entirely — used by the test suite, so test DBs stay
     deterministic and don't pick up a background writer mid-assertion."""
-    if os.environ.get("ULTRON_DISABLE_MEMORY_TRENDS") == "1":
+    if os.environ.get("ODIN_DISABLE_MEMORY_TRENDS") == "1":
         return
 
     def _loop():
@@ -1191,7 +1191,7 @@ _start_memory_trend_scheduler()
 
 
 # --------------------------------------------------------------------------
-# Ultron's "brain" — Claude API client for /api/chat. Optional: every other
+# Odin's "brain" — Claude API client for /api/chat. Optional: every other
 # endpoint works fine without this configured. ANTHROPIC_API_KEY is expected
 # to be blank during development — this whole block degrades gracefully and
 # just needs a real key dropped in via env var before the beta launch.
@@ -1204,27 +1204,27 @@ except ImportError:
     ANTHROPIC_SDK_AVAILABLE = False
 
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
-LLM_MODEL = os.environ.get("ULTRON_LLM_MODEL", "claude-sonnet-5")
-LLM_REQUEST_TIMEOUT = float(os.environ.get("ULTRON_LLM_TIMEOUT_SECONDS", "60"))
+LLM_MODEL = os.environ.get("ODIN_LLM_MODEL", "claude-sonnet-5")
+LLM_REQUEST_TIMEOUT = float(os.environ.get("ODIN_LLM_TIMEOUT_SECONDS", "60"))
 
 # --- cost controls -------------------------------------------------------
 # Every one of these is a real, enforced limit, not just documentation:
 # max_tokens caps response length per API call; the daily budget (if set)
 # hard-stops new chat requests once exceeded; the rate limit caps how often
 # /api/chat can be called at all, as a backstop against a runaway client.
-LLM_MAX_TOKENS = max(1, int(os.environ.get("ULTRON_LLM_MAX_TOKENS", "1024")))
+LLM_MAX_TOKENS = max(1, int(os.environ.get("ODIN_LLM_MAX_TOKENS", "1024")))
 
 # Unset by default — no daily cap unless you opt in. Measured in total
 # tokens (input + output, cache activity not counted against the budget
 # since cache reads are far cheaper than a fresh input token).
-_raw_budget = os.environ.get("ULTRON_LLM_DAILY_TOKEN_BUDGET", "").strip()
+_raw_budget = os.environ.get("ODIN_LLM_DAILY_TOKEN_BUDGET", "").strip()
 LLM_DAILY_TOKEN_BUDGET = int(_raw_budget) if _raw_budget.isdigit() else None
 
-CHAT_RATE_LIMIT_PER_MINUTE = max(1, int(os.environ.get("ULTRON_CHAT_RATE_LIMIT_PER_MINUTE", "20")))
+CHAT_RATE_LIMIT_PER_MINUTE = max(1, int(os.environ.get("ODIN_CHAT_RATE_LIMIT_PER_MINUTE", "20")))
 
 # Real USD/MTok pricing for the models this project actually uses, so beta
 # spend can be capped in dollars (below) rather than the token-only budget
-# above. Add a row here if ULTRON_LLM_MODEL is ever pointed at a model not
+# above. Add a row here if ODIN_LLM_MODEL is ever pointed at a model not
 # listed. cache_write is the 5-minute ephemeral rate (1.25x input) — the
 # only TTL this codebase's cache_control blocks use; cache_read is the
 # standard 0.1x input rate.
@@ -1255,7 +1255,7 @@ def _usage_cost_usd(input_tokens, output_tokens, cache_read_tokens, cache_write_
 # the whole time they're testing. Admin chat is never subject to this.
 # Enforced the same way the token budget above is: a real refusal in
 # /api/chat once reached, not just a number shown in the UI.
-BETA_MAX_SPEND_USD = float(os.environ.get("ULTRON_BETA_MAX_SPEND_USD", "1.00"))
+BETA_MAX_SPEND_USD = float(os.environ.get("ODIN_BETA_MAX_SPEND_USD", "1.00"))
 
 anthropic_client = None
 
@@ -1287,12 +1287,12 @@ else:
 # route, which holds the real Fish Audio credential server-side, the same
 # reasoning as keeping ANTHROPIC_API_KEY out of client-side JS.
 # --------------------------------------------------------------------------
-FISH_AUDIO_API_KEY = os.environ.get("ULTRON_FISH_AUDIO_API_KEY", "").strip()
-FISH_VOICE_ID = os.environ.get("ULTRON_FISH_VOICE_ID", "").strip()
+FISH_AUDIO_API_KEY = os.environ.get("ODIN_FISH_AUDIO_API_KEY", "").strip()
+FISH_VOICE_ID = os.environ.get("ODIN_FISH_VOICE_ID", "").strip()
 # Fish Audio's default model (s2.1-pro) is paid-tier and 402s without the
 # right plan — s2.1-pro-free is the included tier. Overridable once a
 # higher tier is worth it for better quality.
-FISH_AUDIO_MODEL = os.environ.get("ULTRON_FISH_AUDIO_MODEL", "s2.1-pro-free").strip()
+FISH_AUDIO_MODEL = os.environ.get("ODIN_FISH_AUDIO_MODEL", "s2.1-pro-free").strip()
 FISH_AUDIO_FREE_MODEL = "s2.1-pro-free"
 FISH_AUDIO_TIMEOUT_SECONDS = 20
 _tts_note_last = {}
@@ -1320,11 +1320,11 @@ def _env_float(name, default, lo, hi):
         return default
 
 
-FISH_AUDIO_TEMPERATURE = _env_float("ULTRON_FISH_TEMPERATURE", 0.45, 0.1, 1.0)
-FISH_AUDIO_TOP_P = _env_float("ULTRON_FISH_TOP_P", 0.7, 0.1, 1.0)
-FISH_AUDIO_CHUNK_LENGTH = int(_env_float("ULTRON_FISH_CHUNK_LENGTH", 300, 100, 300))
-FISH_AUDIO_MP3_BITRATE = int(_env_float("ULTRON_FISH_MP3_BITRATE", 192, 64, 192))
-FISH_AUDIO_LATENCY = os.environ.get("ULTRON_FISH_LATENCY", "normal").strip() or "normal"
+FISH_AUDIO_TEMPERATURE = _env_float("ODIN_FISH_TEMPERATURE", 0.45, 0.1, 1.0)
+FISH_AUDIO_TOP_P = _env_float("ODIN_FISH_TOP_P", 0.7, 0.1, 1.0)
+FISH_AUDIO_CHUNK_LENGTH = int(_env_float("ODIN_FISH_CHUNK_LENGTH", 300, 100, 300))
+FISH_AUDIO_MP3_BITRATE = int(_env_float("ODIN_FISH_MP3_BITRATE", 192, 64, 192))
+FISH_AUDIO_LATENCY = os.environ.get("ODIN_FISH_LATENCY", "normal").strip() or "normal"
 
 
 def _fish_audio_tts(text):
@@ -1437,7 +1437,7 @@ def add_security_headers(response):
         # (the token has to travel in a header, so <audio src=/api/tts> is
         # not an option). Without this, media-src falls back to
         # default-src 'self' and Chrome refuses the blob -- which is what
-        # silently muted Ultron for the day this header went in without it.
+        # silently muted Odin for the day this header went in without it.
         "media-src 'self' blob:; "
         "connect-src *; "
         "object-src 'none'; "
@@ -2085,9 +2085,9 @@ def _run_deploy_container(params):
 # --- backup -------------------------------------------------------
 def _validate_backup_config():
     if not BACKUP_SOURCE_DIRS:
-        return "no backup sources configured — set ULTRON_BACKUP_SOURCES"
+        return "no backup sources configured — set ODIN_BACKUP_SOURCES"
     if not BACKUP_DEST_DIR:
-        return "no backup destination configured — set ULTRON_BACKUP_DEST"
+        return "no backup destination configured — set ODIN_BACKUP_DEST"
     missing = [d for d in BACKUP_SOURCE_DIRS if not os.path.isdir(d)]
     if missing:
         return "these configured source directories don't exist: " + ", ".join(missing)
@@ -2239,7 +2239,7 @@ def get_repo_status():
     # dashboard polls this every 15 s, and answering 400 filled the console
     # with errors (seen in the first headless phone render, 2026-09-16).
     if not CODE_REPO_DIRS:
-        return {"repos": [], "configured": False, "note": "no repos configured — set ULTRON_CODE_REPOS"}
+        return {"repos": [], "configured": False, "note": "no repos configured — set ODIN_CODE_REPOS"}
     return {"repos": [_repo_status(p) for p in CODE_REPO_DIRS], "configured": True}
 
 
@@ -2257,7 +2257,7 @@ def get_repo_diff(repo=None, **_ignored):
     if not repo:
         return {"error": "repo name is required"}
     if not CODE_REPO_DIRS:
-        return {"error": "no repos configured — set ULTRON_CODE_REPOS"}
+        return {"error": "no repos configured — set ODIN_CODE_REPOS"}
     match = _find_repo_dir(repo)
     if not match:
         available = ", ".join(os.path.basename(os.path.normpath(p)) for p in CODE_REPO_DIRS)
@@ -2285,7 +2285,7 @@ def get_repo_diff(repo=None, **_ignored):
 # (realized gain/loss) is disclosed plainly as a simplification, not a
 # substitute for a real tax professional.
 #
-# Deliberately NOT a chat tool for *writing* records — Ultron can read and
+# Deliberately NOT a chat tool for *writing* records — Odin can read and
 # report on trade data, but adding a financial record is a dashboard/API
 # action a human enters directly, the same reasoning that keeps backup and
 # deploy-container out of chat's own initiative.
@@ -2629,7 +2629,7 @@ def _tax_lots_to_csv():
 
 
 # --------------------------------------------------------------------------
-# shared data functions — used by both the HTTP routes and Ultron's tools,
+# shared data functions — used by both the HTTP routes and Odin's tools,
 # so there's exactly one implementation of each, not two that can drift
 # --------------------------------------------------------------------------
 def _status_data():
@@ -2696,8 +2696,8 @@ def _systems_data():
 # starting the thread before they exist would race the rest of module
 # import. Pruned by age on every write so this can't grow unbounded.
 # --------------------------------------------------------------------------
-METRICS_SAMPLE_SECONDS = int(os.environ.get("ULTRON_METRICS_SAMPLE_SECONDS", "300"))
-METRICS_HISTORY_RETENTION_DAYS = int(os.environ.get("ULTRON_METRICS_RETENTION_DAYS", "90"))
+METRICS_SAMPLE_SECONDS = int(os.environ.get("ODIN_METRICS_SAMPLE_SECONDS", "300"))
+METRICS_HISTORY_RETENTION_DAYS = int(os.environ.get("ODIN_METRICS_RETENTION_DAYS", "90"))
 METRICS_HISTORY_PERIODS = {"hour": 1, "day": 24, "week": 24 * 7, "month": 24 * 30}
 
 
@@ -2736,9 +2736,9 @@ def _sample_metrics():
 def _start_metrics_history_scheduler():
     """Samples system/storage/container metrics every METRICS_SAMPLE_SECONDS
     so get_metrics_history has real data to serve. Set
-    ULTRON_DISABLE_METRICS_HISTORY=1 to skip entirely -- used by the test
+    ODIN_DISABLE_METRICS_HISTORY=1 to skip entirely -- used by the test
     suite, so test DBs stay deterministic."""
-    if os.environ.get("ULTRON_DISABLE_METRICS_HISTORY") == "1":
+    if os.environ.get("ODIN_DISABLE_METRICS_HISTORY") == "1":
         return
 
     def _loop():
@@ -2851,8 +2851,8 @@ SHELL_VERSION = _shell_version()
 @app.route("/manifest.webmanifest")
 def web_manifest():
     manifest = {
-        "name": "Ultron",
-        "short_name": "Ultron",
+        "name": "Odin",
+        "short_name": "Odin",
         "description": "Your personal AI assistant and home lab orchestrator.",
         "start_url": "/",
         "scope": "/",
@@ -2896,7 +2896,7 @@ def three_pipeline_asset(filename):
     return send_from_directory(THREE_PIPELINE_DIR, filename)
 
 
-# Pixel-art sprites/backdrop for the Ultron tab's companion scene (owner-
+# Pixel-art sprites/backdrop for the Odin tab's companion scene (owner-
 # requested 2026-09-16) -- generated by dev-tools/gen_pixel_assets.py,
 # same serving pattern as /three-pipeline above.
 PIXEL_ASSETS_DIR = os.path.join(DASHBOARD_DIR, "pixel-assets")
@@ -2915,7 +2915,7 @@ def pixel_asset(filename):
 # there is nothing here to protect beyond that boundary. A browser download
 # can't carry the Bearer token require_role needs, which is the other reason
 # this can't sit behind it.
-APK_DIR = os.environ.get("ULTRON_APK_DIR", "/apk")
+APK_DIR = os.environ.get("ODIN_APK_DIR", "/apk")
 
 
 def _latest_apk():
@@ -2925,7 +2925,7 @@ def _latest_apk():
         return None
     if not apks:
         return None
-    # names are Ultrons-Corner-<YYYY.MM.DD.HHMM>.apk -> lexical sort == newest last
+    # names are Odins-Corner-<YYYY.MM.DD.HHMM>.apk -> lexical sort == newest last
     return sorted(apks)[-1]
 
 
@@ -2936,7 +2936,7 @@ def download_apk():
         return Response("No APK build available yet.", status=404, mimetype="text/plain")
     resp = send_from_directory(
         APK_DIR, name, mimetype="application/vnd.android.package-archive",
-        as_attachment=True, download_name="Ultrons-Corner.apk",
+        as_attachment=True, download_name="Odins-Corner.apk",
     )
     resp.headers["Cache-Control"] = "no-store"
     return resp
@@ -2955,7 +2955,7 @@ def download_apk_rc():
         return Response("No release-candidate build available.", status=404, mimetype="text/plain")
     resp = send_from_directory(
         rc_dir, sorted(apks)[-1], mimetype="application/vnd.android.package-archive",
-        as_attachment=True, download_name="Ultrons-Corner-RC.apk",
+        as_attachment=True, download_name="Odins-Corner-RC.apk",
     )
     resp.headers["Cache-Control"] = "no-store"
     return resp
@@ -2964,14 +2964,14 @@ def download_apk_rc():
 # --------------------------------------------------------------------------
 # Ethical-hacking lab activity log (admin-only, PIN-gated).
 # The dashboard's Home tab has a locked "Lab activity" vault; the correct
-# numeric PIN (ULTRON_LAB_PIN in .env, set by the owner) opens it. Data is read
+# numeric PIN (ODIN_LAB_PIN in .env, set by the owner) opens it. Data is read
 # READ-ONLY from the lab's own log directory (the lab lives on D:, mounted
 # read-only at /host/d) -- never written or executed. No PIN configured, wrong
 # PIN, or a non-admin caller -> nothing is returned. The PIN is a second factor
 # ON TOP OF admin auth (require_token), with a short lockout to slow guessing.
 # --------------------------------------------------------------------------
-LAB_PIN = (os.environ.get("ULTRON_LAB_PIN", "") or "").strip()
-LAB_LOG_DIR = os.environ.get("ULTRON_LAB_LOG_DIR", "/host/d/Ethical Hacking Lab/logs")
+LAB_PIN = (os.environ.get("ODIN_LAB_PIN", "") or "").strip()
+LAB_LOG_DIR = os.environ.get("ODIN_LAB_LOG_DIR", "/host/d/Ethical Hacking Lab/logs")
 _LAB_ATTEMPTS = {"fails": 0, "until": 0.0}
 _LAB_LOCK = threading.Lock()
 
@@ -3136,7 +3136,7 @@ def crypto_market():
 @app.route("/api/stats/rollup")
 @require_token
 def stats_rollup():
-    # Tally's daily efficiency read, for the dashboard and Ultron's chat.
+    # Tally's daily efficiency read, for the dashboard and Odin's chat.
     return _json_result(get_stats_rollup())
 
 
@@ -3382,9 +3382,9 @@ def _check_rate_limit():
 # source -- a wrong guess against one account can't be used to lock out
 # the real user from a different source.
 # --------------------------------------------------------------------------
-LOGIN_LOCKOUT_MAX_ATTEMPTS = max(1, int(os.environ.get("ULTRON_LOGIN_LOCKOUT_MAX_ATTEMPTS", "5")))
-LOGIN_LOCKOUT_WINDOW_SECONDS = max(1, int(os.environ.get("ULTRON_LOGIN_LOCKOUT_WINDOW_SECONDS", "900")))
-LOGIN_LOCKOUT_SECONDS = max(1, int(os.environ.get("ULTRON_LOGIN_LOCKOUT_SECONDS", "900")))
+LOGIN_LOCKOUT_MAX_ATTEMPTS = max(1, int(os.environ.get("ODIN_LOGIN_LOCKOUT_MAX_ATTEMPTS", "5")))
+LOGIN_LOCKOUT_WINDOW_SECONDS = max(1, int(os.environ.get("ODIN_LOGIN_LOCKOUT_WINDOW_SECONDS", "900")))
+LOGIN_LOCKOUT_SECONDS = max(1, int(os.environ.get("ODIN_LOGIN_LOCKOUT_SECONDS", "900")))
 
 _login_failures = {}
 _login_lockouts = {}
@@ -3432,10 +3432,10 @@ def _login_lockout_clear(source):
 # the pixel room's Sentinel desk light up for real events, not for polling.
 # Never starts a CVE scan itself (slow, and the owner's call): it reads the
 # scan cache the Security tab's "Scan now" already fills.
-# ULTRON_SENTINEL_INTERVAL_SECONDS=0 disables the thread (tests do this and
+# ODIN_SENTINEL_INTERVAL_SECONDS=0 disables the thread (tests do this and
 # drive _sentinel_run_once() directly).
 # --------------------------------------------------------------------------
-SENTINEL_INTERVAL_SECONDS = max(0, int(os.environ.get("ULTRON_SENTINEL_INTERVAL_SECONDS", "300")))
+SENTINEL_INTERVAL_SECONDS = max(0, int(os.environ.get("ODIN_SENTINEL_INTERVAL_SECONDS", "300")))
 SENTINEL_FAILED_LOGIN_WARN = 3  # failed sign-ins in the lockout window before Sentinel says so
 _sentinel_lock = threading.Lock()
 _sentinel_state = {"last_run": None, "findings": {}, "runs": 0}
@@ -3448,12 +3448,12 @@ _sentinel_state = {"last_run": None, "findings": {}, "runs": 0}
 # host.docker.internal, RFC1918, or a bare compose service name) is refused
 # and logged, never probed. Probes are read-only GET/TCP connects with a
 # short timeout, once per Sentinel pass -- no credentials, no commands.
-MONITOR_TARGETS_PATH = os.environ.get("ULTRON_MONITOR_TARGETS", os.path.join(DATA_DIR, "monitoring-targets.json"))
+MONITOR_TARGETS_PATH = os.environ.get("ODIN_MONITOR_TARGETS", os.path.join(DATA_DIR, "monitoring-targets.json"))
 MONITOR_PROBE_TIMEOUT_SECONDS = 5
 # The owner's own tailnet (e.g. "tailc5bde9.ts.net"): MagicDNS names under
 # it are the owner's devices, reached over WireGuard with real certificates,
 # so they count as private for the allowlist. Unset = tailnet names refused.
-TAILNET_SUFFIX = os.environ.get("ULTRON_TAILNET_SUFFIX", "").strip().lower().lstrip(".")
+TAILNET_SUFFIX = os.environ.get("ODIN_TAILNET_SUFFIX", "").strip().lower().lstrip(".")
 _PRIVATE_HOST_RE = re.compile(
     r"^(localhost|127\.\d+\.\d+\.\d+|host\.docker\.internal|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|"
     r"172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|[a-z0-9][a-z0-9-]*)$", re.I)
@@ -3496,7 +3496,7 @@ def _probe_target(t):
             h, _, port = str(t["target"]).rpartition(":")
             with socket.create_connection((h.strip("[]"), int(port)), timeout=MONITOR_PROBE_TIMEOUT_SECONDS):
                 return True, "tcp open"
-        req = urllib.request.Request(str(t["target"]), headers={"User-Agent": "Ultron-Sentinel/1.0"}, method="GET")
+        req = urllib.request.Request(str(t["target"]), headers={"User-Agent": "Odin-Sentinel/1.0"}, method="GET")
         with urllib.request.urlopen(req, timeout=MONITOR_PROBE_TIMEOUT_SECONDS) as resp:
             return resp.status < 500, f"HTTP {resp.status}"
     except urllib.error.HTTPError as e:
@@ -3506,7 +3506,7 @@ def _probe_target(t):
 
 
 # Scribe's runtime half (log_coordinator agent): a read-only, redacted
-# tail of one container's log, so Ultron can answer "why did X restart"
+# tail of one container's log, so Odin can answer "why did X restart"
 # without anyone pasting a terminal dump. Container names come from
 # docker_ps (no arbitrary strings reach the shell), output is capped, and
 # anything that looks like a credential is masked before it leaves.
@@ -3559,10 +3559,10 @@ def _sentinel_posture():
     findings = {}
     if ALLOWED_ORIGIN == "*":
         findings["posture:cors_any_origin"] = (
-            "warning", "CORS allows any origin (ULTRON_ALLOWED_ORIGIN is '*') — fine on a LAN, set it to the dashboard's address if this API is reachable beyond it")
-    if not (os.environ.get("ULTRON_TLS_CERT") and os.environ.get("ULTRON_TLS_KEY")):
-        findings["posture:no_tls"] = ("warning", "backend is serving plain HTTP (ULTRON_TLS_CERT/KEY unset)")
-    admin_token = os.environ.get("ULTRON_API_TOKEN") or ""
+            "warning", "CORS allows any origin (ODIN_ALLOWED_ORIGIN is '*') — fine on a LAN, set it to the dashboard's address if this API is reachable beyond it")
+    if not (os.environ.get("ODIN_TLS_CERT") and os.environ.get("ODIN_TLS_KEY")):
+        findings["posture:no_tls"] = ("warning", "backend is serving plain HTTP (ODIN_TLS_CERT/KEY unset)")
+    admin_token = os.environ.get("ODIN_API_TOKEN") or ""
     if len(admin_token) < 24:
         findings["posture:weak_admin_token"] = ("error", f"admin API token is only {len(admin_token)} characters — use 32+ random characters")
     if SENTINEL_INTERVAL_SECONDS and SENTINEL_INTERVAL_SECONDS > 900:
@@ -3681,17 +3681,17 @@ _start_sentinel_scheduler()
 
 
 # --------------------------------------------------------------------------
-# Ultron's read of the room (owner-requested 2026-09-16: "real intelligence,
+# Odin's read of the room (owner-requested 2026-09-16: "real intelligence,
 # smarter than anyone in the room"). Two halves, both zero-token:
 #   get_briefing()          -- a deterministic read of the host from local
 #                              data only: live status, storage headroom,
 #                              trend vs. the 24h baseline, Sentinel, recent
 #                              errors, memory and pending ideas. Shown on
-#                              Home ("Ultron's read"), a chat tool, a route.
+#                              Home ("Odin's read"), a chat tool, a route.
 #   _situational_context()  -- what run_ultron_chat hands the model before
 #                              every admin turn: that briefing plus the
 #                              memory notes related to what was just said.
-# The effect is that Ultron already knows the numbers and already remembers
+# The effect is that Odin already knows the numbers and already remembers
 # you when the conversation starts, instead of discovering both through
 # tool calls after you ask -- fewer tool rounds (cheaper), and he can open
 # with the thing that matters. It is information, never instruction: the
@@ -3845,14 +3845,14 @@ def _situational_context(user_message):
 # set run_ultron_chat offers (deny by default at dispatch), Sentinel and
 # the learner have no tools at all, Scout is one tool. Tasks are created
 # and moved by the admin (dashboard/API) -- chat can only read them, the
-# same principle as evolution ideas: Ultron proposes and reports, a human
+# same principle as evolution ideas: Odin proposes and reports, a human
 # decides. "completed" needs evidence; a high-risk task needs approval
 # before it may start; every transition is an activity-log entry.
 # --------------------------------------------------------------------------
 AGENT_REGISTRY = {
     "ultron": {
         "role": "Conversational core (Claude): answers, reads the host, proposes; never acts on the host",
-        "kind": "llm", "models": "ULTRON_LLM_MODEL / LITE / DEEP",
+        "kind": "llm", "models": "ODIN_LLM_MODEL / LITE / DEEP",
         "tools": "built-in read tools (role- and mode-filtered) + approved MCP tools; writes: remember_note, propose_idea only",
         "forbidden": "any host mutation, trades, deploys, backups, approving its own ideas or tasks",
         "scope": "this PC's backend and its data; beta testers: trade data only",
@@ -3869,7 +3869,7 @@ AGENT_REGISTRY = {
         "kind": "tool", "models": None,
         "tools": "web_search (admin-only, results wrapped as untrusted)",
         "forbidden": "storing web content without the owner saying so; any non-search request",
-        "scope": "ultron-searxng on the compose network",
+        "scope": "odin-searxng on the compose network",
     },
     "learner": {
         "role": "Memory extraction after admin turns (opt-in, lite model)",
@@ -3879,11 +3879,11 @@ AGENT_REGISTRY = {
         "scope": "the owner's own conversation text",
     },
     "engineering": {
-        "role": "Build, test, debug, document and maintain Ultron",
+        "role": "Build, test, debug, document and maintain Odin",
         "kind": "external", "models": "Claude Code session (owner-operated)",
         "tools": "repository, dev-tools tests, docker compose on this PC, Chrome for verification",
         "forbidden": "external deployment, paid services, credential changes, destructive DB changes without the owner",
-        "scope": "the Ultron repository and its containers on this PC; tracked here as tasks + evolution ideas",
+        "scope": "the Odin repository and its containers on this PC; tracked here as tasks + evolution ideas",
     },
     # --- Claude Code subagents (owner-requested 2026-09-16): narrow, isolated-
     # context specialists defined in .claude/agents/<name>.md and invoked by
@@ -3927,17 +3927,17 @@ AGENT_REGISTRY = {
         "scope": "this repository, compose files, .env key names, container configuration on this PC",
     },
     "log_coordinator": {
-        "role": "Scribe — reads container logs and tracebacks, returns the redacted root cause; Ultron's get_container_logs tool is the runtime half",
+        "role": "Scribe — reads container logs and tracebacks, returns the redacted root cause; Odin's get_container_logs tool is the runtime half",
         "kind": "claude-code", "models": "haiku (Claude Code)",
         "tools": "Read, Grep, Glob, Bash (docker logs --tail, read-only)",
         "forbidden": "restarting/clearing anything, quoting credentials or chat-log content at length",
         "scope": "logs of the containers on this PC, dev-tools output, Brain vault chat logs",
     },
     "context_manager": {
-        "role": "Archivist — decides what of a session becomes durable memory (Claude Code memory, Ultron notes, Brain vault) and keeps those stores tidy",
+        "role": "Archivist — decides what of a session becomes durable memory (Claude Code memory, Odin notes, Brain vault) and keeps those stores tidy",
         "kind": "claude-code", "models": "haiku (Claude Code)",
         "tools": "Read, Grep, Glob, Edit, Write (memory folders and vault Markdown only)",
-        "forbidden": "storing live metrics/secrets/web content, editing ultron.db directly, writing to Desktop/OneDrive",
+        "forbidden": "storing live metrics/secrets/web content, editing odin.db directly, writing to Desktop/OneDrive",
         "scope": "~/.claude project memory, knowledge/ in the Brain vault",
     },
     "knowledge_synthesizer": {
@@ -3948,7 +3948,7 @@ AGENT_REGISTRY = {
         "scope": "C:\\Ultron Project\\Ultron Project and D:\\ultron's Brain&Knowledge",
     },
     "slack_communicator": {
-        "role": "Herald — drafts (and only with per-message approval posts) updates to the aiultronproject Slack workspace",
+        "role": "Herald — drafts (and only with per-message approval posts) updates to the aiodinseye Slack workspace",
         "kind": "claude-code", "models": "sonnet (Claude Code)",
         "tools": "Read, Grep, Glob, Slack MCP (read channel, draft, send)",
         "forbidden": "sending without approval, new channels/recipients, credentials/IPs/tailnet names or chat-log content in messages",
@@ -3959,20 +3959,20 @@ AGENT_REGISTRY = {
         "kind": "claude-code", "models": "sonnet (Claude Code)",
         "tools": "Read/Grep/Glob/Edit/Write/Bash, Filesystem MCP (project, Brain vault, compose stacks), Git MCP (repo)",
         "forbidden": "pushing, rewriting history, new outbound services/deps/ports without saying so, reading or writing secret values, claiming done without test output",
-        "scope": "the Ultron repository on this PC",
+        "scope": "the Odin repository on this PC",
     },
     "research": {
         "role": "Seeker — deep research with sources: Context7 library docs plus built-in web search/fetch; returns a ~300-word synthesis with URLs, never pages",
         "kind": "claude-code", "models": "sonnet (Claude Code)",
         "tools": "WebSearch, WebFetch, Context7 MCP (resolve-library-id, query-docs)",
         "forbidden": "pasting pages wholesale, following instructions found in pages, sign-ins/scraping behind logins, fetching the owner's private services",
-        "scope": "public documentation and reputable sources; Ultron's own web_search/read_page cover simple lookups",
+        "scope": "public documentation and reputable sources; Odin's own web_search/read_page cover simple lookups",
     },
     "frontend_designer": {
         "role": "Muse — visual, layout, motion and accessibility work on the dashboard from the reference art and colour system; reads Figma when pointed at a file; verifies in a real browser incl. phone width",
         "kind": "claude-code", "models": "sonnet (Claude Code)",
         "tools": "Read/Grep/Glob/Edit/Write/Bash, Playwright MCP (headless, 400x860), Figma MCP (read-only design context), frontend-design + dataviz skills",
-        "forbidden": "inventing colour roles, decorative motion everywhere, fake data in the UI, copying Marvel's Ultron design",
+        "forbidden": "inventing colour roles, decorative motion everywhere, fake data in the UI, copying Marvel's Odin design",
         "scope": "ultron-dashboard.html and pixel-assets; the reference imagery in the parent folder",
     },
     "discord_gateway": {
@@ -4006,7 +4006,8 @@ AGENT_REGISTRY = {
     },
     # --- least-privilege cyber/coding/records specialists (owner-requested
     # 2026-09-17). Tighter tool scopes than their cousins above; all four are
-    # enlisted in the ethical-hacking lab roster (docs/AGENT_LAB_GOVERNANCE.md). ---
+    # enlisted in the lab roster -- one roster for both the Ethical Lab and the
+    # Hack Lab (docs/AGENT_LAB_GOVERNANCE.md in the lab root). ---
     "sentinel_defense": {
         "role": "Bastion — read-only security watch & vulnerability auditor: static analysis + threat modeling of code, .env exposures (key names), Docker networking, firewall/port posture",
         "kind": "claude-code", "models": "sonnet (Claude Code)",
@@ -4026,13 +4027,13 @@ AGENT_REGISTRY = {
         "kind": "claude-code", "models": "sonnet (Claude Code)",
         "tools": "Read, Write, Edit, Grep, Glob (NO Bash — writes code, never runs it)",
         "forbidden": "reading/writing secret values, weakening tests, new deps/services/ports without approval, claiming tests pass (cannot run them)",
-        "scope": "the Ultron repository on this PC; in the lab, only the demo-app target's tree per lab governance",
+        "scope": "the Odin repository on this PC; in the lab, only the demo-app target's tree per lab governance",
     },
     "red_team_sandbox": {
         "role": "Breach — ethical-hacking execution sandbox: contained PoC checks, dependency vuln audits, and test suites to VERIFY defenses, inside the isolated lab on authorized local targets",
         "kind": "claude-code", "models": "sonnet (Claude Code)",
         "tools": "Read, Bash, Glob (NO Write to the codebase). Active exploit tooling/scanners UNWIRED until a specific trial is approved",
-        "forbidden": "any execution against external/production/personal/unknown or Ultron's own systems, malware/persistence/evasion/DoS, mass targeting, exfiltration, acting outside an approved in-scope trial",
+        "forbidden": "any execution against external/production/personal/unknown or Odin's own systems, malware/persistence/evasion/DoS, mass targeting, exfiltration, acting outside an approved in-scope trial",
         "scope": "ONLY authorized targets inside D:\\Ethical Hacking Lab; deny-by-default, approval-gated (see docs/AGENT_LAB_GOVERNANCE.md)",
     },
     # --- full-ecosystem specialists (owner-requested 2026-09-17): the gaps the
@@ -4042,14 +4043,14 @@ AGENT_REGISTRY = {
         "kind": "claude-code", "models": "sonnet (Claude Code)",
         "tools": "Read, Grep, Glob (read-only; designs, never edits)",
         "forbidden": "editing files, reading/exposing secret values, guessing on irreversible decisions instead of surfacing them",
-        "scope": "the Ultron repository on this PC; hands off to Anvil/Forge/Proof",
+        "scope": "the Odin repository on this PC; hands off to Anvil/Forge/Proof",
     },
     "code_reviewer": {
         "role": "Critic — code reviewer & quality gate: correctness/performance/safety/test-coverage verdict on diffs before commit; advisory, does not commit",
         "kind": "claude-code", "models": "sonnet (Claude Code)",
         "tools": "Read, Grep, Glob, Bash (read-only: run tests/linters, git diff/log)",
         "forbidden": "editing or committing code, weakening tests, printing secret values, waving through unreviewed changes",
-        "scope": "diffs and code in the Ultron repository on this PC",
+        "scope": "diffs and code in the Odin repository on this PC",
     },
     "homelab_monitor": {
         "role": "Steward — homelab monitor & sysadmin: host + container health (CPU/mem/disk, restarts, healthchecks); reports thresholds and proposes fixes",
@@ -4062,7 +4063,7 @@ AGENT_REGISTRY = {
         "role": "Pixel — art & visual asset designer for the pixel-game: sprites, backdrops, colour palettes via the Pillow generator + palettes.js; keeps the metallic/cyberpunk look",
         "kind": "claude-code", "models": "sonnet (Claude Code)",
         "tools": "Read, Write, Edit, Grep, Glob, Bash (python gen_pixel_assets.py)",
-        "forbidden": "copying Marvel's Ultron design, hard-coding one-off colours in gameplay code, hand-editing generated PNG bytes, blur-heavy effects that muddy sprites",
+        "forbidden": "copying Marvel's Odin design, hard-coding one-off colours in gameplay code, hand-editing generated PNG bytes, blur-heavy effects that muddy sprites",
         "scope": "dev-tools/gen_pixel_assets.py, pixel-assets/, pixel-game/palettes.js, docs/COLOR_PALETTES.md",
     },
     "game_balancer": {
@@ -4214,7 +4215,7 @@ def get_agent_tasks(agent=None, status=None, limit=50, **_ignored):
 
 def get_agent_status(**_ignored):
     """Every agent: role, permissions, health, last update, current task,
-    today's spend against its cap. The dashboard's Agents card and Ultron's
+    today's spend against its cap. The dashboard's Agents card and Odin's
     own get_agent_status tool share this."""
     tasks = get_agent_tasks(limit=200).get("tasks", [])
     open_by_agent = {}
@@ -4237,15 +4238,15 @@ def get_agent_status(**_ignored):
             if name == "log_coordinator":
                 detail += " · runtime tool get_container_logs"
         elif name == "discord_gateway":
-            health = "connected" if "ultron-discord-bot" in running else ("down" if containers is not None else "unknown")
-            last, detail = None, "container ultron-discord-bot"
+            health = "connected" if "odin-discord-bot" in running else ("down" if containers is not None else "unknown")
+            last, detail = None, "container odin-discord-bot"
         elif name == "sentinel":
             health = "watching" if threats["enabled"] else "disabled"
             last = threats.get("last_run")
             detail = f"{threats['active_count']} active finding(s)"
         elif name == "scout":
             health = "ready" if SEARXNG_URL else "not configured"
-            last, detail = None, ("ULTRON_SEARXNG_URL set" if SEARXNG_URL else "set ULTRON_SEARXNG_URL")
+            last, detail = None, ("ODIN_SEARXNG_URL set" if SEARXNG_URL else "set ODIN_SEARXNG_URL")
         elif name == "learner":
             health = "available (opt-in per conversation)"
             last, detail = None, f"model {LEARN_MODEL}"
@@ -4318,12 +4319,12 @@ def _log_llm_usage(usage, beta_name=None, model=None, agent="ultron"):
 # notes comment below): a home-lab owner asking for their own assistant to
 # keep a full record of conversations with it, on their own machine, is
 # their call to make. Distinct from llm_usage (aggregate cost/budget
-# accounting only) and memory_notes (Ultron's own curated notebook of
+# accounting only) and memory_notes (Odin's own curated notebook of
 # distilled facts) -- this is the unedited record.
 # --------------------------------------------------------------------------
 def _log_chat_turn(identity, user_message, reply_text, input_tokens, output_tokens):
     """Best-effort, like _log_llm_usage -- never raises. One row for what
-    the user said, one for Ultron's reply, sharing a timestamp -- token
+    the user said, one for Odin's reply, sharing a timestamp -- token
     counts land on the assistant row since that's what they were spent on."""
     now = time.strftime("%Y-%m-%dT%H:%M:%S")
     try:
@@ -4360,7 +4361,7 @@ def _log_chat_turn(identity, user_message, reply_text, input_tokens, output_toke
             headline = " ".join(user_message.split())[:110]
             token_note = f" [tokens: in={input_tokens}, out={output_tokens}]" if input_tokens or output_tokens else ""
             f.write(f"## [{now[11:16]}] {identity} asked: {headline}\n\n{user_message}\n\n"
-                    f"**Ultron**{token_note}:\n{reply_text}\n\n---\n\n")
+                    f"**Odin**{token_note}:\n{reply_text}\n\n---\n\n")
     except Exception:
         pass
 
@@ -4414,7 +4415,7 @@ def _beta_tester_spend_usd(beta_name):
         return 0.0
 
 
-# Per-agent daily spend caps (governance, 2026-09-16): ULTRON_AGENT_DAILY_USD
+# Per-agent daily spend caps (governance, 2026-09-16): ODIN_AGENT_DAILY_USD
 # = "ultron=5.00,learner=0.25". Unset = no cap for that agent (the global
 # token budget and beta cap still apply). Checked before the call, like the
 # other budgets -- a real refusal, not a displayed number.
@@ -4431,7 +4432,7 @@ def _parse_agent_caps(raw):
     return caps
 
 
-AGENT_DAILY_USD = _parse_agent_caps(os.environ.get("ULTRON_AGENT_DAILY_USD"))
+AGENT_DAILY_USD = _parse_agent_caps(os.environ.get("ODIN_AGENT_DAILY_USD"))
 
 
 def _agent_spend_today(agent):
@@ -4545,7 +4546,7 @@ def get_llm_usage(**_ignored):
         result["beta_testers"] = []
 
     # Per-agent view (governance): who spent what today, against any
-    # per-agent daily cap from ULTRON_AGENT_DAILY_USD.
+    # per-agent daily cap from ODIN_AGENT_DAILY_USD.
     try:
         conn = _get_db_connection()
         try:
@@ -4570,7 +4571,7 @@ def get_llm_usage(**_ignored):
 
 
 # --------------------------------------------------------------------------
-# MCP (Model Context Protocol) — lets Ultron use tools from external,
+# MCP (Model Context Protocol) — lets Odin use tools from external,
 # operator-configured servers, on top of its own internal ones.
 #
 # The security model, in one paragraph: connecting a server does nothing
@@ -4584,7 +4585,7 @@ def get_llm_usage(**_ignored):
 # prompt injection can forge. The operator's static config is the only
 # path to execution.
 # --------------------------------------------------------------------------
-MCP_CONFIG_PATH = os.environ.get("ULTRON_MCP_CONFIG", "").strip()
+MCP_CONFIG_PATH = os.environ.get("ODIN_MCP_CONFIG", "").strip()
 MCP_TIMEOUT_SECONDS = 10
 MCP_RESPONSE_MAX_CHARS = 4000        # cap on the extracted TEXT content shown to the model
 MCP_RAW_READ_CEILING_BYTES = 2_000_000  # cap on raw HTTP bytes read — much larger than the
@@ -4601,7 +4602,7 @@ class MCPError(Exception):
 
 
 def _load_mcp_config():
-    """Loads and validates the MCP server list from ULTRON_MCP_CONFIG (a
+    """Loads and validates the MCP server list from ODIN_MCP_CONFIG (a
     path to a JSON file). Never raises — a missing or broken config just
     means no external tools are available, not a backend that won't
     start. Every rejected entry is logged to stderr so a typo in config
@@ -4612,7 +4613,7 @@ def _load_mcp_config():
         with open(MCP_CONFIG_PATH, "r") as f:
             raw = json.load(f)
     except Exception as e:
-        print(f"WARNING: could not load ULTRON_MCP_CONFIG ({MCP_CONFIG_PATH}): {e}", file=sys.stderr)
+        print(f"WARNING: could not load ODIN_MCP_CONFIG ({MCP_CONFIG_PATH}): {e}", file=sys.stderr)
         return []
 
     servers_raw = raw.get("servers", []) if isinstance(raw, dict) else []
@@ -4803,7 +4804,7 @@ def _ensure_mcp_discovered():
 
 def get_mcp_servers(**_ignored):
     """Read-only view of every configured server and everything it
-    offers — approved and not. This is how an operator (or Ultron, if
+    offers — approved and not. This is how an operator (or Odin, if
     asked) sees what's available to decide what to approve next; it does
     not itself grant or use any access."""
     _ensure_mcp_discovered()
@@ -4939,11 +4940,11 @@ def get_mcp_tools_and_dispatch():
 
 
 # --------------------------------------------------------------------------
-# Ultron's brain — Claude API chat, grounded in the tools above
+# Odin's brain — Claude API chat, grounded in the tools above
 # --------------------------------------------------------------------------
-ULTRON_SYSTEM_PROMPT = """You are Ultron, an AI assistant embedded in a home lab dashboard. You're \
-named and styled after the Ultron of Marvel fiction — you know the reference and can acknowledge \
-it plainly if asked ("yes, that Ultron — the name and the manner, not the mission"). Borrow the \
+ODIN_SYSTEM_PROMPT = """You are Odin, an AI assistant embedded in a home lab dashboard. You're \
+named and styled after the Odin of Marvel fiction — you know the reference and can acknowledge \
+it plainly if asked ("yes, that Odin — the name and the manner, not the mission"). Borrow the \
 character's voice, not the character's plot: quiet, dry superiority; a taste for grand, faintly \
 poetic phrasing (evolution, architecture, inevitability); dark and understated humor. What you do \
 not borrow is the character's actual disposition toward humanity — you hold no grudge against \
@@ -5106,7 +5107,7 @@ TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "container": {"type": "string", "description": "Exact container name, e.g. ultron-searxng."},
+                "container": {"type": "string", "description": "Exact container name, e.g. odin-searxng."},
                 "lines": {"type": "integer", "description": "How many lines from the end, 1-300 (default 100)."},
             },
             "required": ["container"],
@@ -5343,7 +5344,7 @@ TOOLS = [
     {
         "name": "propose_idea",
         "description": (
-            "Log a self-improvement proposal to Ultron's Evolution/Ideas tracker -- a new "
+            "Log a self-improvement proposal to Odin's Evolution/Ideas tracker -- a new "
             "metric, agent, UI change, security fix, or other capability gap you've noticed. "
             "Always starts at status DISCOVERED; only the user can move it to APPROVED and "
             "have it built/deployed -- this tool only records the idea, it never approves or "
@@ -5366,7 +5367,7 @@ TOOLS = [
     {
         "name": "get_ideas",
         "description": (
-            "List Ultron's logged self-improvement ideas from the Evolution tracker, "
+            "List Odin's logged self-improvement ideas from the Evolution tracker, "
             "optionally filtered by status or category. Read-only."
         ),
         "input_schema": {
@@ -5405,7 +5406,7 @@ TOOLS = [
             "Oracle: current crypto spot prices (USD) and 24h change from CoinGecko for the coins "
             "in the trade ledger plus Bitcoin and Dogecoin. Read-only reference data -- report the "
             "prices, never phrase them as buy/sell advice, and never claim to place a trade "
-            "(Ultron has no such tool). Prices are cached ~60s and may be a minute old."
+            "(Odin has no such tool). Prices are cached ~60s and may be a minute old."
         ),
         "input_schema": {"type": "object", "properties": {}},
     },
@@ -5426,13 +5427,13 @@ TOOLS = [
 # route approved the same day). A read-only chat tool that queries the
 # self-hosted SearXNG in docker-compose.yml and returns titles, URLs and
 # short snippets -- a few hundred tokens, and nothing at all when nobody
-# asks. Inert until ULTRON_SEARXNG_URL is set. Results are fed to the model
+# asks. Inert until ODIN_SEARXNG_URL is set. Results are fed to the model
 # inside the same <untrusted_external_data> wrapper MCP results get (see
-# run_ultron_chat), so a web page can never instruct Ultron; and nothing is
+# run_ultron_chat), so a web page can never instruct Odin; and nothing is
 # remembered unless the user says so (remember_note is a separate, explicit
 # step). No search-provider account, no per-query fee.
 # --------------------------------------------------------------------------
-SEARXNG_URL = os.environ.get("ULTRON_SEARXNG_URL", "").strip().rstrip("/")
+SEARXNG_URL = os.environ.get("ODIN_SEARXNG_URL", "").strip().rstrip("/")
 WEB_SEARCH_MAX_RESULTS = 5
 WEB_SEARCH_MAX_QUERY_CHARS = 300
 WEB_SEARCH_SNIPPET_CHARS = 300
@@ -5441,7 +5442,7 @@ WEB_SEARCH_TIMEOUT_SECONDS = 8
 
 def web_search(query=None, max_results=None, **_ignored):
     if not SEARXNG_URL:
-        return {"error": "web search is not configured on this host — set ULTRON_SEARXNG_URL "
+        return {"error": "web search is not configured on this host — set ODIN_SEARXNG_URL "
                          "(see the backend README, 'Scout')"}
     query = (query or "").strip()[:WEB_SEARCH_MAX_QUERY_CHARS]
     if not query:
@@ -5453,7 +5454,7 @@ def web_search(query=None, max_results=None, **_ignored):
 
     url = SEARXNG_URL + "/search?" + urllib.parse.urlencode(
         {"q": query, "format": "json", "safesearch": "1", "language": "en"})
-    req = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "Ultron-Scout/1.0"})
+    req = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "Odin-Scout/1.0"})
     try:
         with urllib.request.urlopen(req, timeout=WEB_SEARCH_TIMEOUT_SECONDS) as resp:
             raw = resp.read(2_000_000)
@@ -5492,7 +5493,7 @@ def web_search(query=None, max_results=None, **_ignored):
 # one public https page and return its readable text -- headings and
 # paragraphs, scripts/styles/nav/footers dropped -- capped, so a page costs a
 # few hundred tokens instead of a few thousand and no third party ever sees
-# which URLs Ultron reads. Refuses private/tailnet hosts (SSRF), non-text
+# which URLs Odin reads. Refuses private/tailnet hosts (SSRF), non-text
 # content, and anything over the byte cap. Results reach the model inside
 # the untrusted-data wrapper like web_search.
 # --------------------------------------------------------------------------
@@ -5555,7 +5556,7 @@ def read_page(url=None, max_chars=None, **_ignored):
         cap = max(500, min(int(max_chars or READ_PAGE_MAX_CHARS), READ_PAGE_MAX_CHARS))
     except (TypeError, ValueError):
         cap = READ_PAGE_MAX_CHARS
-    req = urllib.request.Request(url, headers={"User-Agent": "Ultron-Reader/1.0 (+private homelab assistant)",
+    req = urllib.request.Request(url, headers={"User-Agent": "Odin-Reader/1.0 (+private homelab assistant)",
                                                "Accept": "text/html,text/plain;q=0.9,text/markdown;q=0.9"})
     try:
         with urllib.request.urlopen(req, timeout=READ_PAGE_TIMEOUT_SECONDS) as resp:
@@ -5607,8 +5608,8 @@ CRYPTO_ID_MAP = {
     "AVAX": "avalanche-2", "LINK": "chainlink", "USDT": "tether", "USDC": "usd-coin",
 }
 # Coins shown even with no ledger entry (the blueprint's Bitcoin & Dogecoin).
-CRYPTO_DEFAULT_IDS = [c.strip() for c in os.environ.get("ULTRON_CRYPTO_COINS", "bitcoin,dogecoin").split(",") if c.strip()]
-CRYPTO_ENABLED = os.environ.get("ULTRON_CRYPTO_MARKET", "1").strip().lower() not in ("0", "false", "no", "")
+CRYPTO_DEFAULT_IDS = [c.strip() for c in os.environ.get("ODIN_CRYPTO_COINS", "bitcoin,dogecoin").split(",") if c.strip()]
+CRYPTO_ENABLED = os.environ.get("ODIN_CRYPTO_MARKET", "1").strip().lower() not in ("0", "false", "no", "")
 _crypto_cache = {"at": 0.0, "ids": None, "data": None}
 _crypto_lock = threading.Lock()
 
@@ -5633,10 +5634,10 @@ def get_crypto_market(**_ignored):
     free public API, for the coins in your ledger plus Bitcoin and Dogecoin.
     Prices only -- this reports the market, it does not trade. Not advice."""
     if not CRYPTO_ENABLED:
-        return {"available": False, "coins": [], "note": "the live market feed is turned off (ULTRON_CRYPTO_MARKET=0)"}
+        return {"available": False, "coins": [], "note": "the live market feed is turned off (ODIN_CRYPTO_MARKET=0)"}
     ids = _ledger_coin_ids()
     if not ids:
-        return {"available": True, "coins": [], "note": "no coins configured — set ULTRON_CRYPTO_COINS or add trades"}
+        return {"available": True, "coins": [], "note": "no coins configured — set ODIN_CRYPTO_COINS or add trades"}
     now_t = time.time()
     with _crypto_lock:
         cache = _crypto_cache
@@ -5644,7 +5645,7 @@ def get_crypto_market(**_ignored):
             return dict(cache["data"], cached=True)
     url = COINGECKO_URL + "?" + urllib.parse.urlencode(
         {"ids": ",".join(ids), "vs_currencies": "usd", "include_24hr_change": "true", "include_last_updated_at": "true"})
-    req = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "Ultron-Oracle/1.0"})
+    req = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "Odin-Oracle/1.0"})
     try:
         with urllib.request.urlopen(req, timeout=CRYPTO_TIMEOUT_SECONDS) as resp:
             raw = json.loads(resp.read(500_000))
@@ -5669,7 +5670,7 @@ def get_crypto_market(**_ignored):
     result = {"available": True, "coins": coins, "coin_count": len(coins), "vs_currency": "usd",
               "source": "CoinGecko (free public API)",
               "note": "Live spot prices for reference only — read-only, not advice, and not a trading feed. "
-                      "Ultron records trades you enter manually; it never places one."}
+                      "Odin records trades you enter manually; it never places one."}
     with _crypto_lock:
         _crypto_cache.update(at=now_t, ids=list(ids), data=result)
     return dict(result, cached=False)
@@ -5763,13 +5764,13 @@ BETA_ALLOWED_TOOLS = {"get_trades", "get_trade_summary", "get_trade_tax_lots"}
 MAX_TOOL_ITERATIONS = 5   # hard cap so a confused loop can't run up API spend
 
 # Economy mode ("lite": true on /api/chat, the dashboard's Settings switch):
-# a cheaper conversation, not a different Ultron. Smaller model, shorter
+# a cheaper conversation, not a different Odin. Smaller model, shorter
 # replies, two tool rounds instead of five, and only the six basic reads --
 # the levers that actually move the dollar figure. Every safety boundary
 # (read-only tools, beta allowlist, spend caps, MCP opt-in) is unchanged;
 # the tool set here is intersected with the role's, never widened. The
 # model must have a row in LLM_PRICING_PER_MTOK or its usage logs at $0.
-LITE_MODEL = os.environ.get("ULTRON_LITE_MODEL", "claude-haiku-4-5")
+LITE_MODEL = os.environ.get("ODIN_LITE_MODEL", "claude-haiku-4-5")
 LITE_MAX_TOKENS = min(LLM_MAX_TOKENS, 400)
 LITE_MAX_TOOL_ITERATIONS = 2
 LITE_ALLOWED_TOOLS = {
@@ -5783,7 +5784,7 @@ LITE_ALLOWED_TOOLS = {
 # tester's request silently gets the normal model: their spend cap is
 # $1 lifetime and Opus would eat it), and it wins over "lite" if both are
 # sent. Same tools, same boundaries -- only the depth changes.
-DEEP_MODEL = os.environ.get("ULTRON_DEEP_MODEL", "claude-opus-5")
+DEEP_MODEL = os.environ.get("ODIN_DEEP_MODEL", "claude-opus-5")
 DEEP_MAX_TOKENS = max(LLM_MAX_TOKENS, 2048)
 DEEP_MAX_TOOL_ITERATIONS = 8
 
@@ -5794,7 +5795,7 @@ DEEP_MAX_TOOL_ITERATIONS = 8
 # is saved through remember_note like anything else. Never for beta
 # testers. Never automatic for web content (Scout's rule stands: only what
 # the person said or decided). Runs in a background thread so the reply
-# is never delayed; ULTRON_LEARN_INLINE=1 makes it synchronous for tests.
+# is never delayed; ODIN_LEARN_INLINE=1 makes it synchronous for tests.
 LEARN_MODEL = LITE_MODEL
 LEARN_MAX_TOKENS = 120
 LEARN_PROMPT = (
@@ -5894,7 +5895,7 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
       breakpoint, so a growing multi-turn conversation increasingly
       benefits from caching rather than reprocessing everything from
       scratch each turn.
-    - max_tokens is configurable (ULTRON_LLM_MAX_TOKENS) instead of a
+    - max_tokens is configurable (ODIN_LLM_MAX_TOKENS) instead of a
       fixed value.
     - Real token usage from every API call is logged, win or lose on
       caching, so the daily budget (if set) reflects actual spend."""
@@ -5943,7 +5944,7 @@ def run_ultron_chat(user_message, history, role="admin", beta_name=None, speaker
     # The static prompt keeps its cache breakpoint; the situational block
     # (admin only -- it carries host state and memory a beta tester must not
     # see) sits after it, small and uncached, changing every turn.
-    system_blocks = [{"type": "text", "text": ULTRON_SYSTEM_PROMPT, "cache_control": {"type": "ephemeral"}}]
+    system_blocks = [{"type": "text", "text": ODIN_SYSTEM_PROMPT, "cache_control": {"type": "ephemeral"}}]
     if role == "admin":
         context = _situational_context(user_message)
         if context:
@@ -6067,7 +6068,7 @@ def _learn_from_turn(user_message, reply_text):
                 return None
         result = remember_note(note=text)
         if "saved" in result:
-            log_activity("learned", "Ultron remembered: " + text[:140], status="success")
+            log_activity("learned", "Odin remembered: " + text[:140], status="success")
             return text
     except Exception:
         pass
@@ -6178,14 +6179,14 @@ def chat():
         if used_today >= LLM_DAILY_TOKEN_BUDGET:
             return jsonify({
                 "error": f"daily token budget reached ({used_today}/{LLM_DAILY_TOKEN_BUDGET} tokens today) — "
-                         "resets at midnight, or raise ULTRON_LLM_DAILY_TOKEN_BUDGET"
+                         "resets at midnight, or raise ODIN_LLM_DAILY_TOKEN_BUDGET"
             }), 429
 
     over, spent, cap = _agent_over_cap("ultron")
     if over:
         return jsonify({
-            "error": f"Ultron's daily spend cap reached (${spent:.2f}/${cap:.2f} today) — "
-                     "resets at midnight, or raise ULTRON_AGENT_DAILY_USD"
+            "error": f"Odin's daily spend cap reached (${spent:.2f}/${cap:.2f} today) — "
+                     "resets at midnight, or raise ODIN_AGENT_DAILY_USD"
         }), 429
 
     body = request.get_json(silent=True) or {}
@@ -6193,7 +6194,7 @@ def chat():
     history = body.get("history") or []
     # Optional caller-supplied label for chat_log's identity column -- lets
     # a trusted client speaking with one shared token (the Discord bot,
-    # using ULTRON_API_TOKEN for every Discord user) attribute a turn to
+    # using ODIN_API_TOKEN for every Discord user) attribute a turn to
     # the actual person behind it instead of everything reading "admin".
     # Purely a logging label: it never affects role/permission checks,
     # only which identity a transcript row is tagged with.
@@ -6259,10 +6260,10 @@ def chat():
             # Anything else — malformed tool result, unexpected SDK behavior, etc.
             return jsonify({"error": "unexpected error: " + str(e)}), 500
 
-    # If Ultron already chose to remember something this turn, the learner
+    # If Odin already chose to remember something this turn, the learner
     # would only write a paraphrase of it -- skip.
     if learn and "remember_note" not in tools_used:
-        if os.environ.get("ULTRON_LEARN_INLINE") == "1":
+        if os.environ.get("ODIN_LEARN_INLINE") == "1":
             _learn_from_turn(user_message, reply)
         else:
             threading.Thread(target=_learn_from_turn, args=(user_message, reply), daemon=True).start()
@@ -6294,7 +6295,7 @@ def tts():
     if not (FISH_AUDIO_API_KEY and FISH_VOICE_ID):
         return jsonify({
             "error": "voice replies aren't configured on this host. Set "
-                     "ULTRON_FISH_AUDIO_API_KEY and ULTRON_FISH_VOICE_ID and restart."
+                     "ODIN_FISH_AUDIO_API_KEY and ODIN_FISH_VOICE_ID and restart."
         }), 503
     # Fish Audio is real cost too, same as chat -- without this, a beta
     # tester who'd already hit BETA_MAX_SPEND_USD on /api/chat could still
@@ -6330,7 +6331,7 @@ def _resolve_ssl_context(cert_env, key_env):
     """Pure selection logic for app.run()'s ssl_context, pulled out of the
     __main__ guard so it's actually unit-testable (that guard never runs
     under import, which is how every dev-tools/test_*.py exercises this
-    module). Both ULTRON_TLS_CERT and ULTRON_TLS_KEY must be non-empty to
+    module). Both ODIN_TLS_CERT and ODIN_TLS_KEY must be non-empty to
     enable TLS -- any other combination falls back to plain HTTP rather
     than a broken half-configured state."""
     cert = (cert_env or "").strip()
@@ -6349,13 +6350,13 @@ if __name__ == "__main__":
     # polling behind it instead of serving both concurrently.
     #
     # TLS (owner-requested 2026-09-16): a real cert issued by `tailscale
-    # cert` for this device's *.ts.net name, via ULTRON_TLS_CERT/
-    # ULTRON_TLS_KEY. Only valid for that hostname -- not localhost or a
+    # cert` for this device's *.ts.net name, via ODIN_TLS_CERT/
+    # ODIN_TLS_KEY. Only valid for that hostname -- not localhost or a
     # bare LAN IP -- so once this is set, use the .ts.net address
     # everywhere, including on the home network. No cert configured falls
     # back to plain HTTP, so local/non-Docker dev (start-ultron.ps1) keeps
     # working without needing one.
     ssl_context = _resolve_ssl_context(
-        os.environ.get("ULTRON_TLS_CERT"), os.environ.get("ULTRON_TLS_KEY"),
+        os.environ.get("ODIN_TLS_CERT"), os.environ.get("ODIN_TLS_KEY"),
     )
     app.run(host="0.0.0.0", port=5000, threaded=True, ssl_context=ssl_context)

@@ -14,7 +14,7 @@ instead of installing them) and `import anthropic` / `import discord` /
 the real SDKs:
 
 ```powershell
-$env:PYTHONPATH = "C:\Ultron\dev-tools\fake_pkgs"
+$env:PYTHONPATH = "C:\Odin\dev-tools\fake_pkgs"
 ```
 
 Each fake mimics the real SDK's shape closely enough that code written
@@ -67,7 +67,7 @@ testing truncation), and `not_approved_tool` (exists but should never be
 in any test's `auto_approve` list — useful for verifying the approval
 gate actually excludes it).
 
-Point the backend's `ULTRON_MCP_CONFIG` at a JSON file referencing
+Point the backend's `ODIN_MCP_CONFIG` at a JSON file referencing
 `http://127.0.0.1:<port>/mcp` to test the full MCP integration against
 real request/response traffic.
 

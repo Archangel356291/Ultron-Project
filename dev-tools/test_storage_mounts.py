@@ -1,4 +1,4 @@
-"""Self-check for ULTRON_STORAGE_MOUNTS parsing and the storage read.
+"""Self-check for ODIN_STORAGE_MOUNTS parsing and the storage read.
 
 The Docker container cannot see the host's drives except where compose
 bind-mounts them, so the mount list must be configurable; this proves the
@@ -13,18 +13,18 @@ import os
 import sys
 import tempfile
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
 REAL_DIR = tempfile.mkdtemp()
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_DB_PATH"] = os.path.join(REAL_DIR, "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
-os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
-os.environ["ULTRON_SENTINEL_INTERVAL_SECONDS"] = "0"
-os.environ["ULTRON_STORAGE_MOUNTS"] = f"Real={REAL_DIR}, Missing={os.path.join(REAL_DIR, 'nope')} ,junk-without-equals,=nolabel,nopath="
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_DB_PATH"] = os.path.join(REAL_DIR, "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ODIN_SENTINEL_INTERVAL_SECONDS"] = "0"
+os.environ["ODIN_STORAGE_MOUNTS"] = f"Real={REAL_DIR}, Missing={os.path.join(REAL_DIR, 'nope')} ,junk-without-equals,=nolabel,nopath="
 
 import app  # noqa: E402
 
@@ -44,7 +44,7 @@ def demo():
     lines = " ".join(app.get_briefing()["lines"])
     assert "Storage Real:" in lines and "Missing" not in lines, lines
 
-    print("OK: ULTRON_STORAGE_MOUNTS parses label=path pairs (ignoring junk), a real path reports real "
+    print("OK: ODIN_STORAGE_MOUNTS parses label=path pairs (ignoring junk), a real path reports real "
           "numbers, a missing one a clear error, and the briefing uses the labels as given.")
 
 

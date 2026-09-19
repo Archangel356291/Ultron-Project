@@ -7,7 +7,7 @@ proposed but deliberately not built without a go-ahead.
 
 ## 2. Offline mode
 
-**Finding: Ultron is already offline-capable by architecture.** The backend
+**Finding: Odin is already offline-capable by architecture.** The backend
 is local (Flask on this PC, SQLite, psutil, the Docker socket, local git).
 With no internet at all, every one of these keeps working over the LAN or
 an already-established Tailscale link: status, containers, storage,
@@ -47,7 +47,7 @@ Two real defects were found and fixed, and one improvement built:
   internet, and no third party sees a page view.
 
 **Not built, on purpose:** a "local chat" that answers without Claude. It
-would either be canned responses dressed up as Ultron (the fake offline
+would either be canned responses dressed up as Odin (the fake offline
 mode the task warned against) or a second, weaker brain to maintain. The
 honest offline story is: everything works except talking to him, and he
 says so.
@@ -66,9 +66,9 @@ healthcheck + autoheal in the Pi-hole compose stack, outside this repo).
 **Finding: most of the levers already exist as environment variables;
 what is missing is a way to flip them per conversation.**
 
-Already there: `ULTRON_LLM_MODEL` (with a pricing row for
-`claude-haiku-4-5` already in `LLM_PRICING_PER_MTOK`), `ULTRON_LLM_MAX_TOKENS`
-(default 1024), `ULTRON_LLM_DAILY_TOKEN_BUDGET`, `ULTRON_CHAT_RATE_LIMIT_PER_MINUTE`,
+Already there: `ODIN_LLM_MODEL` (with a pricing row for
+`claude-haiku-4-5` already in `LLM_PRICING_PER_MTOK`), `ODIN_LLM_MAX_TOKENS`
+(default 1024), `ODIN_LLM_DAILY_TOKEN_BUDGET`, `ODIN_CHAT_RATE_LIMIT_PER_MINUTE`,
 `MAX_TOOL_ITERATIONS` (5), prompt caching on the system prompt, tool
 schemas and history, and the beta role's tool allowlist (3 of 21 tools).
 
@@ -88,7 +88,7 @@ What it would NOT change: any safety boundary. Same read-only tools,
 same preview-then-confirm actions, same MCP opt-in, same spend caps.
 
 **Proposed build (~40 backend lines + a Settings switch + one test):**
-`ULTRON_LITE_MODEL` (default `claude-haiku-4-5`) and a per-request
+`ODIN_LITE_MODEL` (default `claude-haiku-4-5`) and a per-request
 `"lite": true` flag from the dashboard (an "Economy mode" switch in
 Settings → AI, persisted like Reduced Visual Mode). Server-side enforced:
 lite swaps the model, caps tool rounds at 2, trims the tool list, and
@@ -97,7 +97,7 @@ so the saving would be visible on the Data & analytics tab, not asserted.
 
 **Built (owner approved 2026-09-16, commit `434cb3e`):** the "Economy
 mode" switch in Settings → AI sends `"lite": true`; the server then uses
-`ULTRON_LITE_MODEL` (default `claude-haiku-4-5`), `max_tokens` 400, two
+`ODIN_LITE_MODEL` (default `claude-haiku-4-5`), `max_tokens` 400, two
 tool rounds, and the read-only tools in `LITE_ALLOWED_TOOLS` (eight now:
 `get_briefing` and `recall_from_brain` joined the original six).
 `dev-tools/test_economy_mode.py` covers it.
@@ -154,13 +154,13 @@ every manifest icon serves as a real PNG. Also in the findings for item
 ## 8. Intelligence — "real knowledge, smarter than anyone in the room"
 
 Owner's ask (2026-09-16, after the roadmap items). The honest reading:
-Ultron's raw reasoning is Claude's; what this project can add is that
+Odin's raw reasoning is Claude's; what this project can add is that
 he *already knows the room and already remembers you* when a
 conversation starts, learns on request with provenance, and carries
 himself like someone who has already looked. Built, all at zero
 recurring token cost:
 
-- **Situational context** — before every admin turn `run_ultron_chat`
+- **Situational context** — before every admin turn `run_odin_chat`
   appends a second, uncached system block assembled locally: the live
   briefing (below) plus the memory notes related to what was just said
   (`recall_related_notes`, graph retrieval, no LLM). Marked as
@@ -172,7 +172,7 @@ recurring token cost:
   storage headroom with a plain verdict, anything ≥15 points above its
   24-hour baseline, Sentinel findings, warning/error events in the last
   day, memory size and pace, ideas awaiting review. Home tab card
-  "Ultron's read", admin-only `GET /api/briefing`, chat tool (also in
+  "Odin's read", admin-only `GET /api/briefing`, chat tool (also in
   Economy mode). `dev-tools/test_situational_context.py`.
 - **Bearing** (system prompt): lead with the answer, then the fact it
   rests on, then the next thing you'll ask; say what was checked; keep
@@ -186,7 +186,7 @@ recurring token cost:
 folder the owner asked for:**
 
 1. **Deep thought mode** — `"deep": true` (Settings switch) answers with
-   `ULTRON_DEEP_MODEL` (default `claude-opus-5`), `max_tokens` ≥ 2048,
+   `ODIN_DEEP_MODEL` (default `claude-opus-5`), `max_tokens` ≥ 2048,
    up to 8 tool rounds; admin-only, wins over Economy, replies tagged
    `deep`. Writing the test caught a real ordering bug (with both flags
    sent, the Economy tool-trim ran before Deep took over).
@@ -194,7 +194,7 @@ folder the owner asked for:**
    admin reply, one lite-model call asks whether the exchange held one
    fact or preference worth remembering next month; if new, it is saved
    through `remember_note` and logged as a "learned" activity event.
-   Background thread, never for beta, skipped when Ultron already used
+   Background thread, never for beta, skipped when Odin already used
    `remember_note` that turn (the first live run showed the learner
    paraphrasing what he had just saved himself — fixed before commit).
 3. **`D:\ultron's Brain&Knowledge`** — already the data dir; it now holds
@@ -222,7 +222,7 @@ folder the owner asked for:**
   real memory graph, not a picture of one.
 - **Cheaper recall.** `dev-tools/brain-graph-refresh.ps1` runs
   `graphify update` over the vault hourly (user-level scheduled task
-  "Ultron Brain Graph", no API key, no tokens). The backend loads
+  "Odin Brain Graph", no API key, no tokens). The backend loads
   `graphify-out/graph.json` from the vault (cached by mtime) for a new
   `recall_from_brain` tool — also in Economy mode — and adds matching
   past conversations to the situational context, so "what did we say
@@ -247,7 +247,7 @@ Dockhand (Docker), Relay (Tailscale), Gatekeeper (Pi-hole/DNS), Proof
 `recall_from_brain`), Herald (Slack, per-message approval), Envoy (the
 Discord bot, health read from `docker_ps`). The pixel room gained a rear
 mezzanine (room background regenerated) so all fifteen agents are
-visible: Ultron, four on the floor by him, two by the server rack, eight
+visible: Odin, four on the floor by him, two by the server rack, eight
 on the catwalk — each lit by a real event (task in progress, learned,
 alert, search). Full matrix in `AGENT_CAPABILITIES_AND_GOVERNANCE.md` §3.
 
@@ -262,7 +262,7 @@ docs as clean text) and **code-review**. `dev-tools/sast-scan.sh` runs
 gitleaks, Bandit and Semgrep in throwaway containers with the repo
 mounted read-only (its own gitleaks config allowlists the gitignored
 secret paths so the working-tree scan reports signal only). In the
-backend, `read_page` gives Ultron a local Firecrawl/Jina-style reader
+backend, `read_page` gives Odin a local Firecrawl/Jina-style reader
 (public https only, HTML → headings/paragraphs, capped, untrusted-wrapped)
 so no third party sees his URLs. New specialists with desks: **Forge**
 (developer: Filesystem + Git MCP), **Seeker** (research: WebSearch/
@@ -282,18 +282,18 @@ SAST baseline: one real Bandit item (SHA-1 used as a cache fingerprint →
 (parameterised SQL with code-controlled column names, validated
 `urlopen` schemes, `0.0.0.0` bind inside the container).
 
-## 12. Ultron's corner rebuilt, and "What Ultron knows" (owner-requested 2026-09-16)
+## 12. Odin's corner rebuilt, and "What Odin knows" (owner-requested 2026-09-16)
 
 - **Why.** The conveyor only ran under four of the seventeen desks, the
   robots sat in front of their own monitors, name plates were 6px glyphs
   scaled down further, and half the room was empty wall. On a phone a desk
   was about 15px wide.
-- **The room is now a cutaway tower** at about double the size: Ultron's
+- **The room is now a cutaway tower** at about double the size: Odin's
   office on the ground floor, a storey of desks per row of agents above it,
   six to a storey on a wide screen and three on a phone (the layout is
   computed from the panel width, so the characters stay large). A belt on
   every storey feeds a lift; the lift drops parcels to the ground belt, past
-  Ultron's desk (they turn gold there) and out through the hatch. Every desk
+  Odin's desk (they turn gold there) and out through the hatch. Every desk
   stands on it. Parcels are ambient, plus one from a desk the moment its
   agent becomes busy.
 - **Readable art.** `gen_pixel_assets.py` now draws in room units on a
@@ -310,9 +310,9 @@ SAST baseline: one real Bandit item (SHA-1 used as a cache fingerprint →
 - **What carries meaning is still real.** The old random desk flicker is
   gone: a screen and plate light only while that agent has a task in
   progress or just acted, with the verb under the name ("Proof / testing");
-  Sentinel's plate goes red on a recent warning; Ultron sits and his plate
+  Sentinel's plate goes red on a recent warning; Odin sits and his plate
   names his state.
-- **"What Ultron knows"**, directly under the room: `GET /api/brain-graph`
+- **"What Odin knows"**, directly under the room: `GET /api/brain-graph`
   (admin-only, the same graphify graph `recall_from_brain` searches) drawn
   as a still 2D graph -- conversations, memories and knowledge pages, with a
   headline count, per-kind filter pills, hover/tap detail, and a
@@ -347,9 +347,9 @@ SAST baseline: one real Bandit item (SHA-1 used as a cache fingerprint →
   activity, chat-log and Sentinel timestamps were UTC.
 - **Storage was the container's disk, not yours.** Since Dockerization the
   Storage panel, `get_storage_usage` and the briefing reported the
-  container's 1 TB virtual disk as "root" (1% used) — found when Ultron
+  container's 1 TB virtual disk as "root" (1% used) — found when Odin
   contradicted his own memory that the media lives on D:. `C:\` and `D:\`
-  are now bind-mounted read-only and `ULTRON_STORAGE_MOUNTS=C:=/host/c,D:=/host/d`
+  are now bind-mounted read-only and `ODIN_STORAGE_MOUNTS=C:=/host/c,D:=/host/d`
   names them; the container now reads exactly what Windows does (C: 999 GB,
   D: 4,001 GB). The prompt also tells him to reconcile a live reading with
   a memory instead of dropping the memory. `dev-tools/test_storage_mounts.py`.
@@ -412,7 +412,7 @@ the dashboard's `--amber`) and **Scout** (violet, the purple the
 activity feed already uses). All four agents now share one sprite/desk/
 tube set generated from the same code in four colours; the desks sit at
 x = 696/786/876/966 with the conveyor starting at the first desk and
-Ultron's walk range shortened so he never overlaps them.
+Odin's walk range shortened so he never overlaps them.
 
 Sentinel is the room's first non-scenery element: its screen stays lit
 and its plate reads `SENTINEL · ALERT` in red while the activity log
@@ -435,7 +435,7 @@ writes to the activity log only on a *change* (a new threat, or a
 threat clearing) with `status: warning|error`, which is exactly what
 already lights Sentinel's desk and lands in the Home feed and the
 Security tab — and it uses no LLM call at all. Read-only, host-safe,
-inert until `ULTRON_SENTINEL_INTERVAL_SECONDS` is set. Ultron himself
+inert until `ODIN_SENTINEL_INTERVAL_SECONDS` is set. Odin himself
 can be asked about it through a new read tool (`get_threat_summary`).
 **No decision needed; about 120 lines plus a test.**
 
@@ -447,11 +447,11 @@ fee). The honest low-cost shape is:
 1. A search backend that costs nothing per query and stays private —
    **SearXNG self-hosted in a container on this PC** (free, no account,
    aggregates other engines, one more `docker compose` service beside
-   Pi-hole and Jellyfin). Inert until `ULTRON_SEARXNG_URL` is set.
+   Pi-hole and Jellyfin). Inert until `ODIN_SEARXNG_URL` is set.
 2. A read-only `web_search` chat tool returning titles + snippets only
    (a few hundred tokens), wrapped in the same
    `<untrusted_external_data>` tag MCP results get, so a page can't
-   instruct Ultron.
+   instruct Odin.
 3. Knowledge is kept only when the owner says so: "remember that" →
    the existing `remember_note`, never automatic ingestion of web text.
    Economy mode makes the summarising step Haiku-priced.
@@ -462,14 +462,14 @@ and zero when nobody is asking.
 **Both built 2026-09-16 (SearXNG approved by the owner):**
 
 - *Sentinel* — `_sentinel_run_once()` on a daemon thread
-  (`ULTRON_SENTINEL_INTERVAL_SECONDS`, default 300), admin-only
+  (`ODIN_SENTINEL_INTERVAL_SECONDS`, default 300), admin-only
   `GET /api/security/threats`, chat tool `get_threat_summary`, a live
   Security-tab card replacing the old illustrative "Posture" card, and
   `dev-tools/test_sentinel.py`. Zero LLM tokens.
-- *Scout* — `ultron-searxng` service in `docker-compose.yml` (no host
+- *Scout* — `odin-searxng` service in `docker-compose.yml` (no host
   port, compose-network only, `searxng/settings.yml` enables JSON and
   disables the limiter), the `web_search` chat tool (inert until
-  `ULTRON_SEARXNG_URL`; results wrapped as `<untrusted_external_data>`;
+  `ODIN_SEARXNG_URL`; results wrapped as `<untrusted_external_data>`;
   admin-only; outside Economy mode), the room's Scout desk lighting up
   after a reply that used it, and `dev-tools/test_web_search.py`.
   Verified end-to-end: a real chat reply cited a real URL from the

@@ -60,7 +60,7 @@ below — one less thing to update later.
 The backend's main setup already has you run this:
 
 ```powershell
-New-NetFirewallRule -DisplayName "Ultron Backend" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow
+New-NetFirewallRule -DisplayName "Odin Backend" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow
 ```
 
 Notice there's no `-Profile` parameter — when it's omitted, the rule
@@ -72,7 +72,7 @@ normal case, you don't need to do anything extra here.
 If you want to double-check rather than take that on faith:
 
 ```powershell
-Get-NetFirewallRule -DisplayName "Ultron Backend" | Get-NetFirewallProfile
+Get-NetFirewallRule -DisplayName "Odin Backend" | Get-NetFirewallProfile
 ```
 
 If that shows the rule scoped to all profiles (or at least includes
@@ -87,8 +87,8 @@ fall in the `100.64.0.0/10` range — you can replace the rule above with
 one scoped to just that:
 
 ```powershell
-Remove-NetFirewallRule -DisplayName "Ultron Backend"
-New-NetFirewallRule -DisplayName "Ultron Backend (Tailscale only)" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow -RemoteAddress 100.64.0.0/10
+Remove-NetFirewallRule -DisplayName "Odin Backend"
+New-NetFirewallRule -DisplayName "Odin Backend (Tailscale only)" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow -RemoteAddress 100.64.0.0/10
 ```
 
 This is a genuine tightening — worth it if you don't need other LAN
@@ -104,7 +104,7 @@ country.
 
 ## 4. Point the dashboard and bot at the Tailscale address
 
-**Dashboard:** open `ultron-dashboard.html`, go to Settings → Connection,
+**Dashboard:** open `odin-dashboard.html`, go to Settings → Connection,
 and enter the Tailscale address instead of the LAN IP:
 
 ```
@@ -116,10 +116,10 @@ home Wi-Fi or not — that's the entire point of Tailscale over a LAN-only
 setup.
 
 **Discord bot** (only relevant if the bot runs on a *different* machine
-than the backend): set `ULTRON_BACKEND_URL` to the same Tailscale address:
+than the backend): set `ODIN_BACKEND_URL` to the same Tailscale address:
 
 ```powershell
-$env:ULTRON_BACKEND_URL = "http://your-pc-name.tailXXXX.ts.net:5000"
+$env:ODIN_BACKEND_URL = "http://your-pc-name.tailXXXX.ts.net:5000"
 ```
 
 If the bot runs on the same machine as the backend, it can keep using
@@ -173,7 +173,7 @@ every other device. That's exactly why Tailscale is easy to set up, and
 it's genuinely fine for a solo tailnet of devices you own. The moment you
 add a device you *don't* fully trust with everything (a friend's device
 you've shared access with, a cheap IoT gadget, a VPS), a blanket "allow
-all" means that device can reach your Ultron backend too, port 5000 and
+all" means that device can reach your Odin backend too, port 5000 and
 all.
 
 **A safe, minimal starting point** — restrict your tailnet to only letting
@@ -211,7 +211,7 @@ explicit grant for the tag:
 ```json
 {
   "tagOwners": {
-    "tag:ultron-backend": ["autogroup:admin"]
+    "tag:odin-backend": ["autogroup:admin"]
   },
   "grants": [
     {
@@ -221,18 +221,18 @@ explicit grant for the tag:
     },
     {
       "src": ["autogroup:member"],
-      "dst": ["tag:ultron-backend"],
+      "dst": ["tag:odin-backend"],
       "ip": ["tcp:5000"]
     }
   ]
 }
 ```
 
-`tagOwners` says who's allowed to apply `tag:ultron-backend` to a device
+`tagOwners` says who's allowed to apply `tag:odin-backend` to a device
 (here, tailnet admins — you, on a personal account). You'd then actually
-tag the Cyberpower PC with `tag:ultron-backend` from the admin console's
+tag the Cyberpower PC with `tag:odin-backend` from the admin console's
 Machines page. The second grant says "your own devices can reach port
-5000 specifically on anything tagged `ultron-backend`" — narrower than
+5000 specifically on anything tagged `odin-backend`" — narrower than
 the first grant's "everything," which is the point: even if some other
 device on your tailnet gets compromised later, it can't reach the backend
 unless it matches one of these rules.

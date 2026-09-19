@@ -129,7 +129,7 @@ def build():
     MAT_GRAPHITE = make_metal("Graphite", (0.067, 0.071, 0.078), 0.55)   # ~#111214, forehead layers (most matte)
     MAT_VISOR = make_emissive("VisorEmissive", (1.0, 0.06, 0.09), 3.2)   # deep crimson emission
 
-    root = bpy.data.objects.new("UltronHead", None)
+    root = bpy.data.objects.new("OdinHead", None)
     bpy.context.collection.objects.link(root)
 
     # Skull: the core angular mass everything else attaches to. Every other

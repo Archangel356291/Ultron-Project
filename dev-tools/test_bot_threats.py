@@ -12,15 +12,15 @@ import asyncio
 import os
 import sys
 
-BOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-discord-bot")
+BOT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-discord-bot")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BOT_DIR)
 
 os.environ["DISCORD_BOT_TOKEN"] = "fake-discord-token"
-os.environ["ULTRON_API_TOKEN"] = "fake-api-token"
-os.environ["ULTRON_BACKEND_URL"] = "http://backend.test:5000"
-os.environ["ULTRON_DISCORD_ALLOWED_USERS"] = "1001"
+os.environ["ODIN_API_TOKEN"] = "fake-api-token"
+os.environ["ODIN_BACKEND_URL"] = "http://backend.test:5000"
+os.environ["ODIN_DISCORD_ALLOWED_USERS"] = "1001"
 
 import discord  # noqa: E402
 import bot  # noqa: E402

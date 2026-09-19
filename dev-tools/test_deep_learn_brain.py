@@ -17,20 +17,20 @@ import sys
 import tempfile
 import time
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
 DATA_DIR = tempfile.mkdtemp()
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_BETA_TOKENS"] = "tester:beta-test-token"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_BETA_TOKENS"] = "tester:beta-test-token"
 os.environ["ANTHROPIC_API_KEY"] = "fake-key-for-test"
-os.environ["ULTRON_DB_PATH"] = os.path.join(DATA_DIR, "ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
-os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
-os.environ["ULTRON_SENTINEL_INTERVAL_SECONDS"] = "0"
-os.environ["ULTRON_LEARN_INLINE"] = "1"
+os.environ["ODIN_DB_PATH"] = os.path.join(DATA_DIR, "odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ODIN_SENTINEL_INTERVAL_SECONDS"] = "0"
+os.environ["ODIN_LEARN_INLINE"] = "1"
 
 import anthropic  # noqa: E402
 import app  # noqa: E402
@@ -107,7 +107,7 @@ def demo():
     client.post("/api/chat", json={"message": "plain", "history": []}, headers=ADMIN)
     assert len(calls) - before == 1
 
-    # Ultron remembered something himself this turn -> the learner stays
+    # Odin remembered something himself this turn -> the learner stays
     # quiet (it would only paraphrase what he just saved).
     script.append(anthropic.Message(
         content=[anthropic.ContentBlock(type="tool_use", id="toolu_rm", name="remember_note",

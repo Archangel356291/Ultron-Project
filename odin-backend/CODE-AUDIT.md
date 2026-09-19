@@ -17,7 +17,7 @@ covers what was actually checked and how, not just "looked fine."
   missing, no Security event log entries on this dev machine) are real
   "dependency unavailable" responses, not bugs.
 - Live-tested the trade write path (`POST /api/trades`, FIFO summary,
-  `DELETE /api/trades/<id>`) against the **real** `ultron.db` — inserted
+  `DELETE /api/trades/<id>`) against the **real** `odin.db` — inserted
   one test BTC trade, confirmed the summary/holding math was correct,
   then deleted it immediately to restore the database to its prior state.
   Worth calling out since it means the real trade ledger was briefly
@@ -25,14 +25,14 @@ covers what was actually checked and how, not just "looked fine."
 - Re-verified the `beta_tester` RBAC boundary still holds (200 on
   trades, 403 on status) after everything else above.
 - Read the path-traversal guard on `/api/dev/repos/<repo>/diff`
-  (basename-matched against the `ULTRON_CODE_REPOS` allowlist, can't be
+  (basename-matched against the `ODIN_CODE_REPOS` allowlist, can't be
   pointed at an arbitrary path), grepped every `subprocess.run` call for
   `shell=True` (none), and every `conn.execute` call for string-built SQL
   (none — all parameterized).
 - Loaded `bot.py` as a module against `dev-tools/fake_pkgs`'s fake
   `discord`/`aiohttp` — all `@bot.tree.command` registrations and
-  module-level config parsing (`DISCORD_BOT_TOKEN`, `ULTRON_API_TOKEN`,
-  `ULTRON_DISCORD_ALLOWED_USERS`) execute without error.
+  module-level config parsing (`DISCORD_BOT_TOKEN`, `ODIN_API_TOKEN`,
+  `ODIN_DISCORD_ALLOWED_USERS`) execute without error.
 - Grepped for `TODO`/`FIXME`/`XXX`/`HACK` across `app.py` and `bot.py` —
   none.
 - Confirmed `requirements.txt` for both backend and bot matches actual
@@ -42,7 +42,7 @@ covers what was actually checked and how, not just "looked fine."
 `anthropic` package, missing Docker CLI, no configured repos) all behave
 as documented rather than crashing.
 
-**Not covered this pass:** `ultron-dashboard.html`'s JS — already
+**Not covered this pass:** `odin-dashboard.html`'s JS — already
 verified separately (see git log) via `node --check`, ID-count, and
 live click-through during the visual-match work; not re-audited here.
 
@@ -61,8 +61,8 @@ live click-through during the visual-match work; not re-audited here.
   (`interaction.user.id != self.author_id`) is still intact on
   `ConfirmActionView`.
 
-**Real bug found and fixed:** `ultron-discord-bot/start-bot.ps1` never
-loaded from `.env` at all — unlike the backend's `start-ultron.ps1`, it
+**Real bug found and fixed:** `odin-discord-bot/start-bot.ps1` never
+loaded from `.env` at all — unlike the backend's `start-odin.ps1`, it
 expected secrets pasted directly into the script itself, which is
 git-tracked. That's the exact mistake this project already got burned by
 once (see the Phase 1 security-pass note above about a hardcoded token
@@ -97,7 +97,7 @@ script instead of `.env`); everything else re-verified clean.
 - Confirmed the `llm_usage` schema change is a live migration
   (`PRAGMA table_info` + `ALTER TABLE ADD COLUMN`), not a
   `CREATE TABLE IF NOT EXISTS` that would silently no-op against an
-  existing `ultron.db` — verified by running it against the real
+  existing `odin.db` — verified by running it against the real
   pre-existing database file, not a fresh one.
 - Confirmed the spend cap only applies to `g.role == "beta"` and never
   to admin — read the check in `chat()` directly rather than trusting
@@ -105,7 +105,7 @@ script instead of `.env`); everything else re-verified clean.
 - `/api/connections` and `/api/whoami`'s new fields are read-only (no
   write path, no new mutation of host state) — consistent with this
   project's "every chat tool is read-only" boundary; neither is exposed
-  to Ultron's own chat tools.
+  to Odin's own chat tools.
 
 **Live-verified, not just read:** `dev-tools/test_beta_spend_cap.py`
 drives real `/api/chat` requests through Flask's test client against a
@@ -129,7 +129,7 @@ and neither does; both are thin callers of the one backend endpoint.
 ## 2026-09-14 — full pre-launch review: 9 real bugs found and fixed
 
 A full read-through of all three production files (`app.py`, `bot.py`,
-`ultron-dashboard.html`), explicitly ahead of a live multi-device beta.
+`odin-dashboard.html`), explicitly ahead of a live multi-device beta.
 SQL injection, subprocess/shell injection, and the core admin/beta_tester
 RBAC boundary (route level and chat tool-dispatch level) all came back
 clean — no changes needed there. Nine real issues found, all fixed and
@@ -231,7 +231,7 @@ Findings 6, 7, and 9 (Discord bot timeout handling, its per-user chat
 lock, and the backup collision lock) were verified by direct code
 inspection only — bot.py has no test harness comparable to the Flask
 test client used for app.py, and backup wasn't live-tested because
-`ULTRON_BACKUP_SOURCES`/`ULTRON_BACKUP_DEST` aren't configured on this
+`ODIN_BACKUP_SOURCES`/`ODIN_BACKUP_DEST` aren't configured on this
 host. Worth live-verifying once either is actually exercised for real.
 
 **Already known, not new:** MCP discovery caching for the life of the

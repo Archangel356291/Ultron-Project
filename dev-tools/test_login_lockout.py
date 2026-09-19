@@ -17,19 +17,19 @@ import sys
 import tempfile
 import time
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_ADMIN_USERNAME"] = "Archangel356291"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
-os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
-os.environ["ULTRON_LOGIN_LOCKOUT_MAX_ATTEMPTS"] = "3"
-os.environ["ULTRON_LOGIN_LOCKOUT_WINDOW_SECONDS"] = "3600"
-os.environ["ULTRON_LOGIN_LOCKOUT_SECONDS"] = "3600"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_ADMIN_USERNAME"] = "Archangel356291"
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ODIN_LOGIN_LOCKOUT_MAX_ATTEMPTS"] = "3"
+os.environ["ODIN_LOGIN_LOCKOUT_WINDOW_SECONDS"] = "3600"
+os.environ["ODIN_LOGIN_LOCKOUT_SECONDS"] = "3600"
 
 import app  # noqa: E402
 

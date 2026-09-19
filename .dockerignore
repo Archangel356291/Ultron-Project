@@ -1,4 +1,4 @@
-# Build context here is the repo root (docker-compose.yml -> ultron-backend
+# Build context here is the repo root (docker-compose.yml -> odin-backend
 # service), so this file is what actually keeps .git/, dev-tools/, .env,
 # graphify-out/, this whole Obsidian vault, etc. out of the backend image —
 # today's Dockerfile COPYs are specific enough to not need it, but that's a
@@ -12,14 +12,14 @@
 **
 
 # ==============================================================================
-# 2. ALLOWLIST — exactly what ultron-backend/Dockerfile COPYs:
-#    ultron-backend/ (requirements.txt + app.py + its own docs/scripts),
+# 2. ALLOWLIST — exactly what odin-backend/Dockerfile COPYs:
+#    odin-backend/ (requirements.txt + app.py + its own docs/scripts),
 #    ultron-dashboard.html (app.py serves it from one directory up), and
 #    three-pipeline/ (Module 13: vendored Three.js + the built hero-head
 #    .glb, served by app.py's /three-pipeline/<file> route).
 # ==============================================================================
-!ultron-backend/
-!ultron-backend/**
+!odin-backend/
+!odin-backend/**
 !ultron-dashboard.html
 !sw.js
 !three-pipeline/
@@ -37,7 +37,7 @@
 
 # ==============================================================================
 # 3. EXPLICIT BLOCKS (strip junk/secrets back out of the allowlisted tree,
-#    even though ultron-backend/** above would otherwise let it through)
+#    even though odin-backend/** above would otherwise let it through)
 # ==============================================================================
 
 # Secrets & local data
@@ -47,7 +47,7 @@
 **/*.db
 # Host-issued Tailscale TLS cert/key -- bind-mounted at runtime instead
 # (see docker-compose.yml), never baked into the image.
-ultron-backend/tls/
+odin-backend/tls/
 
 # Claude Code / AI agent metadata
 **/.claude/

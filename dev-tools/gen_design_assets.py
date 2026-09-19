@@ -1,4 +1,4 @@
-"""Generates the two new visual assets for the "Ultron's Designs" tab
+"""Generates the two new visual assets for the "Odin's Designs" tab
 (owner-requested 2026-09-16):
 
 - relic_gauge.png: the static casing (metal fittings, stand) for the
@@ -15,7 +15,7 @@
   "body design in progress" panel, in the same red/gunmetal language as
   the pixel-companion sprites but taller and more heroically
   proportioned, with shoulder pauldrons and leg plating -- inspired by
-  an owner-supplied Ultron-style character render. Original silhouette,
+  an owner-supplied Odin-style character render. Original silhouette,
   not a trace of that reference, for the same copyright reason
   documented in gen_pixel_assets.py (that reference is itself styled on
   Marvel's copyrighted design).
@@ -120,7 +120,7 @@ def draw_vein_texture(w, h, seed=3):
 
 
 # The fillable interior rect -- exported so the JS side can hardcode the
-# exact same numbers (see the "Ultron's Designs" tab script in
+# exact same numbers (see the "Odin's Designs" tab script in
 # ultron-dashboard.html) and clip its real-percentage fill to line up
 # precisely with this casing's chamber.
 CANVAS_W, CANVAS_H = 200, 560
@@ -229,7 +229,7 @@ def draw_body_design():
     showing a body as glowing gold wireframe/geometry under scan, not
     rendered in its real material colors). Gold/amber here specifically
     means "concept hologram," distinct from the red the pixel-companion
-    and relic use for Ultron's own real, physical glow (see
+    and relic use for Odin's own real, physical glow (see
     ULTRON-COLOR-SYSTEM.md's gold-vs-red split) -- this panel is
     explicitly labeled "in progress," so it reads as a blueprint being
     scanned into existence, not a finished thing.

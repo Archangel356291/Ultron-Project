@@ -1,5 +1,5 @@
 /*
- * Ultron pixel-game — shared color-palette tokens.
+ * Odin pixel-game — shared color-palette tokens.
  * UMD (browser global `GamePalettes` + node require). Data only, no hard-coded
  * one-off colours in gameplay code. See COLOR_PALETTES.md for the full guide.
  *
@@ -15,7 +15,7 @@
 
   // 12 environment/biome palettes: [bg, a, b, c, d, highlight]
   var environments = {
-    ultronCore: { name: 'Ultron Core', colors: ['#05060f', '#00e5ff', '#2b6bff', '#7a4dff', '#ffffff', '#4dfff0'], use: 'Ultron HQ, reactor rooms, title' },
+    ultronCore: { name: 'Odin Core', colors: ['#05060f', '#00e5ff', '#2b6bff', '#7a4dff', '#ffffff', '#4dfff0'], use: 'Odin HQ, reactor rooms, title' },
     neonHacker: { name: 'Neon Hacker', colors: ['#03080a', '#19ff7a', '#b6ff3d', '#00e5ff', '#0c3b3a', '#ffb000'], use: 'Terminals, hack minigames, net' },
     cyberpunkCity: { name: 'Cyberpunk City', colors: ['#160a2e', '#ff2bd0', '#ff5aa0', '#2b8bff', '#00e5ff', '#2a2f3a'], use: 'City streets, markets, rain' },
     industrialScrapyard: { name: 'Industrial Scrapyard', colors: ['#1c1b18', '#e0621f', '#8a8f96', '#0a0a0a', '#ffd21e', '#3d9bff'], use: 'Scrapyards, foundry, salvage' },
@@ -52,7 +52,7 @@
   // 13 player robot cosmetic palettes.
   // Each: primary, secondary, shadow, highlight, glow(LED), eye, damage, effect.
   var robotSkins = {
-    ultron: { name: 'Ultron Cyan/Violet', primary: '#3a4049', secondary: '#8a8f96', shadow: '#1a1e24', highlight: '#c9ccd2', glow: '#00e5ff', eye: '#ff3b3b', damage: '#7a0f1e', effect: '#7a4dff' },
+    ultron: { name: 'Odin Cyan/Violet', primary: '#3a4049', secondary: '#8a8f96', shadow: '#1a1e24', highlight: '#c9ccd2', glow: '#00e5ff', eye: '#ff3b3b', damage: '#7a0f1e', effect: '#7a4dff' },
     hacker: { name: 'Hacker Green', primary: '#12331f', secondary: '#1e8f52', shadow: '#08160d', highlight: '#b6ff3d', glow: '#19ff7a', eye: '#b6ff3d', damage: '#3a1f0a', effect: '#00e5ff' },
     crimson: { name: 'Crimson Assault', primary: '#3a1416', secondary: '#c0392b', shadow: '#1a0708', highlight: '#ff8a7a', glow: '#ff2b3d', eye: '#ffe066', damage: '#4a0a0a', effect: '#ff6a1e' },
     solarGold: { name: 'Solar Gold', primary: '#4a3a12', secondary: '#e0a81f', shadow: '#241c08', highlight: '#ffe9a6', glow: '#ffd21e', eye: '#fff2c0', damage: '#5a3a0a', effect: '#ff9d3c' },

@@ -23,7 +23,7 @@ for.
 on the current graph: 542 nodes, 844 edges, the vendored
 `3d-force-graph` library, and the graph data itself, all inlined).
 **No fetch(), no ES module imports, no CDN** — opens directly, data and
-all, exactly like `ultron-dashboard.html`'s own single-file philosophy.
+all, exactly like `odin-dashboard.html`'s own single-file philosophy.
 (Verified served over a local HTTP server, since the browser automation
 available couldn't navigate to `file://` URLs directly to test that
 path specifically — but the page uses only classic `<script>` tags and

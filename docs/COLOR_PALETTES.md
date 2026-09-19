@@ -1,6 +1,6 @@
 # Color Palettes — `pixel-game/palettes.js`
 
-Reusable colour tokens for the Ultron pixel-game: biome/environment palettes,
+Reusable colour tokens for the Odin pixel-game: biome/environment palettes,
 loot-rarity colours, combat/HUD colours, player robot cosmetic skins, and
 accessibility alternates. Data only — no hard-coded one-off colours in gameplay
 code. Loads as `window.GamePalettes` (browser) and `require()` (Node).
@@ -16,7 +16,7 @@ Each: `{ name, colors: [bg, a, b, c, d, highlight], use }`.
 
 | Palette | Intended use |
 |---|---|
-| Ultron Core | Ultron HQ, reactor rooms, title |
+| Odin Core | Odin HQ, reactor rooms, title |
 | Neon Hacker | terminals, hack minigames, net |
 | Cyberpunk City | city streets, markets, rain |
 | Industrial Scrapyard | scrapyards, foundry, salvage |
@@ -59,7 +59,7 @@ particle so colour meaning is consistent everywhere.
 `GamePalettes.robotSkins[key]` → `{ name, primary, secondary, shadow, highlight,
 glow, eye, damage, effect }`. **Wired in**: the Expedition Chassis Builder's
 skin picker uses these; selecting one sets the robot's eye/LED colour and is
-saved per loadout. Skins: Ultron Cyan/Violet, Hacker Green, Crimson Assault,
+saved per loadout. Skins: Odin Cyan/Violet, Hacker Green, Crimson Assault,
 Solar Gold, Arctic Blue, Toxic Reactor, Industrial Rust, Neon Pink, Royal
 Purple, White/Chrome, Black Stealth, Rainbow/Prototype, Corrupted/Glitch.
 

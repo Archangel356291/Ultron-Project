@@ -64,7 +64,7 @@ built-in AEAD primitive, and hand-rolling encryption for genuinely
 sensitive data is exactly the kind of thing not to DIY) and stored,
 keyed by node id, in `graphify-out/private-nodes.enc.json`.
 
-**Key management:** `ULTRON_GRAPH_ENCRYPTION_KEY` in `.env` — generated
+**Key management:** `ODIN_GRAPH_ENCRYPTION_KEY` in `.env` — generated
 once on first run if absent, reused after that. `.env` is already
 gitignored (see `.gitignore`), the same place every other secret this
 project holds lives. **There is no recovery path if this key is lost** —
@@ -113,7 +113,7 @@ least one private node to a generic name (`"Private/Mixed Community N"`)
 before regenerating `GRAPH_REPORT.md`/`graph.html`/`community_name`.
 Verified by grepping the regenerated report/html for real private labels
 after the fix — zero hits (the node `id` itself, e.g.
-`ultron_backend_app_fifo_engine`, still appears in `graph.html`'s raw
+`odin_backend_app_fifo_engine`, still appears in `graph.html`'s raw
 node list next to `"label": "[private]"` — that's the accepted,
 documented tradeoff above, not a re-opened leak of content).
 

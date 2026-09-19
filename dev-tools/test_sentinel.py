@@ -1,7 +1,7 @@
 """Self-check for Sentinel, the zero-token security watchdog.
 
 Drives _sentinel_run_once() directly (the thread is disabled with
-ULTRON_SENTINEL_INTERVAL_SECONDS=0) against controlled inputs and proves
+ODIN_SENTINEL_INTERVAL_SECONDS=0) against controlled inputs and proves
 the mechanism: a stopped container and an active lockout each produce
 exactly one activity-log entry at the right status, a second pass with
 nothing changed logs nothing, a cleared finding logs once as success,
@@ -16,22 +16,22 @@ import sys
 import tempfile
 import time
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token-with-32-characters!!"
-os.environ["ULTRON_BETA_TOKENS"] = "tester:beta-test-token"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
-os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
-os.environ["ULTRON_SENTINEL_INTERVAL_SECONDS"] = "0"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token-with-32-characters!!"
+os.environ["ODIN_BETA_TOKENS"] = "tester:beta-test-token"
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ODIN_SENTINEL_INTERVAL_SECONDS"] = "0"
 # A clean posture, so this test's finding sets stay about lockouts,
 # containers and CVEs (posture itself is covered by test_agents.py).
-os.environ["ULTRON_ALLOWED_ORIGIN"] = "https://dashboard.test"
-os.environ["ULTRON_TLS_CERT"] = "/tmp/fake.crt"
-os.environ["ULTRON_TLS_KEY"] = "/tmp/fake.key"
+os.environ["ODIN_ALLOWED_ORIGIN"] = "https://dashboard.test"
+os.environ["ODIN_TLS_CERT"] = "/tmp/fake.crt"
+os.environ["ODIN_TLS_KEY"] = "/tmp/fake.key"
 
 import app  # noqa: E402
 
@@ -51,7 +51,7 @@ def demo():
 
     # Controlled world: one stopped container, no lockouts, empty CVE cache.
     world = {"containers": [
-        {"name": "ultron-backend", "image": "x", "status": "Up 2 hours", "running_for": "2 hours ago", "state": "running"},
+        {"name": "odin-backend", "image": "x", "status": "Up 2 hours", "running_for": "2 hours ago", "state": "running"},
         {"name": "jellyfin", "image": "y", "status": "Exited (137) 3 minutes ago", "running_for": "", "state": "stopped"},
     ]}
     app.docker_ps = lambda: (world["containers"], None)

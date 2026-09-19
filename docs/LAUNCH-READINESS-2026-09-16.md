@@ -1,6 +1,6 @@
 # Launch readiness — 2026-09-16
 
-Owner's question: how much building is left before Ultron is a solid, live
+Owner's question: how much building is left before Odin is a solid, live
 system that can be updated as needed — held to the standard an app store
 would expect of a working product, without actually submitting to one.
 Hardware is out of scope.
@@ -22,7 +22,7 @@ people, not a storefront listing.
 
 - **Item 1 -- done 2026-09-16.** The backend is served by gunicorn (one
   worker, 16 threads; `gunicorn.conf.py` says why one), runs as user
-  `ultron` (uid 10001) instead of root, and has a `HEALTHCHECK`. The bot
+  `odin` (uid 10001) instead of root, and has a `HEALTHCHECK`. The bot
   writes a heartbeat only while its Discord gateway connection is alive and
   is health-checked on its age; SearXNG is checked on `/healthz`. All three
   carry the `autoheal` label, so the autoheal container already running in
@@ -44,7 +44,7 @@ people, not a storefront listing.
   security headers, spend caps, read-only tools with preview-then-confirm
   actions, secret scanning on commit, SAST script (gitleaks clean, semgrep
   one warning).
-- Size: `app.py` 5,961 lines, `ultron-dashboard.html` 5,818, bot 941.
+- Size: `app.py` 5,961 lines, `odin-dashboard.html` 5,818, bot 941.
 
 ## Must fix before calling it a release (about 9–13 days)
 
@@ -52,7 +52,7 @@ people, not a storefront listing.
 |---|---|---|---|
 | 1 | Served by Flask's development server | Container log prints "This is a development server. Do not use it in a production deployment"; Dockerfile `CMD ["python", "app.py"]` | Serve with waitress or gunicorn, add a container `HEALTHCHECK` (backend, bot and SearXNG have none), run as a non-root user (backend runs as root). ~1 day |
 | 2 | The password is the session | `performConnect` keeps the password as the bearer token for every call; "remember me" writes `{url, username, password}` to `localStorage` in plain text; nothing expires or can be revoked | Sign-in returns a session token with an expiry; remember-me stores that token, not the password; sign-out invalidates it; the bot gets its own token. ~2–3 days with tests |
-| 3 | Blast radius of a break-in | The backend container is root, has `/var/run/docker.sock`, and mounts all of `C:\` and `D:\` read-only. Anyone who got code running in it could read every file on the PC and control Docker | Mount only what the storage figures need; put a socket proxy in front of Docker limited to the calls Ultron makes. ~1–2 days |
+| 3 | Blast radius of a break-in | The backend container is root, has `/var/run/docker.sock`, and mounts all of `C:\` and `D:\` read-only. Anyone who got code running in it could read every file on the PC and control Docker | Mount only what the storage figures need; put a socket proxy in front of Docker limited to the calls Odin makes. ~1–2 days |
 | 4 | Made-up data still on screen | Media tab's folder table is hard-coded (`plex-media 1.9 TB`, `backups 410 GB`…) with no id, so live data never replaces it. "mock data" wording and sample container rows remain as page defaults | Remove the table or back it with a real endpoint; delete the sample defaults. ~½ day |
 | 5 | No release or update path | No version number, changelog, git tags or CI. `requirements.txt` uses ranges with no lock file, so two builds a month apart are different software. Database changes are 15 ad-hoc `CREATE/ALTER` statements with no schema version | A `VERSION` shown in Settings; pinned, hashed dependencies; migrations keyed on `PRAGMA user_version`; one update command that backs up the DB first and can roll back; CI running the self-checks and SAST on every push. ~2–3 days |
 | 6 | Backups without a restore | `_run_backup` exists; there is no restore function and no restore has been rehearsed | Restore command plus a check that restores into a temp dir and reads it back. ~1 day |
@@ -74,7 +74,7 @@ people, not a storefront listing.
 
 Not needed for the goal above, listed so it is not a surprise later.
 
-- **The name and likeness.** "Ultron" is Marvel's trademark. The art is
+- **The name and likeness.** "Odin" is Marvel's trademark. The art is
   original and private use among family and friends is fine; this only
   matters if the scope above ever changes.
 - Real multi-user accounts (today: one admin, beta testers as static tokens).

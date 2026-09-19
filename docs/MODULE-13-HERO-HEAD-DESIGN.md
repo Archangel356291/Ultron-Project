@@ -11,8 +11,8 @@ or referenced during construction.
 ## What changed, and what didn't
 
 **Touched:** only the hero centerpiece (`.sphere-wrap`'s contents) and
-its immediate glow. `ultron-backend/app.py` gained one new static-asset
-route; `ultron-backend/Dockerfile` and `.dockerignore` gained one new
+its immediate glow. `odin-backend/app.py` gained one new static-asset
+route; `odin-backend/Dockerfile` and `.dockerignore` gained one new
 allowlisted directory.
 
 **Explicitly untouched, per the roadmap's own preservation list:**
@@ -41,7 +41,7 @@ Module 13 is that mechanism, for real:
   they ship in upstream (so their own relative imports between each
   other resolve unmodified). Not previously needed — Module 5 vendored
   the core renderer, not a model loader.
-- **An import map** (`ultron-dashboard.html`'s `<head>`) resolves
+- **An import map** (`odin-dashboard.html`'s `<head>`) resolves
   GLTFLoader's own `import ... from 'three'` (a bare specifier) to the
   vendored `three.module.js`, so none of the three downloaded files
   needed hand-patching — verified working via
@@ -51,8 +51,8 @@ Module 13 is that mechanism, for real:
 
 ## New: a static-asset route, because the dashboard wasn't just one file anymore
 
-The Docker image only ever shipped `ultron-backend/` +
-`ultron-dashboard.html` (see the Dockerfile's own comment). Module 13
+The Docker image only ever shipped `odin-backend/` +
+`odin-dashboard.html` (see the Dockerfile's own comment). Module 13
 needs Three.js + a `.glb` served over HTTP too — an ES module import
 needs a real origin, the same reason the dashboard itself moved off
 `file://` earlier in this project. New route:

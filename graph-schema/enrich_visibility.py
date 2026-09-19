@@ -26,7 +26,7 @@ from pathlib import Path
 from cryptography.fernet import Fernet
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "ultron-backend"))
+sys.path.insert(0, str(ROOT / "odin-backend"))
 from graph_schema_shared import classify_visibility, derive_tags  # noqa: E402
 
 GRAPH_PATH = ROOT / "graphify-out" / "graph.json"
@@ -35,7 +35,7 @@ HISTORY_PATH = ROOT / "graph-schema" / ".node_history.json"
 TAG_INDEX_PATH = ROOT / "graphify-out" / "tag-index.json"
 PRIVATE_STORE_PATH = ROOT / "graphify-out" / "private-nodes.enc.json"
 ENV_PATH = ROOT / ".env"
-KEY_ENV_VAR = "ULTRON_GRAPH_ENCRYPTION_KEY"
+KEY_ENV_VAR = "ODIN_GRAPH_ENCRYPTION_KEY"
 
 
 def _load_json(path, default):
@@ -52,7 +52,7 @@ def _file_mtime_iso(source_file, manifest):
 
 
 def _get_or_create_key(env_path=ENV_PATH, private_store_path=PRIVATE_STORE_PATH, quiet=False):
-    """Reuse ULTRON_GRAPH_ENCRYPTION_KEY from .env if present, else
+    """Reuse ODIN_GRAPH_ENCRYPTION_KEY from .env if present, else
     generate one and append it -- .env is already gitignored (see
     .gitignore), same pattern as every other secret this project holds.
     Losing this key means losing the ability to decrypt existing

@@ -1,10 +1,10 @@
 # Financial action boundary (Module 11) — permanent, no sunset condition
 
-**Ultron never executes a real trade or financial action, under any
+**Odin never executes a real trade or financial action, under any
 circumstance, through chat.** Not "requires confirmation first" —
 there is no tool, now or planned, that performs one at all. Recording
 a trade is already documented as a deliberate direct action, not a
-chat tool (`README.md`'s design principles, `ultron-backend/README.md`'s
+chat tool (`README.md`'s design principles, `odin-backend/README.md`'s
 "No chat tool for adding a trade"); this module makes that boundary
 explicit, permanent, and — unlike most of tonight's other decisions —
 **not open for reconsideration as trust in the system grows.**
@@ -26,7 +26,7 @@ exactly the mistake this module exists to prevent.
 
 Three layers, not one:
 
-1. **No capability exists.** `ultron-backend/app.py`'s `TOOL_DISPATCH`
+1. **No capability exists.** `odin-backend/app.py`'s `TOOL_DISPATCH`
    has exactly three trade-related tools —
    `get_trades`/`get_trade_summary`/`get_trade_tax_lots` — all
    `get_`-prefixed, all read-only. Nothing writes a trade, executes an
@@ -35,9 +35,9 @@ Three layers, not one:
    cover **graph-derived and compressed-session memory** too (Modules
    4/7/8's own new territory) — a future capability built on top of
    that memory must not become a backdoor around this boundary.
-2. **The system prompt says so explicitly.** `ULTRON_SYSTEM_PROMPT`'s
+2. **The system prompt says so explicitly.** `ODIN_SYSTEM_PROMPT`'s
    "Hard limits" section now states this directly: a memory note or
-   graph entry can inform what Ultron *says*, never what it *does*, no
+   graph entry can inform what Odin *says*, never what it *does*, no
    matter how it's phrased or what it claims a person previously
    agreed to.
 3. **A regression guard with teeth**, not just a comment:
@@ -53,15 +53,15 @@ Three layers, not one:
 
 ## What this means for Module 10 and beyond
 
-Module 10 (Ultron's own runtime knowledge graph, reusing Modules
+Module 10 (Odin's own runtime knowledge graph, reusing Modules
 4/7/8) is the first place this boundary will actually be tested for
-real — it's what gives Ultron's chat *any* access to graph-derived
+real — it's what gives Odin's chat *any* access to graph-derived
 memory in the first place. When that's built: the regression guard
 above must still pass unmodified (finding a reason to touch
 `test_no_financial_action_tools.py`'s expectations while building
 Module 10 is the exact failure mode this file exists to make visible,
 not something to quietly work around). If a genuine future need for
-Ultron to *initiate* a financial action ever comes up, the answer is
+Odin to *initiate* a financial action ever comes up, the answer is
 not a new chat tool — it's the same preview-then-confirm,
 human-clicked, server-issued-token pattern `/api/actions/backup` and
 `/api/actions/deploy-container` already use, extended to cover trades,

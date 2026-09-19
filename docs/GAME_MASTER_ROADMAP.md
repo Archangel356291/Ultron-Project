@@ -1,17 +1,17 @@
-# Game Master Roadmap — Ultron Pixel-Game
+# Game Master Roadmap — Odin Pixel-Game
 
-Single source of truth for the pixel robot game growing inside Ultron's
+Single source of truth for the pixel robot game growing inside Odin's
 dashboard. Last updated 2026-09-17.
 
 ---
 
 ## 0. What this project actually is (read first)
 
-The game lives **inside `ultron-dashboard.html`** as "Ultron's Corner" — a
-canvas pixel-art room plus an idle/incremental economy ("Ultron's Foundry") and
-a customization + loot sub-game ("Ultron's Expedition"). It is a **browser
+The game lives **inside `odin-dashboard.html`** as "Ultron's Corner" — a
+canvas pixel-art room plus an idle/incremental economy ("Odin's Foundry") and
+a customization + loot sub-game ("Odin's Expedition"). It is a **browser
 idle/management game with a modular robot builder and a seeded loot system**,
-persisted per-viewer in `localStorage` (`ultron_foundry_v1`). Data-driven parts
+persisted per-viewer in `localStorage` (`odin_foundry_v1`). Data-driven parts
 now live in `pixel-game/*.js` and are unit-tested with Node.
 
 It is **not** (yet) a real-time action-adventure engine: there is no player
@@ -25,7 +25,7 @@ separates "done", "data/foundation done", and "needs the action-game decision".
 
 ## 1. Implemented & working (verified, 0 console errors)
 
-- **Idle economy (Ultron's Foundry)**: robots assembled → march out → mint
+- **Idle economy (Odin's Foundry)**: robots assembled → march out → mint
   currency; upgrades with exponential cost scaling; offline accrual; auto-collect.
 - **Evolving currency**: Bits → Bytes → Chits → Scrip → Nanits (×1000 each),
   used for every balance and cost.
@@ -33,7 +33,7 @@ separates "done", "data/foundation done", and "needs the action-game decision".
   build progress bars, march-into-formation, salute.
 - **Modular Chassis Builder (Expedition)**: 38 part categories in 7 collapsible
   sections (native `<select>`s), 6 quick presets (Scout/Tank/Hacker/Builder/
-  Medic/Ultron), user-saved named loadouts, live preview silhouette.
+  Medic/Odin), user-saved named loadouts, live preview silhouette.
 - **Robot cosmetic skins**: 13 palette-driven skins wired into the builder.
 - **Data-driven loot engine** (`pixel-game/loot-engine.js`): 82 base items
   across weapon/armor/shield/throwable/artifact/consumable/ammo; 6 rarity tiers;
@@ -113,7 +113,7 @@ is the keystone the rest of the action game hangs on.
 
 - **Save compatibility**: adding fields is safe (guards default them); changing
   item shape is not. The loot engine keeps a `version`; add a migration step
-  before any breaking change. **Do not** wipe `ultron_foundry_v1`.
+  before any breaking change. **Do not** wipe `odin_foundry_v1`.
 - **Scope creep vs. the host**: this is a page inside a personal dashboard, not a
   standalone game project. Heavy real-time canvas combat may fight the dashboard
   for the main thread on phones. Keep the game in its own module/loop.
@@ -132,9 +132,9 @@ is the keystone the rest of the action game hangs on.
    - **(c) Turn-based tactics**: middle ground.
 2. **Where should the game live** — keep it embedded in the dashboard, or split
    it into its own page/route (`/pixel-game`) so it can grow without bloating
-   `ultron-dashboard.html`?
-3. **Story tone/canon** — how close to Marvel's Ultron vs. an original
-   "Ultron-inspired" character? (Affects names, lore, and anything shareable.)
+   `odin-dashboard.html`?
+3. **Story tone/canon** — how close to Marvel's Odin vs. an original
+   "Odin-inspired" character? (Affects names, lore, and anything shareable.)
 4. **Audio** — OK to add small self-hosted SFX/music files (size/perf budget),
    or keep silent for now?
 5. **Deploy** — say the word and I'll rebuild the container, verify served bytes,

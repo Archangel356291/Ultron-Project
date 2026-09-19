@@ -1,4 +1,4 @@
-# Ultron — Project & Conversation Summary (for Claude Code handoff)
+# Odin — Project & Conversation Summary (for Claude Code handoff)
 
 This document captures the full arc of a long-running collaborative build —
 not just what exists, but why it exists, what was tried, what broke, and
@@ -7,14 +7,14 @@ covers architecture and design principles for working with the code today;
 this document is the history behind it, useful for judgment calls on
 anything not explicitly covered elsewhere.
 
-## What Ultron is
+## What Odin is
 
 A personal AI-powered home lab management system for a Windows 11 PC,
 built around three pieces that all talk to one Flask backend: a
 single-file HTML/JS dashboard, a Discord bot, and the backend's own LLM
 chat brain (Claude). The throughline across the whole build: exactly one
 implementation of any given piece of logic, with the dashboard and bot as
-thin callers of the same backend functions Ultron's own chat tools use.
+thin callers of the same backend functions Odin's own chat tools use.
 
 ## Where this started
 
@@ -52,7 +52,7 @@ dashboard's previously-mock Development tab.
 4. **Real action endpoints** (backup, deploy-container) — the first
    things that mutate the host. Built with a two-step preview-then-confirm
    flow using a server-issued token; deliberately excluded from chat's own
-   initiative (Ultron will tell you to use the dashboard, never fake
+   initiative (Odin will tell you to use the dashboard, never fake
    compliance).
 5. **Real activity log** — SQLite-backed, replacing a mock "recent
    activity" feed, logging real backups/deploys/CVE scans with success/
@@ -168,8 +168,8 @@ behavior rather than assuming code was correct because it looked right:
   authentication error at runtime instead of the clean "not configured"
   message the app gives when the variable is genuinely unset. Fixed to
   match the commented-out-by-default pattern used everywhere else.
-- **Config value hardening:** `ULTRON_LLM_MAX_TOKENS` and
-  `ULTRON_CHAT_RATE_LIMIT_PER_MINUTE` originally had no floor — a
+- **Config value hardening:** `ODIN_LLM_MAX_TOKENS` and
+  `ODIN_CHAT_RATE_LIMIT_PER_MINUTE` originally had no floor — a
   misconfigured `0` or negative value would have silently broken chat
   entirely (zero-length responses, or a rate limit blocking everything).
   Both now clamp to a minimum of 1.
@@ -233,7 +233,7 @@ Fully functional beta, audited clean as of the last pass: 20 backend
 routes, 15 built-in chat tools (plus dynamic MCP tools when configured),
 a fully live-wired dashboard across all 10 sections, and a 15-command
 Discord bot. Every deliverable file was confirmed byte-identical between
-what was tested and what's in the final package. `ultron-backend/
+what was tested and what's in the final package. `odin-backend/
 BETA-LAUNCH-CHECKLIST.md` is the current source of truth for what's been
 verified end-to-end and what a first real run should expect.
 

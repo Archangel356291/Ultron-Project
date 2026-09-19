@@ -1,6 +1,6 @@
 # Site-wide visual polish: black + metal + blue + gold + red
 
-A full re-theme of `ultron-dashboard.html` — not scoped to Home this
+A full re-theme of `odin-dashboard.html` — not scoped to Home this
 time, per explicit instruction. Same file, same constraint as every
 prior pass tonight: no backend/API/route/auth changes, no functionality
 removed, no new dependencies.
@@ -26,7 +26,7 @@ Five roles, matching the requested 60-70/15-25/5-10/3-8/1-5 split:
 | Black (60-70%) | `--void #08090A`, `--panel #0F1113`, `--panel-raised #16191C` | All backgrounds — three steps, not one flat value, so surfaces read as stacked material |
 | Dark metallic silver (15-25%) | `--line`/`--metal #2C2F33`, `--metal-light #474C52`, `--metal-dim #1B1D20`, `--steel #8B93A0` | Borders, separators, inactive controls, structural framing |
 | Blue (5-10%) | `--blue #4FA6E0`, `--blue-bright #8FD6FF`, `--cyan #3DD6FF` | Readable text, telemetry, AND the general interactive accent (nav active, focus rings, buttons, toggles) |
-| Gold/orange (3-8%) | `--oxide #FF8A1E` (narrowed), `--core-gold #FFB238` | Ultron's identity/intelligence *specifically* — narrowed hard, see below |
+| Gold/orange (3-8%) | `--oxide #FF8A1E` (narrowed), `--core-gold #FFB238` | Odin's identity/intelligence *specifically* — narrowed hard, see below |
 | Red (1-5%, new) | `--red #C0392B`, `--red-bright #FF3B3B` | Errors, critical states, financial losses — didn't exist as a dedicated token before tonight |
 
 **The two token-value-only changes that did the most work for the
@@ -47,10 +47,10 @@ find-replace:
   inside the hero panel itself (eyebrow bolts, sphere-labels border —
   the AI core's own immediate surroundings), the mic button specifically
   while `.listening` (reflects the brain's own real state machine, not
-  a static accent), the `who` label on Ultron's own chat messages, the
-  AI Assistant tab's brain-canvas labels and its own hub node (Ultron's
+  a static accent), the `who` label on Odin's own chat messages, the
+  AI Assistant tab's brain-canvas labels and its own hub node (Odin's
   literal node in that graph).
-- **Becomes red** (`.sev.crit`, `.msg.ultron.err`, `.conn-status.err`,
+- **Becomes red** (`.sev.crit`, `.msg.odin.err`, `.conn-status.err`,
   activity `status === 'error'`, a negative realized trade gain, the
   90%+ tier of every spend/token/beta-spend gauge, one inline error
   span) — every genuine error/critical/loss state, verified live: the

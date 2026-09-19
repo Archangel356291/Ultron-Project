@@ -1,6 +1,6 @@
-# Ultron Discord bot
+# Odin Discord bot
 
-A remote-control surface for the Ultron backend, from Discord. This bot has
+A remote-control surface for the Odin backend, from Discord. This bot has
 no logic of its own beyond formatting — every command is an HTTP call to the
 same backend (`app.py`) the dashboard uses, so there's exactly one
 implementation of "what the system status is," not two that can drift apart.
@@ -24,8 +24,8 @@ implementation of "what the system status is," not two that can drift apart.
 | `/export` | Download trades as a CSV file — transactions or tax-lots | free |
 | `/backup` | **Mutates the host.** Preview a backup, confirm with a button | free |
 | `/deploy` | **Mutates the host.** Preview a container deploy, confirm with a button | free |
-| `/ask <message>` | Ask Ultron anything — routes through the LLM, which can check real data via tools | costs Anthropic API tokens |
-| `/forget` | Clear your conversation history with Ultron | free |
+| `/ask <message>` | Ask Odin anything — routes through the LLM, which can check real data via tools | costs Anthropic API tokens |
+| `/forget` | Clear your conversation history with Odin | free |
 
 `/backup` and `/deploy` use the exact same preview-then-confirm flow as the
 backend and dashboard — see "Action commands" below before using either.
@@ -63,7 +63,7 @@ line, not a missing feature.
 ## Security — read this before inviting the bot anywhere
 
 Every command checks the calling user's Discord ID against
-`ULTRON_DISCORD_ALLOWED_USERS` before doing anything. **The bot refuses to
+`ODIN_DISCORD_ALLOWED_USERS` before doing anything. **The bot refuses to
 start without this set.** Without it, anyone who can see and message the bot
 in a server — not just you — could query your home lab's status or spend
 your Anthropic API budget via `/ask`. This is a remote-control surface for
@@ -92,26 +92,26 @@ anyone else who should be allowed to use the bot.
 ### 3. Install and run (Windows 11, PowerShell)
 
 ```powershell
-cd ultron-discord-bot
+cd odin-discord-bot
 python -m venv venv
 venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 
 $env:DISCORD_BOT_TOKEN = "paste your bot token here"
-$env:ULTRON_BACKEND_URL = "http://127.0.0.1:5000"
-$env:ULTRON_API_TOKEN = "the same token the backend was started with"
-$env:ULTRON_DISCORD_ALLOWED_USERS = "your discord user id, and anyone else's, comma separated"
+$env:ODIN_BACKEND_URL = "http://127.0.0.1:5000"
+$env:ODIN_API_TOKEN = "the same token the backend was started with"
+$env:ODIN_DISCORD_ALLOWED_USERS = "your discord user id, and anyone else's, comma separated"
 
 python bot.py
 ```
 
 The bot needs the backend (`app.py`) already running and reachable at
-`ULTRON_BACKEND_URL`. If the backend is on a different machine (e.g. the
+`ODIN_BACKEND_URL`. If the backend is on a different machine (e.g. the
 Raspberry Pi, or the Cyberpower PC reachable over Tailscale), point this at
 that address instead of `127.0.0.1`.
 
 Global slash commands can take up to an hour to show up in Discord the
-first time. For instant testing, set `ULTRON_DISCORD_DEV_GUILD_ID` to a
+first time. For instant testing, set `ODIN_DISCORD_DEV_GUILD_ID` to a
 server ID (right-click a server icon with Developer Mode on → Copy Server
 ID) and commands sync to that one server immediately.
 
@@ -119,15 +119,15 @@ ID) and commands sync to that one server immediately.
 
 Same pattern as the backend — Task Scheduler:
 
-1. Create `start-bot.bat` in the `ultron-discord-bot` folder:
+1. Create `start-bot.bat` in the `odin-discord-bot` folder:
    ```bat
    @echo off
    cd /d "%~dp0"
    call venv\Scripts\activate.bat
    set DISCORD_BOT_TOKEN=paste-your-token-here
-   set ULTRON_BACKEND_URL=http://127.0.0.1:5000
-   set ULTRON_API_TOKEN=paste-your-backend-token-here
-   set ULTRON_DISCORD_ALLOWED_USERS=your-id,other-id
+   set ODIN_BACKEND_URL=http://127.0.0.1:5000
+   set ODIN_API_TOKEN=paste-your-backend-token-here
+   set ODIN_DISCORD_ALLOWED_USERS=your-id,other-id
    python bot.py
    ```
 2. Task Scheduler → Create Task → Triggers → "At startup" (or "At log on").
@@ -180,6 +180,6 @@ for a restart.
 - No per-server configuration — the allowlist is global across every server
   the bot is in.
 - No rate limiting beyond what Discord itself enforces. If you're worried
-  about `/ask` costs, the backend's own `ULTRON_LLM_TIMEOUT_SECONDS` and
+  about `/ask` costs, the backend's own `ODIN_LLM_TIMEOUT_SECONDS` and
   tool-call cap still apply, but nothing here stops an allowlisted user
   from asking a lot of questions.

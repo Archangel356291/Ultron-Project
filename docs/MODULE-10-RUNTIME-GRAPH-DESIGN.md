@@ -1,10 +1,10 @@
-# Ultron's runtime knowledge graph (Module 10) — v1
+# Odin's runtime knowledge graph (Module 10) — v1
 
-The roadmap's own instruction for this module: *"Build Ultron's runtime
+The roadmap's own instruction for this module: *"Build Odin's runtime
 knowledge graph, reusing Module 4/7/8. Do not design this from scratch.
 Reuse the same schema, labeled-edge convention, public/private tagging,
 indexing, and retrieval logic built for the vault graph, applied to
-Ultron's own runtime memory."* This is that — applied to `memory_notes`,
+Odin's own runtime memory."* This is that — applied to `memory_notes`,
 the SQLite table `remember_note`/`recall_notes` already used, not a new
 store.
 
@@ -12,18 +12,18 @@ store.
 
 The functions the roadmap says to reuse (`classify_visibility`,
 `derive_tags`, `retrieve`) were built in `graph-schema/` (Module 4) and
-`session-read/` (Module 8) — both **outside** `ultron-backend/`. But the
-Docker image (`ultron-backend/Dockerfile`) only `COPY`s `ultron-backend/`
-and `ultron-dashboard.html`; nothing else in the repo root ships inside
+`session-read/` (Module 8) — both **outside** `odin-backend/`. But the
+Docker image (`odin-backend/Dockerfile`) only `COPY`s `odin-backend/`
+and `odin-dashboard.html`; nothing else in the repo root ships inside
 the container. Module 10's actual runtime code lives in `app.py`, which
 does ship — so the functions had to move somewhere `app.py` can import
 directly at build time, not just at dev time.
 
-Fix: `ultron-backend/graph_schema_shared.py` is now the one canonical
+Fix: `odin-backend/graph_schema_shared.py` is now the one canonical
 implementation of `classify_visibility`, `derive_tags`, `_tag_words`, and
 `retrieve`. `graph-schema/enrich_visibility.py` and
 `session-read/retrieve_context.py` were both refactored to import FROM
-this module (`sys.path.insert(0, .../ultron-backend)`) instead of keeping
+this module (`sys.path.insert(0, .../odin-backend)`) instead of keeping
 their own copies — so there is exactly one implementation, not three that
 could quietly drift apart. `app.py` imports it directly (same directory,
 no path hack needed — it's the only one of the three consumers that
@@ -38,7 +38,7 @@ a rewrite.
 
 Three new columns, added the same way `llm_usage` gained `beta_name`/
 `cost_usd` (`ALTER TABLE ... ADD COLUMN`, gated on `PRAGMA table_info`, so
-an existing `ultron.db` keeps its history):
+an existing `odin.db` keeps its history):
 
 ```
 category    TEXT   -- always "concept" for notes today (no file_type/
@@ -73,9 +73,9 @@ keyword (`wireguard`, `api key`, `trade record`, an IP address, etc.) gets
 is lighter than Module 4's**, deliberately: a private *note* is never
 shown to the beta role (memory tools are already admin-only, excluded
 from `BETA_ALLOWED_TOOLS`) but isn't separately encrypted-at-rest the way
-`private-nodes.enc.json` is — `ultron.db` itself isn't published anywhere
+`private-nodes.enc.json` is — `odin.db` itself isn't published anywhere
 graphify's graph.json is, so the threat model (public git history) that
-justified Module 4's encryption doesn't apply here. If `ultron.db` is
+justified Module 4's encryption doesn't apply here. If `odin.db` is
 ever backed up somewhere less trusted, this would need revisiting.
 
 ## Edges: reusing `retrieve()` itself to find them, not new overlap logic

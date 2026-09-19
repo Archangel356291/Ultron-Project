@@ -1,4 +1,4 @@
-# Ultron
+# Odin
 
 A personal AI-powered home lab system: a Flask backend with an LLM chat
 brain (Claude), a single-file HTML/JS dashboard, and a Discord bot — all
@@ -8,14 +8,14 @@ of every piece of logic, not three that can drift apart.
 ## Structure
 
 ```
-ultron-backend/       Flask backend — all the real logic lives here
-ultron-discord-bot/   Thin remote-control layer; every command is an
+odin-backend/       Flask backend — all the real logic lives here
+odin-discord-bot/   Thin remote-control layer; every command is an
                        HTTP call to the backend, no duplicated logic
-ultron-dashboard.html Single-file dashboard, opens directly in a browser
+odin-dashboard.html Single-file dashboard, opens directly in a browser
 fonts/                Self-hosted dashboard typefaces (OFL) — the page makes
                        no third-party requests
 searxng/              Settings for Scout's private search engine (the
-                       ultron-searxng compose service behind web_search)
+                       odin-searxng compose service behind web_search)
 sw.js                 Service worker for the installable app (never
                        caches /api/*)
 dev-tools/            Testing infrastructure (fake SDKs, a real local
@@ -25,22 +25,22 @@ dev-tools/            Testing infrastructure (fake SDKs, a real local
 ## Where to start reading
 
 - **Setting this up for the first time?** →
-  `ultron-backend/BETA-LAUNCH-CHECKLIST.md` — the consolidated,
+  `odin-backend/BETA-LAUNCH-CHECKLIST.md` — the consolidated,
   step-by-step path from files to a running, verified system.
 - **Are you a beta tester, not the developer?** →
-  `ultron-backend/BETA-TESTER-GUIDE.md` — written for you directly, no
+  `odin-backend/BETA-TESTER-GUIDE.md` — written for you directly, no
   dev background assumed. This is the one to actually send someone.
 - **Onboarding a beta tester, or want to see who's helped test this?** →
-  `ultron-backend/BETA-TESTERS.md` — the add/remove process and the
+  `odin-backend/BETA-TESTERS.md` — the add/remove process and the
   credits roster.
 - **Backend API reference, every endpoint and env var?** →
-  `ultron-backend/README.md`
+  `odin-backend/README.md`
 - **Discord bot commands and setup?** →
-  `ultron-discord-bot/README.md`
+  `odin-discord-bot/README.md`
 - **Remote access (Tailscale)?** →
-  `ultron-backend/REMOTE-ACCESS.md`
+  `odin-backend/REMOTE-ACCESS.md`
 - **Connecting a Raspberry Pi for home-lab actions?** →
-  `ultron-backend/PI-SETUP.md` — phase 1 (network/SSH/Docker) only; the
+  `odin-backend/PI-SETUP.md` — phase 1 (network/SSH/Docker) only; the
   backend doesn't talk to a Pi yet
 - **Continuing development / writing tests?** →
   `dev-tools/README.md`
@@ -54,12 +54,12 @@ These aren't incidental — they were deliberate, repeated decisions across
 many features, and code added going forward should keep holding to them
 unless there's a real reason not to:
 
-**Read-only by default, everywhere.** Every chat tool Ultron has is a
+**Read-only by default, everywhere.** Every chat tool Odin has is a
 read function — no chat tool writes a trade, deploys a container, runs a
 backup, or approves an MCP tool. Adding a new *read* tool is low-stakes;
 adding anything that writes needs the reasoning below, not just a
 function reference in `TOOL_DISPATCH`. `remember_note` (see
-`ultron-backend/README.md`'s AI assistant section) is the one existing
+`odin-backend/README.md`'s AI assistant section) is the one existing
 exception, and it earns that by being narrow, reversible, and never
 host-affecting — not by being convenient. Any *future* write tool that
 touches something real (the host, a container, a dollar figure) should
@@ -72,7 +72,7 @@ conversational "yes."** `/api/actions/backup` and
 `/api/actions/deploy-container` both use a preview-then-confirm flow: the
 first call returns a server-issued token and a description of exactly
 what would happen; nothing runs until that exact token comes back in a
-second call. There is no way to skip this from chat — Ultron will tell
+second call. There is no way to skip this from chat — Odin will tell
 you to use the dashboard instead of pretending it can act. If a new
 action ever needs building, this is the pattern to extend, not route
 around.
@@ -82,7 +82,7 @@ the server level.** Connecting an MCP server discovers its tools but
 grants nothing — only tools the operator names in that server's
 `auto_approve` config become callable, and there is deliberately no
 in-conversation approval path (a forged "yes" via prompt injection would
-defeat one). See `ultron-backend/README.md`'s "External tools (MCP)"
+defeat one). See `odin-backend/README.md`'s "External tools (MCP)"
 section for the full reasoning before changing this.
 
 **Real safeguards, not just docs.** Rate limiting, a daily token budget,
@@ -94,7 +94,7 @@ setting exists. Any new cost or safety control added later should meet
 the same bar: prove it does the thing, don't just document the intent.
 
 **One source of truth per piece of logic.** The dashboard, the bot, and
-Ultron's own chat tools all call the same backend functions — there's no
+Odin's own chat tools all call the same backend functions — there's no
 separate "bot version" of the status check or "dashboard version" of the
 trade summary. When adding a feature, the backend function is the
 implementation; the dashboard and bot are thin callers of it.
@@ -104,7 +104,7 @@ ledger computes FIFO gain/loss as a factual record-keeping aid — the
 disclaimer that it isn't tax advice is embedded in the API responses
 themselves (and in exported CSV files as a header comment), not just
 shown once in a UI. The system prompt separately and explicitly forbids
-Ultron from turning that data into trading or tax advice. Both layers
+Odin from turning that data into trading or tax advice. Both layers
 exist on purpose; don't remove either while trying to simplify things.
 
 **Nothing works until explicitly configured.** Backups, git repo status,
@@ -142,7 +142,7 @@ Fully functional beta: backend (27 endpoints, 16 built-in chat tools plus
 dynamic MCP tools), dashboard (10 sections, all live-wired, redesigned as
 a black/metallic/blue/gold/red command-center interface with a live
 particle-based AI core and a real Home-tab knowledge graph), Discord bot
-(16 commands). See `ultron-backend/BETA-LAUNCH-CHECKLIST.md` for what's
+(16 commands). See `odin-backend/BETA-LAUNCH-CHECKLIST.md` for what's
 been verified and what to expect. Known, deliberate gaps — not
 oversights — are called out in each README's own "Not included here" or
 equivalent section (e.g. no stdio/local-subprocess MCP transport, no
@@ -167,7 +167,7 @@ MIT — see [`LICENSE`](LICENSE).
 Credited here as they join — not required, but real work deserves it.
 Full process (how someone gets added, each tester's own independently-
 revocable token, what to send them) lives in
-`ultron-backend/BETA-TESTERS.md`; this table mirrors that file's
+`odin-backend/BETA-TESTERS.md`; this table mirrors that file's
 roster — update both when it changes.
 
 | Name | Started | Notes |
@@ -178,9 +178,9 @@ No third-party testers yet — beta test #1 (2026-09-13) verified the
 `beta_tester` role itself using the owner's own second device over
 Tailscale, not an outside tester.
 
-**Inviting someone?** `ultron-backend/BETA-INVITE-MESSAGE.md` has a
+**Inviting someone?** `odin-backend/BETA-INVITE-MESSAGE.md` has a
 ready-to-send, copy/paste invite — the first ask, sent before
-`ultron-backend/BETA-TESTER-GUIDE.md` and their token. Once they say
+`odin-backend/BETA-TESTER-GUIDE.md` and their token. Once they say
 yes, add their name to the roster both here and in `BETA-TESTERS.md`.
 
 ### Other contributors

@@ -11,33 +11,33 @@ import sys
 import tempfile
 import urllib.error
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
 DATA_DIR = tempfile.mkdtemp()
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token-with-32-characters!!"
-os.environ["ULTRON_BETA_TOKENS"] = "tester:beta-test-token"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token-with-32-characters!!"
+os.environ["ODIN_BETA_TOKENS"] = "tester:beta-test-token"
 os.environ["ANTHROPIC_API_KEY"] = "fake-key-for-test"
-os.environ["ULTRON_DB_PATH"] = os.path.join(DATA_DIR, "ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
-os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
-os.environ["ULTRON_SENTINEL_INTERVAL_SECONDS"] = "0"
-os.environ["ULTRON_LEARN_INLINE"] = "1"
-os.environ["ULTRON_AGENT_DAILY_USD"] = "learner=0.000001,ultron=100"
-os.environ["ULTRON_ALLOWED_ORIGIN"] = "*"
-os.environ.pop("ULTRON_TLS_CERT", None)
-os.environ.pop("ULTRON_TLS_KEY", None)
-os.environ["ULTRON_MONITOR_TARGETS"] = os.path.join(DATA_DIR, "monitoring-targets.json")
-os.environ["ULTRON_TAILNET_SUFFIX"] = "tailc5bde9.ts.net"
+os.environ["ODIN_DB_PATH"] = os.path.join(DATA_DIR, "odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ODIN_SENTINEL_INTERVAL_SECONDS"] = "0"
+os.environ["ODIN_LEARN_INLINE"] = "1"
+os.environ["ODIN_AGENT_DAILY_USD"] = "learner=0.000001,ultron=100"
+os.environ["ODIN_ALLOWED_ORIGIN"] = "*"
+os.environ.pop("ODIN_TLS_CERT", None)
+os.environ.pop("ODIN_TLS_KEY", None)
+os.environ["ODIN_MONITOR_TARGETS"] = os.path.join(DATA_DIR, "monitoring-targets.json")
+os.environ["ODIN_TAILNET_SUFFIX"] = "tailc5bde9.ts.net"
 json.dump({"targets": [
     {"name": "local ok", "type": "http", "target": "http://host.docker.internal:8096/health"},
     {"name": "local down", "type": "http", "target": "http://127.0.0.1:9/nothing"},
     {"name": "public", "type": "http", "target": "https://example.com/"},
     {"name": "tailnet ok", "type": "http", "target": "https://jellyfin.tailc5bde9.ts.net/health"},
     {"name": "lookalike", "type": "http", "target": "https://evil.tailc5bde9.ts.net.attacker.com/"},
-]}, open(os.environ["ULTRON_MONITOR_TARGETS"], "w"))
+]}, open(os.environ["ODIN_MONITOR_TARGETS"], "w"))
 
 import anthropic  # noqa: E402
 import app  # noqa: E402
@@ -76,9 +76,9 @@ def demo():
             assert head.startswith("---\nname: " + name.replace("_", "-")) and "\ntools:" in head, path
 
     # Scribe's runtime half: redacted, capped, only real container names.
-    app.docker_ps = lambda: ([{"name": "ultron-searxng", "image": "x", "status": "Up", "running_for": "", "state": "running"}], None)
+    app.docker_ps = lambda: ([{"name": "odin-searxng", "image": "x", "status": "Up", "running_for": "", "state": "running"}], None)
     r = app.get_container_logs(container="not-a-container")
-    assert "no container named" in r["error"] and r["containers"] == ["ultron-searxng"], r
+    assert "no container named" in r["error"] and r["containers"] == ["odin-searxng"], r
     assert app.get_container_logs()["error"].startswith("container is required")
     # Built from parts so no realistic-looking secret sits in this file
     # (the repo's gitleaks pre-commit hook rightly refuses those).
@@ -88,7 +88,7 @@ def demo():
     class _Res:
         stdout, stderr = fake, ""
     app.subprocess.run = lambda *a, **k: _Res()
-    r = app.get_container_logs(container="ultron-searxng", lines=999)
+    r = app.get_container_logs(container="odin-searxng", lines=999)
     assert r["lines_requested"] == app.LOG_TAIL_MAX_LINES
     assert "abcdefghijklmnop123" not in r["log"] and fake_key not in r["log"] and "hunter2secret" not in r["log"] and "XXXXXXXXXXXX" not in r["log"], r["log"]
     assert "[redacted]" in r["log"] and "normal line" in r["log"], r["log"]

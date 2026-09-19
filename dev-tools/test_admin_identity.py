@@ -1,4 +1,4 @@
-"""Self-check for ULTRON_ADMIN_USERNAME (owner-requested 2026-09-15: mark the
+"""Self-check for ODIN_ADMIN_USERNAME (owner-requested 2026-09-15: mark the
 admin's identity as "Archangel356291" instead of the generic literal
 "admin" in whoami, presence, and chat_log).
 
@@ -14,17 +14,17 @@ import os
 import sys
 import tempfile
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_ADMIN_USERNAME"] = "Archangel356291"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_ADMIN_USERNAME"] = "Archangel356291"
 os.environ["ANTHROPIC_API_KEY"] = "fake-key-for-test"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
-os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_DISABLE_METRICS_HISTORY"] = "1"
 
 import anthropic  # noqa: E402  (the fake, via sys.path above)
 import app  # noqa: E402
@@ -62,7 +62,7 @@ def demo():
     turns = app.get_chat_history()["turns"]
     assert all(t["identity"] == "Archangel356291" for t in turns), turns
 
-    print("OK: ULTRON_ADMIN_USERNAME overrides the admin identity in /api/whoami and chat_log, "
+    print("OK: ODIN_ADMIN_USERNAME overrides the admin identity in /api/whoami and chat_log, "
           "while the actual token check is untouched -- a wrong token is still 401'd "
           "regardless of the configured name.")
 

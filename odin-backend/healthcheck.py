@@ -10,7 +10,7 @@ import ssl
 import sys
 import urllib.request
 
-tls = bool((os.environ.get("ULTRON_TLS_CERT") or "").strip() and (os.environ.get("ULTRON_TLS_KEY") or "").strip())
+tls = bool((os.environ.get("ODIN_TLS_CERT") or "").strip() and (os.environ.get("ODIN_TLS_KEY") or "").strip())
 ctx = ssl._create_unverified_context() if tls else None
 try:
     with urllib.request.urlopen(("https" if tls else "http") + "://127.0.0.1:5000/api/health", timeout=5, context=ctx) as res:

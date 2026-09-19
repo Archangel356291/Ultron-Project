@@ -1,5 +1,5 @@
 /*
- * Ultron pixel-game — data-driven loot engine.
+ * Odin pixel-game — data-driven loot engine.
  * Pure, dependency-free, UMD (browser global `LootEngine` + node require).
  *
  * Design goals (from the owner's spec):
@@ -177,7 +177,7 @@
     R('titan_servo_core', 'Titan Servo Core', ['legendary', 'legendary'], { maxHp: 40, dmg: 10 }, 'Melee hits stagger and knock back.'),
     R('quantum_memory_shard', 'Quantum Memory Shard', ['legendary', 'legendary'], { critDmg: 20 }, 'Stores one loadout swap mid-run.'),
     R('singularity_battery', 'Singularity Battery', ['mythic', 'mythic'], { energyRegen: 24 }, 'Abilities cost half energy.'),
-    R('ultron_prime_core', 'Ultron Prime Core', ['mythic', 'mythic'], { dmg: 20, maxShield: 30 }, 'Summons a squad of loyal drones.'),
+    R('ultron_prime_core', 'Odin Prime Core', ['mythic', 'mythic'], { dmg: 20, maxShield: 30 }, 'Summons a squad of loyal drones.'),
     R('living_circuit', 'Living Circuit', ['mythic', 'mythic'], { repairPower: 25 }, 'Slowly regrows destroyed parts.'),
     R('chrono_relay', 'Chrono Relay', ['mythic', 'mythic'], { cooldown: 20 }, 'Rewinds 2s once per encounter.'),
     // consumables (fixed effects)

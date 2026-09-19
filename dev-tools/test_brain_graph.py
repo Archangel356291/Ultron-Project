@@ -1,5 +1,5 @@
-"""Self-check for GET /api/brain-graph -- the Brain vault drawn under Ultron's
-corner ("What Ultron knows", owner-requested 2026-09-16).
+"""Self-check for GET /api/brain-graph -- the Brain vault drawn under Odin's
+corner ("What Odin knows", owner-requested 2026-09-16).
 
 Proves the things the panel depends on: a memory note's page and heading fold
 into one node named by the note's own words (not "note-7.md"), conversations
@@ -16,17 +16,17 @@ import os
 import sys
 import tempfile
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)
 sys.path.insert(0, BACKEND_DIR)
 
 DATA_DIR = tempfile.mkdtemp()
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_BETA_TOKENS"] = "tester:beta-test-token"
-os.environ["ULTRON_DB_PATH"] = os.path.join(DATA_DIR, "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
-os.environ["ULTRON_DISABLE_METRICS_HISTORY"] = "1"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_BETA_TOKENS"] = "tester:beta-test-token"
+os.environ["ODIN_DB_PATH"] = os.path.join(DATA_DIR, "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_DISABLE_METRICS_HISTORY"] = "1"
 
 import app  # noqa: E402
 

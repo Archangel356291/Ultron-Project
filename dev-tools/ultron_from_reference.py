@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild Ultron's in-game sprites so he looks exactly like the pixel reference
+"""Rebuild Odin's in-game sprites so he looks exactly like the pixel reference
 art (pixel ultron referance.png). Pink background -> transparent, crisp NEAREST
 upscale, anchored to match the existing sprite canvases so the draw code keeps
 placing him correctly behind his desk / on the floor.

@@ -1,7 +1,7 @@
 # Loot System — `pixel-game/loot-engine.js`
 
-A pure, data-driven, seeded loot engine for the Ultron pixel-game (the
-Expedition sub-game inside `ultron-dashboard.html`). No dependencies. Loads as a
+A pure, data-driven, seeded loot engine for the Odin pixel-game (the
+Expedition sub-game inside `odin-dashboard.html`). No dependencies. Loads as a
 browser global (`window.LootEngine`) and as a Node module
 (`require('./pixel-game/loot-engine.js')`), so the same code the page runs is the
 code the tests run.

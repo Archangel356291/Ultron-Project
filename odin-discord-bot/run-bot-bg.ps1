@@ -6,6 +6,6 @@
 # activate the venv yourself in the current shell first. If you're typing
 # commands interactively, activate the venv and run start-bot.ps1 directly
 # instead; this exists for everything else. Mirrors
-# ultron-backend/run-beta.ps1.
+# odin-backend/run-beta.ps1.
 & "$PSScriptRoot\venv\Scripts\Activate.ps1"
 & "$PSScriptRoot\start-bot.ps1"

@@ -1,10 +1,10 @@
-"""Self-check for Ultron's Evolution/Ideas tracker (propose_idea / get_ideas /
+"""Self-check for Odin's Evolution/Ideas tracker (propose_idea / get_ideas /
 update_idea_status -- master prompt section 13).
 
 Proves the real mechanisms: validation rejects unknown category/status,
 propose_idea always lands at DISCOVERED regardless of what's passed in, the
 chat surface can create ideas but NOT change their status (section 11 --
-Ultron proposes, never self-approves), and the REST routes behind the
+Odin proposes, never self-approves), and the REST routes behind the
 dashboard's Approve/Reject actions require an admin token.
 
 Run standalone from anywhere:
@@ -14,14 +14,14 @@ import os
 import sys
 import tempfile
 
-BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ultron-backend")
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "odin-backend")
 FAKE_PKGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fake_pkgs")
 sys.path.insert(0, FAKE_PKGS_DIR)   # 'import anthropic' inside app.py resolves to the fake
 sys.path.insert(0, BACKEND_DIR)
 
-os.environ["ULTRON_API_TOKEN"] = "admin-test-token"
-os.environ["ULTRON_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_ultron.db")
-os.environ["ULTRON_DISABLE_MEMORY_TRENDS"] = "1"
+os.environ["ODIN_API_TOKEN"] = "admin-test-token"
+os.environ["ODIN_DB_PATH"] = os.path.join(tempfile.mkdtemp(), "test_odin.db")
+os.environ["ODIN_DISABLE_MEMORY_TRENDS"] = "1"
 
 import app  # noqa: E402
 

@@ -18,9 +18,9 @@ id_ed25519
 credentials.json
 
 # Tailscale TLS cert/key for the backend (host-specific, machine-issued --
-# see ultron-backend/tls/README.md, which stays tracked)
-ultron-backend/tls/*.crt
-ultron-backend/tls/*.key
+# see odin-backend/tls/README.md, which stays tracked)
+odin-backend/tls/*.crt
+odin-backend/tls/*.key
 
 # Encrypted private knowledge-graph nodes (graph-schema/enrich_visibility.py).
 # Never committed even though it's encrypted -- see GRAPH-SCHEMA-DESIGN.md;
@@ -83,11 +83,11 @@ $RECYCLE.BIN/
 # vault config and stays tracked.
 /.obsidian/
 
-# Ultron's Brain & Knowledge mirrors -- written next to ultron.db (D:\ultron's
+# Ultron's Brain & Knowledge mirrors -- written next to odin.db (D:\ultron's
 # Brain&Knowledge in Docker); if the backend is ever run bare with the default
 # DB path they would land here, and they are runtime data, never source.
 # Sandboxed SAST reports (dev-tools/sast-scan.sh) -- regenerated on demand.
 /dev-tools/sast-reports/
-/ultron-backend/knowledge/
-/ultron-backend/chat logs/
-/ultron-backend/graphify-out/
+/odin-backend/knowledge/
+/odin-backend/chat logs/
+/odin-backend/graphify-out/

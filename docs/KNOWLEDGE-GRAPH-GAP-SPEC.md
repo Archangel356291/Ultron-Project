@@ -7,7 +7,7 @@ graphify's documentation.
 
 ## 1. Beta test results already recorded — pulled in as ground truth
 
-Checked `ultron-backend/BETA-TESTERS.md`, `CODE-AUDIT.md`,
+Checked `odin-backend/BETA-TESTERS.md`, `CODE-AUDIT.md`,
 `BETA-LAUNCH-CHECKLIST.md`, and queried the graphify graph itself
 (`graphify query "beta test results and verification"`) for anything not
 already in those docs. Nothing was found outside them — the graph

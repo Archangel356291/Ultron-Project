@@ -26,7 +26,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "ultron-backend"))
+sys.path.insert(0, str(ROOT / "odin-backend"))
 from graph_schema_shared import retrieve  # noqa: E402 -- Module 10 made this the shared home
 
 GRAPH_PATH = ROOT / "graphify-out" / "graph.json"

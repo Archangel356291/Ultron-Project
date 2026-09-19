@@ -3,7 +3,7 @@
 A visual/UX overhaul of the Home screen only, per the user's reference
 image (a dark-navy/cyan HUD with an orange/gold holographic AI core).
 Scoped deliberately: no backend, auth, API, or other-section changes —
-`ultron-dashboard.html` is the only file this touched.
+`odin-dashboard.html` is the only file this touched.
 
 ## Audit correction, up front
 
@@ -98,7 +98,7 @@ labeled — user's explicit call.
 
 **What the request asked for that still doesn't exist anywhere in this
 backend, so wasn't added**: network download/upload/latency, and
-per-device online/offline counts. No endpoint in `ultron-backend/app.py`
+per-device online/offline counts. No endpoint in `odin-backend/app.py`
 produces either. Adding real ones would mean new backend monitoring
 code — out of scope for a visual redesign pass, flagged rather than
 faked or silently dropped.
@@ -123,7 +123,7 @@ confirming the CSS rules are still present unmodified.
 
 ## Addendum: density refinement against the actual reference image
 
-The reference image (`ultron brain referance pic.jpg`, project root —
+The reference image (`odin brain referance pic.jpg`, project root —
 confirmed present, inspected directly, not assumed) is a dense
 gold/orange particle-filament wheel/hub with radiating spokes, a bright
 ring-structured core, and scattered sparks. The original v1 particle
@@ -168,7 +168,7 @@ Mode's lower counts confirmed present in the same code path.
 - **The Crypto & Markets ticker's identical fake-data problem**, noted
   above, is unresolved — deliberately out of scope tonight.
 - **No component-file split.** The request's suggested
-  `UltronHome/AiCore/SystemTelemetry/...` hierarchy assumes a framework
+  `OdinHome/AiCore/SystemTelemetry/...` hierarchy assumes a framework
   this project doesn't have (plain HTML/CSS/JS, no build step, by
   design — see `README.md`). The equivalent here is clearly-labeled CSS
   blocks and named JS functions within the single file, not physically

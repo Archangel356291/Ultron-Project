@@ -1,17 +1,17 @@
 # Beta testers
 
-Everyone who helps test Ultron gets credited here as they join — not
+Everyone who helps test Odin gets credited here as they join — not
 because it's required, but because finding what's broken before it
 matters is real work.
 
 ## How someone gets added
 
-Each tester gets their **own** token — never your `ULTRON_API_TOKEN`,
-and never one token shared between people. `ULTRON_BETA_TOKENS` in `.env`
+Each tester gets their **own** token — never your `ODIN_API_TOKEN`,
+and never one token shared between people. `ODIN_BETA_TOKENS` in `.env`
 holds all of them at once, as `name:token` pairs:
 
 ```
-ULTRON_BETA_TOKENS=alice:3f9a1c7e2b8d4056a1f2e3c4b5a69788,bob:9c2e5f81a4b7301dc6e9f0a2b3c4d5e6
+ODIN_BETA_TOKENS=alice:3f9a1c7e2b8d4056a1f2e3c4b5a69788,bob:9c2e5f81a4b7301dc6e9f0a2b3c4d5e6
 ```
 
 0. **Ask first.** `BETA-INVITE-MESSAGE.md` has a ready-to-send invite —
@@ -21,7 +21,7 @@ ULTRON_BETA_TOKENS=alice:3f9a1c7e2b8d4056a1f2e3c4b5a69788,bob:9c2e5f81a4b7301dc6
    ```powershell
    -join ((48..57)+(97..102)|Get-Random -Count 32|%{[char]$_})
    ```
-2. **Add it to `ULTRON_BETA_TOKENS`** in `.env` as `name:token`, comma-separated
+2. **Add it to `ODIN_BETA_TOKENS`** in `.env` as `name:token`, comma-separated
    from any existing entries. Restart the backend to pick it up.
 3. **Send them `BETA-TESTER-GUIDE.md`, their URL, and their token.** The
    guide is written for the tester directly (no dev background assumed)
@@ -36,7 +36,7 @@ ULTRON_BETA_TOKENS=alice:3f9a1c7e2b8d4056a1f2e3c4b5a69788,bob:9c2e5f81a4b7301dc6
    testers" section, which mirrors this one for visibility. Keep both
    in sync.
 5. **When they stop testing:** remove their `name:token` entry from
-   `ULTRON_BETA_TOKENS` and restart the backend. This revokes only that
+   `ODIN_BETA_TOKENS` and restart the backend. This revokes only that
    person — everyone else's token keeps working.
 
 ## Roster
@@ -55,10 +55,10 @@ actual other people.
 Every beta tester is capped at **$1.00 of real API spend, total, for the
 whole time they're testing** — not a daily allowance, a lifetime one. It's
 enforced in `/api/chat` itself (a genuine refusal once reached, not just a
-displayed number — see `ultron-backend/app.py`'s `_beta_tester_spend_usd`
+displayed number — see `odin-backend/app.py`'s `_beta_tester_spend_usd`
 and the check in the `chat()` route), computed from each call's actual
 token usage at real Claude pricing, not estimated. Default is
-`$1.00`; override with `ULTRON_BETA_MAX_SPEND_USD` in `.env` if a
+`$1.00`; override with `ODIN_BETA_MAX_SPEND_USD` in `.env` if a
 particular tester (or the beta as a whole) needs a different limit —
 it applies to every beta token, there's no per-tester override yet.
 Admin chat is never subject to this. A tester can see their own running

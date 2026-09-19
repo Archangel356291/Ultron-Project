@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "ultron-backend"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "odin-backend"))
 from retrieve_context import retrieve, format_for_context  # noqa: E402
 from graph_schema_shared import _tag_words  # noqa: E402
 
