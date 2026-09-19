@@ -2822,37 +2822,9 @@ def _json_result(data, error_status=502):
 DASHBOARD_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def _game_accounts():
-    # Game-section login accounts, from .env. Sign in with the PIN or the
-    # username+password. Admin first, then up to 5 extra "user:pass:pin" accounts.
-    accts = []
-    au = os.environ.get("ULTRON_GAME_ADMIN_USERNAME", "").strip()
-    ap = os.environ.get("ULTRON_GAME_ADMIN_PASSWORD", "")
-    apin = os.environ.get("ULTRON_GAME_ADMIN_PIN", "").strip()
-    if au or ap or apin:
-        accts.append({"name": au, "pass": ap, "pin": apin, "admin": True})
-    for i in range(1, 6):
-        raw = os.environ.get("ULTRON_GAME_ACCOUNT_%d" % i, "").strip()
-        if not raw:
-            continue
-        parts = raw.split(":")
-        accts.append({
-            "name": parts[0].strip() if len(parts) > 0 else "",
-            "pass": parts[1] if len(parts) > 1 else "",
-            "pin": parts[2].strip() if len(parts) > 2 else "",
-        })
-    return accts
-
-
 @app.route("/")
 def dashboard():
-    # Inject the game-login accounts so the in-game lock can validate them
-    # client-side (the whole dashboard is already behind the main sign-in).
-    with open(os.path.join(DASHBOARD_DIR, "ultron-dashboard.html"), encoding="utf-8") as f:
-        html = f.read()
-    inject = "<script>window.__GAME_ACCOUNTS=%s;</script>" % json.dumps(_game_accounts())
-    html = html.replace("</head>", inject + "</head>", 1)
-    return Response(html, mimetype="text/html")
+    return send_from_directory(DASHBOARD_DIR, "ultron-dashboard.html")
 
 
 # --- installable app (PWA) -------------------------------------------------
@@ -2935,50 +2907,6 @@ def pixel_asset(filename):
     return send_from_directory(PIXEL_ASSETS_DIR, filename)
 
 
-# Pixel-game data modules (data-driven loot engine + colour-palette tokens),
-# loaded by ultron-dashboard.html. Same serving pattern as above; these are
-# plain same-origin JS (CSP script-src 'self') and node-testable in dev-tools.
-PIXEL_GAME_DIR = os.path.join(DASHBOARD_DIR, "pixel-game")
-
-
-@app.route("/pixel-game/<path:filename>")
-def pixel_game_asset(filename):
-    return send_from_directory(PIXEL_GAME_DIR, filename)
-
-
-# --- Cross-device pixel-game save sync (per user). The dashboard keeps its
-# game state in localStorage per browser; these endpoints let a logged-in user
-# carry that progress across every device, keyed by identity. Last-write-wins by
-# the client's saved_at timestamp. Any authenticated user (admin or beta) may
-# store and fetch only their OWN save. ---
-def _game_user_key():
-    return "admin" if getattr(g, "role", None) == "admin" else ("beta:" + (getattr(g, "beta_name", None) or "?"))
-
-
-# The main ultron.db is read-only inside the hardened non-root container (its
-# file predates the non-root switch), but the /data dir is writable, so game
-# saves live in their OWN sqlite file the container creates and owns. Persistent
-# (on the same volume) and cross-device.
-# Owner-chosen game-save location (C:\Ultron Project\Ultrons Game, bind-mounted
-# to /game-saves in compose); falls back to the data dir if unset.
-GAME_DIR = os.environ.get("ULTRON_GAME_DIR", DATA_DIR)
-GAME_DB_PATH = os.path.join(GAME_DIR, "game_saves.db")
-
-
-def _game_db():
-    try:
-        os.makedirs(GAME_DIR, exist_ok=True)
-    except OSError:
-        pass
-    conn = sqlite3.connect(GAME_DB_PATH, timeout=10)
-    conn.row_factory = sqlite3.Row
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS game_saves (user_key TEXT PRIMARY KEY, data TEXT NOT NULL, "
-        "saved_at INTEGER NOT NULL, updated_at TEXT NOT NULL)"
-    )
-    return conn
-
-
 # --- offline APK download ---------------------------------------------------
 # Serves the newest built APK from the read-only /apk bind mount so the owner
 # can install the game on a phone straight from the tailnet. Served open on the
@@ -3031,58 +2959,6 @@ def download_apk_rc():
     )
     resp.headers["Cache-Control"] = "no-store"
     return resp
-
-
-@app.route("/api/game/save", methods=["GET"])
-@require_role
-def game_save_get():
-    try:
-        conn = _game_db()
-    except sqlite3.OperationalError:
-        return jsonify({"data": None, "savedAt": 0, "unavailable": True})  # store unavailable: local-only
-    try:
-        row = conn.execute(
-            "SELECT data, saved_at FROM game_saves WHERE user_key = ?", (_game_user_key(),)
-        ).fetchone()
-    finally:
-        conn.close()
-    if not row:
-        return jsonify({"data": None, "savedAt": 0})
-    return jsonify({"data": row["data"], "savedAt": row["saved_at"]})
-
-
-@app.route("/api/game/save", methods=["PUT", "POST"])
-@require_role
-def game_save_put():
-    body = request.get_json(silent=True) or {}
-    data = body.get("data")
-    if not isinstance(data, str) or len(data) > 200000:
-        return jsonify({"error": "invalid data"}), 400
-    try:
-        saved_at = int(body.get("savedAt"))
-    except (TypeError, ValueError):
-        saved_at = int(time.time() * 1000)
-    key = _game_user_key()
-    try:
-        conn = _game_db()
-    except sqlite3.OperationalError:
-        return jsonify({"ok": False, "stored": False, "reason": "server_unavailable"})  # store unavailable: local-only
-    try:
-        row = conn.execute("SELECT saved_at FROM game_saves WHERE user_key = ?", (key,)).fetchone()
-        if row and row["saved_at"] and int(row["saved_at"]) > saved_at:
-            # a newer save already exists (another device) -- don't clobber it
-            return jsonify({"ok": True, "stored": False, "reason": "server_newer", "savedAt": row["saved_at"]})
-        conn.execute(
-            "INSERT INTO game_saves (user_key, data, saved_at, updated_at) VALUES (?,?,?,?) "
-            "ON CONFLICT(user_key) DO UPDATE SET data=excluded.data, saved_at=excluded.saved_at, updated_at=excluded.updated_at",
-            (key, data, saved_at, time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())),
-        )
-        conn.commit()
-    except sqlite3.OperationalError:
-        return jsonify({"ok": False, "stored": False, "reason": "server_unavailable"})  # read-only DB: local-only
-    finally:
-        conn.close()
-    return jsonify({"ok": True, "stored": True, "savedAt": saved_at})
 
 
 # --------------------------------------------------------------------------

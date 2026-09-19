@@ -19,8 +19,6 @@ COPY sw.js sw.js
 COPY three-pipeline/ three-pipeline/
 # Pixel-art sprites/backdrop for the Ultron tab, served by /pixel-assets/<file>.
 COPY pixel-assets/ pixel-assets/
-# Pixel-game data modules (loot engine, palettes, combat), served by /pixel-game/<file>.
-COPY pixel-game/ pixel-game/
 # Self-hosted dashboard typefaces (OFL), served by /fonts/<file>.
 COPY fonts/ fonts/
 # Home-tab knowledge graph: only graph.json itself (already privacy-redacted

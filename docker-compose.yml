@@ -30,9 +30,6 @@ services:
       # Without this the container reported its own virtual disk as
       # "root" (1 TB, 1% used) while D: alone is 4 TB.
       - ULTRON_STORAGE_MOUNTS=C:=/host/c,D:=/host/d
-      # Per-user pixel-game saves live at the owner's chosen path (bind-mounted
-      # below). The container creates + writes game_saves.db here.
-      - ULTRON_GAME_DIR=/game-saves
     volumes:
       # Host drives, read-only, so disk usage is the owner's actual C: and
       # D: (shutil.disk_usage on a bind mount reports the underlying
@@ -48,8 +45,6 @@ services:
       # ULTRON_DATA_DIR there) rather than hardcoded here -- this repo
       # is public, and other clones won't have this exact path.
       - "${ULTRON_DATA_DIR}:/data"
-      # Pixel-game per-user saves, at the owner's chosen browsable path.
-      - "C:\\Ultron Project\\Ultrons Game:/game-saves"
       # The built offline APK (private, secret-free), read-only, so the phone
       # can download it over the tailnet from /download/ultrons-corner.apk.
       - "C:\\Ultron Project\\Ultrons APK Game\\apk:/apk:ro"
