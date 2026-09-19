@@ -90,30 +90,38 @@ def upgrade(fig):
                 if opaque(X, Y):
                     px[X, Y] = (c[0], c[1], c[2], 255)
 
-    # brow gem (mind stone) at head center, ~18% down
+    # ---- Infinity Stones, arranged like Ultron wears them: MIND on the forehead,
+    #      a pair (+ a lower centre core) on the chest, and one set into each hand. ----
     cx = w // 2
-    dot(cx, int(h * 0.16), (245, 60, 60), 1)
-    dot(cx, int(h * 0.16) - 1, (255, 180, 180), 0)
 
-    # six Infinity Stones set in a row across the chest (~46% down) -- the signature.
-    # Bigger + brighter so they read clearly: 5x5 gem, 3x3 bright core, white glint,
-    # and a wider colour glow ring around each (kept on the body via gem()/opaque()).
-    cy = int(h * 0.46)
-    span = int(w * 0.56)
-    x0 = cx - span // 2
-    for i, col in enumerate(STONES):
-        gx = x0 + int(i * span / 5)
-        if opaque(gx, cy) or opaque(gx, cy + 1) or opaque(gx, cy - 1):
-            bright = (min(255, col[0] + 80), min(255, col[1] + 80), min(255, col[2] + 80))
-            gem(gx, cy, col, 2)              # 5x5 gem
-            gem(gx, cy, bright, 1)           # 3x3 bright core
-            dot(gx, cy - 1, (255, 255, 255), 0)  # white top glint
-            for ox, oy in ((3, 0), (-3, 0), (0, 3), (0, -3), (2, 2), (-2, 2), (2, -2), (-2, -2)):
-                if opaque(gx + ox, cy + oy):
-                    p = px[gx + ox, cy + oy]
-                    px[gx + ox, cy + oy] = (min(255, (p[0] + col[0]) // 2 + 40),
-                                            min(255, (p[1] + col[1]) // 2 + 40),
-                                            min(255, (p[2] + col[2]) // 2 + 40), 255)
+    def setstone(x, y, col, rad=2):
+        # a bright, body-masked gem with a white glint and a colour glow ring
+        if not (opaque(x, y) or opaque(x, y + 1) or opaque(x, y - 1)):
+            return
+        bright = (min(255, col[0] + 80), min(255, col[1] + 80), min(255, col[2] + 80))
+        gem(x, y, col, rad)
+        gem(x, y, bright, max(0, rad - 1))
+        dot(x, y - 1, (255, 255, 255), 0)
+        for ox, oy in ((rad + 1, 0), (-(rad + 1), 0), (0, rad + 1), (0, -(rad + 1))):
+            if opaque(x + ox, y + oy):
+                p = px[x + ox, y + oy]
+                px[x + ox, y + oy] = (min(255, (p[0] + col[0]) // 2 + 40),
+                                      min(255, (p[1] + col[1]) // 2 + 40),
+                                      min(255, (p[2] + col[2]) // 2 + 40), 255)
+
+    MIND    = (245, 214, 70)    # yellow -- Mind stone on the brow
+    POWER   = (155, 89, 232)    # purple
+    SPACE   = (60, 140, 245)    # blue
+    REALITY = (232, 60, 60)     # red
+    SOUL    = (245, 150, 40)    # orange
+    TIME    = (70, 210, 110)    # green
+
+    setstone(cx, int(h * 0.15), MIND, 2)                              # forehead: Mind stone
+    setstone(cx - int(w * 0.11), int(h * 0.44), REALITY, 2)          # chest pair (left)
+    setstone(cx + int(w * 0.11), int(h * 0.44), SOUL, 2)             # chest pair (right)
+    setstone(cx, int(h * 0.50), POWER, 2)                            # chest lower-centre core
+    setstone(cx - int(w * 0.25), int(h * 0.58), SPACE, 2)           # left hand
+    setstone(cx + int(w * 0.25), int(h * 0.58), TIME, 2)           # right hand
 
     # gold trim on the shoulders (top corners of the torso band)
     gold = (232, 184, 40)

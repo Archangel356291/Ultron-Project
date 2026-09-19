@@ -1073,6 +1073,8 @@
   .arc-cls{ font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:#8fb0d8; margin:12px 0 6px; border-left:2px solid #3a4c66; padding-left:7px; }
   .arc-machines{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; }
   .arc-mach{ border:1px solid var(--ac); border-radius:8px; background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.15)); padding:8px 9px; box-shadow:0 0 12px -6px var(--ac); }
+  .arc-mach.arc-mach-off{ opacity:.72; border-style:dashed; }
+  .arc-locked{ font-family:var(--font-mono); font-size:11px; color:#ff9db0; font-weight:400; }
   .arc-mn{ font-family:var(--font-display); font-weight:700; font-size:11.5px; color:var(--text); }
   .arc-sym{ color:var(--ac); }
   .arc-ct{ font-family:var(--font-mono); font-size:14px; font-weight:700; color:#e8edf5; margin:2px 0 6px; }
@@ -7675,9 +7677,8 @@ function toggleReducedVisuals(el) {
   function drawUltronAlive(box, t) {
     if (!box || !box.w) return;
     var cx = box.x + box.w / 2, headY = box.y + box.h * 0.20;
-    // anatomically-correct heart: centre of the chest but tilted to the person's
-    // LEFT (their left = our right on a front-facing figure), upper-middle chest.
-    var heartX = cx + box.w * 0.10, heartY = box.y + box.h * 0.33;
+    // heartbeat glow dead-centre of Ultron's chest
+    var heartX = cx, heartY = box.y + box.h * 0.40;
     var charge = Math.max(0, Math.min(1, (foundryCfg().charge) || 0));
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     var beat = Math.pow(0.5 + 0.5 * Math.sin(t * 2.4), 2);   // sharper heartbeat throb
@@ -7920,6 +7921,26 @@ function toggleReducedVisuals(el) {
   // across reboots, so this is a lasting reward, not lost when his army falls.
   var BODY_UPGRADE_AT = 3;   // Nanite Cores needed for the first upgraded chassis (visual gate; power bonus lives in the foundry module)
   function hexRgb(h) { h = h.replace('#', ''); if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2]; var n = parseInt(h, 16); return (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255); }
+  // The body suspended in Ultron's power tube = Ultron's OWN sprite, so it looks
+  // exactly like him (cape, chest stones and all). When the upgraded Ultron Prime
+  // chassis has been forged (bodyTier>0) it's lit with a gold aura. Falls back to
+  // the drawn vibranium body only until the sprite art has loaded.
+  function drawUltronInTube(cx, top, bot, t, charge) {
+    var img = IMG.ultronWalkA;
+    if (!img || !img.complete || !img.naturalWidth) { drawVibraniumBody(cx, bot, bot - top, t, charge, foundryCfg().cores || 0, 1.9); return; }
+    var upgraded = (foundryCfg().bodyTier || 0) > 0;
+    var natR = img.naturalWidth / img.naturalHeight, innerH = (bot - top) - 10, innerW = 122;
+    var dh = innerH, dw = dh * natR; if (dw > innerW) { dw = innerW; dh = dw / natR; }
+    var bob = Math.sin(t * 1.2) * 2;
+    var dx = cx - dw / 2, dy = bot - dh - 4 + bob;
+    ctx.save();
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    if (upgraded) { ctx.shadowColor = '#ffd868'; ctx.shadowBlur = 16 + 8 * charge; }   // gold aura marks the forged Ultron Prime chassis
+    ctx.globalAlpha = 0.9 + 0.1 * charge;
+    ctx.drawImage(img, dx, dy, dw, dh);
+    if (upgraded) { ctx.shadowBlur = 0; ctx.globalAlpha = 0.5 + 0.3 * charge; ctx.drawImage(img, dx, dy, dw, dh); }   // second pass brightens the gilded chassis
+    ctx.restore();
+  }
   function drawVibraniumBody(cx, bot, h, t, charge, cores, bs) {
     bs = bs || 1;   // body scale (bigger = closer to Ultron's own size)
     var sk = bodySkin((cores || 0) + 1);   // the tube holds the NEXT body
@@ -8056,7 +8077,7 @@ function toggleReducedVisuals(el) {
     }
     ctx.shadowBlur = 0; ctx.restore();
     ctx.restore();
-    drawVibraniumBody(cx, bot, h, t, charge, cores, 1.9);   // +50% -- fills the bigger tube
+    drawUltronInTube(cx, top, bot, t, charge);   // the body in the tube looks exactly like Ultron (his own sprite), gold-lit when the Prime chassis is forged
     ctx.strokeStyle = '#3a4056'; ctx.lineWidth = 2; roundRectPath(x0, top, w, h, 10); ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fillRect(x0 + 5, top + 4, 6, h - 8);
     ctx.fillStyle = M_STEEL; ctx.fillRect(x0 - 6, top - 6, w + 12, 8); ctx.fillRect(x0 - 6, bot - 2, w + 12, 6);
@@ -8837,7 +8858,7 @@ window.__sfx = (function () {
   function coreMult() { return Math.pow(1.08, (state.prestige && state.prestige.cores) || 0); }
   // Upgraded Ultron chassis -- now FORGED in the Arc Reactor Lab by spending arc
   // reactors (see arcBuildBody). Each tier is permanent (kept across reboots) and
-  // gives Ultron a lasting +20% combat-power head start.
+  // gives Ultron a lasting +20% head start on ALL stats (combat, income, production).
   function ultronBodyTier() { return (state.arc && state.arc.bodyBuilt) || 0; }
   function ultronBodyMult() { return 1 + 0.2 * ultronBodyTier(); }
   // ---- Prestige upgrade tree: each reboot mints POINTS (from the round's take)
@@ -8870,7 +8891,7 @@ window.__sfx = (function () {
   function genesisMult() { return Math.pow(3, (state.genesis && state.genesis.fired) || 0); }
   var PROD_BOOST = 1.5625;   // owner buff: +25% faster production on top of the prior 1.25 (all income routes through globalMult)
   var VALUE_BOOST = 1.15;    // owner buff: +15% more value per unit of currency
-  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * cryptoMult() * mechMult() * ultronUpMult() * planetGlobalMult() * agentBoost('income') * PROD_BOOST * VALUE_BOOST; }
+  function globalMult() { return coreMult() * (1 + 0.05 * skillLvl('foundry') + 0.03 * skillLvl('software')) * (1 + 0.1 * tierIdx()) * milestoneMult() * incomeMult() * prestigeEcoMult() * genesisMult() * attrIncMult() * stoneIncMult() * cosmicPowerMult() * holJackpotMult() * stoneMasteryMult() * relicIncMult() * brainMult() * cryptoMult() * mechMult() * ultronUpMult() * planetGlobalMult() * agentBoost('income') * ultronBodyMult() * PROD_BOOST * VALUE_BOOST; }
   // Skill tree, grouped into four subsystems that mirror the Gather -> Process
   // -> Build -> Fight loop. Every skill feeds a REAL multiplier already in the
   // game (income, ore rate, smelt yield, ingot value, offline, combat power),
@@ -8891,7 +8912,7 @@ window.__sfx = (function () {
   function pct(l, per) { return 1 + (per / 100) * skillLvl(l); }       // additive %-boost skill
   function xmul(l, step) { return Math.pow(1 + step, skillLvl(l)); }   // compounding × skill
   function xpGainMult() { return pct('xpboost', 5) * xmul('xpmult', 0.03) * attrXpMult() * stoneXpMult() * stoneMasteryMult() * relicXpMult() * brainMult() * agentBoost('xp'); }   // + INT + Mind stone + mastery + relics + brain cognition + subagents
-  function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03) * prestigeProdMult() * stoneProdMult() * stoneMasteryMult(); }
+  function prodQtyMult() { return pct('prodqty', 4) * xmul('prodqtym', 0.03) * prestigeProdMult() * stoneProdMult() * stoneMasteryMult() * ultronBodyMult(); }
   function prodQualMult() { return pct('prodqual', 5) * xmul('prodqualm', 0.025); }
   function incomeMult() { return pct('incboost', 4) * xmul('incmult', 0.03); }
   var SKILLS = [
@@ -9420,15 +9441,17 @@ window.__sfx = (function () {
   // each produced by its own upgradeable machine. An Iron Man armour recycler cycles
   // 15 distinct armour marks and shreds them into extra parts + materials. Arc
   // reactors are spent to forge the upgraded "Ultron Prime" chassis.
+  // Each machine unlocks in stages: reach its level (req) -> buy the machine (buy, in
+  // bits) -> then upgrade Speed/Amount. It produces nothing until purchased.
   var ARC_PARTS = [
-    { id: 'pd',     name: 'Palladium Core',      sym: '⬡', col: '#c9cdd6', base: 0.055, desc: 'Pd-107 cold-fusion catalyst core' },
-    { id: 'ring',   name: 'Containment Ring',    sym: '◯', col: '#7fd0ff', base: 0.05,  desc: 'toroidal ring the ionized plasma circulates in' },
-    { id: 'coil',   name: 'Superconductor Coil', sym: '§', col: '#ffb45a', base: 0.05,  desc: 'electromagnet coils that ignite and confine the arc' },
-    { id: 'plasma', name: 'Deuterium Cell',      sym: '✦', col: '#8fe6b4', base: 0.055, desc: 'hydrogen-isotope fusion fuel' },
-    { id: 'stark',  name: 'Starkium Element',    sym: '★', col: '#c07bff', base: 0.022, desc: 'the synthesized new element that replaces poisonous palladium' },
+    { id: 'pd',     name: 'Palladium Core',      sym: '⬡', col: '#c9cdd6', base: 0.055, req: 40, buy: 2.5e7, desc: 'Pd-107 cold-fusion catalyst core' },
+    { id: 'ring',   name: 'Containment Ring',    sym: '◯', col: '#7fd0ff', base: 0.05,  req: 42, buy: 6e7,   desc: 'toroidal ring the ionized plasma circulates in' },
+    { id: 'coil',   name: 'Superconductor Coil', sym: '§', col: '#ffb45a', base: 0.05,  req: 44, buy: 1.4e8, desc: 'electromagnet coils that ignite and confine the arc' },
+    { id: 'plasma', name: 'Deuterium Cell',      sym: '✦', col: '#8fe6b4', base: 0.055, req: 46, buy: 3e8,   desc: 'hydrogen-isotope fusion fuel' },
+    { id: 'stark',  name: 'Starkium Element',    sym: '★', col: '#c07bff', base: 0.022, req: 48, buy: 7e8,   desc: 'the synthesized new element that replaces poisonous palladium' },
   ];
   var ARC_RECIPE = { pd: 4, ring: 3, coil: 3, plasma: 5, stark: 1 };   // core parts consumed per arc reactor
-  var ARC_BODY_COST = [8, 20, 45, 90];   // arc reactors to forge each Ultron Prime chassis tier (then scales up)
+  var ARC_BODY_COST = [15, 40, 80, 140];   // arc reactors to forge each Ultron Prime chassis tier (hard; then scales up)
   // 15 Iron Man armour marks the recycler cycles through -- each a visibly distinct colour set
   var ARMOR_MARKS = [
     { n: 'Mark I',            a: '#7f858e', b: '#4c515a' },   // raw grey
@@ -9451,7 +9474,7 @@ window.__sfx = (function () {
     if (!state.arc) state.arc = {};
     var a = state.arc;
     if (!a.parts) a.parts = {}; if (!a.mach) a.mach = {};
-    ARC_PARTS.forEach(function (p) { if (a.parts[p.id] == null) a.parts[p.id] = 0; if (!a.mach[p.id]) a.mach[p.id] = { spd: 0, amt: 0 }; });
+    ARC_PARTS.forEach(function (p) { if (a.parts[p.id] == null) a.parts[p.id] = 0; if (!a.mach[p.id]) a.mach[p.id] = { spd: 0, amt: 0, owned: false }; });
     if (a.reactors == null) a.reactors = 0;
     if (a.bodyBuilt == null) a.bodyBuilt = 0;
     if (!a.rec) a.rec = { spd: 0, yield: 0, mark: 0, prog: 0 };
@@ -9459,7 +9482,9 @@ window.__sfx = (function () {
   }
   function arcUnlocked() { return playerLevel() >= 35; }
   function arcPart(id) { for (var i = 0; i < ARC_PARTS.length; i++) if (ARC_PARTS[i].id === id) return ARC_PARTS[i]; }
-  function arcMachRate(pid) { var a = arcInit(); return arcPart(pid).base * (1 + 0.5 * a.mach[pid].spd) * (1 + 0.5 * a.mach[pid].amt); }   // parts/sec (speed x amount)
+  function arcMachRate(pid) { var a = arcInit(); if (!a.mach[pid].owned) return 0; return arcPart(pid).base * (1 + 0.5 * a.mach[pid].spd) * (1 + 0.5 * a.mach[pid].amt); }   // parts/sec (0 until the machine is purchased)
+  function arcMachOwned(pid) { return !!arcInit().mach[pid].owned; }
+  function arcBuyMachine(pid) { var a = arcInit(), p = arcPart(pid); if (playerLevel() < p.req) { gamePop('🔒 Unlocks at level ' + p.req, '#8fb0d8'); return; } if (a.mach[pid].owned) return; if (state.bits < p.buy) { gamePop('Need ' + fmt(p.buy) + ' to build the machine', '#ff8098'); return; } state.bits -= p.buy; a.mach[pid].owned = true; if (window.__sfx) window.__sfx('unlock'); gamePop('🏭 ' + p.name + ' machine built', p.col); addXp(80, 'Built the ' + p.name + ' machine'); dirty = true; save(); renderArcReactor(); renderBalance(); }
   function arcUpCost(pid, kind) { var lvl = arcInit().mach[pid][kind]; return Math.ceil((kind === 'spd' ? 5e7 : 8e7) * Math.pow(1.85, lvl)); }
   function arcRecCost(kind) { var lvl = arcInit().rec[kind]; return Math.ceil((kind === 'spd' ? 8e7 : 1.2e8) * Math.pow(1.85, lvl)); }
   function arcBodyCost() { var t = arcInit().bodyBuilt, i = Math.min(t, ARC_BODY_COST.length - 1); return ARC_BODY_COST[i] * (t >= ARC_BODY_COST.length ? (t - ARC_BODY_COST.length + 2) : 1); }
@@ -9485,30 +9510,37 @@ window.__sfx = (function () {
   function arcUpgrade(pid, kind) { var a = arcInit(), c = arcUpCost(pid, kind); if (state.bits < c) { gamePop('Need ' + fmt(c), '#ff8098'); return; } state.bits -= c; a.mach[pid][kind]++; if (window.__sfx) window.__sfx('upgrade'); dirty = true; save(); renderArcReactor(); renderBalance(); }
   function arcRecUpgrade(kind) { var a = arcInit(), c = arcRecCost(kind); if (state.bits < c) { gamePop('Need ' + fmt(c), '#ff8098'); return; } state.bits -= c; a.rec[kind]++; if (window.__sfx) window.__sfx('upgrade'); dirty = true; save(); renderArcReactor(); renderBalance(); }
   function arcBuildReactor() { var a = arcInit(); if (!arcCanBuild()) { gamePop('Need more core parts', '#ff8098'); return; } for (var k in ARC_RECIPE) a.parts[k] -= ARC_RECIPE[k]; a.reactors++; if (window.__sfx) window.__sfx('unlock'); gamePop('⚛️ Arc Reactor assembled', '#7fd0ff'); addXp(120, 'Assembled an Arc Reactor'); publish(); dirty = true; save(); renderArcReactor(); renderBalance(); }
-  function arcBuildBody() { var a = arcInit(), c = arcBodyCost(); if (a.reactors < c) { gamePop('Need ' + c + ' arc reactors', '#ff8098'); return; } a.reactors -= c; a.bodyBuilt++; if (window.__sfx) window.__sfx('reboot'); gamePop('🤖 Ultron Prime chassis forged — tier ' + a.bodyBuilt + ' (+' + (20 * a.bodyBuilt) + '% combat)', '#ffe08a'); addXp(500, 'Forged upgraded chassis'); publish(); dirty = true; save(); renderArcReactor(); renderBalance(); }
+  function arcBuildBody() { var a = arcInit(), c = arcBodyCost(); if (a.reactors < c) { gamePop('Need ' + c + ' arc reactors', '#ff8098'); return; } a.reactors -= c; a.bodyBuilt++; if (window.__sfx) window.__sfx('reboot'); gamePop('🤖 Ultron Prime chassis forged — tier ' + a.bodyBuilt + ' (+' + (20 * a.bodyBuilt) + '% all stats)', '#ffe08a'); addXp(500, 'Forged upgraded chassis'); publish(); dirty = true; save(); renderArcReactor(); renderBalance(); }
   window.__arcTick = arcTick;
   var arcEl = document.getElementById('arcreactor');
   function renderArcReactor() {
     if (!arcEl) return;
     if (!arcUnlocked()) { arcEl.innerHTML = '<div class="arc-head">⚛️ Arc Reactor Lab <span class="arc-sub">— 🔒 unlocks at level 35: forge Ultron’s arc reactors from their core parts</span></div>'; return; }
     var a = arcInit();
-    var html = '<div class="arc-head">⚛️ Arc Reactor Lab <span class="arc-sub">— ' + fmtN(a.reactors) + ' arc reactor' + (a.reactors === 1 ? '' : 's') + ' built · Ultron Prime chassis tier ' + a.bodyBuilt + ' (+' + (20 * a.bodyBuilt) + '% combat)</span></div>';
+    var html = '<div class="arc-head">⚛️ Arc Reactor Lab <span class="arc-sub">— ' + fmtN(a.reactors) + ' arc reactor' + (a.reactors === 1 ? '' : 's') + ' built · Ultron Prime chassis tier ' + a.bodyBuilt + ' (+' + (20 * a.bodyBuilt) + '% all stats)</span></div>';
     html += '<div class="arc-cls">Core-part machines</div><div class="arc-machines">';
     ARC_PARTS.forEach(function (p) {
-      var m = a.mach[p.id];
-      html += '<div class="arc-mach" style="--ac:' + p.col + '" title="' + esc(p.desc) + '">' +
-        '<div class="arc-mn"><span class="arc-sym">' + p.sym + '</span> ' + p.name + '</div>' +
-        '<div class="arc-ct">' + fmtN(a.parts[p.id] || 0) + ' <span class="arc-rate">+' + arcMachRate(p.id).toFixed(2) + '/s</span></div>' +
-        '<div class="arc-ups">' +
-          '<button class="arc-up' + (state.bits >= arcUpCost(p.id, 'spd') ? ' can' : '') + '" data-arcup="' + p.id + '" data-k="spd">⚡ Speed Lv' + m.spd + ' · ' + fmt(arcUpCost(p.id, 'spd')) + '</button>' +
-          '<button class="arc-up' + (state.bits >= arcUpCost(p.id, 'amt') ? ' can' : '') + '" data-arcup="' + p.id + '" data-k="amt">⬆ Amount Lv' + m.amt + ' · ' + fmt(arcUpCost(p.id, 'amt')) + '</button>' +
-        '</div></div>';
+      var m = a.mach[p.id], lvOk = playerLevel() >= p.req, owned = m.owned, body;
+      if (!lvOk) {
+        body = '<div class="arc-ct arc-locked">🔒 Unlocks at level ' + p.req + '</div>';
+      } else if (!owned) {
+        body = '<div class="arc-rate" style="margin:2px 0 6px">machine not built yet</div>' +
+          '<button class="arc-build' + (state.bits >= p.buy ? ' can' : '') + '" data-arcbuy="' + p.id + '"' + (state.bits >= p.buy ? '' : ' disabled') + '>🏭 Build machine · ' + fmt(p.buy) + '</button>';
+      } else {
+        body = '<div class="arc-ct">' + fmtN(a.parts[p.id] || 0) + ' <span class="arc-rate">+' + arcMachRate(p.id).toFixed(2) + '/s</span></div>' +
+          '<div class="arc-ups">' +
+            '<button class="arc-up' + (state.bits >= arcUpCost(p.id, 'spd') ? ' can' : '') + '" data-arcup="' + p.id + '" data-k="spd">⚡ Speed Lv' + m.spd + ' · ' + fmt(arcUpCost(p.id, 'spd')) + '</button>' +
+            '<button class="arc-up' + (state.bits >= arcUpCost(p.id, 'amt') ? ' can' : '') + '" data-arcup="' + p.id + '" data-k="amt">⬆ Amount Lv' + m.amt + ' · ' + fmt(arcUpCost(p.id, 'amt')) + '</button>' +
+          '</div>';
+      }
+      html += '<div class="arc-mach' + (owned ? '' : ' arc-mach-off') + '" style="--ac:' + p.col + '" title="' + esc(p.desc) + '">' +
+        '<div class="arc-mn"><span class="arc-sym">' + p.sym + '</span> ' + p.name + (lvOk ? '' : ' <span class="arc-rate">Lv ' + p.req + '</span>') + '</div>' + body + '</div>';
     });
     html += '</div>';
     var recipe = Object.keys(ARC_RECIPE).map(function (k) { var have = a.parts[k] || 0; return '<span class="arc-req' + (have >= ARC_RECIPE[k] ? ' ok' : '') + '">' + arcPart(k).sym + ' ' + fmtN(have) + '/' + ARC_RECIPE[k] + '</span>'; }).join('');
     html += '<div class="arc-cls">Assembly &amp; chassis</div><div class="arc-build-row">' +
       '<div class="arc-panel"><div class="arc-mn">🔧 Assemble Arc Reactor</div><div class="arc-recipe">' + recipe + '</div><button class="arc-build' + (arcCanBuild() ? ' can' : '') + '" id="arc-build"' + (arcCanBuild() ? '' : ' disabled') + '>⚛️ Build reactor</button></div>' +
-      '<div class="arc-panel"><div class="arc-mn">🤖 Ultron Prime Chassis</div><div class="arc-recipe"><span class="arc-req">tier ' + a.bodyBuilt + '</span><span class="arc-req">+' + (20 * a.bodyBuilt) + '% combat</span></div><button class="arc-build' + (a.reactors >= arcBodyCost() ? ' can' : '') + '" id="arc-body-build"' + (a.reactors >= arcBodyCost() ? '' : ' disabled') + '>Forge chassis · ' + arcBodyCost() + ' ⚛️</button></div>' +
+      '<div class="arc-panel"><div class="arc-mn">🤖 Ultron Prime Chassis</div><div class="arc-recipe"><span class="arc-req">tier ' + a.bodyBuilt + '</span><span class="arc-req">+' + (20 * a.bodyBuilt) + '% all stats</span></div><button class="arc-build' + (a.reactors >= arcBodyCost() ? ' can' : '') + '" id="arc-body-build"' + (a.reactors >= arcBodyCost() ? '' : ' disabled') + '>Forge chassis · ' + arcBodyCost() + ' ⚛️</button></div>' +
       '</div>';
     var mk = ARMOR_MARKS[a.rec.mark % ARMOR_MARKS.length];
     html += '<div class="arc-cls">Iron Man Armor Recycler</div>' +
@@ -9516,6 +9548,7 @@ window.__sfx = (function () {
       '<div class="arc-ups"><button class="arc-up' + (state.bits >= arcRecCost('spd') ? ' can' : '') + '" data-arcrec="spd">⚡ Feed speed Lv' + a.rec.spd + ' · ' + fmt(arcRecCost('spd')) + '</button><button class="arc-up' + (state.bits >= arcRecCost('yield') ? ' can' : '') + '" data-arcrec="yield">⬆ Yield Lv' + a.rec.yield + ' · ' + fmt(arcRecCost('yield')) + '</button></div></div>';
     arcEl.innerHTML = html;
     arcEl.querySelectorAll('[data-arcup]').forEach(function (b) { b.addEventListener('click', function () { arcUpgrade(b.dataset.arcup, b.dataset.k); }); });
+    arcEl.querySelectorAll('[data-arcbuy]').forEach(function (b) { b.addEventListener('click', function () { arcBuyMachine(b.dataset.arcbuy); }); });
     arcEl.querySelectorAll('[data-arcrec]').forEach(function (b) { b.addEventListener('click', function () { arcRecUpgrade(b.dataset.arcrec); }); });
     var bd = document.getElementById('arc-build'); if (bd) bd.addEventListener('click', arcBuildReactor);
     var bb = document.getElementById('arc-body-build'); if (bb) bb.addEventListener('click', arcBuildBody);
@@ -12886,12 +12919,12 @@ window.__sfx = (function () {
   // progression tracker, then each room in the order it matters to the economy /
   // becomes available. The number is the player level the floor unlocks at.
   var PLAN = [
-    ['#dev-floor', 0], ['#progression', 1], ['#foundry', 1], ['#ultron-up', 2],
-    ['#expedition', 3], ['#foundry-generators', 4], ['#refinery', 6], ['#botparts', 8],
-    ['#armory', 10], ['#arsenal', 12], ['#agents-panel', 14], ['#relics', 16],
-    ['#xpcrystal', 18], ['#brainlab', 20], ['#cyber', 22], ['#crypto', 24],
-    ['#portal', 26], ['#stonelab', 28], ['#cosmic', 32], ['#arcreactor', 35], ['#genesis', 36],
-    ['#mechbay', 40], ['#prestige', 30], ['#holiday', 5], ['#codex', 1]
+    ['#dev-floor', 0], ['#progression', 1], ['#foundry', 1], ['#ultron-up', 7],
+    ['#expedition', 8], ['#foundry-generators', 9], ['#refinery', 11], ['#botparts', 13],
+    ['#armory', 15], ['#arsenal', 17], ['#agents-panel', 19], ['#relics', 21],
+    ['#xpcrystal', 23], ['#brainlab', 25], ['#cyber', 27], ['#crypto', 29],
+    ['#portal', 31], ['#stonelab', 33], ['#cosmic', 37], ['#arcreactor', 40], ['#genesis', 41],
+    ['#mechbay', 45], ['#prestige', 35], ['#holiday', 10], ['#codex', 1]
   ];
   function curLevel() { try { return (window.__foundry && window.__foundry.xplevel) || 1; } catch (e) { return 1; } }
   function applyLock(f) {
