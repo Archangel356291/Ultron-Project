@@ -24,7 +24,7 @@ def demo():
     ids = {s["id"] for s in summ["storefronts"]}
     assert ids == {"trade-post", "dropship-docks"}, ids
     assert all(not s["active"] for s in summ["storefronts"]), "storefronts must start OFF (opt-in)"
-    assert summ["totals"] == {"revenue": 0, "tax": 0, "sales": 0}, summ["totals"]
+    assert summ["totals"]["sales"] == 0 and summ["totals"]["revenue"] == 0 and summ["totals"]["net"] == 0, summ["totals"]
 
     # toggle persists
     assert app.set_storefront_active("trade-post", True)["active"] is True
@@ -54,6 +54,15 @@ def demo():
     assert os.path.isfile(master) and os.path.isfile(per), os.listdir(ledger)
     assert "Raven Tee" in open(per, encoding="utf-8").read()
     assert sum(1 for _ in open(master, encoding="utf-8")) == 2, "master ledger has a line per sale"
+
+    # cost (COGS) -> real net income + the Jarl's one-stop rollup
+    r3 = app.record_storefront_sale("trade-post", {"item": "Wolf Cloak", "subtotal": 50, "tax_rate": 0, "cost": 30})
+    assert r3["sale"]["cost"] == 30 and r3["sale"]["net"] == 20, r3["sale"]
+    t = app.storefront_summary()["totals"]
+    assert t["gross"] == 110.0 and t["cost"] == 30.0 and t["net"] == 80.0, t   # gross 40+20+50; net=gross-cost
+    js = app.jarl_stats()
+    assert js["financials"]["totals"]["net"] == 80.0 and js["leader"] == "Drengskapr", js["financials"]["totals"]
+    assert "agents" in js["system"] and "memory_notes" in js["system"], js["system"]
 
     print("OK: storefront ledger records sales+tax, writes the log folder, and the on/off toggle persists.")
 

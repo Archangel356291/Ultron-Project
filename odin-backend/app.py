@@ -425,6 +425,7 @@ def _init_db():
                 total_cents INTEGER NOT NULL DEFAULT 0,
                 currency TEXT NOT NULL DEFAULT 'USD',
                 tax_rate REAL NOT NULL DEFAULT 0,
+                cost_cents INTEGER NOT NULL DEFAULT 0,
                 source TEXT NOT NULL DEFAULT 'manual'
             )
         """)
@@ -439,6 +440,10 @@ def _init_db():
         """)
         # Etsy dropped by owner request -> the POD storefront is Shopify-only now.
         conn.execute("UPDATE storefronts SET platform='shopify' WHERE platform='etsy_shopify'")
+        try:
+            conn.execute("ALTER TABLE storefront_sales ADD COLUMN cost_cents INTEGER NOT NULL DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass  # already migrated
         # Seed two opt-in storefronts, OFF by default (the owner flips them on from
         # the village toggle once real platform keys are set).
         if conn.execute("SELECT COUNT(*) FROM storefronts").fetchone()[0] == 0:
@@ -6428,6 +6433,7 @@ def record_storefront_sale(storefront_id, body):
             subtotal = round(float(body.get("subtotal", 0)) * 100)
             tax_rate = float(body.get("tax_rate", 0))
             tax = round(float(body["tax"]) * 100) if body.get("tax") is not None else round(subtotal * tax_rate / 100.0)
+            cost = round(float(body.get("cost", 0)) * 100)
         except (TypeError, ValueError):
             return {"error": "bad numbers"}
         total = subtotal + tax
@@ -6436,18 +6442,19 @@ def record_storefront_sale(storefront_id, body):
         source = str(body.get("source", "manual"))[:20]
         ts = time.strftime("%Y-%m-%dT%H:%M:%S")
         conn.execute(
-            "INSERT INTO storefront_sales (storefront_id, ts, order_id, item, qty, subtotal_cents, tax_cents, total_cents, currency, tax_rate, source) "
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-            (storefront_id, ts, order_id, item, qty, subtotal, tax, total, currency, tax_rate, source))
+            "INSERT INTO storefront_sales (storefront_id, ts, order_id, item, qty, subtotal_cents, tax_cents, total_cents, currency, tax_rate, cost_cents, source) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            (storefront_id, ts, order_id, item, qty, subtotal, tax, total, currency, tax_rate, cost, source))
         conn.commit()
         row = {"storefront_id": storefront_id, "ts": ts, "order_id": order_id, "item": item, "qty": qty,
                "subtotal_cents": subtotal, "tax_cents": tax, "total_cents": total, "currency": currency,
-               "tax_rate": tax_rate, "source": source}
+               "tax_rate": tax_rate, "cost_cents": cost, "source": source}
         _write_ledger_files(row)
         log_activity("storefront_sale", "Sale on %s" % storefront_id,
                      "%s x%d = %.2f %s (tax %.2f)" % (item, qty, total / 100, currency, tax / 100))
         sale = {"storefront_id": storefront_id, "ts": ts, "order_id": order_id, "item": item, "qty": qty,
                 "subtotal": round(subtotal / 100, 2), "tax": round(tax / 100, 2), "total": round(total / 100, 2),
+                "cost": round(cost / 100, 2), "net": round((subtotal - cost) / 100, 2),
                 "currency": currency, "tax_rate": tax_rate, "source": source}
         return {"ok": True, "sale": sale}
     finally:
@@ -6458,15 +6465,20 @@ def storefront_summary():
     conn = _get_db_connection()
     try:
         stores = conn.execute("SELECT id, name, platform, active FROM storefronts ORDER BY name").fetchall()
-        out, g_rev, g_tax, g_n = [], 0, 0, 0
+        out, g_rev, g_gross, g_cost, g_tax, g_n = [], 0, 0, 0, 0, 0
         for s in stores:
-            agg = conn.execute("SELECT COUNT(*) c, COALESCE(SUM(total_cents),0) rev, COALESCE(SUM(tax_cents),0) tax "
+            agg = conn.execute("SELECT COUNT(*) c, COALESCE(SUM(total_cents),0) rev, COALESCE(SUM(subtotal_cents),0) gross, "
+                               "COALESCE(SUM(cost_cents),0) cost, COALESCE(SUM(tax_cents),0) tax "
                                "FROM storefront_sales WHERE storefront_id=?", (s["id"],)).fetchone()
             out.append({"id": s["id"], "name": s["name"], "platform": s["platform"], "active": bool(s["active"]),
-                        "sales": agg["c"], "revenue": round(agg["rev"] / 100, 2), "tax": round(agg["tax"] / 100, 2)})
-            g_rev += agg["rev"]; g_tax += agg["tax"]; g_n += agg["c"]
+                        "sales": agg["c"], "revenue": round(agg["rev"] / 100, 2), "gross": round(agg["gross"] / 100, 2),
+                        "cost": round(agg["cost"] / 100, 2), "net": round((agg["gross"] - agg["cost"]) / 100, 2),
+                        "tax": round(agg["tax"] / 100, 2)})
+            g_rev += agg["rev"]; g_gross += agg["gross"]; g_cost += agg["cost"]; g_tax += agg["tax"]; g_n += agg["c"]
         return {"storefronts": out,
-                "totals": {"revenue": round(g_rev / 100, 2), "tax": round(g_tax / 100, 2), "sales": g_n},
+                "totals": {"revenue": round(g_rev / 100, 2), "gross": round(g_gross / 100, 2),
+                           "cost": round(g_cost / 100, 2), "net": round((g_gross - g_cost) / 100, 2),
+                           "tax": round(g_tax / 100, 2), "sales": g_n},
                 "ledger_dir": STOREFRONT_LEDGER_DIR}
     finally:
         conn.close()
@@ -6496,6 +6508,42 @@ def set_storefront_active(storefront_id, active):
         return {"ok": cur.rowcount > 0, "id": storefront_id, "active": bool(active)}
     finally:
         conn.close()
+
+
+def jarl_stats():
+    """Everything the Jarl (Drengskapr) can see at a glance: the storefront P&L
+    (gross / net / tax) plus a rollup of the wider system -- one spot, in
+    addition to where each stat already lives."""
+    fin = storefront_summary()
+    counts = {}
+    conn = _get_db_connection()
+    try:
+        def _one(q, *a):
+            try:
+                return conn.execute(q, a).fetchone()[0]
+            except Exception:
+                return None
+        since = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(time.time() - 86400))
+        counts["memory_notes"] = _one("SELECT COUNT(*) FROM memory_notes")
+        counts["trades"] = _one("SELECT COUNT(*) FROM trades")
+        counts["agent_tasks"] = _one("SELECT COUNT(*) FROM agent_tasks")
+        counts["activity_24h"] = _one("SELECT COUNT(*) FROM activity_log WHERE timestamp >= ?", since)
+        counts["evolution_ideas"] = _one("SELECT COUNT(*) FROM evolution_ideas")
+    finally:
+        conn.close()
+    try:
+        counts["agents"] = len(AGENT_REGISTRY)
+    except Exception:
+        counts["agents"] = None
+    counts["storefronts_active"] = sum(1 for s in fin["storefronts"] if s["active"])
+    return {"financials": {"totals": fin["totals"], "storefronts": fin["storefronts"], "ledger_dir": fin["ledger_dir"]},
+            "system": counts, "leader": "Drengskapr", "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S")}
+
+
+@app.route("/api/jarl/stats")
+@require_role
+def api_jarl_stats():
+    return jsonify(jarl_stats())
 
 
 @app.route("/api/storefronts")

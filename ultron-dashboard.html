@@ -1395,6 +1395,25 @@
             </div>
           </div>
 
+          <div class="sf-panel" id="jarl-panel" hidden>
+            <div class="sf-panel-inner">
+              <div class="sf-panel-head"><h3>Drengskapr’s Reckoning</h3><span class="sf-x" id="jarl-x">✕ close</span></div>
+              <div class="sf-body">
+                <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+                  <canvas id="jarl-portrait" width="150" height="176" style="border:1px solid #3a2c18; border-radius:8px; flex-shrink:0;"></canvas>
+                  <div style="flex:1; min-width:200px;">
+                    <div style="font-family:var(--font-display); color:#e6c766; font-size:16px;">Jarl Drengskapr</div>
+                    <div style="color:#8a93a3; font-size:11px;">the AI who rules Tryggvangr — every tiding in one seat</div>
+                    <div id="jarl-fin" class="sf-stat-row" style="margin-top:10px;"></div>
+                  </div>
+                </div>
+                <div style="color:#8a93a3; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; margin:14px 0 4px;">Across the whole system</div>
+                <div id="jarl-sys" class="sf-stat-row"></div>
+                <div class="sf-note">These same numbers also live in their own places (Crypto, Vitals, Agents, the ledger). This is one seat to read them all. “Net” = gross − cost (COGS); enter a cost when recording a sale to make net real.</div>
+              </div>
+            </div>
+          </div>
+
           <div class="panel-label" style="margin-top:28px;">Agent roster &amp; enlistments</div>
           <div class="agent-roster" id="agent-roster"></div>
 
@@ -5720,7 +5739,7 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = health === 'OK' ? '#7fbf5a' : health === 'OFFLINE' ? '#8a93a3' : health ? '#ff6b6b' : '#8a93a3';
     ctx.beginPath(); ctx.arc(x, footY - 4, 3 + Math.sin(t * 3) * 0.6, 0, 7); ctx.fill();
     caption('THE JARL’S STONE', x, footY + 12, '#cfc8bb');
-    hover('The Jarl’s Stone', x, footY - 30, 40, '<b style="color:#cfc8bb">The Jarl’s Stone</b><br><span class="rt-enl">Carved with the day’s tidings: the price of gold, the mind’s burden (memory), and whether all is hale.</span>');
+    hover('The Jarl’s Stone', x, footY - 30, 40, '<b style="color:#cfc8bb">The Jarl’s Stone</b><br><span class="rt-enl">The day’s tidings — gold, the mind’s burden (memory), and health. <b style="color:#e6c766">Tap for Drengskapr’s full reckoning.</b></span>', function () { if (window.__openJarlPanel) window.__openJarlPanel(); });
   }
   function caption(text, cx, y, color) { setFont(fontPx * 0.72, true); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = 'rgba(20,18,14,0.55)'; ctx.fillText(text, cx, y + 1); ctx.fillStyle = color || '#efe6d2'; ctx.fillText(text, cx, y); }
 
@@ -5919,6 +5938,42 @@ function toggleReducedVisuals(el) {
       (kind === 'dropship' ? 'AI dropshipping storefront' : 'Shopify print-on-demand & dropship storefront') + '. Tap to open its ledger, toggle it on/off, and record or view sales.</span>',
       function () { if (window.__openStorefrontPanel) window.__openStorefrontPanel(id); });
   }
+  // A bust of Drengskapr the Jarl for the reckoning panel -- original figure.
+  function drawDrengskaprPortrait(cv, t) {
+    if (!cv || !cv.getContext) return; var c = cv.getContext('2d');
+    var W2 = cv.width, H2 = cv.height, cx = W2 / 2, s = Math.min(W2, H2) / 46, baseY = H2 * 0.92;
+    var g = c.createLinearGradient(0, 0, 0, H2); g.addColorStop(0, '#20304a'); g.addColorStop(1, '#12100a');
+    c.fillStyle = g; c.fillRect(0, 0, W2, H2);
+    c.save(); c.translate(cx, 0);
+    // cloak + shoulders
+    c.fillStyle = '#3d4a5a'; c.beginPath(); c.moveTo(-16 * s, baseY); c.lineTo(16 * s, baseY); c.lineTo(11 * s, baseY - 12 * s); c.lineTo(-11 * s, baseY - 12 * s); c.closePath(); c.fill();
+    c.fillStyle = '#2c3644'; c.fillRect(-16 * s, baseY - 3 * s, 32 * s, 3 * s);
+    c.fillStyle = '#5a6474'; c.fillRect(-9 * s, baseY - 16 * s, 18 * s, 6 * s);               // gorget
+    c.fillStyle = '#cfa23c'; c.fillRect(-9 * s, baseY - 13 * s, 18 * s, 1.6 * s);
+    var hy = baseY - 34 * s;
+    // head + long white-gold beard
+    c.fillStyle = '#e3b183'; c.fillRect(-6.5 * s, hy, 13 * s, 11 * s);
+    c.fillStyle = '#e8dcc0'; c.beginPath(); c.moveTo(-6.5 * s, hy + 7 * s); c.lineTo(6.5 * s, hy + 7 * s); c.lineTo(3.5 * s, hy + 22 * s); c.lineTo(-3.5 * s, hy + 22 * s); c.closePath(); c.fill();
+    c.fillStyle = '#cfc4a8'; c.fillRect(-6.5 * s, hy + 7 * s, 13 * s, 1.4 * s);
+    // one seeing eye + a gilded patch
+    var gl = 0.5 + 0.5 * Math.sin((t || 0) * 3);
+    c.fillStyle = '#2a2320'; c.fillRect(1.6 * s, hy + 3 * s, 2.2 * s, 2 * s);
+    c.fillStyle = 'rgba(230,199,102,' + (0.55 + 0.4 * gl) + ')'; c.fillRect(-3.8 * s, hy + 3 * s, 2.2 * s, 2 * s);
+    // gold-rimmed steel helm with raven wings
+    c.fillStyle = '#aeb7c2'; c.beginPath(); c.arc(0, hy + 2.5 * s, 7.4 * s, Math.PI, 0); c.fill();
+    c.fillStyle = '#cfa23c'; c.fillRect(-7.4 * s, hy + 2 * s, 14.8 * s, 2 * s);
+    c.fillStyle = '#0b0d12'; c.fillRect(-0.7 * s, hy + 2 * s, 1.4 * s, 5 * s);                 // nose guard
+    c.fillStyle = '#d6dce3';
+    for (var w = -1; w <= 1; w += 2) { c.beginPath(); c.moveTo(w * 7.4 * s, hy + 1 * s); c.lineTo(w * 16 * s, hy - 7 * s); c.lineTo(w * 12 * s, hy - 7.5 * s); c.lineTo(w * 7.4 * s, hy - 2.5 * s); c.closePath(); c.fill(); }
+    // spear Gungnir over the shoulder
+    c.strokeStyle = '#6a4526'; c.lineWidth = 2.4 * s; c.beginPath(); c.moveTo(11 * s, baseY); c.lineTo(11 * s, hy - 8 * s); c.stroke();
+    c.fillStyle = '#d6dce3'; c.beginPath(); c.moveTo(11 * s, hy - 14 * s); c.lineTo(13.6 * s, hy - 8 * s); c.lineTo(11 * s, hy - 6.5 * s); c.lineTo(8.4 * s, hy - 8 * s); c.closePath(); c.fill();
+    c.restore();
+    // rune runes glow along the bottom
+    c.fillStyle = 'rgba(230,199,102,' + (0.45 + 0.3 * gl) + ')'; c.font = 'bold ' + Math.round(9 * s) + 'px monospace'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+    c.fillText('\u16B7 \u16A6 \u16CF \u16DA', cx, H2 - 6);
+  }
+  window.__drawJarl = function (cv, t) { drawDrengskaprPortrait(cv, typeof t === 'number' ? t : now()); };
   function drawScene(t) {
     hoverables.length = 0;
     ground();
@@ -6545,7 +6600,7 @@ function toggleReducedVisuals(el) {
       '<div class="sf-stat"><div class="k">Tax collected</div><div class="v">' + money(s.tax) + '</div></div></div>' +
       '<div class="sf-note">' + connect + '<br>Every sale is logged to <code>' + esc(state.ledgerDir || 'the ledger folder') + '</code> (per-store CSV + a master JSONL).</div>' +
       '<div class="sf-keys" id="sf-keys"></div>' +
-      '<div class="sf-form"><input id="sf-item" placeholder="item"><input id="sf-sub" placeholder="subtotal" type="number" step="0.01"><input id="sf-rate" placeholder="tax %" type="number" step="0.01"><button id="sf-add">Record sale</button></div>' +
+      '<div class="sf-form"><input id="sf-item" placeholder="item"><input id="sf-sub" placeholder="subtotal" type="number" step="0.01"><input id="sf-rate" placeholder="tax %" type="number" step="0.01"><input id="sf-cost" placeholder="cost" type="number" step="0.01"><button id="sf-add">Record sale</button></div>' +
       '<div id="sf-recent"></div>';
     document.getElementById('sf-tg').onclick = function () { toggle(s.id); };
     document.getElementById('sf-add').onclick = function () { recordSale(s.id); };
@@ -6566,7 +6621,8 @@ function toggleReducedVisuals(el) {
     var item = (document.getElementById('sf-item').value || 'item');
     var sub = parseFloat(document.getElementById('sf-sub').value || '0');
     var rate = parseFloat(document.getElementById('sf-rate').value || '0');
-    try { await window.__apiPost('/api/storefronts/' + id + '/sales', { item: item, subtotal: sub, tax_rate: rate, source: 'manual' }); await load(); loadRecent(id); }
+    var cost = parseFloat((document.getElementById('sf-cost') || {}).value || '0');
+    try { await window.__apiPost('/api/storefronts/' + id + '/sales', { item: item, subtotal: sub, tax_rate: rate, cost: cost, source: 'manual' }); await load(); loadRecent(id); }
     catch (e) { alert('Recording a sale needs admin sign-in.'); }
   }
   function keySlots(platform) {
@@ -6597,6 +6653,29 @@ function toggleReducedVisuals(el) {
   panel.addEventListener('click', function (e) { if (e.target === panel) panel.hidden = true; });
   load(); setInterval(load, 15000);
   var nav = document.querySelector('.nav-item[data-section="ultron-core"]'); if (nav) nav.addEventListener('click', function () { setTimeout(load, 300); });
+})();
+</script>
+<script>
+(function () {
+  var panel = document.getElementById('jarl-panel'); if (!panel) return;
+  var fin = document.getElementById('jarl-fin'), sys = document.getElementById('jarl-sys'), portrait = document.getElementById('jarl-portrait');
+  var raf = null;
+  function money(n) { return '$' + (Number(n) || 0).toFixed(2); }
+  function stat(k, v, color) { return '<div class="sf-stat"><div class="k">' + k + '</div><div class="v"' + (color ? ' style="color:' + color + '"' : '') + '>' + v + '</div></div>'; }
+  async function load() {
+    if (!window.__apiGet) return;
+    try {
+      var d = await window.__apiGet('/api/jarl/stats'); var t = d.financials.totals, sy = d.system || {};
+      fin.innerHTML = stat('Gross income', money(t.gross), '#7dffb0') + stat('Net income', money(t.net), '#7dffb0') + stat('Tax', money(t.tax), '#ffd24b') + stat('Sales', t.sales);
+      function n(x) { return x != null ? x : '\u2014'; }
+      sys.innerHTML = stat('Agents', n(sy.agents)) + stat('Memories', n(sy.memory_notes)) + stat('Trades', n(sy.trades)) + stat('Tasks', n(sy.agent_tasks)) + stat('Activity 24h', n(sy.activity_24h)) + stat('Ideas', n(sy.evolution_ideas)) + stat('Live stores', n(sy.storefronts_active));
+    } catch (e) { fin.innerHTML = '<div class="sf-note">Sign in as admin to see the reckoning.</div>'; sys.innerHTML = ''; }
+  }
+  function anim() { if (window.__drawJarl) window.__drawJarl(portrait); raf = requestAnimationFrame(anim); }
+  window.__openJarlPanel = function () { panel.hidden = false; load(); if (!raf) anim(); };
+  function close() { panel.hidden = true; if (raf) { cancelAnimationFrame(raf); raf = null; } }
+  document.getElementById('jarl-x').onclick = close;
+  panel.addEventListener('click', function (e) { if (e.target === panel) close(); });
 })();
 </script>
 </body>
