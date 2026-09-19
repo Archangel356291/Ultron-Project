@@ -1424,6 +1424,13 @@
             </div>
           </div>
 
+          <div class="sf-panel" id="runes-panel" hidden>
+            <div class="sf-panel-inner">
+              <div class="sf-panel-head"><h3>The Rune Temple — Elder Futhark &amp; the Old Lore</h3><span class="sf-x" id="runes-x">✕ close</span></div>
+              <div class="sf-body" id="runes-body"></div>
+            </div>
+          </div>
+
           <div class="panel-label" style="margin-top:28px;">Agent roster &amp; enlistments</div>
           <div class="agent-roster" id="agent-roster"></div>
 
@@ -5814,6 +5821,7 @@ function toggleReducedVisuals(el) {
     decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'trade-post', 'SHOPIFY', 'pod'); }, x: midX - sfDx, y: sfY, anim: true });
     decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'dropship-docks', 'AI DROPSHIP', 'dropship'); }, x: midX + sfDx, y: sfY, anim: true });
     decoSpots.push({ f: drawBifrost, x: narrow ? W - MARGIN - 52 : W - MARGIN - 66, y: narrow ? topBand + 150 : gateY - 96, anim: true });
+    decoSpots.push({ f: drawRuneTemple, x: narrow ? MARGIN + 54 : MARGIN + 210, y: narrow ? topBand + 232 : gateY - 8, anim: true });
   }
   var VILLAGE_NAME = 'TRYGGVANGR';
   // A stone high-seat raised to Odin: a monument of tribute, honor & loyalty.
@@ -6012,6 +6020,30 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = pg; ctx.beginPath(); ctx.ellipse(cx, footY - 6, 22, 14, 0, 0, 7); ctx.fill();
     caption('BIFROST \u00b7 tap to cross', cx, footY + 14, '#cfe0ff');
     hover('The Bifrost', cx, footY - 18, 44, '<b style="color:#9ec7ff">The Bifrost</b><br><span class="rt-enl">The rune-bridge to the AI\u2019s own containers &amp; devices on <b>this account only</b> (read-only, never other accounts). Tap to cross.</span>', function () { if (window.__openBifrostPanel) window.__openBifrostPanel(); });
+  }
+  // A horgr: a stone altar ringed by carved runestones. Click opens the
+  // rune & lore guide. Original art.
+  function drawRuneTemple(cx, footY, t) {
+    ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(cx, footY, 40, 8, 0, 0, 7); ctx.fill();
+    // stepped stone altar
+    ctx.fillStyle = P.stoneD; roundRect(cx - 20, footY - 12, 40, 12, 3); ctx.fill();
+    ctx.fillStyle = P.stone; roundRect(cx - 16, footY - 20, 32, 10, 3); ctx.fill();
+    ctx.fillStyle = P.stoneL; ctx.fillRect(cx - 14, footY - 19, 28, 2);
+    // offering flame
+    var fl = 0.6 + 0.4 * Math.sin(t * 8);
+    ctx.fillStyle = 'rgba(230,120,40,' + (0.7 * fl) + ')'; ctx.beginPath(); ctx.moveTo(cx - 5, footY - 20); ctx.quadraticCurveTo(cx, footY - 34 - fl * 4, cx + 5, footY - 20); ctx.fill();
+    ctx.fillStyle = 'rgba(255,215,90,' + (0.85 * fl) + ')'; ctx.beginPath(); ctx.moveTo(cx - 2.5, footY - 20); ctx.quadraticCurveTo(cx, footY - 29 - fl * 3, cx + 2.5, footY - 20); ctx.fill();
+    // flanking runestones with glowing carvings
+    var glyphs = ['\u16A0', '\u16B7', '\u16CF'];
+    for (var i = -1; i <= 1; i += 2) {
+      var sx = cx + i * 30, sh = 44;
+      ctx.fillStyle = P.stoneD; roundRect(sx - 9, footY - sh, 18, sh, 7); ctx.fill();
+      ctx.fillStyle = P.stone; roundRect(sx - 7, footY - sh + 2, 14, sh - 4, 6); ctx.fill();
+      ctx.fillStyle = 'rgba(230,199,102,' + (0.5 + 0.4 * Math.sin(t * 2 + i)) + ')'; setFont(fontPx * 0.85, true); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(glyphs[i < 0 ? 0 : 2], sx, footY - sh / 2);
+    }
+    caption('RUNE TEMPLE \u00b7 tap to read', cx, footY + 12, '#e6dcc0');
+    hover('The Rune Temple', cx, footY - 22, 42, '<b style="color:#e6c766">The Rune Temple (h\u00f6rgr)</b><br><span class="rt-enl">The elder runes and the old lore of the North. Tap to open the guide.</span>', function () { if (window.__openRunesPanel) window.__openRunesPanel(); });
   }
   function drawScene(t) {
     hoverables.length = 0;
@@ -6734,6 +6766,73 @@ function toggleReducedVisuals(el) {
   }
   window.__openBifrostPanel = function () { panel.hidden = false; load(); };
   document.getElementById('bifrost-x').onclick = function () { panel.hidden = true; };
+  panel.addEventListener('click', function (e) { if (e.target === panel) panel.hidden = true; });
+})();
+</script>
+<script>
+(function () {
+  var panel = document.getElementById('runes-panel'); if (!panel) return;
+  var body = document.getElementById('runes-body');
+  // Elder Futhark (24 runes) -- the historical runic alphabet, ~2nd-8th c.
+  var FUTHARK = [
+    ['\u16A0', 'Fehu', 'cattle \u2014 wealth, earned prosperity'],
+    ['\u16A2', 'Uruz', 'the aurochs \u2014 raw strength, vitality'],
+    ['\u16A6', 'Thurisaz', 'thorn / giant \u2014 a sharp defence'],
+    ['\u16A8', 'Ansuz', 'the \u00c6sir, breath \u2014 wisdom, the word'],
+    ['\u16B1', 'Raidho', 'the ride \u2014 journey, right order'],
+    ['\u16B2', 'Kenaz', 'the torch \u2014 knowledge, craft, fire'],
+    ['\u16B7', 'Gebo', 'the gift \u2014 exchange, generosity'],
+    ['\u16B9', 'Wunjo', 'joy \u2014 harmony, belonging'],
+    ['\u16BA', 'Hagalaz', 'hail \u2014 sudden disruption, testing'],
+    ['\u16BE', 'Nauthiz', 'need \u2014 hardship met with endurance'],
+    ['\u16C1', 'Isa', 'ice \u2014 stillness, a pause'],
+    ['\u16C3', 'Jera', 'the year \u2014 harvest, the turning cycle'],
+    ['\u16C7', 'Eihwaz', 'the yew / world-tree \u2014 resilience'],
+    ['\u16C8', 'Perthro', 'the lot-cup \u2014 fate, hidden things'],
+    ['\u16C9', 'Algiz', 'the elk \u2014 protection, warding'],
+    ['\u16CB', 'Sowilo', 'the sun \u2014 victory, guiding light'],
+    ['\u16CF', 'Tiwaz', 'Tyr \u2014 justice, honour, sacrifice'],
+    ['\u16D2', 'Berkano', 'the birch \u2014 growth, renewal'],
+    ['\u16D6', 'Ehwaz', 'the horse \u2014 partnership, trust'],
+    ['\u16D7', 'Mannaz', 'the self \u2014 humankind, the mind'],
+    ['\u16DA', 'Laguz', 'water \u2014 flow, the unknown deep'],
+    ['\u16DC', 'Ingwaz', 'Ing / Freyr \u2014 fertility, potential'],
+    ['\u16DE', 'Dagaz', 'day \u2014 breakthrough, awakening'],
+    ['\u16DF', 'Othala', 'inheritance \u2014 homeland, kin, legacy']
+  ];
+  var REALMS = [
+    ['Asgard', 'hall of the \u00c6sir, ruled by the All-Father'],
+    ['Vanaheim', 'home of the Vanir, gods of fertility & the sea'],
+    ['Alfheim', 'realm of the light-elves'],
+    ['Midgard', 'the world of people, ringed by the great sea'],
+    ['Jotunheim', 'land of the giants (j\u00f6tnar)'],
+    ['Svartalfheim', 'Nidavellir \u2014 the dwarves\u2019 forges below'],
+    ['Muspelheim', 'the primal fire of the south'],
+    ['Niflheim', 'the primal ice & mist of the north'],
+    ['Helheim', 'the realm of the dead, kept by Hel']
+  ];
+  var built = false;
+  function build() {
+    if (built) return; built = true;
+    var runes = FUTHARK.map(function (r) {
+      return '<div style="background:#241a10;border:1px solid #3a2c18;border-radius:8px;padding:8px;display:flex;gap:9px;align-items:center;">' +
+        '<div style="font-size:26px;color:#e6c766;width:30px;text-align:center;line-height:1;">' + r[0] + '</div>' +
+        '<div><div style="color:#ffe6a0;font-size:12px;font-weight:600;">' + r[1] + '</div><div style="color:#cfc8bb;font-size:11px;">' + r[2] + '</div></div></div>';
+    }).join('');
+    var realms = REALMS.map(function (r) {
+      return '<li style="margin:3px 0;"><b style="color:#ffe6a0;">' + r[0] + '</b> <span style="color:#cfc8bb;">\u2014 ' + r[1] + '</span></li>';
+    }).join('');
+    body.innerHTML =
+      '<div class="sf-note">An educational guide to the pre-Christian religion of the Norse and the elder runes \u2014 history and mythology, drawn from the surviving sources (the Eddas, the sagas, and runic inscriptions).</div>' +
+      '<div style="color:#e6c766;font-family:var(--font-display);margin:12px 0 6px;">The Elder Futhark</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:7px;">' + runes + '</div>' +
+      '<div style="color:#e6c766;font-family:var(--font-display);margin:16px 0 4px;">The Nine Realms of Yggdrasil</div>' +
+      '<ul style="list-style:none;padding:0;margin:0;font-size:12px;">' + realms + '</ul>' +
+      '<div style="color:#e6c766;font-family:var(--font-display);margin:16px 0 4px;">The old ways, in brief</div>' +
+      '<div style="color:#cfc8bb;font-size:12px;line-height:1.55;">The Norse honoured many gods \u2014 Odin the All-Father, Thor the thunderer, Freyr and Freyja of the Vanir, Tyr of justice, and more. Worship (<i>bl\u00f3t</i>) was held at a <i>h\u00f6rgr</i> (stone altar) or <i>hof</i> (temple hall) with feasts, toasts, and offerings; the community gathered at the <i>Thing</i> to make law. The runes served for writing, memorial stones, and divination. This corner keeps the lore for study \u2014 Tryggvangr\u2019s namesake virtue, <i>drengskapr</i>, means honour, courage, and troth.</div>';
+  }
+  window.__openRunesPanel = function () { build(); panel.hidden = false; };
+  document.getElementById('runes-x').onclick = function () { panel.hidden = true; };
   panel.addEventListener('click', function (e) { if (e.target === panel) panel.hidden = true; });
 })();
 </script>
