@@ -6,7 +6,10 @@ services:
     container_name: ultron-backend
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      # Tailnet + this machine only -- never the Wi-Fi/LAN. The tailnet IP is
+      # host-specific, so it comes from the untracked .env.
+      - "${ULTRON_BIND_IP:?Add ULTRON_BIND_IP to .env (output of: tailscale ip -4)}:5000:5000"
+      - "127.0.0.1:5000:5000"
     env_file:
       - .env
     environment:
