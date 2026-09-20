@@ -1475,6 +1475,7 @@
               <div class="sf-panel-head"><h3>The Works Board — road to launch</h3><span class="sf-x" id="launch-x">✕ close</span></div>
               <div class="sf-body">
                 <div style="color:#8a93a3;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Products</div>
+                <div id="launch-llm-hint" class="sf-note" style="margin-bottom:6px;"></div>
                 <div id="launch-products"></div>
                 <div style="color:#8a93a3;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;margin:12px 0 4px;">Ad campaigns</div>
                 <div id="launch-campaigns"></div>
@@ -7159,21 +7160,41 @@ function toggleReducedVisuals(el) {
   function itemRow(it, kind) {
     var ladder = ladders[kind] || [];
     var atEnd = ladder.length && it.stage === ladder[ladder.length - 1];
+    var arts = it.artifacts || [], last = arts.length ? arts[arts.length - 1] : null;
+    var who = it.agent ? '\u2692 ' + esc(it.agent) : (it.next_agent ? 'next: ' + esc(it.next_agent) : '');
+    var artHtml = arts.length
+      ? '<details style="margin-top:6px;"><summary style="color:#8ad0b0;font-size:10.5px;cursor:pointer;">' + arts.length + ' draft' + (arts.length > 1 ? 's' : '') + ' \u2014 latest: ' + esc(last.stage) + ' by ' + esc(last.agent) + '</summary><div style="white-space:pre-wrap;color:#e8dcc0;font-size:11px;line-height:1.5;background:#12100a;border-radius:6px;padding:8px;margin-top:5px;max-height:260px;overflow:auto;">' + esc(last.text) + '</div></details>'
+      : '';
+    var draftBtn = (!atEnd && it.can_draft)
+      ? '<button data-draft="' + it.id + '" style="margin:5px 0 0 6px;padding:3px 10px;border-radius:6px;border:1px solid #6a4526;background:#2a2016;color:#e6c766;cursor:pointer;font-size:11px;">\u2692 Odin drafts this</button>'
+      : '';
     return '<div style="background:#241a10;border:1px solid #3a2c18;border-radius:8px;padding:8px 10px;margin-bottom:6px;">' +
       '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;">' +
       '<span style="color:#ffe6a0;font-size:12px;">' + esc(it.name) + '</span>' +
       '<span style="color:#8a93a3;font-size:11px;">' + esc(it.stage) + ' \u00b7 ' + it.progress + '%</span></div>' +
       '<div style="background:#12100a;border-radius:6px;height:7px;margin:6px 0;overflow:hidden;"><div style="height:7px;width:' + it.progress + '%;background:' + (it.progress >= 100 ? '#5fe39a' : '#cfa23c') + ';"></div></div>' +
+      (who ? '<div style="color:#8ad0b0;font-size:10.5px;margin-bottom:3px;">' + who + '</div>' : '') +
       (it.note ? '<div style="color:#cfc8bb;font-size:10.5px;">' + esc(it.note) + '</div>' : '') +
-      (atEnd ? '<div style="color:#7dffb0;font-size:11px;margin-top:4px;">\u2713 launched</div>' : '<button data-adv="' + it.id + '" data-kind="' + kind + '" style="margin-top:5px;padding:3px 10px;border-radius:6px;border:1px solid #cfa23c;background:#3a2c16;color:#ffe6a0;cursor:pointer;font-size:11px;">advance \u2192</button>') +
+      artHtml +
+      (atEnd ? '<div style="color:#7dffb0;font-size:11px;margin-top:4px;">\u2713 launched \u2014 your listing/ads are live by your hand</div>' :
+        '<div><button data-adv="' + it.id + '" data-kind="' + kind + '" style="margin-top:5px;padding:3px 10px;border-radius:6px;border:1px solid #cfa23c;background:#3a2c16;color:#ffe6a0;cursor:pointer;font-size:11px;">advance \u2192</button>' + draftBtn + '</div>') +
       '</div>';
   }
   async function load() {
     if (!window.__apiGet) return;
     try {
       var d = await window.__apiGet('/api/launch'); ladders = d.ladders || {}; if (dir) dir.textContent = d.log_dir || '';
+      var hint = document.getElementById('launch-llm-hint');
+      if (hint) hint.textContent = d.llm_ready ? '' : 'Tip: \u2692 \u201cOdin drafts this\u201d turns on once ANTHROPIC_API_KEY is set on the host. It writes the design brief, listing copy and ad scripts for you \u2014 you still do the final publish.';
       prodBox.innerHTML = (d.products || []).map(function (i) { return itemRow(i, 'product'); }).join('') || '<div class="sf-note">No products yet.</div>';
       campBox.innerHTML = (d.campaigns || []).map(function (i) { return itemRow(i, 'campaign'); }).join('') || '<div class="sf-note">No campaigns yet.</div>';
+      Array.prototype.forEach.call(panel.querySelectorAll('button[data-draft]'), function (b) {
+        b.onclick = async function () {
+          var id = b.getAttribute('data-draft'); b.disabled = true; b.textContent = '\u2692 Odin is drafting\u2026';
+          try { await window.__apiPost('/api/launch/draft', { id: Number(id) }); load(); }
+          catch (e) { b.disabled = false; b.textContent = '\u2692 Odin drafts this'; alert((e && e.message) ? e.message : 'Drafting needs admin sign-in.'); }
+        };
+      });
       Array.prototype.forEach.call(panel.querySelectorAll('button[data-adv]'), function (b) {
         b.onclick = async function () {
           var kind = b.getAttribute('data-kind'), ladder = ladders[kind] || [];

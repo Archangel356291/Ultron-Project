@@ -40,7 +40,32 @@ def demo():
     log = os.path.join(app.LAUNCH_LOG_DIR, "launch.jsonl")
     assert os.path.isfile(log) and sum(1 for _ in open(log, encoding="utf-8")) >= 2, "stage changes logged"
 
-    print("OK: launch board seeds current items, tracks stage->progress, and logs changes.")
+    # --- Odin-drafts-the-work pipeline ---
+    # every non-terminal stage of every ladder has an assigned agent + task,
+    # and the terminal stage deliberately has none (that step is the human's).
+    for kind, ladder in app.LAUNCH_LADDERS.items():
+        for st in ladder[:-1]:
+            assert (kind, st) in app.LAUNCH_TASKS, (kind, st)
+        assert (kind, ladder[-1]) not in app.LAUNCH_TASKS, (kind, ladder[-1])
+
+    # without an LLM key, drafting refuses cleanly (503) and changes nothing.
+    app.anthropic_client = None
+    res, code = app.launch_draft(tee["id"])
+    assert code == 503 and "error" in res, (code, res)
+
+    # with the LLM stubbed, drafting saves an artifact, assigns the agent,
+    # and advances the stage -- but never past the terminal (publish) stage.
+    app.anthropic_client = object()
+    app.run_ultron_chat = lambda msg, hist, **kw: ("DRAFT: a cozy Norse design brief.", [], [])
+    idea = app.launch_upsert({"kind": "product", "name": "Runestone mug", "stage": "Idea"})
+    res, code = app.launch_draft(idea["id"])
+    assert code == 200 and res["ok"], (code, res)
+    assert res["agent"] == "store_scout" and res["stage"] == "Design", res
+    got = next(p for p in app.launch_summary()["products"] if p["id"] == idea["id"])
+    assert got["agent"] == "store_scout" and len(got["artifacts"]) == 1, got
+    assert got["artifacts"][0]["text"].startswith("DRAFT:"), got
+
+    print("OK: launch board seeds items, tracks stage->progress, logs changes, and Odin drafts each step (human keeps the publish).")
 
 
 if __name__ == "__main__":

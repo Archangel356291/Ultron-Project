@@ -466,6 +466,11 @@ def _init_db():
                 updated_at TEXT NOT NULL
             )
         """)
+        _li_cols = [r[1] for r in conn.execute("PRAGMA table_info(launch_items)").fetchall()]
+        if "agent" not in _li_cols:
+            conn.execute("ALTER TABLE launch_items ADD COLUMN agent TEXT")
+        if "artifacts" not in _li_cols:
+            conn.execute("ALTER TABLE launch_items ADD COLUMN artifacts TEXT")
         if conn.execute("SELECT COUNT(*) FROM launch_items").fetchone()[0] == 0:
             _now = time.strftime("%Y-%m-%dT%H:%M:%S")
             for _k, _n, _st, _note in (
@@ -7037,14 +7042,22 @@ def launch_summary():
     conn = _get_db_connection()
     try:
         out = {"product": [], "campaign": []}
-        for r in conn.execute("SELECT id, kind, name, stage, note, updated_at FROM launch_items ORDER BY kind, id").fetchall():
+        for r in conn.execute("SELECT id, kind, name, stage, note, updated_at, agent, artifacts FROM launch_items ORDER BY kind, id").fetchall():
             ladder = LAUNCH_LADDERS.get(r["kind"], [])
             idx = ladder.index(r["stage"]) if r["stage"] in ladder else 0
             prog = round((idx + 1) / len(ladder) * 100) if ladder else 0
+            try:
+                arts = json.loads(r["artifacts"]) if r["artifacts"] else []
+            except Exception:
+                arts = []
+            task = LAUNCH_TASKS.get((r["kind"], r["stage"]))
             (out.get(r["kind"]) or out.setdefault(r["kind"], [])).append(
                 {"id": r["id"], "name": r["name"], "stage": r["stage"], "progress": prog,
-                 "note": r["note"], "updated_at": r["updated_at"]})
-        return {"products": out["product"], "campaigns": out["campaign"], "ladders": LAUNCH_LADDERS, "log_dir": LAUNCH_LOG_DIR}
+                 "note": r["note"], "updated_at": r["updated_at"], "agent": r["agent"],
+                 "artifacts": arts, "can_draft": bool(task),
+                 "next_agent": task[0] if task else None})
+        return {"products": out["product"], "campaigns": out["campaign"], "ladders": LAUNCH_LADDERS,
+                "log_dir": LAUNCH_LOG_DIR, "llm_ready": anthropic_client is not None}
     finally:
         conn.close()
 
@@ -7060,6 +7073,95 @@ def api_launch():
 def api_launch_item():
     result = launch_upsert(request.get_json(silent=True) or {})
     return jsonify(result), (201 if result.get("ok") else 400)
+
+
+# Each non-terminal stage maps to the subagent who works it and the actual
+# deliverable Odin drafts for it. The TERMINAL stage of each ladder (Live /
+# Posted) is deliberately absent: that is the human's move (publishing a
+# listing, paying to boost an ad), never something the AI does for you.
+LAUNCH_TASKS = {
+    ("product", "Idea"): ("store_scout", "Refine this product idea for a small Norse/cozy shop: who it's for, why it sells, three concrete variations, and which single one to make first."),
+    ("product", "Design"): ("store_designer", "Write a complete design brief: visual concept, colour palette, motifs, the exact label/print text, and a ready-to-use listing (title, ~120-word description, 13 tags). Original art only, cozy Norse brand voice."),
+    ("product", "Sample"): ("store_fulfillment", "Give a sample-review QA checklist (print quality, colour accuracy, placement, sizing) and the specific things to fix before this goes live."),
+    ("product", "Listed"): ("store_merchant", "Write the go-live checklist: a price + rough margin suggestion, the product photos needed, and the exact publish steps the owner performs to take this listing live."),
+    ("campaign", "Idea"): ("ad_social", "Turn this into an ad-campaign concept: target audience, the hook angle, best platform, and a posting cadence."),
+    ("campaign", "Scripted"): ("ad_video", "Write three short (15-30s) video scripts with on-screen captions and hashtags. Put the strongest hook in the first line of each."),
+    ("campaign", "Filmed"): ("ad_video", "Give a phone-friendly shot list: each shot, any b-roll, and the on-screen text, so this can actually be filmed."),
+    ("campaign", "Scheduled"): ("ad_social", "Draft the posting schedule: which platform, which caption, and the exact day/time for each post."),
+}
+
+
+def launch_draft(item_id):
+    """Have the assigned subagent actually DRAFT the next deliverable for a
+    launch item (a design brief, listing copy, ad scripts...) via Odin's LLM,
+    save it to the item + the launch log, and advance the stage. It never
+    publishes or spends -- the terminal stage stays the owner's own move."""
+    if anthropic_client is None:
+        return {"error": "Odin's brain isn't configured on this host yet (set ANTHROPIC_API_KEY and restart). Drafting products/ads needs it; every other board feature works without it."}, 503
+    over, spent, cap = _agent_over_cap("ultron")
+    if over:
+        return {"error": f"Odin's daily spend cap reached (${spent:.2f}/${cap:.2f} today) -- resets at midnight, or raise ODIN_AGENT_DAILY_USD"}, 429
+    conn = _get_db_connection()
+    try:
+        row = conn.execute("SELECT kind, name, stage, artifacts FROM launch_items WHERE id=?", (item_id,)).fetchone()
+    finally:
+        conn.close()
+    if not row:
+        return {"error": "unknown item"}, 404
+    kind, name, stage = row["kind"], row["name"], row["stage"]
+    ladder = LAUNCH_LADDERS.get(kind, [])
+    task = LAUNCH_TASKS.get((kind, stage))
+    if not task:
+        return {"error": "This stage is your move -- Odin has prepped everything up to launch. Publishing the listing or paying to boost is done by you, not the AI."}, 400
+    agent, instruction = task
+    prompt = (
+        "You run the storefront for this home lab. Draft the \"" + stage + "\" deliverable for our "
+        + kind + " \"" + name + "\" (this is the " + agent + " step of getting it launch-ready).\n\n"
+        + instruction + "\n\n"
+        "This is a working draft for me, the owner, to review and publish myself -- so write the actual "
+        "usable content, plainly and concisely, with no preamble. Where you would need real product data, "
+        "invent sensible specifics and mark them [like this] as placeholders for me to confirm. Don't "
+        "claim anything has actually been posted, listed, purchased, or paid for."
+    )
+    try:
+        reply, _hist, _tools = run_ultron_chat(prompt, [], role="admin", lite=True)
+    except Exception as e:
+        return {"error": "Odin couldn't draft this right now: " + str(e)[:160]}, 502
+
+    now = time.strftime("%Y-%m-%dT%H:%M:%S")
+    idx = ladder.index(stage) if stage in ladder else 0
+    new_stage = ladder[idx + 1] if idx + 1 < len(ladder) else stage   # advance, never past terminal
+    conn = _get_db_connection()
+    try:
+        try:
+            arts = json.loads(row["artifacts"]) if row["artifacts"] else []
+        except Exception:
+            arts = []
+        arts.append({"ts": now, "stage": stage, "agent": agent, "text": reply})
+        arts = arts[-20:]                                             # keep the last 20 drafts
+        note = agent + " drafted the " + stage.lower() + " step"
+        conn.execute("UPDATE launch_items SET stage=?, agent=?, artifacts=?, note=?, updated_at=? WHERE id=?",
+                     (new_stage, agent, json.dumps(arts, ensure_ascii=False), note[:280], now, item_id))
+        conn.commit()
+    finally:
+        conn.close()
+    _launch_log({"ts": now, "id": item_id, "name": name, "kind": kind,
+                 "stage": new_stage, "from_stage": stage, "agent": agent,
+                 "note": note, "drafted": True})
+    return {"ok": True, "id": item_id, "agent": agent, "from_stage": stage,
+            "stage": new_stage, "artifact": reply}, 200
+
+
+@app.route("/api/launch/draft", methods=["POST"])
+@require_token
+def api_launch_draft():
+    body = request.get_json(silent=True) or {}
+    try:
+        item_id = int(body.get("id"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "id required"}), 400
+    result, code = launch_draft(item_id)
+    return jsonify(result), code
 
 
 # ---------------------------------------------------------------------------
