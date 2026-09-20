@@ -5422,6 +5422,7 @@ function toggleReducedVisuals(el) {
   var hoverables = [];
   function hover(name, x, y, r, tip, onClick) { hoverables.push({ name: name, x: x, y: y, r: r, tip: tip, onClick: onClick }); }
 
+  var lastLayoutW = -1;
   function layout() {
     var cssW = wrap.clientWidth;
     if (!cssW) return false;
@@ -5449,6 +5450,7 @@ function toggleReducedVisuals(el) {
     ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
     ctx.imageSmoothingEnabled = false;
     fontPx = cssW >= 1040 ? 12 : 11;
+    lastLayoutW = cssW;
     return true;
   }
 
@@ -6386,8 +6388,13 @@ function toggleReducedVisuals(el) {
   // ---------------------------------------------------------------- boot
   function forceDraw() { if (laidOut || (laidOut = layout())) { decoSpots = []; drawScene(now()); } }
   window.__roomRelayout = function () { laidOut = layout(); forceDraw(); };
-  if (window.ResizeObserver) { new ResizeObserver(function () { laidOut = layout(); decoSpots = []; forceDraw(); }).observe(wrap); }
-  else { window.addEventListener('resize', function () { laidOut = layout(); decoSpots = []; forceDraw(); }); }
+  window.__roomRedraw = function () { if (laidOut) drawScene(now()); };   // repaint only, no resize
+  // Only re-layout when the WIDTH actually changes. The canvas is height:auto,
+  // so setting its size changes the wrap's height and would otherwise re-fire
+  // the observer forever (the flicker/jitter). Layout depends only on width.
+  function onWrapResize() { if (wrap.clientWidth && wrap.clientWidth !== lastLayoutW) { laidOut = layout(); decoSpots = []; forceDraw(); } }
+  if (window.ResizeObserver) { new ResizeObserver(onWrapResize).observe(wrap); }
+  else { window.addEventListener('resize', onWrapResize); }
   if (window.IntersectionObserver) { new IntersectionObserver(function (entries) { var vis = entries[entries.length - 1].isIntersecting; if (vis && !onScreen) { onScreen = true; forceDraw(); } else onScreen = vis; }).observe(wrap); }
 
   if (prefersReducedMotion) { requestStatic(); setInterval(function () { stepVillagers(0.5); requestStatic(); }, 600); }
@@ -6875,7 +6882,7 @@ function toggleReducedVisuals(el) {
   var state = { list: [], active: null, ledgerDir: '' };
   function money(n) { return '$' + (Number(n) || 0).toFixed(2); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function syncCanvas() { var m = {}; state.list.forEach(function (s) { m[s.id] = s.active; }); window.__storefrontState = m; if (window.__roomRelayout) window.__roomRelayout(); }
+  function syncCanvas() { var m = {}; state.list.forEach(function (s) { m[s.id] = s.active; }); window.__storefrontState = m; if (window.__roomRedraw) window.__roomRedraw(); else if (window.__roomRelayout) window.__roomRelayout(); }
   function notify(msg) {
     var box = document.getElementById('sf-toasts');
     if (!box) { box = document.createElement('div'); box.id = 'sf-toasts'; box.style.cssText = 'position:fixed; top:14px; right:14px; z-index:100000; display:flex; flex-direction:column; gap:8px; max-width:300px;'; document.body.appendChild(box); }
@@ -6884,7 +6891,7 @@ function toggleReducedVisuals(el) {
     box.appendChild(el); requestAnimationFrame(function () { el.style.opacity = '1'; el.style.transform = 'none'; });
     setTimeout(function () { el.style.opacity = '0'; setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 350); }, 7000);
   }
-  async function load() {
+  async function load(reRenderPanel) {
     if (!window.__apiGet) return;
     try {
       var d = await window.__apiGet('/api/storefronts');
@@ -6892,7 +6899,7 @@ function toggleReducedVisuals(el) {
       var seen = window.__sfSeen;
       if (seen) { var nnew = 0, names = []; state.list.forEach(function (s) { if (seen[s.id] != null && s.sales > seen[s.id]) { nnew += (s.sales - seen[s.id]); names.push(s.name); } }); if (nnew > 0) notify('💰 ' + nnew + ' new sale' + (nnew > 1 ? 's' : '') + ' — ' + names.join(', ') + (d.totals ? ' · ' + money(d.totals.revenue) + ' total' : '')); }
       var ns = {}; state.list.forEach(function (s) { ns[s.id] = s.sales; }); window.__sfSeen = ns;
-      renderBar(d.totals); syncCanvas(); if (window.__setRoomStats && d.totals) window.__setRoomStats({ profit: d.totals.net }); if (!panel.hidden) renderPanel();
+      renderBar(d.totals); syncCanvas(); if (window.__setRoomStats && d.totals) window.__setRoomStats({ profit: d.totals.net }); if (reRenderPanel && !panel.hidden) renderPanel();
     } catch (e) { /* not signed in yet */ }
   }
   function renderBar(t) {
@@ -6903,10 +6910,10 @@ function toggleReducedVisuals(el) {
   }
   async function toggle(id) {
     var s = state.list.find(function (x) { return x.id === id; }); if (!s || !window.__apiPost) return;
-    try { await window.__apiPost('/api/storefronts/' + id + '/active', { active: !s.active }); await load(); }
+    try { await window.__apiPost('/api/storefronts/' + id + '/active', { active: !s.active }); await load(true); }
     catch (e) { alert('Toggling a storefront needs admin sign-in.'); }
   }
-  function openPanel(id) { state.active = id || (state.list[0] && state.list[0].id); panel.hidden = false; renderPanel(); }
+  function openPanel(id) { panel.hidden = false; if (!state.list.length) { load(false).then(function () { state.active = id || (state.list[0] && state.list[0].id); renderPanel(); }); } else { state.active = id || (state.list[0] && state.list[0].id); renderPanel(); } }
   window.__openStorefrontPanel = openPanel;
   function renderPanel() {
     tabs.innerHTML = state.list.map(function (s) { return '<span class="sf-tab' + (s.id === state.active ? ' active' : '') + '" data-id="' + s.id + '">' + esc(s.name) + '</span>'; }).join('');
@@ -6948,7 +6955,7 @@ function toggleReducedVisuals(el) {
     if (!window.__apiPost) { if (msg) msg.textContent = 'sign in first.'; return; }
     try { var r = await window.__apiPost('/api/storefronts/' + id + '/sync', {});
       if (r.error) { if (msg) msg.textContent = r.error; }
-      else { if (msg) msg.textContent = 'pulled ' + r.synced + ' new, ' + r.skipped + ' already logged'; await load(); loadRecent(id); }
+      else { if (msg) msg.textContent = 'pulled ' + r.synced + ' new, ' + r.skipped + ' already logged'; await load(true); loadRecent(id); }
     } catch (e) { if (msg) msg.textContent = 'sync needs admin sign-in.'; }
   }
   async function recordSale(id) {
@@ -6957,7 +6964,7 @@ function toggleReducedVisuals(el) {
     var sub = parseFloat(document.getElementById('sf-sub').value || '0');
     var rate = parseFloat(document.getElementById('sf-rate').value || '0');
     var cost = parseFloat((document.getElementById('sf-cost') || {}).value || '0');
-    try { await window.__apiPost('/api/storefronts/' + id + '/sales', { item: item, subtotal: sub, tax_rate: rate, cost: cost, source: 'manual' }); await load(); loadRecent(id); }
+    try { await window.__apiPost('/api/storefronts/' + id + '/sales', { item: item, subtotal: sub, tax_rate: rate, cost: cost, source: 'manual' }); await load(true); loadRecent(id); }
     catch (e) { alert('Recording a sale needs admin sign-in.'); }
   }
   function keySlots(platform) {
@@ -6993,7 +7000,7 @@ function toggleReducedVisuals(el) {
   document.getElementById('sf-ledger-btn').onclick = function () { openPanel(); };
   document.getElementById('sf-x').onclick = function () { panel.hidden = true; };
   panel.addEventListener('click', function (e) { if (e.target === panel) panel.hidden = true; });
-  load(); setInterval(load, 15000);
+  load(); setInterval(function () { load(false); }, 15000);
   if (/[?&]shopify=connected/.test(location.search)) { setTimeout(function () { try { alert('\u2705 Shopify connected \u2014 open a storefront and hit \u201cSync Shopify orders\u201d to pull your sales.'); } catch (e) {} }, 400); }
   var nav = document.querySelector('.nav-item[data-section="ultron-core"]'); if (nav) nav.addEventListener('click', function () { setTimeout(load, 300); });
 })();
