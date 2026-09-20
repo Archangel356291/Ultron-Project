@@ -7062,6 +7062,90 @@ def api_launch_item():
     return jsonify(result), (201 if result.get("ok") else 400)
 
 
+# ---------------------------------------------------------------------------
+# Live crypto tracking -- READ-ONLY, free, public-address only. The owner stores
+# a PUBLIC wallet address in the vault (never a seed phrase or private key); the
+# app queries a free public explorer and returns the live balance. BTC uses
+# blockstream (free, no key); ETH uses the owner's own free Etherscan key if set.
+# Nothing here can move funds; it only reads public chain data.
+# ---------------------------------------------------------------------------
+def _http_get_json(url, headers=None, timeout=12):
+    try:
+        req = urllib.request.Request(url, headers=headers or {"Accept": "application/json", "User-Agent": "odins-eye"})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.load(r), None
+    except urllib.error.HTTPError as e:
+        return None, "explorer HTTP %s" % e.code
+    except Exception as e:
+        return None, ("could not reach explorer: " + str(e))[:140]
+
+
+def _btc_parse(data):
+    cs = data.get("chain_stats") or {}
+    ms = data.get("mempool_stats") or {}
+    conf = (cs.get("funded_txo_sum", 0) - cs.get("spent_txo_sum", 0)) / 1e8
+    pend = (ms.get("funded_txo_sum", 0) - ms.get("spent_txo_sum", 0)) / 1e8
+    return {"balance": round(conf + pend, 8), "confirmed": round(conf, 8),
+            "pending": round(pend, 8), "tx_count": cs.get("tx_count", 0) + ms.get("tx_count", 0)}
+
+
+def _btc_live(addr):
+    data, err = _http_get_json("https://blockstream.info/api/address/" + urllib.parse.quote(addr.strip()))
+    if err:
+        return None, err
+    try:
+        return _btc_parse(data), None
+    except Exception:
+        return None, "unexpected explorer response"
+
+
+def _eth_live(addr, key):
+    data, err = _http_get_json("https://api.etherscan.io/api?module=account&action=balance&address=%s&tag=latest&apikey=%s"
+                               % (urllib.parse.quote(addr.strip()), urllib.parse.quote(key.strip())))
+    if err:
+        return None, err
+    try:
+        if str(data.get("status")) != "1":
+            return None, str(data.get("message") or "etherscan error")
+        return {"balance": round(int(data["result"]) / 1e18, 8)}, None
+    except Exception:
+        return None, "unexpected etherscan response"
+
+
+def _wallet_live_snapshot(rows):
+    try:
+        os.makedirs(WALLET_LEDGER_DIR, exist_ok=True)
+        with open(os.path.join(WALLET_LEDGER_DIR, "live-balances.jsonl"), "a", encoding="utf-8") as f:
+            f.write(json.dumps({"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "balances": rows}, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
+def wallet_live():
+    out = []
+    btc = get_user_key("WALLET_BTC_ADDRESS")
+    if btc:
+        d, err = _btc_live(btc)
+        out.append({"asset": "BTC", "address": btc, "error": err} if err else dict({"asset": "BTC", "address": btc}, **d))
+    eth = get_user_key("WALLET_ETH_ADDRESS")
+    ekey = get_user_key("ETHERSCAN_API_KEY")
+    if eth:
+        if ekey:
+            d, err = _eth_live(eth, ekey)
+            out.append({"asset": "ETH", "address": eth, "error": err} if err else dict({"asset": "ETH", "address": eth}, **d))
+        else:
+            out.append({"asset": "ETH", "address": eth, "error": "add a free ETHERSCAN_API_KEY to track ETH live"})
+    if out:
+        _wallet_live_snapshot(out)
+    return {"live": out, "note": "read-only from public explorers; add addresses under Your Keys as WALLET_BTC_ADDRESS / WALLET_ETH_ADDRESS (public address only -- never a seed phrase)."}
+
+
+@app.route("/api/wallet/live")
+@require_token
+def api_wallet_live():
+    return jsonify(wallet_live())
+
+
 if __name__ == "__main__":
     # Bind to all interfaces so it's reachable from the dashboard on other
     # devices on your network. Never expose this directly to the internet —

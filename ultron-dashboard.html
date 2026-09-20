@@ -1440,6 +1440,14 @@
             <div class="sf-panel-inner">
               <div class="sf-panel-head"><h3>The Treasury — crypto wallet ledger</h3><span class="sf-x" id="wallet-x">✕ close</span></div>
               <div class="sf-body">
+                <div style="color:#8a93a3;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Live on-chain (read-only · free)</div>
+                <div id="wallet-live" class="sf-stat-row"></div>
+                <div class="sf-form" style="flex-wrap:wrap;">
+                  <input id="w-btc-addr" placeholder="BTC public address (bc1…)" style="width:230px;">
+                  <button id="w-save-btc">Save BTC address</button>
+                  <button id="w-refresh-live">↻ Refresh live</button>
+                </div>
+                <div style="color:#8a93a3;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;margin:12px 0 4px;">Manual ledger</div>
                 <div id="wallet-balances" class="sf-stat-row"></div>
                 <div class="sf-form" style="flex-wrap:wrap;">
                   <select id="w-kind" style="background:#120d07;border:1px solid #3a2c18;color:#e8dcc0;border-radius:6px;padding:5px 7px;font-size:12px;"></select>
@@ -5401,7 +5409,7 @@ function toggleReducedVisuals(el) {
 
   // ---- layout ----
   var W = 1200, H = 900, cols = 5, scale = 1, fontPx = 12;
-  var MARGIN = 26, cellW = 240, cellH = 232, topBand = 250, gateBand = 150;
+  var MARGIN = 26, cellW = 240, cellH = 232, topBand = 250, gateBand = 150, storeBand = 0;
   var gridTop = 0, gateY = 0;
   var hoverables = [];
   function hover(name, x, y, r, tip, onClick) { hoverables.push({ name: name, x: x, y: y, r: r, tip: tip, onClick: onClick }); }
@@ -5413,7 +5421,8 @@ function toggleReducedVisuals(el) {
     cellW = cssW >= 1040 ? 246 : cssW >= 560 ? 232 : cssW / 2 - MARGIN;
     W = MARGIN * 2 + cols * cellW;
     var rows = Math.ceil(SUBAGENTS.length / cols);
-    gridTop = topBand;
+    storeBand = (cols <= 2) ? 330 : 210;   // marketplace plaza for the two storefronts, up top
+    gridTop = topBand + storeBand;
     gateY = gridTop + rows * cellH + 40;
     H = gateY + gateBand;
     // each agent gets a cell; villager wanders its lower half
@@ -5874,14 +5883,21 @@ function toggleReducedVisuals(el) {
     // Jarl's Stone (live tidings) takes the centre plaza below the hall.
     decoSpots.push({ f: runeStone, x: midX, y: topBand + (narrow ? 150 : 44) });
     if (!narrow) {
-      decoSpots.push({ f: well, x: midX + 168, y: topBand + 120 });
       decoSpots.push({ f: tree, x: MARGIN + 64, y: gateY - 120 });
       decoSpots.push({ f: firepit, x: W - MARGIN - 74, y: gateY - 120, anim: true });
+      decoSpots.push({ f: well, x: MARGIN + 74, y: gateY - 118 });
     }
     decoSpots.push({ f: cart, x: MARGIN + 74, y: gateY - 10 });
-    var sfDx = Math.min(170, W / 2 - MARGIN - 64), sfY = gateY - 6;
-    decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'trade-post', 'SHOPIFY', 'pod'); }, x: midX - sfDx, y: sfY, anim: true });
-    decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'dropship-docks', 'AI DROPSHIP', 'dropship'); }, x: midX + sfDx, y: sfY, anim: true });
+    // The two storefronts are the village's top priority: a marketplace plaza
+    // right below the Jarl's hall, ahead of every worker hut.
+    if (narrow) {
+      decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'dropship-docks', 'AI DROPSHIP', 'dropship'); }, x: midX, y: topBand + 150, anim: true });
+      decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'trade-post', 'SHOPIFY', 'pod'); }, x: midX, y: topBand + 300, anim: true });
+    } else {
+      var sfDx = Math.min(196, W / 2 - MARGIN - 78), sfY = topBand + 182;
+      decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'trade-post', 'SHOPIFY', 'pod'); }, x: midX - sfDx, y: sfY, anim: true });
+      decoSpots.push({ f: function (x, y, t) { drawStorefront(x, y, t, 'dropship-docks', 'AI DROPSHIP', 'dropship'); }, x: midX + sfDx, y: sfY, anim: true });
+    }
     decoSpots.push({ f: drawBifrost, x: narrow ? midX + 66 : midX + 150, y: topBand + (narrow ? 6 : 30), anim: true });
     decoSpots.push({ f: drawRuneTemple, x: narrow ? midX - 66 : midX - 150, y: topBand + (narrow ? 6 : 30), anim: true });
     decoSpots.push({ f: drawTreasury, x: narrow ? W - MARGIN - 52 : W - MARGIN - 66, y: narrow ? topBand + 150 : gateY - 96, anim: true });
@@ -5986,43 +6002,53 @@ function toggleReducedVisuals(el) {
   // on click. Original art.
   function sfActive(id) { var m = window.__storefrontState; return !!(m && m[id]); }
   function drawStorefront(cx, footY, t, id, label, kind) {
-    var on = sfActive(id), w = 116, h = 60, x = cx - w / 2, y = footY - h;
-    ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath(); ctx.ellipse(cx, footY + 3, w / 2 + 6, 9, 0, 0, 7); ctx.fill();
+    var on = sfActive(id), w = 132, h = 64, x = cx - w / 2, y = footY - h;
+    ctx.fillStyle = 'rgba(0,0,0,0.24)'; ctx.beginPath(); ctx.ellipse(cx, footY + 4, w / 2 + 10, 11, 0, 0, 7); ctx.fill();
     if (kind === 'dropship') {
-      // stone warehouse + a longship prow + stacked crates
-      stoneWall(x, y, w, h);
-      ctx.fillStyle = P.beamD; ctx.fillRect(x, y, w, 5); ctx.fillRect(x, y + h - 6, w, 6);
-      ctx.fillStyle = '#2b2f36'; roundRect(x + w - 34, y + 16, 22, 24, 2); ctx.fill();            // loading door
-      ctx.fillStyle = P.beam; for (var d = 0; d < 3; d++) ctx.fillRect(x + w - 34, y + 16 + d * 8, 22, 2);
-      // crates
-      ctx.fillStyle = P.wood; roundRect(x + 8, footY - 20, 16, 16, 2); ctx.fill(); roundRect(x + 26, footY - 16, 14, 12, 2); ctx.fill();
-      ctx.strokeStyle = P.woodD; ctx.lineWidth = 1; ctx.strokeRect(x + 8, footY - 20, 16, 16); ctx.beginPath(); ctx.moveTo(x + 8, footY - 12); ctx.lineTo(x + 24, footY - 12); ctx.stroke();
-      // longship prow rising behind
-      ctx.strokeStyle = P.beamD; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x + w - 8, footY - 4); ctx.quadraticCurveTo(x + w + 8, y + 6, x + w - 2, y - 8); ctx.stroke();
-      ctx.fillStyle = P.beam; ctx.beginPath(); ctx.moveTo(x + w - 2, y - 8); ctx.lineTo(x + w + 8, y - 12); ctx.lineTo(x + w + 2, y - 2); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#e6c766'; ctx.beginPath(); ctx.arc(x + w, y - 9, 1.4, 0, 7); ctx.fill();
-      thatchRoof(cx, y, w + 12);
+      // A Viking DOCK: water, a plank pier, and an original longship.
+      ctx.fillStyle = '#3f6f9a'; roundRect(x - 8, footY - 16, w + 16, 20, 4); ctx.fill();
+      ctx.strokeStyle = 'rgba(150,200,240,0.5)'; ctx.lineWidth = 1;
+      for (var wv = 0; wv < 4; wv++) { var wy = footY - 12 + wv * 4; ctx.beginPath(); for (var wx2 = x - 6; wx2 < x + w + 6; wx2 += 10) { ctx.moveTo(wx2, wy + Math.sin((wx2 + t * 30) * 0.2) * 1.2); ctx.lineTo(wx2 + 5, wy + Math.sin((wx2 + 5 + t * 30) * 0.2) * 1.2); } ctx.stroke(); }
+      stoneWall(x, y, w * 0.5, h - 6);
+      thatchRoof(x + w * 0.25, y, w * 0.5 + 10);
+      ctx.fillStyle = '#2b2f36'; roundRect(x + 10, y + 24, 18, h - 32, 2); ctx.fill();
+      ctx.fillStyle = P.wood; ctx.fillRect(x + w * 0.45, footY - 20, w * 0.5, 6);
+      ctx.fillStyle = P.woodD; for (var pk = 0; pk < 8; pk++) ctx.fillRect(x + w * 0.45 + pk * (w * 0.5 / 8), footY - 20, 1.5, 6);
+      var sx = cx + 12, sb = footY - 6, hullW = 66, bob = Math.sin(t * 1.2) * 1.5;
+      ctx.save(); ctx.translate(0, bob);
+      ctx.fillStyle = P.beam; ctx.beginPath(); ctx.moveTo(sx - hullW / 2, sb - 16); ctx.quadraticCurveTo(sx - hullW / 2 - 10, sb - 6, sx - hullW / 2 + 4, sb); ctx.lineTo(sx + hullW / 2 - 4, sb); ctx.quadraticCurveTo(sx + hullW / 2 + 10, sb - 6, sx + hullW / 2, sb - 16); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = P.woodD; ctx.fillRect(sx - hullW / 2 + 4, sb - 8, hullW - 8, 2);
+      for (var sh2 = 0; sh2 < 5; sh2++) { var shx = sx - hullW / 2 + 12 + sh2 * ((hullW - 20) / 4); ctx.fillStyle = sh2 % 2 ? '#c0392b' : '#e6c766'; ctx.beginPath(); ctx.arc(shx, sb - 12, 4.5, 0, 7); ctx.fill(); ctx.fillStyle = P.steelL; ctx.beginPath(); ctx.arc(shx, sb - 12, 1.4, 0, 7); ctx.fill(); }
+      ctx.strokeStyle = P.beamD; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(sx + hullW / 2 - 2, sb - 16); ctx.quadraticCurveTo(sx + hullW / 2 + 12, sb - 34, sx + hullW / 2 + 2, sb - 40); ctx.stroke();
+      ctx.fillStyle = P.beam; ctx.beginPath(); ctx.moveTo(sx + hullW / 2 + 2, sb - 40); ctx.lineTo(sx + hullW / 2 + 12, sb - 44); ctx.lineTo(sx + hullW / 2 + 9, sb - 36); ctx.lineTo(sx + hullW / 2 + 14, sb - 34); ctx.lineTo(sx + hullW / 2 + 2, sb - 33); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#e6c766'; ctx.beginPath(); ctx.arc(sx + hullW / 2 + 6, sb - 40, 1.3, 0, 7); ctx.fill();
+      ctx.strokeStyle = P.beamD; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(sx - hullW / 2 + 2, sb - 16); ctx.quadraticCurveTo(sx - hullW / 2 - 8, sb - 28, sx - hullW / 2 - 2, sb - 32); ctx.stroke();
+      ctx.strokeStyle = P.woodD; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(sx, sb - 14); ctx.lineTo(sx, sb - 46); ctx.stroke();
+      var sailW = 34, sailH = 24, swy = sb - 44;
+      ctx.fillStyle = '#efe6d2'; roundRect(sx - sailW / 2, swy, sailW, sailH, 3); ctx.fill();
+      for (var st2 = 0; st2 < 3; st2++) { ctx.fillStyle = '#c0392b'; ctx.fillRect(sx - sailW / 2, swy + 3 + st2 * 8, sailW, 4); }
+      ctx.restore();
     } else {
-      // timber POD stall with a striped awning + goods on a counter
-      timberWall(x, y, w, h);
-      ctx.fillStyle = '#2b2f36'; roundRect(x + w / 2 - 11, y + 22, 22, h - 22, 2); ctx.fill();     // door
-      // counter + wares (folded tees / mugs)
-      ctx.fillStyle = P.wood; ctx.fillRect(x + 6, footY - 16, 34, 12);
-      ctx.fillStyle = '#c9552f'; ctx.fillRect(x + 9, footY - 22, 8, 6); ctx.fillStyle = '#3a7a4a'; ctx.fillRect(x + 19, footY - 22, 8, 6); ctx.fillStyle = '#4a6fb0'; ctx.fillRect(x + 29, footY - 22, 8, 6);
-      // striped awning
-      var aw = w + 14, ax = cx - aw / 2, ay = y - 4;
-      for (var i = 0; i < 8; i++) { ctx.fillStyle = i % 2 ? '#e07a3c' : '#efe6d2'; ctx.beginPath(); ctx.moveTo(ax + aw * i / 8, ay); ctx.lineTo(ax + aw * (i + 1) / 8, ay); ctx.lineTo(ax + aw * (i + 1) / 8, ay + 10); ctx.lineTo(ax + aw * i / 8 + aw / 16, ay + 14); ctx.closePath(); ctx.fill(); }
-      ctx.fillStyle = P.beamD; ctx.fillRect(ax, ay - 2, aw, 3);
+      // A special MARKET HALL: peaked striped awning, banners, display tables.
+      ctx.fillStyle = '#c8b389'; roundRect(x, y, w, h, 3); ctx.fill();
+      ctx.fillStyle = P.beam; ctx.fillRect(x, y, 5, h); ctx.fillRect(x + w - 5, y, 5, h);
+      ctx.fillStyle = P.stone; roundRect(x, y + h - 14, w, 14, 2); ctx.fill();
+      ctx.fillStyle = P.woodD; roundRect(cx - 15, footY - 40, 30, 40, 4); ctx.fill();
+      ctx.fillStyle = P.wood; roundRect(cx - 12, footY - 37, 24, 37, 4); ctx.fill();
+      ctx.strokeStyle = P.steelD; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, footY - 37, 12, Math.PI, 0); ctx.stroke();
+      for (var sdir = -1; sdir <= 1; sdir += 2) { var tbx = cx + sdir * 40; ctx.fillStyle = P.wood; ctx.fillRect(tbx - 12, footY - 14, 24, 10); ctx.fillStyle = '#c0392b'; ctx.fillRect(tbx - 9, footY - 20, 6, 6); ctx.fillStyle = '#3a7a4a'; ctx.fillRect(tbx - 1, footY - 20, 6, 6); ctx.fillStyle = '#4a6fb0'; ctx.fillRect(tbx + 6, footY - 20, 5, 6); }
+      var aw = w + 18, ax = cx - aw / 2, ay = y - 2;
+      ctx.fillStyle = P.beamD; ctx.beginPath(); ctx.moveTo(ax, ay + 12); ctx.lineTo(cx, ay - 12); ctx.lineTo(ax + aw, ay + 12); ctx.closePath(); ctx.fill();
+      for (var i = 0; i < 9; i++) { ctx.fillStyle = i % 2 ? '#c0392b' : '#efe6d2'; var a0 = i / 9, a1 = (i + 1) / 9; ctx.beginPath(); ctx.moveTo(ax + aw * a0, ay + 12 - Math.abs(a0 - 0.5) * 24); ctx.lineTo(ax + aw * a1, ay + 12 - Math.abs(a1 - 0.5) * 24); ctx.lineTo(ax + aw * a1, ay + 17 - Math.abs(a1 - 0.5) * 24); ctx.lineTo(ax + aw * a0, ay + 17 - Math.abs(a0 - 0.5) * 24); ctx.closePath(); ctx.fill(); }
+      for (var bdir = -1; bdir <= 1; bdir += 2) { var bxp = cx + bdir * (w / 2 - 8); ctx.fillStyle = '#2f6bff'; ctx.beginPath(); ctx.moveTo(bxp - 4, y + 8); ctx.lineTo(bxp + 4, y + 8); ctx.lineTo(bxp + 4, y + 26); ctx.lineTo(bxp, y + 30); ctx.lineTo(bxp - 4, y + 26); ctx.closePath(); ctx.fill(); ctx.fillStyle = '#e6c766'; ctx.beginPath(); ctx.arc(bxp, y + 17, 2.4, 0, 7); ctx.fill(); }
     }
-    // active/off lamp
     ctx.fillStyle = on ? '#5fe39a' : '#5a5040'; ctx.beginPath(); ctx.arc(x + 8, y + 8, 3, 0, 7); ctx.fill();
     if (on) { ctx.save(); ctx.globalAlpha = 0.5 + 0.3 * Math.sin(t * 3); ctx.fillStyle = '#5fe39a'; ctx.beginPath(); ctx.arc(x + 8, y + 8, 5, 0, 7); ctx.fill(); ctx.restore(); }
-    // big hanging sign
-    signpost(cx, footY + 12, label, on ? '#7dffb0' : '#e6c766');
-    caption(on ? 'OPEN \u00b7 tap to manage' : 'closed \u00b7 tap to open', cx, footY + 30, on ? '#9fe6b6' : '#b9a988');
-    hover(label, cx, y + h / 2, w / 2 + 6,
+    signpost(cx, footY + 14, label, on ? '#7dffb0' : '#e6c766');
+    caption(on ? 'OPEN \u00b7 tap to manage' : 'closed \u00b7 tap to open', cx, footY + 32, on ? '#9fe6b6' : '#b9a988');
+    hover(label, cx, y + h / 2, w / 2 + 8,
       '<b style="color:#e6c766">' + label + (on ? ' \u2014 <span style="color:#5fe39a">ACTIVE</span>' : ' \u2014 off') + '</b><br><span class="rt-enl">' +
-      (kind === 'dropship' ? 'AI dropshipping storefront' : 'Shopify print-on-demand & dropship storefront') + '. Tap to open its ledger, toggle it on/off, and record or view sales.</span>',
+      (kind === 'dropship' ? 'AI dropshipping \u2014 the longship dock' : 'Shopify print-on-demand market hall') + '. Tap to open its ledger, toggle on/off, and record or view sales.</span>',
       function () { if (window.__openStorefrontPanel) window.__openStorefrontPanel(id); });
   }
   // A bust of Drengskapr the Jarl for the reckoning panel -- original figure.
@@ -6997,9 +7023,24 @@ function toggleReducedVisuals(el) {
     try { var r = await window.__apiPost('/api/wallet/tx', body); if (r && r.error) { alert(r.error); } else { document.getElementById('w-amount').value = ''; document.getElementById('w-note').value = ''; load(); } }
     catch (e) { alert('Recording a transaction needs admin sign-in.'); }
   }
-  window.__openWalletPanel = function () { panel.hidden = false; load(); };
+  async function loadLive() {
+    var box = document.getElementById('wallet-live'); if (!box || !window.__apiGet) return;
+    box.innerHTML = '<div class="sf-note">checking the chain\u2026</div>';
+    try {
+      var d = await window.__apiGet('/api/wallet/live'); var L = d.live || [];
+      box.innerHTML = L.length ? L.map(function (a) { return '<div class="sf-stat"><div class="k">' + esc(a.asset) + ' (live)</div><div class="v">' + (a.error ? '\u2014' : num(a.balance)) + '</div><div class="k" style="margin-top:4px;">' + (a.error ? esc(a.error) : ('confirmed ' + num(a.confirmed != null ? a.confirmed : a.balance) + (a.pending ? ' \u00b7 pending ' + num(a.pending) : ''))) + '</div></div>'; }).join('') : '<div class="sf-note">Add your <b>public</b> wallet address below to track your live balance \u2014 free &amp; read-only. Never paste a seed phrase or private key.</div>';
+    } catch (e) { box.innerHTML = '<div class="sf-note">Sign in as admin, then add a public address to track live.</div>'; }
+  }
+  async function saveAddr() {
+    if (!window.__apiPost) return; var v = (document.getElementById('w-btc-addr').value || '').trim();
+    try { await window.__apiPost('/api/me/keys', { name: 'WALLET_BTC_ADDRESS', value: v }); document.getElementById('w-btc-addr').value = ''; loadLive(); }
+    catch (e) { alert('Saving an address needs admin sign-in.'); }
+  }
+  window.__openWalletPanel = function () { panel.hidden = false; load(); loadLive(); };
   document.getElementById('wallet-x').onclick = function () { panel.hidden = true; };
   document.getElementById('w-add').onclick = add;
+  document.getElementById('w-save-btc').onclick = saveAddr;
+  document.getElementById('w-refresh-live').onclick = loadLive;
   panel.addEventListener('click', function (e) { if (e.target === panel) panel.hidden = true; });
 })();
 </script>
