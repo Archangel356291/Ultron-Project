@@ -6857,6 +6857,60 @@ def shopify_sync(storefront_id):
     return result
 
 
+# Live storefront tracking: a background daemon that pulls the owner's Shopify
+# orders into the ledger every few minutes, so sales show up in Odin on their
+# own -- no button press. Reads the owner's own keys straight from the vault
+# (no request context), dedupes by order id, and pings Slack on new sales.
+_AUTO_SYNC_SECONDS = int(os.environ.get("ODIN_SHOPIFY_AUTOSYNC_SECONDS", "300"))
+
+
+def _slack_notify_owner(text):
+    try:
+        hook = _vault_get("owner", "SLACK_WEBHOOK_URL")
+    except Exception:
+        hook = None
+    if not hook or not str(hook).startswith("https://hooks.slack.com/"):
+        return
+    try:
+        req = urllib.request.Request(str(hook), data=json.dumps({"text": text}).encode("utf-8"),
+                                     method="POST", headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=8):
+            pass
+    except Exception:
+        pass
+
+
+def _auto_shopify_sync_once():
+    store = _vault_get("owner", "SHOPIFY_STORE")
+    token = _vault_get("owner", "SHOPIFY_ADMIN_TOKEN")
+    if not (store and token):
+        return 0
+    orders, err = _shopify_fetch_orders(store, token)
+    if err or not orders:
+        return 0
+    res = _shopify_record_orders("trade-post", orders)
+    n = res.get("synced", 0) if isinstance(res, dict) else 0
+    if n:
+        _slack_notify_owner("💰 Odin auto-synced %d new Shopify sale%s into the ledger." % (n, "s" if n != 1 else ""))
+    return n
+
+
+def _auto_shopify_sync_loop():
+    while True:
+        time.sleep(_AUTO_SYNC_SECONDS)
+        try:
+            _auto_shopify_sync_once()
+        except Exception:
+            pass
+
+
+try:
+    if os.environ.get("ODIN_DISABLE_AUTOSYNC") != "1":
+        threading.Thread(target=_auto_shopify_sync_loop, daemon=True).start()
+except Exception:
+    pass
+
+
 @app.route("/api/storefronts/<storefront_id>/sync", methods=["POST"])
 @require_token
 def api_storefront_sync(storefront_id):
