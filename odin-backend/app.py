@@ -6869,6 +6869,27 @@ def api_storefront_sync(storefront_id):
     return jsonify(shopify_sync(storefront_id))
 
 
+def _slack_notify(text, blocks=None):
+    """Best-effort Slack ping via the owner's SLACK_WEBHOOK_URL (from the vault).
+    No-op when unset; never raises. Only a hooks.slack.com URL is accepted, so it
+    can't be aimed at an arbitrary host. This posts a notification to the owner's
+    own channel -- it does not touch the store, orders, or money."""
+    try:
+        hook = get_user_key("SLACK_WEBHOOK_URL")
+    except Exception:
+        return False
+    if not hook or not str(hook).startswith("https://hooks.slack.com/"):
+        return False
+    try:
+        payload = {"blocks": blocks} if blocks else {"text": text}
+        req = urllib.request.Request(str(hook), data=json.dumps(payload).encode("utf-8"),
+                                     method="POST", headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=8):
+            return True
+    except Exception:
+        return False
+
+
 # ---------------------------------------------------------------------------
 # Crypto wallet ledger. A manual, records-first tracker: log deposits, mining
 # rewards, withdrawals, transfers, fees and adjustments; balance = the running
@@ -7148,6 +7169,8 @@ def launch_draft(item_id):
     _launch_log({"ts": now, "id": item_id, "name": name, "kind": kind,
                  "stage": new_stage, "from_stage": stage, "agent": agent,
                  "note": note, "drafted": True})
+    _slack_notify("\U0001F441 Odin's Eye \u2014 %s drafted the %s step for %s \"%s\". Open the Works Board to review & approve."
+                  % (agent, stage.lower(), kind, name))
     return {"ok": True, "id": item_id, "agent": agent, "from_stage": stage,
             "stage": new_stage, "artifact": reply}, 200
 
