@@ -3015,17 +3015,32 @@ def _latest_apk():
     return sorted(apks)[-1]
 
 
-@app.route("/download/ultrons-corner.apk")
-def download_apk():
+def _serve_latest_apk(download_name=None):
     name = _latest_apk()
     if not name:
         return Response("No APK build available yet.", status=404, mimetype="text/plain")
     resp = send_from_directory(
         APK_DIR, name, mimetype="application/vnd.android.package-archive",
-        as_attachment=True, download_name="Odins-Saga.apk",
+        as_attachment=True, download_name=(download_name or name),   # None => the version-stamped filename (unique per build)
     )
-    resp.headers["Cache-Control"] = "no-store"
+    # Hard no-cache: phone browsers/download managers otherwise re-serve a
+    # previously downloaded APK for the same URL, handing back a stale build.
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
     return resp
+
+
+@app.route("/download/ultrons-corner.apk")
+def download_apk():
+    return _serve_latest_apk("Odins-Saga.apk")
+
+
+# Fresh, clearly-named download path (new URL => never served from the phone's
+# cache) so the Viking build downloads cleanly. This is the link to share.
+@app.route("/download/odins-saga.apk")
+def download_apk_odin():
+    return _serve_latest_apk()   # version-stamped filename => phone can't reuse an old download
 
 
 # Separate release-candidate channel (R8-shrunk / v2+v3 signed test builds) so the
