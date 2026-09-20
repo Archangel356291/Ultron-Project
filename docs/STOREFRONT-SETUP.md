@@ -129,3 +129,24 @@ In Odin's Eye: **LEITMADR** (Sourcing Hall) drafts a supplier shortlist,
 scouts trending scents/themes, **KAUPMADR** writes the listings, and
 **SKATTMADR** logs every sale + tax to the ledger. You approve, publish, and keep
 the money.
+
+---
+
+## How fulfillment works — you never touch a package
+
+POD is fully hands-off. You do **designs, marketing, and customer service** — nothing physical.
+
+- **The supplier** (Printful/Printify) manufactures, prints your label, packs, and ships to the customer, and syncs the **tracking number** back to Shopify automatically.
+- **Shopify** hosts the store, takes the customer's payment into **your** bank, and routes the order to the supplier's app.
+- **The order lifecycle:** customer pays $30 → Shopify deposits it to you → the order auto-sends to the supplier → the supplier charges your linked card the base cost (say $12) and ships → your **profit is the difference** ($18) → tracking emails to the customer.
+
+**Two things to set up because of this:**
+- **Split shipments** — if someone buys a print *and* a candle, they may come from different providers in **two packages** arriving at different times. Put one line in your **FAQ** so customers aren't confused ("Orders with multiple item types may ship separately").
+- **Branded pack-ins (optional, later)** — Printful can add a logo packing slip or thank-you card for a small fee. Skip it until you're profitable.
+
+## Your current setup (2026-09)
+
+You're on **Shopify Basic** with **Printful** installed (plus Translate & Adapt, Digital Products, Messaging). That means:
+- You can list **apparel / prints / mugs via Printful right now** — no extra cost until a customer orders.
+- **Candles** need a candle-capable supplier: install **Printify** when you're ready (it's free; charges only on a sale). Given you're overdrafted, it's fine to **launch Printful products first** and add Printify candles later.
+- Everything in the launch kit (`STOREFRONT-LAUNCH-KIT.md`) works with Printful for the apparel/print items today; the candle products wait for Printify.
