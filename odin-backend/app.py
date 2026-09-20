@@ -7090,6 +7090,8 @@ def _btc_parse(data):
 
 
 def _btc_live(addr):
+    if not _valid_addr(addr):
+        return None, "that does not look like a public Bitcoin address"
     data, err = _http_get_json("https://blockstream.info/api/address/" + urllib.parse.quote(addr.strip()))
     if err:
         return None, err
@@ -7100,6 +7102,8 @@ def _btc_live(addr):
 
 
 def _eth_live(addr, key):
+    if not _valid_addr(addr):
+        return None, "that does not look like a public Ethereum address"
     data, err = _http_get_json("https://api.etherscan.io/api?module=account&action=balance&address=%s&tag=latest&apikey=%s"
                                % (urllib.parse.quote(addr.strip()), urllib.parse.quote(key.strip())))
     if err:
@@ -7110,6 +7114,61 @@ def _eth_live(addr, key):
         return {"balance": round(int(data["result"]) / 1e18, 8)}, None
     except Exception:
         return None, "unexpected etherscan response"
+
+
+def _http_post_json(url, payload, timeout=12):
+    try:
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(url, data=data, method="POST",
+                                     headers={"Content-Type": "application/json", "Accept": "application/json", "User-Agent": "odins-eye"})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.load(r), None
+    except urllib.error.HTTPError as e:
+        return None, "explorer HTTP %s" % e.code
+    except Exception as e:
+        return None, ("could not reach explorer: " + str(e))[:140]
+
+
+# A public wallet address is not a secret, but we still (a) store it only in
+# the Fernet-encrypted vault, (b) accept it read-only, and (c) validate its
+# shape before it ever reaches a URL or RPC body, so a malformed or hostile
+# value can't be used for injection. Every supported chain's address is a
+# bounded run of unreserved base58/hex/bech32 characters -- nothing else.
+_ADDR_RE = re.compile(r"^[A-Za-z0-9]{20,100}$")
+
+
+def _valid_addr(addr):
+    return bool(addr) and bool(_ADDR_RE.match(addr.strip()))
+
+
+def _sol_live(addr):
+    if not _valid_addr(addr):
+        return None, "that does not look like a public Solana address"
+    data, err = _http_post_json("https://api.mainnet-beta.solana.com",
+                                {"jsonrpc": "2.0", "id": 1, "method": "getBalance", "params": [addr.strip()]})
+    if err:
+        return None, err
+    try:
+        if data.get("error"):
+            return None, str(data["error"].get("message") or "solana rpc error")[:120]
+        return {"balance": round(int(data["result"]["value"]) / 1e9, 9)}, None
+    except Exception:
+        return None, "unexpected Solana response"
+
+
+def _doge_live(addr):
+    if not _valid_addr(addr):
+        return None, "that does not look like a public Dogecoin address"
+    data, err = _http_get_json("https://api.blockcypher.com/v1/doge/main/addrs/%s/balance"
+                               % urllib.parse.quote(addr.strip()))
+    if err:
+        return None, err
+    try:
+        conf = int(data.get("balance", 0)) / 1e8
+        pend = int(data.get("unconfirmed_balance", 0)) / 1e8
+        return {"balance": round(conf + pend, 8), "confirmed": round(conf, 8), "pending": round(pend, 8)}, None
+    except Exception:
+        return None, "unexpected Dogecoin response"
 
 
 def _wallet_live_snapshot(rows):
@@ -7135,9 +7194,17 @@ def wallet_live():
             out.append({"asset": "ETH", "address": eth, "error": err} if err else dict({"asset": "ETH", "address": eth}, **d))
         else:
             out.append({"asset": "ETH", "address": eth, "error": "add a free ETHERSCAN_API_KEY to track ETH live"})
+    sol = get_user_key("WALLET_SOL_ADDRESS")
+    if sol:
+        d, err = _sol_live(sol)
+        out.append({"asset": "SOL", "address": sol, "error": err} if err else dict({"asset": "SOL", "address": sol}, **d))
+    doge = get_user_key("WALLET_DOGE_ADDRESS")
+    if doge:
+        d, err = _doge_live(doge)
+        out.append({"asset": "DOGE", "address": doge, "error": err} if err else dict({"asset": "DOGE", "address": doge}, **d))
     if out:
         _wallet_live_snapshot(out)
-    return {"live": out, "note": "read-only from public explorers; add addresses under Your Keys as WALLET_BTC_ADDRESS / WALLET_ETH_ADDRESS (public address only -- never a seed phrase)."}
+    return {"live": out, "note": "read-only from public explorers; add addresses under Your Keys as WALLET_BTC_ADDRESS / WALLET_ETH_ADDRESS / WALLET_SOL_ADDRESS / WALLET_DOGE_ADDRESS (public address only -- never a seed phrase or private key). Addresses are stored encrypted in your per-user vault."}
 
 
 @app.route("/api/wallet/live")

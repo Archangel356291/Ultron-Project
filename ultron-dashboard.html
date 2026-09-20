@@ -1443,10 +1443,17 @@
                 <div style="color:#8a93a3;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Live on-chain (read-only · free)</div>
                 <div id="wallet-live" class="sf-stat-row"></div>
                 <div class="sf-form" style="flex-wrap:wrap;">
-                  <input id="w-btc-addr" placeholder="BTC public address (bc1…)" style="width:230px;">
-                  <button id="w-save-btc">Save BTC address</button>
+                  <select id="w-chain" style="background:#120d07;border:1px solid #3a2c18;color:#e8dcc0;border-radius:6px;padding:5px 7px;font-size:12px;">
+                    <option value="BTC">Bitcoin (BTC)</option>
+                    <option value="ETH">Ethereum (ETH)</option>
+                    <option value="SOL">Solana (SOL)</option>
+                    <option value="DOGE">Dogecoin (DOGE)</option>
+                  </select>
+                  <input id="w-addr" placeholder="public address" style="width:220px;">
+                  <button id="w-save-addr">Save address</button>
                   <button id="w-refresh-live">↻ Refresh live</button>
                 </div>
+                <div class="sf-note">Public wallet addresses only — never a seed phrase or private key. Addresses are stored <b>encrypted</b> in your own vault and used read-only, so nothing here can move funds. ETH needs a free Etherscan key (saved as <code>ETHERSCAN_API_KEY</code>); BTC/SOL/DOGE need no key.</div>
                 <div style="color:#8a93a3;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;margin:12px 0 4px;">Manual ledger</div>
                 <div id="wallet-balances" class="sf-stat-row"></div>
                 <div class="sf-form" style="flex-wrap:wrap;">
@@ -7129,14 +7136,16 @@ function toggleReducedVisuals(el) {
     } catch (e) { box.innerHTML = '<div class="sf-note">Sign in as admin, then add a public address to track live.</div>'; }
   }
   async function saveAddr() {
-    if (!window.__apiPost) return; var v = (document.getElementById('w-btc-addr').value || '').trim();
-    try { await window.__apiPost('/api/me/keys', { name: 'WALLET_BTC_ADDRESS', value: v }); document.getElementById('w-btc-addr').value = ''; loadLive(); }
+    if (!window.__apiPost) return;
+    var chain = document.getElementById('w-chain').value, v = (document.getElementById('w-addr').value || '').trim();
+    if (!v) return;
+    try { await window.__apiPost('/api/me/keys', { name: 'WALLET_' + chain + '_ADDRESS', value: v }); document.getElementById('w-addr').value = ''; loadLive(); }
     catch (e) { alert('Saving an address needs admin sign-in.'); }
   }
   window.__openWalletPanel = function () { panel.hidden = false; load(); loadLive(); };
   document.getElementById('wallet-x').onclick = function () { panel.hidden = true; };
   document.getElementById('w-add').onclick = add;
-  document.getElementById('w-save-btc').onclick = saveAddr;
+  document.getElementById('w-save-addr').onclick = saveAddr;
   document.getElementById('w-refresh-live').onclick = loadLive;
   panel.addEventListener('click', function (e) { if (e.target === panel) panel.hidden = true; });
 })();
