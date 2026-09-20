@@ -3048,6 +3048,39 @@ def download_apk_rc():
 
 
 # --------------------------------------------------------------------------
+# Serve the offline game as a live web PWA (read-only) so it can be opened +
+# tested over the tailnet -- and installed to a phone via "Add to Home Screen"
+# -- without rebuilding the .apk. The game's source lives on the host and is
+# mounted read-only via /host/c; we serve it straight from there, so edits to
+# the game files show up on the next reload with no container rebuild.
+# --------------------------------------------------------------------------
+GAME_DIR = os.environ.get(
+    "ODIN_GAME_DIR", "/host/c/Ultron Project/Ultrons APK Game/Ultrons Game"
+)
+_GAME_FRESH = (".html", "sw-game.js", "VERSION.txt", ".webmanifest")
+
+
+@app.route("/game")
+def game_index_redirect():
+    return redirect("/game/")
+
+
+@app.route("/game/")
+def game_index():
+    resp = send_from_directory(GAME_DIR, "index.html")
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.route("/game/<path:filename>")
+def game_file(filename):
+    resp = send_from_directory(GAME_DIR, filename)
+    if filename.endswith(_GAME_FRESH):
+        resp.headers["Cache-Control"] = "no-store"   # always pull fresh html/sw/version
+    return resp
+
+
+# --------------------------------------------------------------------------
 # Ethical-hacking lab activity log (admin-only, PIN-gated).
 # The dashboard's Home tab has a locked "Lab activity" vault; the correct
 # numeric PIN (ODIN_LAB_PIN in .env, set by the owner) opens it. Data is read
