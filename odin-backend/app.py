@@ -106,7 +106,7 @@ from functools import wraps
 from html.parser import HTMLParser
 
 import psutil
-from flask import Flask, jsonify, request, Response, g, send_from_directory, stream_with_context
+from flask import Flask, jsonify, request, Response, g, redirect, send_from_directory, stream_with_context
 
 # Module 10: the schema/tagging/retrieval logic Module 4 and Module 8 built
 # for the vault knowledge graph, reused as-is for Odin's own runtime memory
@@ -6867,6 +6867,125 @@ def api_storefront_sync(storefront_id):
     finally:
         conn.close()
     return jsonify(shopify_sync(storefront_id))
+
+
+# ---------------------------------------------------------------------------
+# "Connect Shopify" -- OAuth for Dashboard-only stores that don't hand out a
+# shpat_ token in the UI. The authed dashboard asks /api/shopify/connect for an
+# authorize URL and sends the owner's browser there; Shopify bounces back to
+# /api/shopify/callback with a code, which we verify (HMAC with the app secret +
+# a one-time state nonce = CSRF guard) and exchange for an OFFLINE access token
+# stored in the owner's vault. Read scopes only -- no funds, no store writes.
+# ---------------------------------------------------------------------------
+SHOPIFY_OAUTH_SCOPES = "read_orders,read_products"
+SHOPIFY_PUBLIC_BASE = (os.environ.get("ODIN_PUBLIC_URL") or "https://desktop-47v3oim.tailc5bde9.ts.net:5000").rstrip("/")
+_shopify_oauth_state = {}   # state nonce -> (shop, ts, identity); single-process, in-memory
+
+
+def _shopify_shop_ok(shop):
+    shop = str(shop or "").strip().lower().replace("https://", "").replace("http://", "").strip("/")
+    return shop if re.match(r"^[a-z0-9][a-z0-9\-]*\.myshopify\.com$", shop) else None
+
+
+def _vault_get(identity, name):
+    conn = _get_db_connection()
+    try:
+        row = conn.execute("SELECT value_enc FROM user_settings WHERE user_id=? AND key_name=?", (identity, name)).fetchone()
+    finally:
+        conn.close()
+    if row:
+        v = _vault_dec(row["value_enc"])
+        if v:
+            return v
+    return os.environ.get(name) if identity == "owner" else None
+
+
+def _vault_put(identity, name, value):
+    enc = _vault_enc(str(value))
+    if enc is None:
+        return False
+    conn = _get_db_connection()
+    try:
+        conn.execute("INSERT INTO user_settings (user_id, key_name, value_enc, updated_at) VALUES (?,?,?,?) "
+                     "ON CONFLICT(user_id, key_name) DO UPDATE SET value_enc=excluded.value_enc, updated_at=excluded.updated_at",
+                     (identity, name, enc, time.strftime("%Y-%m-%dT%H:%M:%S")))
+        conn.commit()
+    finally:
+        conn.close()
+    return True
+
+
+def _shopify_verify_hmac(args, secret):
+    """Verify Shopify's OAuth callback HMAC: all params except hmac/signature,
+    sorted by key, joined key=value with &, HMAC-SHA256 with the app secret."""
+    provided = args.get("hmac", "")
+    msg = "&".join("%s=%s" % (k, args[k]) for k in sorted(args) if k not in ("hmac", "signature"))
+    digest = hmac.new(secret.encode("utf-8"), msg.encode("utf-8"), hashlib.sha256).hexdigest()
+    return bool(provided) and hmac.compare_digest(digest, provided)
+
+
+def _shopify_exchange_code(shop, client_id, secret, code):
+    body = json.dumps({"client_id": client_id, "client_secret": secret, "code": code}).encode("utf-8")
+    req = urllib.request.Request("https://%s/admin/oauth/access_token" % shop, data=body, method="POST",
+                                 headers={"Content-Type": "application/json", "Accept": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            d = json.load(r)
+        return (d.get("access_token"), None) if d.get("access_token") else (None, "no access_token in response")
+    except urllib.error.HTTPError as e:
+        return None, "token exchange HTTP %s" % e.code
+    except Exception as e:
+        return None, ("token exchange failed: " + str(e))[:140]
+
+
+@app.route("/api/shopify/connect")
+@require_token
+def api_shopify_connect():
+    shop = _shopify_shop_ok(get_user_key("SHOPIFY_STORE"))
+    client_id = get_user_key("SHOPIFY_API_KEY")
+    if not shop:
+        return jsonify({"error": "add your Shopify store domain (e.g. mikaaf-11.myshopify.com) first"}), 400
+    if not client_id or not get_user_key("SHOPIFY_API_SECRET"):
+        return jsonify({"error": "add your app Client ID (SHOPIFY_API_KEY) and Secret (SHOPIFY_API_SECRET) first"}), 400
+    now = time.time()
+    for k, v in list(_shopify_oauth_state.items()):
+        if now - v[1] > 600:
+            _shopify_oauth_state.pop(k, None)
+    state = secrets.token_urlsafe(24)
+    _shopify_oauth_state[state] = (shop, now, _current_identity())
+    params = urllib.parse.urlencode({"client_id": client_id, "scope": SHOPIFY_OAUTH_SCOPES,
+                                     "redirect_uri": SHOPIFY_PUBLIC_BASE + "/api/shopify/callback", "state": state})
+    return jsonify({"authorize_url": "https://%s/admin/oauth/authorize?%s" % (shop, params)})
+
+
+@app.route("/api/shopify/callback")
+def api_shopify_callback():
+    args = request.args.to_dict()
+    entry = _shopify_oauth_state.pop(args.get("state", ""), None)
+    if not entry:
+        return Response("Connection link expired or invalid. Start again from Odin's storefront panel.", status=400)
+    shop_expected, _ts, identity = entry
+    shop = _shopify_shop_ok(args.get("shop"))
+    if not shop or shop != shop_expected:
+        return Response("Shop mismatch -- connection rejected.", status=400)
+    secret = _vault_get(identity, "SHOPIFY_API_SECRET")
+    client_id = _vault_get(identity, "SHOPIFY_API_KEY")
+    if not (secret and client_id):
+        return Response("Missing app credentials. Add them in Odin and reconnect.", status=400)
+    if not _shopify_verify_hmac(args, secret):
+        return Response("Security check failed (HMAC). Connection rejected.", status=401)
+    if not args.get("code"):
+        return Response("No authorization code returned.", status=400)
+    token, err = _shopify_exchange_code(shop, client_id, secret, args["code"])
+    if err or not token:
+        return Response("Could not complete the connection: " + (err or "no token"), status=502)
+    _vault_put(identity, "SHOPIFY_ADMIN_TOKEN", token)
+    _vault_put(identity, "SHOPIFY_STORE", shop)
+    try:
+        log_activity("storefront", "Shopify connected via OAuth", detail=shop, status="ok")
+    except Exception:
+        pass
+    return redirect("/?shopify=connected")
 
 
 def _slack_notify(text, blocks=None):

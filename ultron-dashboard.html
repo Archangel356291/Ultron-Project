@@ -6961,7 +6961,7 @@ function toggleReducedVisuals(el) {
     catch (e) { alert('Recording a sale needs admin sign-in.'); }
   }
   function keySlots(platform) {
-    var b = [['SHOPIFY_STORE', 'Shopify store domain (xxx.myshopify.com)'], ['SHOPIFY_ADMIN_TOKEN', 'Shopify Admin API access token']];
+    var b = [['SHOPIFY_STORE', 'Shopify store domain (xxx.myshopify.com)'], ['SHOPIFY_API_KEY', 'Shopify app Client ID'], ['SHOPIFY_API_SECRET', 'Shopify app Secret'], ['SHOPIFY_ADMIN_TOKEN', 'Shopify Admin API token (auto-filled by Connect)']];
     if (platform === 'ai_dropship') b = b.concat([['DROPSHIP_API_KEY', 'Dropship tool API key (AutoDS / DSers)']]);
     return b;
   }
@@ -6974,19 +6974,27 @@ function toggleReducedVisuals(el) {
       keySlots(platform).map(function (sl) {
         return '<div class="sf-key-row"><span class="kl">' + esc(sl[1]) + ' ' + (set[sl[0]] ? '<i class="ok">\u2714 set</i>' : '<i class="no">not set</i>') + '</span>' +
           '<span class="ke"><input type="password" data-k="' + sl[0] + '" placeholder="paste value"><button data-save="' + sl[0] + '">Save</button>' + (set[sl[0]] ? '<button data-clear="' + sl[0] + '">clear</button>' : '') + '</span></div>';
-      }).join('');
+      }).join('') +
+      '<div class="sf-key-row" style="margin-top:8px;"><span class="kl">Auto-connect &amp; fetch the token for you</span><span class="ke"><button id="sf-connect-shopify">\u2699 Connect Shopify</button></span></div>';
     Array.prototype.forEach.call(box.querySelectorAll('button[data-save]'), function (btn) { btn.onclick = function () { var n = btn.getAttribute('data-save'); saveKey(n, box.querySelector('input[data-k="' + n + '"]').value, platform); }; });
     Array.prototype.forEach.call(box.querySelectorAll('button[data-clear]'), function (btn) { btn.onclick = function () { saveKey(btn.getAttribute('data-clear'), '', platform); }; });
+    var cbtn = document.getElementById('sf-connect-shopify'); if (cbtn) cbtn.onclick = connectShopify;
   }
   async function saveKey(name, value, platform) {
     if (!window.__apiPost) return;
     try { await window.__apiPost('/api/me/keys', { name: name, value: value }); loadKeys(platform); }
     catch (e) { alert('Saving a key needs you to be signed in.'); }
   }
+  async function connectShopify() {
+    if (!window.__apiGet) return;
+    try { var d = await window.__apiGet('/api/shopify/connect'); if (d && d.authorize_url) { window.location.href = d.authorize_url; } else { alert((d && d.error) || 'Could not start Shopify connect.'); } }
+    catch (e) { alert('Before connecting, save your Shopify store domain, app Client ID and Secret above (and be signed in as admin).'); }
+  }
   document.getElementById('sf-ledger-btn').onclick = function () { openPanel(); };
   document.getElementById('sf-x').onclick = function () { panel.hidden = true; };
   panel.addEventListener('click', function (e) { if (e.target === panel) panel.hidden = true; });
   load(); setInterval(load, 15000);
+  if (/[?&]shopify=connected/.test(location.search)) { setTimeout(function () { try { alert('\u2705 Shopify connected \u2014 open a storefront and hit \u201cSync Shopify orders\u201d to pull your sales.'); } catch (e) {} }, 400); }
   var nav = document.querySelector('.nav-item[data-section="ultron-core"]'); if (nav) nav.addEventListener('click', function () { setTimeout(load, 300); });
 })();
 </script>
