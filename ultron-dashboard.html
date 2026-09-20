@@ -6961,7 +6961,7 @@ function toggleReducedVisuals(el) {
     catch (e) { alert('Recording a sale needs admin sign-in.'); }
   }
   function keySlots(platform) {
-    var b = [['SHOPIFY_STORE', 'Shopify store domain (xxx.myshopify.com)'], ['SHOPIFY_API_KEY', 'Shopify app Client ID'], ['SHOPIFY_API_SECRET', 'Shopify app Secret'], ['SHOPIFY_ADMIN_TOKEN', 'Shopify Admin API token (auto-filled by Connect)']];
+    var b = [['SHOPIFY_STORE', 'Shopify store domain (xxx.myshopify.com)'], ['SHOPIFY_API_KEY', 'Shopify app Client ID'], ['SHOPIFY_API_SECRET', 'Shopify app Secret'], ['SHOPIFY_ADMIN_TOKEN', 'Shopify Admin API token (auto-filled by Connect)'], ['SLACK_WEBHOOK_URL', 'Slack webhook URL for approval pings (hooks.slack.com/…)']];
     if (platform === 'ai_dropship') b = b.concat([['DROPSHIP_API_KEY', 'Dropship tool API key (AutoDS / DSers)']]);
     return b;
   }
