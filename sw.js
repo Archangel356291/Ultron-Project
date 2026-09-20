@@ -38,7 +38,7 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.startsWith('/api/') || url.pathname === '/sw.js') return; // network only, never cached
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/download/') || url.pathname === '/sw.js') return; // network only, never cached (downloads must never hit the shell fallback)
 
   if (url.pathname === '/' || req.mode === 'navigate') {
     event.respondWith(

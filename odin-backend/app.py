@@ -3043,6 +3043,16 @@ def download_apk_odin():
     return _serve_latest_apk()   # version-stamped filename => phone can't reuse an old download
 
 
+# The dashboard's service worker intercepts navigations (a download-link tap is
+# one) and can fall back to the app shell -- which made the APK link open the
+# dashboard instead. The SW is network-only for /api/*, so also expose the APK
+# there: this URL is never touched by the SW and downloads straight from network.
+@app.route("/api/apk/odins-saga.apk")
+@app.route("/api/apk")
+def download_apk_api():
+    return _serve_latest_apk()
+
+
 # Separate release-candidate channel (R8-shrunk / v2+v3 signed test builds) so the
 # main /download stays on the known-good build. Files live in APK_DIR/rc/.
 @app.route("/download/ultrons-corner-rc.apk")
