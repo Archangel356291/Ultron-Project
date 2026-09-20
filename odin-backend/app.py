@@ -3022,7 +3022,7 @@ def download_apk():
         return Response("No APK build available yet.", status=404, mimetype="text/plain")
     resp = send_from_directory(
         APK_DIR, name, mimetype="application/vnd.android.package-archive",
-        as_attachment=True, download_name="Odins-Corner.apk",
+        as_attachment=True, download_name="Odins-Saga.apk",
     )
     resp.headers["Cache-Control"] = "no-store"
     return resp
@@ -3041,7 +3041,7 @@ def download_apk_rc():
         return Response("No release-candidate build available.", status=404, mimetype="text/plain")
     resp = send_from_directory(
         rc_dir, sorted(apks)[-1], mimetype="application/vnd.android.package-archive",
-        as_attachment=True, download_name="Odins-Corner-RC.apk",
+        as_attachment=True, download_name="Odins-Saga-RC.apk",
     )
     resp.headers["Cache-Control"] = "no-store"
     return resp
