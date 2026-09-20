@@ -45,3 +45,30 @@ Color for all text: cream **`#EDE6D2`**.
 5. In Shopify it appears under Products → **Publish**. Use Printful's auto-generated mockup photos (free).
 
 That's a real product, live in your store, for **$0** — candles come later with Printify.
+
+---
+
+## KAUPMADR — paste-ready listing (for the "Keeper of Small Fires" tee)
+
+**Title:**
+`Keeper of Small Fires — Cozy Rustic Tee`
+
+**Description:**
+Some people chase the big blaze. You keep the small fires — the candle by the
+window, the kettle on, the lamp left on for someone coming home. This soft,
+everyday tee wears that quiet the way a good hoodie does: understated, warm, and
+built for slow mornings and long nights.
+
+- Original hand-set typography — cream on a deep, cozy base
+- Unisex fit, soft combed cotton; true to size
+- Printed to order just for you (please allow a few days before it ships)
+- A low-key gift for the homebody, the candle-lover, the one who runs warm
+
+*Light the long nights.*
+
+**Tags (copy the whole line):**
+`cozy, cottagecore, rustic, norse, hygge, candle lover, homebody, gift for her, gift for him, minimalist, autumn, unisex tee, cozy aesthetic, slow living`
+
+**Variants to enable in Printful:** S–3XL, colors Black + Heather Forest.
+
+**Suggested price:** if the Printful base is ~$13, sell at **$26** (round, healthy margin). Adjust once you see the real base cost.

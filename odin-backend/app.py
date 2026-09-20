@@ -3940,6 +3940,27 @@ AGENT_REGISTRY = {
         "forbidden": "guaranteeing sales, giving financial advice, spending",
         "scope": "public market & trend research",
     },
+    "ad_copywriter": {
+        "role": "Ordsmidr — ad word-smith: drafts ad copy, headlines, taglines and A/B variants for the owner to run",
+        "kind": "claude-code", "models": "sonnet",
+        "tools": "Read, Grep, Glob; text drafts only",
+        "forbidden": "buying ads, spending, posting, false/unsubstantiated claims, impersonating people or brands",
+        "scope": "marketing copy for the owner's own store",
+    },
+    "ad_video": {
+        "role": "Skaldr — short-form video skald: drafts TikTok/Reels scripts, hooks and shot lists to push the product organically",
+        "kind": "claude-code", "models": "sonnet",
+        "tools": "Read, Grep, Glob; scripts/storyboards only",
+        "forbidden": "posting, ad spend, using copyrighted music/footage, fake testimonials",
+        "scope": "organic short-form content plans for the owner",
+    },
+    "ad_social": {
+        "role": "Kallari — the crier: drafts social captions, hashtag sets and a posting calendar (owner reviews and posts)",
+        "kind": "claude-code", "models": "haiku",
+        "tools": "Read, Grep, Glob; drafts + a schedule only",
+        "forbidden": "auto-posting, ad spend, buying followers/engagement, spam",
+        "scope": "the owner's own social channels (drafts only)",
+    },
     "sentinel": {
         "role": "Security watchdog + monitoring (zero tokens)",
         "kind": "scheduler", "models": None,
