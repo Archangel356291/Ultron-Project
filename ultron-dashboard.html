@@ -5506,29 +5506,97 @@ function toggleReducedVisuals(el) {
   }
 
   // ---------------------------------------------------------------- buildings
+  // Each hut gets a stable "style seed" hashed from its owner's name, so every
+  // building in the village reads as its own place (door, windows, roof finial,
+  // gable accent, a side prop, size) without hand-authoring 40+ designs.
+  function hutHash(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function hutStyle(a) {
+    if (!a._sty) { var h = hutHash(a.label);
+      a._sty = { door: h % 3, win: (h >> 3) % 3, finial: (h >> 6) % 5, prop: (h >> 9) % 6,
+                 wj: ((h >> 12) % 3 - 1) * 4, hj: (h >> 14) % 3 * 4,
+                 accent: ['#7a1f2b', '#1f4a7a', '#2f6b3a', '#6b4a1f'][(h >> 16) % 4] }; }
+    return a._sty;
+  }
+  function drawFinial(cx, peakY, kind, hex) {
+    ctx.save(); ctx.translate(cx, peakY);
+    if (kind === 0) {            // carved dragon head
+      ctx.strokeStyle = P.beamD; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, 6); ctx.quadraticCurveTo(6, -8, 1, -14); ctx.stroke();
+      ctx.fillStyle = P.beam; ctx.beginPath(); ctx.moveTo(1, -14); ctx.lineTo(9, -17); ctx.lineTo(5, -11); ctx.lineTo(10, -9); ctx.lineTo(1, -8); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#e6c766'; ctx.fillRect(5, -14, 1.4, 1.4);
+    } else if (kind === 1) {     // antlers
+      ctx.strokeStyle = P.beamD; ctx.lineWidth = 2; ctx.beginPath();
+      ctx.moveTo(0, 4); ctx.lineTo(-5, -12); ctx.moveTo(-5, -12); ctx.lineTo(-9, -10); ctx.moveTo(-5, -12); ctx.lineTo(-3, -16);
+      ctx.moveTo(0, 4); ctx.lineTo(5, -12); ctx.moveTo(5, -12); ctx.lineTo(9, -10); ctx.moveTo(5, -12); ctx.lineTo(3, -16); ctx.stroke();
+    } else if (kind === 2) {     // crossed gable beams
+      ctx.strokeStyle = P.beamD; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-6, -12); ctx.lineTo(6, 2); ctx.moveTo(6, -12); ctx.lineTo(-6, 2); ctx.stroke();
+    } else if (kind === 3) {     // weather-vane
+      ctx.strokeStyle = P.beamD; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, 6); ctx.lineTo(0, -12); ctx.stroke();
+      ctx.fillStyle = hex; ctx.beginPath(); ctx.moveTo(0, -12); ctx.lineTo(9, -9); ctx.lineTo(0, -6); ctx.closePath(); ctx.fill();
+    } else {                     // little banner
+      ctx.strokeStyle = P.beamD; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, 6); ctx.lineTo(0, -15); ctx.stroke();
+      ctx.fillStyle = hex; ctx.beginPath(); ctx.moveTo(0, -15); ctx.lineTo(11, -13); ctx.lineTo(9, -10); ctx.lineTo(11, -8); ctx.lineTo(0, -8); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  function drawHutProp(x, footY, kind) {
+    if (kind === 0) {            // stacked woodpile
+      for (var i = 0; i < 3; i++) for (var j = 0; j <= i; j++) { ctx.fillStyle = (i + j) % 2 ? P.wood : P.woodD; ctx.beginPath(); ctx.arc(x + 4 + j * 7, footY - 3 - i * 5, 3, 0, 7); ctx.fill(); }
+    } else if (kind === 1) {     // two barrels
+      for (var b = 0; b < 2; b++) { var bx = x + 1 + b * 11; ctx.fillStyle = P.woodD; roundRect(bx, footY - 14, 9, 14, 2); ctx.fill(); ctx.fillStyle = P.wood; ctx.fillRect(bx, footY - 11, 9, 2); ctx.fillRect(bx, footY - 6, 9, 2); }
+    } else if (kind === 2) {     // hay bale
+      ctx.fillStyle = P.thatchD; roundRect(x, footY - 10, 20, 10, 3); ctx.fill(); ctx.fillStyle = P.thatch; for (var h2 = 0; h2 < 3; h2++) ctx.fillRect(x + 2, footY - 9 + h2 * 3, 16, 1);
+    } else if (kind === 3) {     // drying rack with fish
+      ctx.strokeStyle = P.woodD; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, footY); ctx.lineTo(x, footY - 16); ctx.moveTo(x + 18, footY); ctx.lineTo(x + 18, footY - 16); ctx.moveTo(x, footY - 14); ctx.lineTo(x + 18, footY - 14); ctx.stroke();
+      ctx.fillStyle = '#9fb0c0'; for (var f = 0; f < 3; f++) ctx.fillRect(x + 3 + f * 6, footY - 12, 3, 6);
+    } else if (kind === 4) {     // leaning shield
+      roundShield(x + 8, footY - 8, 8, '#c0392b', true);
+    }
+    // kind 5 = a bare yard, no prop
+  }
   function drawHut(a) {
-    var cx = a.cx, footY = a.groundY, w = Math.min(150, cellW - 40), h = 74, x = cx - w / 2, y = footY - h;
+    var st = hutStyle(a);
+    var cx = a.cx, footY = a.groundY, w = Math.min(150, cellW - 40) + st.wj, h = 74 + st.hj, x = cx - w / 2, y = footY - h;
     var lit = isBusy(a.color) || (a.alertable && sentinelAlert);
     ctx.fillStyle = 'rgba(0,0,0,0.20)'; ctx.beginPath(); ctx.ellipse(cx, footY + 4, w / 2 + 6, 10, 0, 0, 7); ctx.fill();
+    if ((cellW - w) / 2 > 32) drawHutProp(x - 26, footY, st.prop);   // prop only when the yard has room
     // walls
     if (a.roof === 'stone') { stoneWall(x, y, w, h); } else { timberWall(x, y, w, h); }
-    // door
-    ctx.fillStyle = P.woodD; roundRect(cx - 12, footY - 34, 24, 34, 3); ctx.fill();
-    ctx.fillStyle = P.wood; roundRect(cx - 10, footY - 32, 20, 32, 3); ctx.fill();
+    // gable accent stripe under the eaves
+    ctx.fillStyle = st.accent; ctx.fillRect(x + 4, y + 4, w - 8, 3);
+    // door -- 0 plain, 1 arched, 2 double
+    if (st.door === 2) {
+      ctx.fillStyle = P.woodD; roundRect(cx - 15, footY - 34, 30, 34, 3); ctx.fill();
+      ctx.fillStyle = P.wood; roundRect(cx - 13, footY - 32, 12, 31, 2); ctx.fill(); roundRect(cx + 1, footY - 32, 12, 31, 2); ctx.fill();
+      ctx.strokeStyle = P.woodD; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx, footY - 32); ctx.lineTo(cx, footY - 1); ctx.stroke();
+    } else {
+      ctx.fillStyle = P.woodD; roundRect(cx - 12, footY - 34, 24, 34, 3); ctx.fill();
+      ctx.fillStyle = P.wood; roundRect(cx - 10, footY - 32, 20, 32, 3); ctx.fill();
+      if (st.door === 1) { ctx.fillStyle = P.woodD; ctx.beginPath(); ctx.arc(cx, footY - 32, 10, Math.PI, 0); ctx.fill(); ctx.fillStyle = P.wood; ctx.beginPath(); ctx.arc(cx, footY - 32, 8, Math.PI, 0); ctx.fill(); }
+    }
     ctx.fillStyle = P.steelD; ctx.beginPath(); ctx.arc(cx + 5, footY - 16, 1.6, 0, 7); ctx.fill();
-    // window, glows when the agent is busy
-    ctx.fillStyle = lit ? lift(a.hex, 0.35) : '#2b2f36'; roundRect(x + 10, y + 20, 16, 14, 2); ctx.fill();
-    ctx.strokeStyle = P.beamD; ctx.lineWidth = 2; ctx.strokeRect(x + 10, y + 20, 16, 14); ctx.beginPath(); ctx.moveTo(x + 18, y + 20); ctx.lineTo(x + 18, y + 34); ctx.moveTo(x + 10, y + 27); ctx.lineTo(x + 26, y + 27); ctx.stroke();
-    if (lit) { ctx.save(); ctx.globalAlpha = 0.5; ctx.fillStyle = lift(a.hex, 0.4); ctx.fillRect(x + 10, y + 20, 16, 14); ctx.restore(); }
-    // painted shield hung on the wall (agent colour)
-    roundShield(x + w - 20, y + 30, 10, a.hex, a.color === a.color);
+    // windows -- 0 one, 1 two, 2 round porthole
+    function win(wx, wy) {
+      ctx.fillStyle = lit ? lift(a.hex, 0.35) : '#2b2f36'; roundRect(wx, wy, 14, 12, 2); ctx.fill();
+      ctx.strokeStyle = P.beamD; ctx.lineWidth = 1.6; ctx.strokeRect(wx, wy, 14, 12); ctx.beginPath(); ctx.moveTo(wx + 7, wy); ctx.lineTo(wx + 7, wy + 12); ctx.moveTo(wx, wy + 6); ctx.lineTo(wx + 14, wy + 6); ctx.stroke();
+      if (lit) { ctx.save(); ctx.globalAlpha = 0.5; ctx.fillStyle = lift(a.hex, 0.4); ctx.fillRect(wx, wy, 14, 12); ctx.restore(); }
+    }
+    if (st.win === 2) {
+      ctx.fillStyle = lit ? lift(a.hex, 0.35) : '#2b2f36'; ctx.beginPath(); ctx.arc(x + 18, y + 26, 8, 0, 7); ctx.fill();
+      ctx.strokeStyle = P.beamD; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x + 18, y + 26, 8, 0, 7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + 10, y + 26); ctx.lineTo(x + 26, y + 26); ctx.moveTo(x + 18, y + 18); ctx.lineTo(x + 18, y + 34); ctx.stroke();
+      if (lit) { ctx.save(); ctx.globalAlpha = 0.5; ctx.fillStyle = lift(a.hex, 0.4); ctx.beginPath(); ctx.arc(x + 18, y + 26, 7, 0, 7); ctx.fill(); ctx.restore(); }
+    } else { win(x + 10, y + 20); if (st.win === 1) win(x + w - 24, y + 20); }
+    // painted shield hung on the wall (skip when a second window already fills that side)
+    if (st.win !== 1) roundShield(x + w - 20, y + 30, 10, a.hex, true);
     // roof
     if (a.roof === 'thatch') thatchRoof(cx, y, w + 14); else woodRoof(cx, y, w + 14);
+    // ridge finial
+    drawFinial(cx, y - 40, st.finial, a.hex);
     // chimney smoke when working
     if (lit) smoke(x + 16, y - 6, now());
     // hanging sign
     signpost(cx, footY + 12, a.sign, a.hex);
-    hover(a.label, cx, y + h / 2, w / 2, '<b style="color:' + lift(a.hex, 0.3) + '">' + a.label + '’s ' + titleCase(a.sign) + '</b><br><span class="rt-enl">' + (AGENT_ROLE[a.agent] || '') + '<br>' + agentEnlist(a.agent) + ' · ' + (lit ? 'busy' : 'idle') + '</span>');
+    hover(a.label, cx, y + h / 2, w / 2, '<b style="color:' + lift(a.hex, 0.3) + '">' + a.label + '\u2019s ' + titleCase(a.sign) + '</b><br><span class="rt-enl">' + (AGENT_ROLE[a.agent] || '') + '<br>' + agentEnlist(a.agent) + ' \u00b7 ' + (lit ? 'busy' : 'idle') + '</span>');
   }
   function titleCase(s) { return s.toLowerCase().replace(/\b\w/g, function (c) { return c.toUpperCase(); }); }
   function stoneWall(x, y, w, h) {
@@ -5640,6 +5708,13 @@ function toggleReducedVisuals(el) {
 
   // ---------------------------------------------------------------- vikings
   // Simple 3/4 top-down figure; original art in the Norse palette.
+  var BEARD_HUES = ['#6b4a2a', '#3a2c1e', '#8a3a1e', '#8a8f98', '#d8b878'];
+  function vikStyle(a) {
+    if (!a._vsty) { var h = hutHash(a.label + 'v');
+      a._vsty = { helm: h % 5, beard: (h >> 3) % 4, beardHex: BEARD_HUES[(h >> 5) % BEARD_HUES.length], cloak: ((h >> 8) % 3 === 0) ? shade(a.hex, 0.35) : null };
+      a._vsty.hair = a._vsty.beardHex; }
+    return a._vsty;
+  }
   function drawViking(x, footY, o) {
     var s = o.s || 2.1, face = o.face || 'down', walk = o.walk || 0;
     var tun = o.tunic || '#8a8f98', tunD = shade(tun, 0.28);
@@ -5649,6 +5724,8 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.beginPath(); ctx.ellipse(0, 0, 7 * s, 2.4 * s, 0, 0, 7); ctx.fill();
     if (o.glow) { ctx.save(); ctx.shadowColor = o.glow; ctx.shadowBlur = 12; ctx.fillStyle = 'rgba(0,0,0,0)'; ctx.beginPath(); ctx.arc(0, -8 * s, 8 * s, 0, 7); ctx.fill(); ctx.restore(); }
     var back = face === 'up';
+    // cloak on some vikings, draped behind the body
+    if (o.cloak) { ctx.fillStyle = o.cloak; ctx.beginPath(); ctx.moveTo(-4.6 * s, -11 * s); ctx.lineTo(4.6 * s, -11 * s); ctx.lineTo(6.4 * s, -1 * s); ctx.lineTo(-6.4 * s, -1 * s); ctx.closePath(); ctx.fill(); ctx.fillStyle = shade(o.cloak, 0.25); ctx.fillRect(-6.4 * s, -2.2 * s, 12.8 * s, 1.4 * s); }
     // legs
     ctx.fillStyle = P.woodD;
     ctx.fillRect(-3 * s, -3.5 * s + Math.max(0, step), 2.4 * s, 4 * s);
@@ -5663,25 +5740,44 @@ function toggleReducedVisuals(el) {
     ctx.fillStyle = o.skin ? P.skin : P.skinD;
     ctx.fillRect(-6 * s, -10 * s, 2 * s, 5 * s); ctx.fillRect(4 * s, -10 * s, 2 * s, 5 * s);
     // head
-    var hy = -14.6 * s;
+    var hy = -14.6 * s, beardHex = o.beardHex || P.beard, beardD = shade(beardHex, 0.25);
     if (!back) {
+      ctx.fillStyle = o.hair || beardHex; ctx.fillRect(-3.4 * s, hy - 0.4 * s, 6.8 * s, 1.8 * s);   // hair under the brim
       ctx.fillStyle = P.skin; roundRect(-3.2 * s, hy, 6.4 * s, 5.4 * s, 2 * s); ctx.fill();
-      // beard
-      ctx.fillStyle = P.beard; ctx.beginPath(); ctx.moveTo(-3.2 * s, hy + 2.6 * s); ctx.lineTo(3.2 * s, hy + 2.6 * s); ctx.lineTo(1.8 * s, hy + 6.2 * s); ctx.lineTo(-1.8 * s, hy + 6.2 * s); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = P.beardD; ctx.fillRect(-3.2 * s, hy + 2.6 * s, 6.4 * s, 0.8 * s);
+      // beard -- 0 short, 1 long, 2 forked, 3 stubble + moustache
+      ctx.fillStyle = beardHex;
+      if (o.beard === 3) { ctx.fillRect(-2.6 * s, hy + 2.3 * s, 5.2 * s, 1.1 * s); ctx.fillRect(-2 * s, hy + 3.3 * s, 4 * s, 0.9 * s); }
+      else if (o.beard === 2) { ctx.beginPath(); ctx.moveTo(-3.2 * s, hy + 2.6 * s); ctx.lineTo(3.2 * s, hy + 2.6 * s); ctx.lineTo(2.4 * s, hy + 6 * s); ctx.lineTo(0.6 * s, hy + 5 * s); ctx.lineTo(-0.6 * s, hy + 7.4 * s); ctx.lineTo(-2.4 * s, hy + 6 * s); ctx.closePath(); ctx.fill(); }
+      else { var bl = o.beard === 1 ? 8.4 : 6.2; ctx.beginPath(); ctx.moveTo(-3.2 * s, hy + 2.6 * s); ctx.lineTo(3.2 * s, hy + 2.6 * s); ctx.lineTo(1.8 * s, hy + bl * s); ctx.lineTo(-1.8 * s, hy + bl * s); ctx.closePath(); ctx.fill(); }
+      ctx.fillStyle = beardD; ctx.fillRect(-3.2 * s, hy + 2.6 * s, 6.4 * s, 0.8 * s);
       // eyes
       ctx.fillStyle = '#2a2320'; ctx.fillRect(-1.8 * s, hy + 1.4 * s, 1 * s, 1 * s); ctx.fillRect(0.8 * s, hy + 1.4 * s, 1 * s, 1 * s);
     } else {
-      ctx.fillStyle = P.beard; roundRect(-3.2 * s, hy + 0.6 * s, 6.4 * s, 5 * s, 2 * s); ctx.fill();
-      ctx.fillStyle = P.beardD; ctx.fillRect(-3.2 * s, hy + 3 * s, 6.4 * s, 2.4 * s);
+      ctx.fillStyle = o.hair || beardHex; roundRect(-3.2 * s, hy + 0.6 * s, 6.4 * s, 5 * s, 2 * s); ctx.fill();
+      ctx.fillStyle = beardD; ctx.fillRect(-3.2 * s, hy + 3 * s, 6.4 * s, 2.4 * s);
     }
-    // helm (steel dome + nose guard; horns/wings for wardens & Odin-kin)
-    ctx.fillStyle = P.steel; ctx.beginPath(); ctx.arc(0, hy + 1.4 * s, 3.4 * s, Math.PI, 0); ctx.fill();
-    ctx.fillStyle = P.steelL; ctx.beginPath(); ctx.arc(-0.8 * s, hy + 1.2 * s, 3.4 * s, Math.PI + 0.3, Math.PI + 1.1); ctx.stroke();
-    ctx.fillStyle = P.steelD; ctx.fillRect(-3.4 * s, hy + 1.2 * s, 6.8 * s, 1.2 * s);
-    if (!back) { ctx.fillStyle = P.steelD; ctx.fillRect(-0.6 * s, hy + 1 * s, 1.2 * s, 2.6 * s); }   // nose guard
-    ctx.fillStyle = P.steelL; ctx.fillRect(-0.6 * s, hy - 0.4 * s, 1.2 * s, 1.4 * s);
-    if (o.helm === 2) { ctx.fillStyle = P.steelL; ctx.beginPath(); ctx.moveTo(-3.4 * s, hy + 0.8 * s); ctx.lineTo(-6 * s, hy - 2.4 * s); ctx.lineTo(-3.4 * s, hy - 0.6 * s); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(3.4 * s, hy + 0.8 * s); ctx.lineTo(6 * s, hy - 2.4 * s); ctx.lineTo(3.4 * s, hy - 0.6 * s); ctx.closePath(); ctx.fill(); }
+    // headgear -- 0 steel dome, 1 horned, 2 winged, 3 leather cap, 4 bare (hair only)
+    var helm = o.helm || 0;
+    if (helm === 4) {
+      ctx.fillStyle = o.hair || beardHex; ctx.beginPath(); ctx.arc(0, hy + 1 * s, 3.5 * s, Math.PI, 0); ctx.fill(); ctx.fillRect(-3.5 * s, hy + 0.6 * s, 1.4 * s, 2.4 * s); ctx.fillRect(2.1 * s, hy + 0.6 * s, 1.4 * s, 2.4 * s);
+    } else if (helm === 3) {
+      ctx.fillStyle = '#6b4a2a'; ctx.beginPath(); ctx.arc(0, hy + 1.4 * s, 3.4 * s, Math.PI, 0); ctx.fill();
+      ctx.fillStyle = '#4f3620'; ctx.fillRect(-3.4 * s, hy + 1.2 * s, 6.8 * s, 1.2 * s);
+      if (!back) { ctx.fillStyle = '#4f3620'; ctx.fillRect(-0.6 * s, hy + 1 * s, 1.2 * s, 2.2 * s); }
+    } else {
+      ctx.fillStyle = P.steel; ctx.beginPath(); ctx.arc(0, hy + 1.4 * s, 3.4 * s, Math.PI, 0); ctx.fill();
+      ctx.strokeStyle = P.steelL; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(-0.8 * s, hy + 1.2 * s, 3.4 * s, Math.PI + 0.3, Math.PI + 1.1); ctx.stroke();
+      ctx.fillStyle = P.steelD; ctx.fillRect(-3.4 * s, hy + 1.2 * s, 6.8 * s, 1.2 * s);
+      if (!back) { ctx.fillStyle = P.steelD; ctx.fillRect(-0.6 * s, hy + 1 * s, 1.2 * s, 2.6 * s); }
+      ctx.fillStyle = P.steelL; ctx.fillRect(-0.6 * s, hy - 0.4 * s, 1.2 * s, 1.4 * s);
+      if (helm === 1) {
+        ctx.fillStyle = '#efe6d0';
+        ctx.beginPath(); ctx.moveTo(-2.8 * s, hy + 0.4 * s); ctx.quadraticCurveTo(-6 * s, hy - 1 * s, -5.4 * s, hy - 3.8 * s); ctx.lineTo(-4 * s, hy - 3 * s); ctx.quadraticCurveTo(-4.2 * s, hy - 0.6 * s, -2.4 * s, hy - 0.4 * s); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(2.8 * s, hy + 0.4 * s); ctx.quadraticCurveTo(6 * s, hy - 1 * s, 5.4 * s, hy - 3.8 * s); ctx.lineTo(4 * s, hy - 3 * s); ctx.quadraticCurveTo(4.2 * s, hy - 0.6 * s, 2.4 * s, hy - 0.4 * s); ctx.closePath(); ctx.fill();
+      } else if (helm === 2) {
+        ctx.fillStyle = P.steelL; ctx.beginPath(); ctx.moveTo(-3.4 * s, hy + 0.8 * s); ctx.lineTo(-6 * s, hy - 2.4 * s); ctx.lineTo(-3.4 * s, hy - 0.6 * s); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(3.4 * s, hy + 0.8 * s); ctx.lineTo(6 * s, hy - 2.4 * s); ctx.lineTo(3.4 * s, hy - 0.6 * s); ctx.closePath(); ctx.fill();
+      }
+    }
     // shield (on the off-hand / back)
     if (o.shield) { var sxp = back ? 0 : -6.6 * s, syp = back ? -8 * s : -7.5 * s; roundShieldFig(sxp, syp, 4 * s, o.boss || tun); }
     // weapon (main hand)
@@ -5861,7 +5957,8 @@ function toggleReducedVisuals(el) {
     // sort by y so nearer vikings overlap farther ones
     SUBAGENTS.slice().sort(function (p, q) { return p.hy - q.hy; }).forEach(function (a) {
       var busy = isBusy(a.color) || (a.alertable && sentinelAlert);
-      drawViking(a.hx, a.hy, { tunic: a.hex, weapon: a.weapon, shield: a.weapon === 'shield' || a.weapon === 'axe' || a.weapon === 'sword', boss: a.color === 'royalgold' ? P.gold : a.hex, face: a.face, walk: a.walk, skin: true, s: 2.05, glow: (a.alertable && sentinelAlert) ? '#ff5566' : busy ? lift(a.hex, 0.2) : null });
+      var vs = vikStyle(a);
+      drawViking(a.hx, a.hy, { tunic: a.hex, weapon: a.weapon, shield: a.weapon === 'shield' || a.weapon === 'axe' || a.weapon === 'sword', boss: a.color === 'royalgold' ? P.gold : a.hex, face: a.face, walk: a.walk, skin: true, s: 2.05, helm: vs.helm, beard: vs.beard, beardHex: vs.beardHex, hair: vs.hair, cloak: vs.cloak, glow: (a.alertable && sentinelAlert) ? '#ff5566' : busy ? lift(a.hex, 0.2) : null });
       // name banner
       setFont(fontPx * 0.66, true); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
       ctx.fillStyle = 'rgba(18,16,12,0.55)'; ctx.fillText(a.label, a.hx, a.hy - 34 * 1.0 - 3 + 1);
