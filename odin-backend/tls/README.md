@@ -35,3 +35,13 @@ docker compose up -d --force-recreate odin-backend
 file is missing, it falls back to plain HTTP automatically. That's the
 normal state for local/non-Docker dev (`start-odin.ps1`), which has no
 reason to have Tailscale certs configured at all.
+
+## HTTPS down after a reboot
+
+If the container is healthy but nothing answers on port 5000, Docker
+Desktop started before Tailscale had the `ODIN_BIND_IP` address and
+silently dropped the port forward (`docker port odin-backend` prints
+nothing). `odin-portfix.cmd` in this folder handles it: run from a
+`shell:startup` shortcut at logon, it waits for Docker and Tailscale and
+restarts `odin-backend` only if the forward is missing. Manual fix is the
+same: `docker restart odin-backend`.
