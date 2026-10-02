@@ -5076,12 +5076,11 @@ KNOWN_SENSES = [
 KNOWN_DEVICES = [
     {"device": "CyberPower PC", "role": "core", "status": "connected",
      "detail": "Backend + Discord bot run here via Docker Compose"},
-    {"device": "Raspberry Pi", "role": "planned sense", "status": "not_connected",
-     "detail": "PI-SETUP.md phase 1 (flash/SSH/Tailscale/Docker) not done yet as of 2026-09-15"},
-    {"device": "M715q", "role": "planned sense", "status": "not_connected", "detail": "No code or setup doc exists yet"},
-    {"device": "M920q", "role": "planned sense", "status": "not_connected", "detail": "No code or setup doc exists yet"},
+    {"device": "ZimaBoard 2", "role": "planned sense", "status": "not_connected",
+     "detail": "Replaced the Raspberry Pi 5 plan on 2026-09-28; LAB-SETUP.md phase 1 (Tailscale/SSH key) not done yet"},
+    {"device": "Lenovo M920q (32GB/1TB)", "role": "planned sense", "status": "not_connected",
+     "detail": "Arrived 2026-09-28 with Windows 11; LAB-SETUP.md phase 1 (Proxmox/Tailscale/SSH/Docker) not done yet"},
     {"device": "NAS", "role": "planned sense", "status": "not_connected", "detail": "No code or setup doc exists yet"},
-    {"device": "Raspberry Pi 5 systems", "role": "planned sense", "status": "not_connected", "detail": "No code or setup doc exists yet"},
     {"device": "Pixel 7", "role": "remote control", "status": "partially_connected",
      "detail": "Tailscale client access to the PC confirmed via one real beta test; nothing Pixel-specific beyond that"},
 ]

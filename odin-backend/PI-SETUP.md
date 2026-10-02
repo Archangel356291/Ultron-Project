@@ -1,5 +1,7 @@
 # Raspberry Pi setup — getting it reachable, phase 1
 
+> **2026-09-28:** the Pi 5 was swapped for a ZimaBoard 2 (x86, Intel). Steps 2-4 (Raspberry Pi Imager) don't apply; the SSH-key/Tailscale/Docker steps still do on any Debian-based OS.
+
 This is step one of "let Odin reach into the home lab on the Pi": get
 the Pi itself flashed, on the same Tailscale tailnet as the Cyberpower
 PC, SSH-reachable with a key (no password guessing), and running Docker.

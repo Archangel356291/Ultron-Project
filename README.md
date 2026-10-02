@@ -39,9 +39,10 @@ dev-tools/            Testing infrastructure (fake SDKs, a real local
   `odin-discord-bot/README.md`
 - **Remote access (Tailscale)?** →
   `odin-backend/REMOTE-ACCESS.md`
-- **Connecting a Raspberry Pi for home-lab actions?** →
-  `odin-backend/PI-SETUP.md` — phase 1 (network/SSH/Docker) only; the
-  backend doesn't talk to a Pi yet
+- **Connecting the M920q / ZimaBoards for home-lab actions?** →
+  `odin-backend/LAB-SETUP.md` — phase 1 (Proxmox/Tailscale/SSH/Docker)
+  only; the backend doesn't talk to them yet (`PI-SETUP.md` is the
+  superseded Pi version)
 - **Continuing development / writing tests?** →
   `dev-tools/README.md`
 - **Dashboard's visual design, pixel-sampled against the reference
