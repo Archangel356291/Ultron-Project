@@ -2,7 +2,12 @@
 # listed here comes from SearXNG's own defaults. The secret key is supplied
 # by the SEARXNG_SECRET environment variable (see docker-compose.yml), never
 # written into this file.
-use_default_settings: true
+use_default_settings:
+  engines:
+    # Tor-only engines; no Tor proxy here, so they fail to load and spam the log.
+    remove:
+      - ahmia
+      - torch
 
 general:
   instance_name: "Odin Scout"
