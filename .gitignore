@@ -91,3 +91,22 @@ $RECYCLE.BIN/
 /odin-backend/knowledge/
 /odin-backend/chat logs/
 /odin-backend/graphify-out/
+
+# Secrets / local-only (added 2026-10-02 for the viking-dev home base)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.pfx
+id_rsa*
+id_ed25519*
+credentials*
+secrets*
+node_modules/
+.venv/
+venv/
+__pycache__/
+.stfolder/
+.stversions/
+.stignore

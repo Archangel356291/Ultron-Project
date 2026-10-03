@@ -30,3 +30,10 @@ Proxmox host `viking` = 192.168.0.50 (web UI :8006, `ssh root@192.168.0.50`, key
 | CT 100 `viking-dash` | 192.168.0.51 | bare Debian 13, purpose TBD | root via pct |
 
 Nightly `vzdump` of all guests at 03:00 to the `zima-backups` share (keep last 7). Other boxes: `viking-ai` 192.168.0.141 (ZimaOS, local AI project, Jellyfin :8096), `viking-storage` 192.168.0.176 (ZimaOS, backups).
+
+### viking-dev as home base (2026-10-02)
+
+- **Browser VS Code:** code-server on viking-dev, port 8080, password auth (password lives in Slack #viking-lab-access, never in this repo). LAN: http://192.168.0.54:8080. Tailnet HTTPS: https://viking-dev.tailc5bde9.ts.net. Not exposed to the internet.
+- **Claude Code:** installed for `archangel`; also runs as a Remote Control service named `viking-dev` (systemd user unit `claude-remote`).
+- **Syncthing:** one folder `ultron-project` = `C:\Ultron Project` on the PC <-> `/home/archangel/sync/Ultron Project` on viking-dev. `.stignore` excludes .env, keys, .ssh, credentials, node_modules, .venv. PC runs Syncthing from a Startup shortcut; viking-dev runs `syncthing@archangel`.
+- **GitHub:** viking-dev has its own key `~/.ssh/id_ed25519_github` (pinned to github.com in ~/.ssh/config); git identity matches the PC. Repos stay private.
