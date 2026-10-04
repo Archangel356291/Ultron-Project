@@ -45,15 +45,15 @@ CT 9100 (restore test) no longer exists.
 | code-server | viking-dev | https://viking-dev.tailc5bde9.ts.net | listens on 127.0.0.1:8080 only; published by `tailscale serve`, tailnet only (the old LAN URL :8080 is dead) |
 | Syncthing | viking-dev + PC | sync :22000; GUI localhost-only | folder `ultron-project` |
 | Dockge | odin-docker | http://192.168.0.53:5001 | `/opt/stacks/dockge`, image `louislam/dockge:1.5.0`. Has the docker socket (root-equivalent). Admin `archangel`, password in `/root/viking-secrets/dockge.env` |
-| Uptime Kuma | odin-docker | http://192.168.0.53:3001 | `/opt/stacks/uptime-kuma`, image `louislam/uptime-kuma:2.5.5`, SQLite. Admin `archangel` (`/root/viking-secrets/uptime-kuma.env`). 17 monitors (ping x6, http x10, dns x1) created by `/opt/stacks/_tools/setup.js`; notifications pending a Slack webhook |
+| Uptime Kuma | odin-docker | http://192.168.0.53:3001 | `/opt/stacks/uptime-kuma`, image `louislam/uptime-kuma:2.5.5`, SQLite. Admin `archangel` (`/root/viking-secrets/uptime-kuma.env`). 19 monitors created by `/opt/stacks/_tools/setup.js` (idempotent); default notification = Slack #viking-alerts via incoming webhook (`/opt/stacks/_tools/notify.js`, URL in `/root/viking-secrets/slack-webhook.env`) |
 | Homepage | odin-docker | http://192.168.0.53:3000 | `/opt/stacks/homepage`, image `ghcr.io/gethomepage/homepage:v2.4.0`; config in `config/*.yaml`; Proxmox widget uses token `homepage@pve!homepage` (PVEAuditor) from `/root/viking-secrets/homepage.env` |
-| Watchtower | odin-docker | (no UI) | `/opt/stacks/watchtower`, `containrrr/watchtower:1.7.1`, **monitor-only** (`WATCHTOWER_MONITOR_ONLY=true`, `NO_RESTART`), daily 07:00 check; needs `DOCKER_API_VERSION=1.44` with Docker 29; Slack URL goes in `/root/viking-secrets/watchtower.env`. Upstream repo is archived; `nickfedor/watchtower` is the maintained fork if it breaks |
+| Watchtower | odin-docker | (no UI) | `/opt/stacks/watchtower`, `containrrr/watchtower:1.7.1`, **monitor-only** (`WATCHTOWER_MONITOR_ONLY=true`, `NO_RESTART`), daily 07:00 check; needs `DOCKER_API_VERSION=1.44` with Docker 29; Slack #viking-alerts notifications via shoutrrr, URL in `/root/viking-secrets/watchtower.env`. Upstream repo is archived; `nickfedor/watchtower` is the maintained fork if it breaks |
 | Open WebUI | odin-docker | http://192.168.0.53:8080 | `/opt/stacks/open-webui`, image `ghcr.io/open-webui/open-webui:v0.11.4`, **host network** (reaches loopback Ollama). Admin = owner's Gmail, password in `/root/viking-secrets/open-webui.env`; `ENABLE_SIGNUP=false` (verified 403), new users would land as `pending`; OpenAI API + community sharing off |
 | Ollama | odin-docker | 127.0.0.1:11434 (loopback only, unchanged) | model pulled: `llama3.2:3b` (2 GB, CPU). Only Open WebUI (host net) reaches it |
 | Odin's Eye backend | PC | https://100.114.166.96:5000 | see `odin-backend/`, `odin-portfix.cmd` |
 
 Where compose files live: Docker services on `odin-docker` go in `/opt/stacks/<service>/compose.yaml`, all on the user-defined docker network `lab`.
-Secrets on odin-docker (root, 0600): `homepage.env` (Proxmox token `homepage@pve!homepage`, PVEAuditor), `watchtower.env` (pending Slack URL), `uptime-kuma.env`, `dockge.env`, `open-webui.env`. Layout: `/root/viking-secrets/<service>.env` **hardlinked** to `/opt/stacks/<service>/.env` so Dockge (root inside its container) and
+Secrets on odin-docker (root, 0600): `homepage.env` (Proxmox token `homepage@pve!homepage`, PVEAuditor), `watchtower.env`, `slack-webhook.env` (Slack app 'Viking Alerts', channel #viking-alerts), `uptime-kuma.env`, `dockge.env`, `open-webui.env`. Layout: `/root/viking-secrets/<service>.env` **hardlinked** to `/opt/stacks/<service>/.env` so Dockge (root inside its container) and
 `sudo docker compose` read the same single file. Stacks with an `.env` must be started with `sudo docker compose up -d`; the odin user can run the others.
 New ports need a rule in `/etc/pve/firewall/120.fw` (LAN + tailnet sources only).
 Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `viking-dev` or `viking-dash` runs in Docker yet.
@@ -86,7 +86,6 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 
 ## Pending owner actions
 
-- Slack incoming webhook for Uptime Kuma + Watchtower notifications.
 - Trust the lab root CA on phones/other devices: open http://ca.lan/viking-lab-root-ca.crt on the device (LAN or Tailscale) and install it as a CA certificate. Android: Settings > Security > Encryption & credentials > Install a certificate > CA certificate.
 - Tailscale ACL review (Phase 3): paste the current policy + the draft so it can be explained and applied with a rollback copy.
 
