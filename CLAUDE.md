@@ -26,14 +26,14 @@ Proxmox host `viking` = 192.168.0.50 (web UI :8006, `ssh root@192.168.0.50`, key
 |---|---|---|---|
 | CT 101 `viking-dev` | 192.168.0.54 | Coding dev box for VS Code Remote-SSH (Debian 13, Docker, Python 3.13, Node 20). Day-to-day user is `archangel`, never root. | `ssh viking-dev` (entry in ~/.ssh/config, key id_ed25519) |
 | CT 110 `pihole` | 192.168.0.52 | Pi-hole DNS for the LAN and tailnet (router DHCP hands out .52) | http://192.168.0.52/admin, tailnet `pihole-1` |
-| VM 120 `odin-docker` | 192.168.0.53 | Docker + Ollama host for lab services | `ssh odin@192.168.0.53` |
+| VM 120 `odin-docker` | 192.168.0.53 | Docker + Ollama host for lab services. Stacks in `/opt/stacks/<svc>/compose.yaml`: Dockge :5001, Uptime Kuma :3001, Homepage :3000, Open WebUI :8080, Watchtower (monitor-only). Secrets in `/root/viking-secrets/`. Full inventory: `docs/homelab.md` | `ssh odin@192.168.0.53` |
 | CT 100 `viking-dash` | 192.168.0.51 | bare Debian 13, purpose TBD | root via pct |
 
 Nightly `vzdump` of all guests at 03:00 to the `zima-backups` share (keep last 7). Other boxes: `viking-ai` 192.168.0.141 (ZimaOS, local AI project, Jellyfin :8096), `viking-storage` 192.168.0.176 (ZimaOS, backups).
 
 ### viking-dev as home base (2026-10-02)
 
-- **Browser VS Code:** code-server on viking-dev, port 8080, password auth (password lives in Slack #viking-lab-access, never in this repo). LAN: http://192.168.0.54:8080. Tailnet HTTPS: https://viking-dev.tailc5bde9.ts.net. Not exposed to the internet.
+- **Browser VS Code:** code-server on viking-dev, port 8080, password auth (password lives in Slack #viking-lab-access, never in this repo). Listens on 127.0.0.1:8080 only; reach it via Tailnet HTTPS https://viking-dev.tailc5bde9.ts.net (the LAN :8080 URL no longer works). Not exposed to the internet.
 - **Claude Code:** installed for `archangel`; also runs as a Remote Control service named `viking-dev` (systemd user unit `claude-remote`).
 - **Syncthing:** one folder `ultron-project` = `C:\Ultron Project` on the PC <-> `/home/archangel/sync/Ultron Project` on viking-dev. `.stignore` excludes .env, keys, .ssh, credentials, node_modules, .venv. PC runs Syncthing from a Startup shortcut; viking-dev runs `syncthing@archangel`.
 - **GitHub:** viking-dev has its own key `~/.ssh/id_ed25519_github` (pinned to github.com in ~/.ssh/config); git identity matches the PC. Repos stay private.
