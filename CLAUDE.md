@@ -29,7 +29,7 @@ Proxmox host `viking` = 192.168.0.50 (web UI :8006, `ssh root@192.168.0.50`, key
 | VM 120 `odin-docker` | 192.168.0.53 | Docker + Ollama host for lab services. Stacks in `/opt/stacks/<svc>/compose.yaml`: Dockge :5001, Uptime Kuma :3001, Homepage :3000, Open WebUI :8080, Watchtower (monitor-only). Secrets in `/root/viking-secrets/`. Full inventory: `docs/homelab.md` | `ssh odin@192.168.0.53` |
 | CT 100 `viking-dash` | 192.168.0.51 | bare Debian 13, purpose TBD | root via pct |
 
-Nightly `vzdump` of all guests at 03:00 to the `zima-backups` share (keep last 7). Other boxes: `viking-ai` 192.168.0.141 (ZimaOS, local AI project, Jellyfin :8096), `viking-storage` 192.168.0.176 (ZimaOS, backups).
+Nightly backup of all guests at 03:00 to **Proxmox Backup Server** (VM 130 `viking-pbs`, 192.168.0.55, https://backup.lan; datastore on viking-storage; prune 7d/4w/3m). VM 130 itself goes to the `zima-backups` share weekly. Off-site: restic -> Backblaze, critical set only (Pi-hole + /etc/pve). Other boxes: `viking-ai` 192.168.0.141 (ZimaOS, local AI project, Jellyfin :8096), `viking-storage` 192.168.0.176 (ZimaOS, backups).
 
 ### viking-dev as home base (2026-10-02)
 
