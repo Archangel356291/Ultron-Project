@@ -42,6 +42,8 @@ CT 9100 (restore test) no longer exists.
 | Caddy | odin-docker | :80 / :443, names `dash.lan` `kuma.lan` `dockge.lan` `chat.lan` `jellyfin.lan` `pihole.lan` `proxmox.lan` | `/opt/stacks/caddy`, image `caddy:2.10`, internal CA (`tls internal`). Root CA download for devices: **http://ca.lan/viking-lab-root-ca.crt** (fingerprint SHA256 0F:17:51:C5:63:8D...2C:6A, valid to 2036-08). Installed in the PC's user Root store 2026-10-03. Key material in `/opt/stacks/caddy/data/caddy/pki/` (never copy root.key) |
 | Jellyfin | viking-ai | http://192.168.0.141:8096 | ZimaOS App Store install; `/media/models` -> `/Media` (Movies, Music, TV Shows). `/health` returns 200 |
 | ZimaOS web UI | viking-ai, viking-storage | http://<ip>/ (:80) | SMB :139/:445 on both; SSH :22 key-only, user `Archangel` |
+| Gitea | viking-dev | https://git.lan (Caddy on odin-docker -> 192.168.0.54:3000); git over SSH `ssh://git@192.168.0.54:2222/archangel/<repo>.git` | `/opt/stacks/gitea` on viking-dev, `gitea/gitea:1.27.3`, SQLite, registration disabled, sign-in required to view, Actions off. Admin `archangel` (`~/viking-secrets/gitea.env` on viking-dev, copy in odin-docker's `/root/viking-secrets/gitea.env`). Repos: `bitcoin-mining-tycoon`, `ultrons-apk-game` (private, pushed 2026-10-04 from the PC; PC key id_ed25519 registered). 101.fw allows 3000 + 2222 from LAN/tailnet |
+| n8n | odin-docker | https://flow.lan | `/opt/stacks/n8n`, `docker.n8n.io/n8nio/n8n:2.41.6`, SQLite in `./data`, owner = owner's Gmail (`/root/viking-secrets/n8n.env`, also holds `N8N_ENCRYPTION_KEY`, keep it or credentials in backups are unreadable). Sample workflow **Inbox file -> Slack**: Local File Trigger (polling, read-only mount of viking-storage `backups/inbox` at `/files/inbox`) -> HTTP Request to the Slack webhook via `$env.SLACK_WEBHOOK_URL` (so the URL is not stored in the workflow). Diagnostics/telemetry off |
 | code-server | viking-dev | https://viking-dev.tailc5bde9.ts.net | listens on 127.0.0.1:8080 only; published by `tailscale serve`, tailnet only (the old LAN URL :8080 is dead) |
 | Syncthing | viking-dev + PC + phone | sync :22000; GUI localhost-only (`ssh -L 8384:127.0.0.1:8384 viking-dev`) | folders: `ultron-project` (PC <-> viking-dev), `phone` = `/home/archangel/sync/Phone` (viking-dev <-> Samsung phone, Syncthing-Fork, trashcan versioning 30 d). Discovery/relays off: devices are added by ID + explicit address (phone uses `tcp://192.168.0.54:22000`; it connects via the viking subnet router) |
 | Dockge | odin-docker | http://192.168.0.53:5001 | `/opt/stacks/dockge`, image `louislam/dockge:1.5.0`. Has the docker socket (root-equivalent). Admin `archangel`, password in `/root/viking-secrets/dockge.env` |
@@ -87,6 +89,16 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 - ZimaBoards: SSH key-only. Docker socket needs sudo (password), so container listing from automation is not possible there.
 - Tailscale policy reviewed 2026-10-03: two grants (member->self, member->192.168.0.0/24), single-user tailnet, no tags; kept as is. Rollback copy `docs/tailscale/policy-2026-10-03-before-phase3.hujson`. Key expiry disabled on all six lab nodes via API (key in `/root/viking-secrets/tailscale-api.env` on odin-docker, expires ~2027-01). Devices kept: pixel-7, dedede (owner's).
 
+## Gotchas learned
+
+- Compose env files: never put a value containing `$` in them (argon2 hashes); Compose interpolates even `$$`. Use the app's own config file.
+- n8n: `/healthz` is green before the REST API is ready; during migrations every route returns the SPA HTML with 200. Wait for `/rest/settings` to return JSON. Its session cookie is `Secure` (N8N_PROTOCOL=https), so plain-http API scripts must carry `n8n-auth` by hand.
+- Uptime Kuma socket API: register the `monitorList` listener before `login` or you create duplicates.
+- Immich app: the server URL must include `http://`; the app assumes https otherwise.
+- Proxmox CIFS credential file (`/etc/pve/priv/storage/<id>.pw`) is in `password=...` format, not a raw password.
+- ZimaOS: `Archangel` cannot sudo without a password and cannot write to `/media/*` over SSH; use SMB (same password) for storage access.
+- Git Bash curl on the PC is a Schannel debug build that reports `000` for working HTTPS; verify with PowerShell `Invoke-WebRequest`.
+
 ## Observations from Phase 0 (nothing changed)
 
 1. Timezones: pihole and odin-docker switched to `America/Los_Angeles` on 2026-10-03 (owner OK). viking-storage (ZimaOS) still UTC: no passwordless sudo there; change it in the ZimaOS UI if it matters.
@@ -106,7 +118,7 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 
 ## Phase log
 
-- 2026-10-03 Phase 0 inventory; Phase 1 Dockge/Uptime Kuma/Homepage/Watchtower; Phase 2 Open WebUI + llama3.2:3b; Phase 3 Unbound (Pi-hole upstream switched), Caddy + .lan names + internal CA, firewall rules. Stale cleanup: nothing left (CT 9100 and old Tailscale nodes were already gone). Tailscale: policy reviewed and kept, key expiry disabled on servers. Phase 4: Netdata on viking, CrowdSec on viking + odin-docker replacing fail2ban. Wazuh skipped (too heavy), future option. Phase 5: Vaultwarden at vault.lan, owner invited, signups closed. Phase 6: Immich, Paperless, Navidrome, Audiobookshelf, Jellyseerr, Sonarr/Radarr/Prowlarr; CIFS mounts of both ZimaBoards; Proxmox backup credential repaired.
+- 2026-10-03 Phase 0 inventory; Phase 1 Dockge/Uptime Kuma/Homepage/Watchtower; Phase 2 Open WebUI + llama3.2:3b; Phase 3 Unbound (Pi-hole upstream switched), Caddy + .lan names + internal CA, firewall rules. Stale cleanup: nothing left (CT 9100 and old Tailscale nodes were already gone). Tailscale: policy reviewed and kept, key expiry disabled on servers. Phase 4: Netdata on viking, CrowdSec on viking + odin-docker replacing fail2ban. Wazuh skipped (too heavy), future option. Phase 5: Vaultwarden at vault.lan, owner invited, signups closed. Phase 6: Immich, Paperless, Navidrome, Audiobookshelf, Jellyseerr, Sonarr/Radarr/Prowlarr; CIFS mounts of both ZimaBoards; Proxmox backup credential repaired. Phase 7 (2026-10-04): Gitea on viking-dev with both game repos pushed; n8n on odin-docker with the inbox->Slack sample workflow.
 
 ## TODO
 

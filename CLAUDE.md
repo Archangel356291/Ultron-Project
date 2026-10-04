@@ -37,6 +37,7 @@ Nightly `vzdump` of all guests at 03:00 to the `zima-backups` share (keep last 7
 - **Claude Code:** installed for `archangel`; also runs as a Remote Control service named `viking-dev` (systemd user unit `claude-remote`).
 - **Syncthing:** one folder `ultron-project` = `C:\Ultron Project` on the PC <-> `/home/archangel/sync/Ultron Project` on viking-dev. `.stignore` excludes .env, keys, .ssh, credentials, node_modules, .venv. PC runs Syncthing from a Startup shortcut; viking-dev runs `syncthing@archangel`.
 - **GitHub:** viking-dev has its own key `~/.ssh/id_ed25519_github` (pinned to github.com in ~/.ssh/config); git identity matches the PC. Repos stay private.
+- **Gitea (self-hosted git):** https://git.lan on viking-dev (`/opt/stacks/gitea`, port 3000, SSH 2222). `Bitcoin Mining Tycoon` and `Ultrons APK Game` push to remote `gitea` there (`ssh://git@192.168.0.54:2222/archangel/<repo>.git`). Registration disabled.
 
 ### Security hardening (2026-10-02)
 
