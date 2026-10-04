@@ -48,6 +48,8 @@ CT 9100 (restore test) no longer exists.
 | Uptime Kuma | odin-docker | http://192.168.0.53:3001 | `/opt/stacks/uptime-kuma`, image `louislam/uptime-kuma:2.5.5`, SQLite. Admin `archangel` (`/root/viking-secrets/uptime-kuma.env`). 19 monitors created by `/opt/stacks/_tools/setup.js` (idempotent); default notification = Slack #viking-alerts via incoming webhook (`/opt/stacks/_tools/notify.js`, URL in `/root/viking-secrets/slack-webhook.env`) |
 | Homepage | odin-docker | http://192.168.0.53:3000 | `/opt/stacks/homepage`, image `ghcr.io/gethomepage/homepage:v2.4.0`; config in `config/*.yaml`; Proxmox widget uses token `homepage@pve!homepage` (PVEAuditor) from `/root/viking-secrets/homepage.env` |
 | Watchtower | odin-docker | (no UI) | `/opt/stacks/watchtower`, `containrrr/watchtower:1.7.1`, **monitor-only** (`WATCHTOWER_MONITOR_ONLY=true`, `NO_RESTART`), daily 07:00 check; needs `DOCKER_API_VERSION=1.44` with Docker 29; Slack #viking-alerts notifications via shoutrrr, URL in `/root/viking-secrets/watchtower.env`. Upstream repo is archived; `nickfedor/watchtower` is the maintained fork if it breaks |
+| Netdata | viking | http://192.168.0.50:19999 (LAN + tailnet; cluster.fw rule) | v2.12 via kickstart, `--disable-cloud --disable-telemetry`, **not claimed** to Netdata Cloud (`/var/lib/netdata/cloud.d/cloud.conf` enabled=no). lm-sensors installed for CPU temps. Sees LXC guests via cgroups. **Not on the ZimaBoards**: ZimaOS has no package manager and `Archangel` has no passwordless sudo, so Docker can't be driven from automation there (owner can install Netdata from the ZimaOS App Store) |
+| CrowdSec | viking + odin-docker | local API 127.0.0.1:8080 (viking) / **127.0.0.1:8081** (odin-docker, 8080 is Open WebUI) | v1.8.1 from the official repo, collections `crowdsecurity/linux` + `sshd`, community blocklist (CAPI) enabled, **nftables firewall bouncer** (own `crowdsec`/`crowdsec6` tables, independent of pve-firewall). Whitelist `/etc/crowdsec/parsers/s02-enrich/viking-whitelist.yaml`: 192.168.0.0/24, 100.64.0.0/10, 127/8 (+172.16/12 on odin-docker). viking also watches `pvedaemon`/`pveproxy` journald for web-UI brute force. **fail2ban replaced**: stopped + disabled on viking (config copy `/root/fail2ban.bak-2026-10-03`, package kept). Not installed on pihole / viking-dev (unprivileged LXC, SSH-only, LAN+tailnet-only already) |
 | Open WebUI | odin-docker | http://192.168.0.53:8080 | `/opt/stacks/open-webui`, image `ghcr.io/open-webui/open-webui:v0.11.4`, **host network** (reaches loopback Ollama). Admin = owner's Gmail, password in `/root/viking-secrets/open-webui.env`; `ENABLE_SIGNUP=false` (verified 403), new users would land as `pending`; OpenAI API + community sharing off |
 | Ollama | odin-docker | 127.0.0.1:11434 (loopback only, unchanged) | model pulled: `llama3.2:3b` (2 GB, CPU). Only Open WebUI (host net) reaches it |
 | Odin's Eye backend | PC | https://100.114.166.96:5000 | see `odin-backend/`, `odin-portfix.cmd` |
@@ -70,10 +72,10 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 
 ## Security state
 
-- viking: SSH key-only, fail2ban jails `sshd` + `proxmox`, datacenter firewall input-DROP with LAN + tailnet allow for 22/8006/ICMP and UDP 41641.
+- viking: SSH key-only, CrowdSec + nftables bouncer (fail2ban retired 2026-10-03), datacenter firewall input-DROP with LAN + tailnet allow for 22/8006/ICMP and UDP 41641.
 - Guests: per-guest firewall files; **a new published service needs a rule in `/etc/pve/firewall/<id>.fw`**. 120.fw now also allows 3000,3001,5001,8080 and 80,443 from LAN + tailnet (backups `/root/120.fw.bak-*` on viking).
 - ZimaBoards: SSH key-only. Docker socket needs sudo (password), so container listing from automation is not possible there.
-- Tailscale ACL draft exists, **not applied** (Phase 3).
+- Tailscale policy reviewed 2026-10-03: two grants (member->self, member->192.168.0.0/24), single-user tailnet, no tags; kept as is. Rollback copy `docs/tailscale/policy-2026-10-03-before-phase3.hujson`. Key expiry disabled on all six lab nodes via API (key in `/root/viking-secrets/tailscale-api.env` on odin-docker, expires ~2027-01). Devices kept: pixel-7, dedede (owner's).
 
 ## Observations from Phase 0 (nothing changed)
 
@@ -87,13 +89,14 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 ## Pending owner actions
 
 - Trust the lab root CA on phones/other devices: open http://ca.lan/viking-lab-root-ca.crt on the device (LAN or Tailscale) and install it as a CA certificate. Android: Settings > Security > Encryption & credentials > Install a certificate > CA certificate.
-- Tailscale ACL review (Phase 3): paste the current policy + the draft so it can be explained and applied with a rollback copy.
+- Netdata on viking-ai / viking-storage: install from the ZimaOS App Store, or grant `Archangel` NOPASSWD sudo so Claude can run the official container.
 
 ## Phase log
 
-- 2026-10-03 Phase 0 inventory; Phase 1 Dockge/Uptime Kuma/Homepage/Watchtower; Phase 2 Open WebUI + llama3.2:3b; Phase 3 Unbound (Pi-hole upstream switched), Caddy + .lan names + internal CA, firewall rules. Stale cleanup: nothing left (CT 9100 and old Tailscale nodes were already gone). Tailscale ACL: pending owner input.
+- 2026-10-03 Phase 0 inventory; Phase 1 Dockge/Uptime Kuma/Homepage/Watchtower; Phase 2 Open WebUI + llama3.2:3b; Phase 3 Unbound (Pi-hole upstream switched), Caddy + .lan names + internal CA, firewall rules. Stale cleanup: nothing left (CT 9100 and old Tailscale nodes were already gone). Tailscale: policy reviewed and kept, key expiry disabled on servers. Phase 4: Netdata on viking, CrowdSec on viking + odin-docker replacing fail2ban. Wazuh skipped (too heavy), future option.
 
 ## TODO
 
 - Move Ollama to viking-ai after the T4 is installed and passthrough/drivers are verified (Phase 2 note).
 - Wazuh skipped (too heavy for this hardware); revisit if a bigger box arrives.
+- viking RAM: ~11-12 GB available with the VM's 16 GB fully touched by Ollama + containers. Fine for now; shrink VM 120 to 12 GB or enable ballooning if Phase 6 needs room.
