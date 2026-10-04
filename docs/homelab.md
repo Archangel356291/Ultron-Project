@@ -51,6 +51,12 @@ CT 9100 (restore test) no longer exists.
 | Netdata | viking | http://192.168.0.50:19999 (LAN + tailnet; cluster.fw rule) | v2.12 via kickstart, `--disable-cloud --disable-telemetry`, **not claimed** to Netdata Cloud (`/var/lib/netdata/cloud.d/cloud.conf` enabled=no). lm-sensors installed for CPU temps. Sees LXC guests via cgroups. **Not on the ZimaBoards**: ZimaOS has no package manager and `Archangel` has no passwordless sudo, so Docker can't be driven from automation there (owner can install Netdata from the ZimaOS App Store) |
 | CrowdSec | viking + odin-docker | local API 127.0.0.1:8080 (viking) / **127.0.0.1:8081** (odin-docker, 8080 is Open WebUI) | v1.8.1 from the official repo, collections `crowdsecurity/linux` + `sshd`, community blocklist (CAPI) enabled, **nftables firewall bouncer** (own `crowdsec`/`crowdsec6` tables, independent of pve-firewall). Whitelist `/etc/crowdsec/parsers/s02-enrich/viking-whitelist.yaml`: 192.168.0.0/24, 100.64.0.0/10, 127/8 (+172.16/12 on odin-docker). viking also watches `pvedaemon`/`pveproxy` journald for web-UI brute force. **fail2ban replaced**: stopped + disabled on viking (config copy `/root/fail2ban.bak-2026-10-03`, package kept). Not installed on pihole / viking-dev (unprivileged LXC, SSH-only, LAN+tailnet-only already) |
 | Vaultwarden | odin-docker | **https://vault.lan** only (no host port; Caddy -> `vaultwarden:80`) | `/opt/stacks/vaultwarden`, image `vaultwarden/server:1.37.3`, data `./data` (SQLite, in nightly vzdump). `SIGNUPS_ALLOWED=false`, invitations on: the owner's Gmail was **invited** from /admin, so "Create account" with that address works, anyone else gets refused. Admin page https://vault.lan/admin protected by an **argon2id** token stored in `data/config.json` (not env: Compose env-file interpolation eats the `$` in the hash); the plain admin password + hash are in `/root/viking-secrets/vaultwarden.env`. Push notifications off, password hints off. Bitwarden apps: set server URL to https://vault.lan after trusting the lab CA on the device |
+| Immich | odin-docker | https://photos.lan, app URL http://192.168.0.53:2283 (fw rule) | `/opt/stacks/immich` (upstream compose v3.2.4 + `.env` hardlink of `/root/viking-secrets/immich.env`). Uploads on **viking-storage** via CIFS `/mnt/viking-storage/immich`; Postgres + ML cache on the VM disk. Admin = owner Gmail |
+| Paperless-ngx | odin-docker | https://docs.lan | `/opt/stacks/paperless`, `ghcr.io/paperless-ngx/paperless-ngx:3.2.1` + redis:8, SQLite. media/export/consume on viking-storage (`/mnt/viking-storage/paperless/*`), index+db local. Consumer polls every 30 s (inotify does not work over SMB). Admin `archangel` |
+| Navidrome | odin-docker | https://music.lan | `/opt/stacks/navidrome`, `deluan/navidrome:0.64.2`, music **read-only** from viking-ai `/mnt/viking-ai/models/Music`. Admin `archangel`. Subsonic API for mobile apps |
+| Audiobookshelf | odin-docker | https://books.lan | `/opt/stacks/audiobookshelf`, `ghcr.io/advplyr/audiobookshelf:2.37.1`. **No library yet** (no Audiobooks folder exists on the media drive and we do not create folders there). Admin `archangel` |
+| Jellyseerr | odin-docker | https://requests.lan | `/opt/stacks/jellyseerr`, `fallenbagel/jellyseerr:2.7.3`. **Owner finishes the wizard** (Jellyfin sign-in), then links Sonarr/Radarr |
+| Sonarr / Radarr / Prowlarr | odin-docker | https://sonarr.lan, https://radarr.lan, https://prowlarr.lan | `/opt/stacks/arr` (lscr.io/linuxserver sonarr:4.0.20, radarr:6.4.4, prowlarr:2.6.5). Forms auth, user `archangel`. Root folders `/tv` and `/movies` = viking-ai TV Shows / Movies (rw mount, nothing writes). Prowlarr synced to both. **Zero indexers, zero download clients by design** |
 | Open WebUI | odin-docker | http://192.168.0.53:8080 | `/opt/stacks/open-webui`, image `ghcr.io/open-webui/open-webui:v0.11.4`, **host network** (reaches loopback Ollama). Admin = owner's Gmail, password in `/root/viking-secrets/open-webui.env`; `ENABLE_SIGNUP=false` (verified 403), new users would land as `pending`; OpenAI API + community sharing off |
 | Ollama | odin-docker | 127.0.0.1:11434 (loopback only, unchanged) | model pulled: `llama3.2:3b` (2 GB, CPU). Only Open WebUI (host net) reaches it |
 | Odin's Eye backend | PC | https://100.114.166.96:5000 | see `odin-backend/`, `odin-portfix.cmd` |
@@ -59,6 +65,8 @@ Where compose files live: Docker services on `odin-docker` go in `/opt/stacks/<s
 Secrets on odin-docker (root, 0600): `homepage.env` (Proxmox token `homepage@pve!homepage`, PVEAuditor), `watchtower.env`, `slack-webhook.env` (Slack app 'Viking Alerts', channel #viking-alerts), `vaultwarden.env`, `tailscale-api.env`, `uptime-kuma.env`, `dockge.env`, `open-webui.env`. Layout: `/root/viking-secrets/<service>.env` **hardlinked** to `/opt/stacks/<service>/.env` so Dockge (root inside its container) and
 `sudo docker compose` read the same single file. Stacks with an `.env` must be started with `sudo docker compose up -d`; the odin user can run the others.
 New ports need a rule in `/etc/pve/firewall/120.fw` (LAN + tailnet sources only).
+CIFS mounts on odin-docker (`/etc/fstab`, creds `/root/viking-secrets/zima-smb.cred`, uid/gid 1000, `_netdev,nofail`): `//192.168.0.176/backups` -> `/mnt/viking-storage`, `//192.168.0.141/models` -> `/mnt/viking-ai/models`.
+ZimaOS shares (user `Archangel`): viking-storage `backups`, `proxmox`, `ZimaOS-HD`; viking-ai `models`, `models2`, `ZimaOS-HD`.
 Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `viking-dev` or `viking-dash` runs in Docker yet.
 
 ## Backups
@@ -70,6 +78,7 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 - Older artefact: `/mnt/pve/zima-backups/pc-stacks/pc-pihole-jellyfin-stacks-2026-10-02.tgz` (archive of the retired PC Pi-hole/Jellyfin stacks).
 - Off-site: restic -> Backblaze B2 bucket `viking-backups`. **Disabled** (`restic-backup.timer` disabled) because the one 10.8 GB snapshot exceeds the 10 GB free cap. Decision pending (Phase 8).
 - Proxmox e-mail alerts go to Gmail via SMTP target `gmail`.
+- **2026-10-03 fix:** the ZimaOS password had been changed after Proxmox first mounted the share; `/etc/pve/priv/storage/zima-backups.pw` was stale and the storage showed `inactive`. Rewritten in the required `password=...` format; storage active again. The same password is also in `/root/viking-secrets/zima-smb.env` on odin-docker.
 
 ## Security state
 
@@ -89,6 +98,10 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 
 ## Pending owner actions
 
+- Jellyseerr wizard at https://requests.lan: choose Jellyfin, server `http://192.168.0.141:8096`, sign in with your Jellyfin account; then Settings > Services add Sonarr (`http://sonarr:8989`) and Radarr (`http://radarr:7878`) with the API keys from the vault.
+- Immich phone app: server `http://192.168.0.53:2283`, log in with the vault entry, enable backup.
+- Syncthing phone pairing: see Phase 6 report / CLAUDE.md.
+
 - Vaultwarden: open https://vault.lan, **Create account** with your Gmail (it is pre-invited), then export your Bitwarden vault yourself (Bitwarden web vault > Tools > Export, .json) and import it at vault.lan > Tools > Import. Claude never touches vault data.
 
 - Trust the lab root CA on phones/other devices: open http://ca.lan/viking-lab-root-ca.crt on the device (LAN or Tailscale) and install it as a CA certificate. Android: Settings > Security > Encryption & credentials > Install a certificate > CA certificate.
@@ -96,7 +109,7 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 
 ## Phase log
 
-- 2026-10-03 Phase 0 inventory; Phase 1 Dockge/Uptime Kuma/Homepage/Watchtower; Phase 2 Open WebUI + llama3.2:3b; Phase 3 Unbound (Pi-hole upstream switched), Caddy + .lan names + internal CA, firewall rules. Stale cleanup: nothing left (CT 9100 and old Tailscale nodes were already gone). Tailscale: policy reviewed and kept, key expiry disabled on servers. Phase 4: Netdata on viking, CrowdSec on viking + odin-docker replacing fail2ban. Wazuh skipped (too heavy), future option. Phase 5: Vaultwarden at vault.lan, owner invited, signups closed.
+- 2026-10-03 Phase 0 inventory; Phase 1 Dockge/Uptime Kuma/Homepage/Watchtower; Phase 2 Open WebUI + llama3.2:3b; Phase 3 Unbound (Pi-hole upstream switched), Caddy + .lan names + internal CA, firewall rules. Stale cleanup: nothing left (CT 9100 and old Tailscale nodes were already gone). Tailscale: policy reviewed and kept, key expiry disabled on servers. Phase 4: Netdata on viking, CrowdSec on viking + odin-docker replacing fail2ban. Wazuh skipped (too heavy), future option. Phase 5: Vaultwarden at vault.lan, owner invited, signups closed. Phase 6: Immich, Paperless, Navidrome, Audiobookshelf, Jellyseerr, Sonarr/Radarr/Prowlarr; CIFS mounts of both ZimaBoards; Proxmox backup credential repaired.
 
 ## TODO
 
