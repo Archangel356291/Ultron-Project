@@ -26,7 +26,7 @@ Access sheet for people: Slack #viking-lab-access.
 |---|---|---|---|---|---|---|
 | CT 100 | `viking-dash` | 192.168.0.51 | — | LXC 2c/2 GB/16 GB | Bare Debian 13 template for throwaway test CTs | running, empty |
 | CT 101 | `viking-dev` | 192.168.0.54 | 100.104.198.83 | LXC 4c/4 GB/32 GB | Coding box: code-server, Syncthing, Claude remote control | running, 3.1 GB RAM avail, disk 22 % |
-| CT 110 | `pihole` | 192.168.0.52 | 100.71.18.122 (`pihole-1`) | LXC 1c/512 MB/4 GB | Pi-hole v6 DNS for LAN + tailnet | running, 443 MB RAM avail, disk 29 % |
+| CT 110 | `pihole` | 192.168.0.52 | 100.71.18.122 (`pihole-1`) | LXC 1c/1 GB/4 GB (raised from 512 MB 2026-10-03, snapshot `pre-unbound-20261003`) | Pi-hole v6 DNS for LAN + tailnet, **Unbound** recursive resolver on 127.0.0.1#5335 | running, ~940 MB RAM avail |
 | VM 120 | `odin-docker` | 192.168.0.53 | 100.87.191.83 | VM 4c/16 GB/200 GB | Docker 29 + Ollama (CPU, no models yet); Phase 1 stacks in `/opt/stacks` | running, snapshot `pre-phase1-20261003` exists |
 
 All guests: `onboot=1`, Proxmox firewall on (`/etc/pve/firewall/<id>.fw`), unprivileged CTs, SSH key-only.
@@ -37,7 +37,9 @@ CT 9100 (restore test) no longer exists.
 | Service | Host | URL / port | Notes |
 |---|---|---|---|
 | Proxmox web UI | viking | https://192.168.0.50:8006 | TOTP on root@pam and archangel@pve |
-| Pi-hole admin | pihole | http://192.168.0.52/admin, https://pihole-1.tailc5bde9.ts.net | DNS :53 TCP/UDP. Upstreams currently `8.8.8.8`, `8.8.4.4` (roll-back values for Phase 3 Unbound) |
+| Pi-hole admin | pihole | http://192.168.0.52/admin, https://pihole.lan, https://pihole-1.tailc5bde9.ts.net | DNS :53 TCP/UDP. Upstream = `127.0.0.1#5335` (Unbound) since 2026-10-03. **Rollback:** `pihole-FTL --config dns.upstreams '["8.8.8.8","8.8.4.4"]'` (pre-change copy: `/etc/pihole/pihole.toml.bak-2026-10-03`). Local DNS records `dns.hosts`: all `*.lan` names -> 192.168.0.53 |
+| Unbound | pihole CT | 127.0.0.1:5335 (loopback only) | `/etc/unbound/unbound.conf.d/pi-hole.conf`, root hints `/var/lib/unbound/root.hints`, DNSSEC validating (dnssec-failed.org -> SERVFAIL verified), `unbound-resolvconf` disabled |
+| Caddy | odin-docker | :80 / :443, names `dash.lan` `kuma.lan` `dockge.lan` `chat.lan` `jellyfin.lan` `pihole.lan` `proxmox.lan` | `/opt/stacks/caddy`, image `caddy:2.10`, internal CA (`tls internal`). Root CA download for devices: **http://ca.lan/viking-lab-root-ca.crt** (fingerprint SHA256 0F:17:51:C5:63:8D...2C:6A, valid to 2036-08). Installed in the PC's user Root store 2026-10-03. Key material in `/opt/stacks/caddy/data/caddy/pki/` (never copy root.key) |
 | Jellyfin | viking-ai | http://192.168.0.141:8096 | ZimaOS App Store install; `/media/models` -> `/Media` (Movies, Music, TV Shows). `/health` returns 200 |
 | ZimaOS web UI | viking-ai, viking-storage | http://<ip>/ (:80) | SMB :139/:445 on both; SSH :22 key-only, user `Archangel` |
 | code-server | viking-dev | https://viking-dev.tailc5bde9.ts.net | listens on 127.0.0.1:8080 only; published by `tailscale serve`, tailnet only (the old LAN URL :8080 is dead) |
@@ -51,7 +53,7 @@ CT 9100 (restore test) no longer exists.
 | Odin's Eye backend | PC | https://100.114.166.96:5000 | see `odin-backend/`, `odin-portfix.cmd` |
 
 Where compose files live: Docker services on `odin-docker` go in `/opt/stacks/<service>/compose.yaml`, all on the user-defined docker network `lab`.
-Secrets on odin-docker (root, 0600): `homepage.env` (pending Proxmox token), `watchtower.env` (pending Slack URL), `uptime-kuma.env`, `dockge.env`, `open-webui.env`. Layout: `/root/viking-secrets/<service>.env` **hardlinked** to `/opt/stacks/<service>/.env` so Dockge (root inside its container) and
+Secrets on odin-docker (root, 0600): `homepage.env` (Proxmox token `homepage@pve!homepage`, PVEAuditor), `watchtower.env` (pending Slack URL), `uptime-kuma.env`, `dockge.env`, `open-webui.env`. Layout: `/root/viking-secrets/<service>.env` **hardlinked** to `/opt/stacks/<service>/.env` so Dockge (root inside its container) and
 `sudo docker compose` read the same single file. Stacks with an `.env` must be started with `sudo docker compose up -d`; the odin user can run the others.
 New ports need a rule in `/etc/pve/firewall/120.fw` (LAN + tailnet sources only).
 Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `viking-dev` or `viking-dash` runs in Docker yet.
@@ -69,7 +71,7 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 ## Security state
 
 - viking: SSH key-only, fail2ban jails `sshd` + `proxmox`, datacenter firewall input-DROP with LAN + tailnet allow for 22/8006/ICMP and UDP 41641.
-- Guests: per-guest firewall files; **a new published service needs a rule in `/etc/pve/firewall/<id>.fw`**.
+- Guests: per-guest firewall files; **a new published service needs a rule in `/etc/pve/firewall/<id>.fw`**. 120.fw now also allows 3000,3001,5001,8080 and 80,443 from LAN + tailnet (backups `/root/120.fw.bak-*` on viking).
 - ZimaBoards: SSH key-only. Docker socket needs sudo (password), so container listing from automation is not possible there.
 - Tailscale ACL draft exists, **not applied** (Phase 3).
 
@@ -82,11 +84,15 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 5. Loose ends from the brief already resolved: CT 9100 is gone, and the old `pihole`/`jellyfin` Tailscale nodes are no longer in the machine list. Remaining tailnet devices: viking, viking-dev, viking-ai, viking-storage, odin-docker, pihole-1, desktop-47v3oim, galaxy-s25-fe, dedede (android, offline 10 h), pixel-7 (android, offline 15 d).
 6. `/media/models2` (932 GB) on viking-ai is empty — good candidate for Immich/Paperless data if viking-storage gets tight.
 
-## Pending owner actions (auto-mode classifier refuses these for Claude)
+## Pending owner actions
 
-- Append to `/etc/pve/firewall/120.fw` on viking (ports 3000/3001/5001/8080 from LAN + tailnet). Until then the odin-docker UIs are reachable only from odin-docker itself.
-- Create `homepage@pve` (PVEAuditor) + API token `homepage`, store as `HOMEPAGE_VAR_PROXMOX_TOKEN=<id>=<secret>`... see the Phase 1 report; then `sudo ln -f /root/viking-secrets/homepage.env /opt/stacks/homepage/.env && sudo docker compose -f /opt/stacks/homepage/compose.yaml up -d`.
-- Slack incoming webhook for Uptime Kuma + Watchtower.
+- Slack incoming webhook for Uptime Kuma + Watchtower notifications.
+- Trust the lab root CA on phones/other devices: open http://ca.lan/viking-lab-root-ca.crt on the device (LAN or Tailscale) and install it as a CA certificate. Android: Settings > Security > Encryption & credentials > Install a certificate > CA certificate.
+- Tailscale ACL review (Phase 3): paste the current policy + the draft so it can be explained and applied with a rollback copy.
+
+## Phase log
+
+- 2026-10-03 Phase 0 inventory; Phase 1 Dockge/Uptime Kuma/Homepage/Watchtower; Phase 2 Open WebUI + llama3.2:3b; Phase 3 Unbound (Pi-hole upstream switched), Caddy + .lan names + internal CA, firewall rules. Stale cleanup: nothing left (CT 9100 and old Tailscale nodes were already gone). Tailscale ACL: pending owner input.
 
 ## TODO
 

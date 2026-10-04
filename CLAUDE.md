@@ -25,7 +25,7 @@ Proxmox host `viking` = 192.168.0.50 (web UI :8006, `ssh root@192.168.0.50`, key
 | Guest | Address | Purpose | Login |
 |---|---|---|---|
 | CT 101 `viking-dev` | 192.168.0.54 | Coding dev box for VS Code Remote-SSH (Debian 13, Docker, Python 3.13, Node 20). Day-to-day user is `archangel`, never root. | `ssh viking-dev` (entry in ~/.ssh/config, key id_ed25519) |
-| CT 110 `pihole` | 192.168.0.52 | Pi-hole DNS for the LAN and tailnet (router DHCP hands out .52) | http://192.168.0.52/admin, tailnet `pihole-1` |
+| CT 110 `pihole` | 192.168.0.52 | Pi-hole DNS for the LAN and tailnet (router DHCP hands out .52); upstream is Unbound on 127.0.0.1#5335 in the same CT; serves `*.lan` names -> odin-docker's Caddy | http://192.168.0.52/admin, https://pihole.lan, tailnet `pihole-1` |
 | VM 120 `odin-docker` | 192.168.0.53 | Docker + Ollama host for lab services. Stacks in `/opt/stacks/<svc>/compose.yaml`: Dockge :5001, Uptime Kuma :3001, Homepage :3000, Open WebUI :8080, Watchtower (monitor-only). Secrets in `/root/viking-secrets/`. Full inventory: `docs/homelab.md` | `ssh odin@192.168.0.53` |
 | CT 100 `viking-dash` | 192.168.0.51 | bare Debian 13, purpose TBD | root via pct |
 
