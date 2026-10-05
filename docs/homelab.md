@@ -121,6 +121,20 @@ Jellyfin is a ZimaOS App Store app (ZimaOS manages its compose). Nothing on `vik
 
 - 2026-10-03 Phase 0 inventory; Phase 1 Dockge/Uptime Kuma/Homepage/Watchtower; Phase 2 Open WebUI + llama3.2:3b; Phase 3 Unbound (Pi-hole upstream switched), Caddy + .lan names + internal CA, firewall rules. Stale cleanup: nothing left (CT 9100 and old Tailscale nodes were already gone). Tailscale: policy reviewed and kept, key expiry disabled on servers. Phase 4: Netdata on viking, CrowdSec on viking + odin-docker replacing fail2ban. Wazuh skipped (too heavy), future option. Phase 5: Vaultwarden at vault.lan, owner invited, signups closed. Phase 6: Immich, Paperless, Navidrome, Audiobookshelf, Jellyseerr, Sonarr/Radarr/Prowlarr; CIFS mounts of both ZimaBoards; Proxmox backup credential repaired. Phase 7 (2026-10-04): Gitea on viking-dev with both game repos pushed; n8n on odin-docker with the inbox->Slack sample workflow. Phase 8 (2026-10-04): PBS VM 130, datastore on viking-storage, first full backup, verified restore (CT 9100, deleted after owner OK), nightly job switched to PBS, weekly plain backup of the PBS VM, Backblaze option B.
 
+## Phase 9 (optional): declined by the owner 2026-10-04
+
+No Home Assistant (no smart devices), no k3s lab, no Windows VM. The build-out brief is complete.
+
+## Monthly checklist (15 minutes)
+
+1. **Dashboard sweep:** https://dash.lan/ — every dot green. https://kuma.lan/ — no monitors down in the last 30 days; alerts arrive in Slack #viking-alerts.
+2. **Backups:** https://backup.lan/ — last nightly job OK, verify job green, datastore usage reasonable. On viking: `restic snapshots` shows a fresh nightly-critical snapshot. Once a quarter: restore one PBS backup to a throwaway CT and boot it.
+3. **Updates:** Watchtower posts available image updates to #viking-alerts; apply with `cd /opt/stacks/<svc> && sudo docker compose pull && sudo docker compose up -d` (snapshot VM 120 first). `apt list --upgradable` on viking, odin-docker, viking-dev, viking-pbs; Pi-hole updates via `pihole -up` in CT 110; ZimaOS update page on both boards.
+4. **Security:** `cscli alerts list` on viking + odin-docker (anything surprising?); Tailscale admin console: unknown devices? Review Jellyfin users (Dashboard > Users). Check https://pihole.lan query log for odd upstreams.
+5. **Expiries:** Tailscale API token (created 2026-10-03, 90 days) -> regenerate and replace `/root/viking-secrets/tailscale-api.env`. Lab CA valid to 2036. Odin's Eye Tailscale cert on the PC: `tailscale cert` before 2026-12-14.
+6. **Vault:** export the Vaultwarden vault (Tools > Export) to the courier drive or a USB stick as an offline copy.
+7. **Headroom:** viking RAM (keep < 80 %), odin-docker disk, viking-storage disk (Immich + PBS grow here).
+
 ## TODO
 
 - Move Ollama to viking-ai after the T4 is installed and passthrough/drivers are verified (Phase 2 note).
