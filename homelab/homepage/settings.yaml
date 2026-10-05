@@ -10,6 +10,9 @@ quicklaunch:
   searchDescriptions: true
   hideInternetSearch: true
 layout:
+  Tyr AI:
+    style: row
+    columns: 1
   Infrastructure:
     style: row
     columns: 5

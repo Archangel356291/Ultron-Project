@@ -1,3 +1,9 @@
+- Tyr AI:
+    - Tyr - Private AI:
+        icon: mdi-robot-happy
+        href: https://tyr.lan
+        description: Hermes 3 command center + terminal
+        siteMonitor: http://192.168.0.139:3000
 - Infrastructure:
     - Proxmox (viking):
         icon: proxmox.png
