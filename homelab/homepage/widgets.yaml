@@ -1,0 +1,11 @@
+- resources:
+    label: odin-docker
+    cpu: true
+    memory: true
+    disk: /
+    uptime: true
+- datetime:
+    text_size: xl
+    format:
+      dateStyle: short
+      timeStyle: short

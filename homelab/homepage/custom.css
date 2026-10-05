@@ -1,0 +1,103 @@
+/* Viking Lab — cyber / future theme for Homepage (gethomepage.dev).
+   Self-contained except for two Google Fonts. Remove this file to return to stock. */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --vk-cyan: #00f0ff;
+  --vk-magenta: #ff2bd6;
+  --vk-lime: #7cff6b;
+  --vk-ink: #050912;
+  --vk-panel: rgba(8, 16, 32, 0.72);
+  --vk-line: rgba(0, 240, 255, 0.22);
+}
+
+html, body, #page_wrapper, #page_container, .page-wrapper, main {
+  background: transparent !important;
+}
+html { background: var(--vk-ink) !important; }
+body, .service-card, .bookmark, #information-widgets { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace !important; color: #cfe9f3; }
+
+/* layered backdrop: deep glow + perspective grid + faint scanlines */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(0, 240, 255, 0.16), transparent 60%),
+    radial-gradient(900px 500px at 100% 110%, rgba(255, 43, 214, 0.14), transparent 60%),
+    linear-gradient(rgba(0, 240, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.06) 1px, transparent 1px),
+    var(--vk-ink);
+  background-size: auto, auto, 48px 48px, 48px 48px, auto;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 3px);
+  mix-blend-mode: overlay;
+}
+
+#page_wrapper, #page_container, #__next > * { position: relative; z-index: 1; }
+
+/* page title */
+#page_container h1, .text-theme-800.dark\:text-theme-200 { font-family: 'Orbitron', sans-serif !important; }
+
+/* group headings */
+.service-group-name, .bookmark-group-name, h2 {
+  font-family: 'Orbitron', sans-serif !important;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 700 !important;
+  color: var(--vk-cyan) !important;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.55), 0 0 24px rgba(0, 240, 255, 0.25);
+  border-left: 3px solid var(--vk-magenta);
+  padding-left: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+.service-group-name::before, .bookmark-group-name::before { content: '// '; color: var(--vk-magenta); text-shadow: 0 0 8px rgba(255,43,214,0.6); }
+
+/* cards: glass, neon edge, lift on hover */
+.service-card, .bookmark, #information-widgets > div, .information-widget-resource, .information-widget-datetime {
+  background: var(--vk-panel) !important;
+  border: 1px solid var(--vk-line) !important;
+  border-radius: 10px !important;
+  backdrop-filter: blur(10px) saturate(130%);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.4) inset, 0 0 14px rgba(0, 240, 255, 0.10);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  position: relative; overflow: hidden;
+}
+.service-card::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: linear-gradient(90deg, var(--vk-cyan), var(--vk-magenta), transparent);
+  opacity: .8;
+}
+.service-card:hover, .bookmark:hover {
+  transform: translateY(-3px);
+  border-color: var(--vk-cyan) !important;
+  box-shadow: 0 0 22px rgba(0, 240, 255, 0.35), 0 0 48px rgba(255, 43, 214, 0.15);
+}
+.service-card .service-title, .service-card .service-name, .bookmark-name {
+  color: #ffffff !important; font-weight: 600 !important; letter-spacing: 0.02em;
+}
+.service-card .service-description, .bookmark-description { color: #8fb8c9 !important; }
+
+/* status dots & widget text */
+.service-card .status-dot, .status-dot { box-shadow: 0 0 8px currentColor; }
+#information-widgets, #information-widgets * { font-family: 'JetBrains Mono', monospace !important; }
+#information-widgets .text-theme-800, #information-widgets .text-theme-200 { color: var(--vk-cyan) !important; }
+
+/* widget panels inside cards (proxmox etc.) */
+.service-card .bg-theme-200\/50, .service-card [class*="bg-theme-200"], .service-card [class*="bg-theme-900"] {
+  background: rgba(0, 240, 255, 0.06) !important;
+  border: 1px solid rgba(0, 240, 255, 0.12) !important;
+}
+
+/* links & scrollbar */
+a { color: var(--vk-cyan); }
+a:hover { color: var(--vk-magenta); }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--vk-ink); }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--vk-cyan), var(--vk-magenta)); border-radius: 6px; }
+
+/* subtle flicker on the page title, once on load */
+@keyframes vk-flicker { 0%,100%{opacity:1} 8%{opacity:.55} 10%{opacity:1} 20%{opacity:.7} 22%{opacity:1} }
+#page_container h1 { animation: vk-flicker 2.4s linear 1; }

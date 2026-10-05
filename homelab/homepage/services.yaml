@@ -1,0 +1,120 @@
+- Infrastructure:
+    - Proxmox (viking):
+        icon: proxmox.png
+        href: https://192.168.0.50:8006
+        description: Hypervisor, 192.168.0.50
+        widget:
+          type: proxmox
+          url: https://192.168.0.50:8006
+          username: homepage@pve!homepage
+          password: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
+    - Pi-hole:
+        icon: pi-hole.png
+        href: http://192.168.0.52/admin
+        description: DNS, 192.168.0.52
+        siteMonitor: http://192.168.0.52/admin/
+    - Proxmox Backup Server:
+        icon: proxmox.png
+        href: https://backup.lan
+        description: Deduplicated backups on viking-storage
+        siteMonitor: https://192.168.0.55:8007
+    - Netdata (viking):
+        icon: netdata.png
+        href: http://192.168.0.50:19999
+        description: CPU, RAM, disk, temps
+        siteMonitor: http://192.168.0.50:19999/api/v1/info
+    - Uptime Kuma:
+        icon: uptime-kuma.png
+        href: http://192.168.0.53:3001
+        description: Monitoring
+        siteMonitor: http://uptime-kuma:3001
+- Services:
+    - Jellyfin:
+        icon: jellyfin.png
+        href: http://192.168.0.141:8096
+        description: Media, viking-ai
+        siteMonitor: http://192.168.0.141:8096/health
+    - Dockge:
+        icon: dockge.png
+        href: http://192.168.0.53:5001
+        description: Containers on odin-docker
+        siteMonitor: http://dockge:5001
+    - ZimaOS viking-ai:
+        icon: mdi-nas
+        href: http://192.168.0.141
+        description: 192.168.0.141
+        siteMonitor: http://192.168.0.141
+    - ZimaOS viking-storage:
+        icon: mdi-nas
+        href: http://192.168.0.176
+        description: 192.168.0.176, backups
+        siteMonitor: http://192.168.0.176
+    - Vaultwarden:
+        icon: vaultwarden.png
+        href: https://vault.lan
+        description: Passwords (Bitwarden-compatible)
+        siteMonitor: http://vaultwarden:80/alive
+- Media & Files:
+    - Immich (photos):
+        icon: immich.png
+        href: https://photos.lan
+        description: Phone photo backup. App URL http://192.168.0.53:2283
+        siteMonitor: http://immich-server:2283/api/server/ping
+    - Paperless-ngx (documents):
+        icon: paperless-ngx.png
+        href: https://docs.lan
+        description: Scan + search documents, stored on viking-storage
+        siteMonitor: http://paperless:8000/api/
+    - Navidrome (music):
+        icon: navidrome.png
+        href: https://music.lan
+        description: Music from viking-ai (read-only)
+        siteMonitor: http://navidrome:4533/ping
+    - Audiobookshelf:
+        icon: audiobookshelf.png
+        href: https://books.lan
+        description: Audiobooks (no library yet)
+        siteMonitor: http://audiobookshelf:80/healthcheck
+    - Jellyseerr (requests):
+        icon: jellyseerr.png
+        href: https://requests.lan
+        description: Request shows/movies
+        siteMonitor: http://jellyseerr:5055/api/v1/status
+    - Sonarr:
+        icon: sonarr.png
+        href: https://sonarr.lan
+        siteMonitor: http://sonarr:8989/ping
+    - Radarr:
+        icon: radarr.png
+        href: https://radarr.lan
+        siteMonitor: http://radarr:7878/ping
+    - Prowlarr:
+        icon: prowlarr.png
+        href: https://prowlarr.lan
+        description: No indexers configured
+        siteMonitor: http://prowlarr:9696/ping
+- Dev:
+    - Gitea (git):
+        icon: gitea.png
+        href: https://git.lan
+        description: Private repos on viking-dev
+        siteMonitor: http://192.168.0.54:3000/api/healthz
+    - n8n (automation):
+        icon: n8n.png
+        href: https://flow.lan
+        description: "Workflows. Sample: inbox file -> Slack"
+        siteMonitor: http://n8n:5678/healthz
+    - code-server:
+        icon: code-server.png
+        href: https://viking-dev.tailc5bde9.ts.net
+        description: viking-dev (Tailscale only)
+        siteMonitor: https://viking-dev.tailc5bde9.ts.net
+    - Open WebUI:
+        icon: open-webui.png
+        href: http://192.168.0.53:8080
+        description: Chat with local Ollama models
+        siteMonitor: http://192.168.0.53:8080/health
+    - Odin's Eye:
+        icon: mdi-eye
+        href: https://100.114.166.96:5000
+        description: PC backend (Tailscale)

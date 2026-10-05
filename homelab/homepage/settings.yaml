@@ -1,0 +1,24 @@
+title: VIKING // LAB
+headerStyle: clean
+theme: dark
+color: slate
+cardBlur: md
+hideVersion: true
+statusStyle: dot
+disableUpdateCheck: true
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: true
+layout:
+  Infrastructure:
+    style: row
+    columns: 5
+  Services:
+    style: row
+    columns: 4
+  Media & Files:
+    style: row
+    columns: 4
+  Dev:
+    style: row
+    columns: 3
