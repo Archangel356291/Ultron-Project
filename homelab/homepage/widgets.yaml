@@ -1,7 +1,7 @@
 - openmeteo:
-    label: Weather
-    latitude: 34.05
-    longitude: -118.24
+    label: Pahrump
+    latitude: 36.2083
+    longitude: -115.9839
     units: imperial
     cache: 5
 - resources:
