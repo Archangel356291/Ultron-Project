@@ -9,7 +9,7 @@ Access sheet for people: Slack #viking-lab-access.
 - LAN: `192.168.0.0/24`, gateway/router TP-Link Archer C4000 at `192.168.0.1` (DHCP primary DNS = `.52`).
 - Tailnet: `tailc5bde9.ts.net`, MagicDNS on. `viking` advertises `192.168.0.0/24` as a subnet router (approved),
   so phones reach LAN addresses directly. Tailscale global nameserver = pihole-1 (`100.71.18.122`).
-- Nothing is port-forwarded on the router. No public reverse proxy. **One owner-approved exception (2026-10-04):** Jellyfin is published to the internet through **Tailscale Funnel** at `https://viking.tailc5bde9.ts.net` (viking runs `tailscale funnel --bg --https=443 http://192.168.0.141:8096`; turn off with `tailscale funnel --https=443 off`). Only Jellyfin is reachable that way; family accounts (`Treez`) and the owner's `Archangel` may log in remotely, `archangel-admin` and `private` are LAN/tailnet-only (Jellyfin `EnableRemoteAccess=false`, with viking listed as a known proxy so Funnel visitors count as remote). All accounts lock after 5 wrong passwords (admin after 3). Policy rollback copy: `docs/tailscale/policy-2026-10-04-before-funnel.hujson` (the change added `nodeAttrs` funnel). Funnel bandwidth is a few Mbit/s per stream; home uplink measured 92 Mbit/s up / 100 down (2026-10-04), so Funnel is the only ceiling. Mitigation: `RemoteClientBitrateLimit` = 4 Mbit/s on `Treez` and `Archangel` (Jellyfin transcodes bigger files down for remote viewers). Transcoding is **software** (libx264) on the N150: VAAPI was tried and reverted because the ZimaOS Jellyfin app does not expose `/dev/dri` to the container (ffmpeg never got `-init_hw_device`). To enable QuickSync: in ZimaOS, Jellyfin app > Settings > add device `/dev/dri` -> `/dev/dri`, then Dashboard > Playback > Transcoding = VAAPI, device `/dev/dri/renderD128`. Moot once the Tesla T4 arrives.
+- Nothing is port-forwarded on the router. No public reverse proxy. **One owner-approved exception (2026-10-04):** Jellyfin is published to the internet through **Tailscale Funnel** at `https://armonia.tailc5bde9.ts.net` (viking runs `tailscale funnel --bg --https=443 http://192.168.0.141:8096`; turn off with `tailscale funnel --https=443 off`). Only Jellyfin is reachable that way; family accounts (`Treez`) and the owner's `Archangel` may log in remotely, `archangel-admin` and `private` are LAN/tailnet-only (Jellyfin `EnableRemoteAccess=false`, with viking listed as a known proxy so Funnel visitors count as remote). All accounts lock after 5 wrong passwords (admin after 3). Policy rollback copy: `docs/tailscale/policy-2026-10-04-before-funnel.hujson` (the change added `nodeAttrs` funnel). Funnel bandwidth is a few Mbit/s per stream; home uplink measured 92 Mbit/s up / 100 down (2026-10-04), so Funnel is the only ceiling. Mitigation: `RemoteClientBitrateLimit` = 4 Mbit/s on `Treez` and `Archangel` (Jellyfin transcodes bigger files down for remote viewers). Transcoding is **software** (libx264) on the N150: VAAPI was tried and reverted because the ZimaOS Jellyfin app does not expose `/dev/dri` to the container (ffmpeg never got `-init_hw_device`). To enable QuickSync: in ZimaOS, Jellyfin app > Settings > add device `/dev/dri` -> `/dev/dri`, then Dashboard > Playback > Transcoding = VAAPI, device `/dev/dri/renderD128`. Moot once the Tesla T4 arrives.
 
 ## Hosts
 
@@ -32,6 +32,25 @@ Access sheet for people: Slack #viking-lab-access.
 
 All guests: `onboot=1`, Proxmox firewall on (`/etc/pve/firewall/<id>.fw`), unprivileged CTs, SSH key-only.
 CT 9100 (restore test) no longer exists.
+
+## Target Range (practice) — added 2026-10-29
+
+Intentionally-vulnerable practice targets on the isolated bridge **vmbr9 (10.9.9.0/24, no internet, no home-LAN)**.
+**Off by default** (RAM-constrained host); start only to practice. Control from viking with the `range` command.
+
+| VMID | Host | IP | Teaches | Difficulty dial |
+|---|---|---|---|---|
+| CT 103 | `vuln-target` | 10.9.9.20 | DVWA web app + Linux privesc suite | `labctl` (beginner→expert) |
+| CT 105 | `vuln-shop` | 10.9.9.21 | SQLi shop + Linux privesc suite | — |
+| CT 106 | `misa` | 10.9.9.30 | Network services (FTP/SMB/SNMP/telnet + legacy banner) + Linux privesc suite | `labctl-misa` (beginner→expert) |
+
+- **Control:** `range status | up | down | reset [--start]` on viking (`/usr/local/bin/range`). `reset` rolls every target back to its `vulnbaseline` snapshot.
+- **Ryuk:** can drive the range through its lab-ops forced-command key — `range status|up|down|reset [--start]` only, nothing else (no hypervisor root).
+- **Privesc vectors** (per target): SUID binary, root cron + world-writable script, readable creds in config/history, PATH hijack; CT106 also a `sudo NOPASSWD` GTFOBins case.
+- **Isolation verified** 2026-10-29 from CT106: internet + 192.168.0.x blocked, lab peers reachable, provisioning LAN NIC removed.
+- **Credentials / full walkthrough:** private only — `homelab/range/ANSWERS.md` (lab-only weak creds; never in Slack, never on a target).
+- Build/provisioning scripts: `homelab/range/` (`build-misa.sh`, `inject-privesc.sh`, `labctl-misa`, `range`, `ryuk-ops-cmd`).
+- **Remote access (Phase 4, done 2026-10-29):** viking (`armonia`) advertises `10.9.9.0/24` (enabled). Tailscale policy: `tag:attacker` → `10.9.9.0/24` only. **Pixel 7** = `tag:attacker` (attacker-only, key-expiry off). **Latitude laptop `gelus` (100.92.206.68)** reaches the range via a `hosts` alias grant — kept untagged so it retains its normal lab/SSH/Ryuk access; key-expiry off. Untagged/other devices have no grant to the range. Policy rollback: `homelab/range/ts-acl-rollback.hujson`. Targets have no gateway/NAT off vmbr9 (internet + home-LAN isolation verified).
 
 ## Services and ports
 

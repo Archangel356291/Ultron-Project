@@ -1,0 +1,29 @@
+{
+	"grants": [
+		{
+			"src": ["autogroup:member"],
+			"dst": ["autogroup:self"],
+			"ip":  ["*"],
+		},
+		// Lab Subnet via Viking Proxmox
+		{
+			"src": ["autogroup:member"],
+			"dst": ["192.168.0.0/24"],
+			"ip":  ["*"],
+		},
+	],
+	// Allow Tailscale Funnel (public HTTPS) on our own nodes. Owner-approved 2026-10-04 for Jellyfin only.
+	"nodeAttrs": [
+		{"target": ["autogroup:member"], "attr": ["funnel"]},
+	],
+	"ssh": [
+		// The default SSH policy, which lets users SSH into devices they own.
+		// Learn more at https://tailscale.com/docs/features/tailscale-ssh
+		{
+			"action": "check",
+			"src":    ["autogroup:member"],
+			"dst":    ["autogroup:self"],
+			"users":  ["autogroup:nonroot", "root"],
+		},
+	],
+}

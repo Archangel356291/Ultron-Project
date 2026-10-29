@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# range — control the Death Note practice target range on viking.
+#   range status   show each target: VMID, state, lab level, snapshot
+#   range up       start all targets
+#   range down     stop all targets (off-by-default posture)
+#   range reset     roll every target back to its 'vulnbaseline' snapshot (leaves them stopped)
+#   range reset --start   reset, then start them
+# Targets are disposable, intentionally-vulnerable LXCs on the isolated bridge vmbr9.
+set -u
+SNAP=vulnbaseline
+# VMID:IP:what-it-teaches
+TARGETS=(
+  "103:10.9.9.20:DVWA web app + difficulty dial + linux privesc"
+  "105:10.9.9.21:SQLi shop + linux privesc"
+  "106:10.9.9.30:network services (ftp/smb/snmp/telnet/legacy) + linux privesc + labctl-misa dial"
+)
+ids(){ for t in "${TARGETS[@]}"; do echo "${t%%:*}"; done; }
+
+status(){
+  printf '%-5s %-11s %-9s %-9s %s\n' VMID IP STATE SNAP TEACHES
+  for t in "${TARGETS[@]}"; do
+    id="${t%%:*}"; rest="${t#*:}"; ip="${rest%%:*}"; teach="${rest#*:}"
+    st=$(pct status "$id" 2>/dev/null | awk '{print $2}'); st=${st:-missing}
+    snp=$(pct listsnapshot "$id" 2>/dev/null | grep -q "$SNAP" && echo ok || echo MISSING)
+    lvl=""
+    [ "$st" = running ] && lvl=$(pct exec "$id" -- cat /etc/lab-level 2>/dev/null)
+    printf '%-5s %-11s %-9s %-9s %s\n' "$id" "$ip" "$st${lvl:+/$lvl}" "$snp" "$teach"
+  done
+}
+up(){   for id in $(ids); do echo "start $id"; pct start "$id" 2>/dev/null || true; done; }
+down(){ for id in $(ids); do echo "stop $id";  pct stop  "$id" 2>/dev/null || true; done; }
+reset(){
+  local start=0; [ "${1:-}" = "--start" ] && start=1
+  for id in $(ids); do
+    echo "reset $id -> $SNAP"
+    pct stop "$id" 2>/dev/null || true
+    pct rollback "$id" "$SNAP" 2>&1 | tail -1 || echo "  WARN: rollback $id failed"
+    [ "$start" = 1 ] && pct start "$id" 2>/dev/null || true
+  done
+  echo "range reset complete$([ "$start" = 1 ] && echo ' (started)' || echo ' (left stopped)')."
+}
+case "${1:-status}" in
+  status) status;;
+  up)     up;;
+  down)   down;;
+  reset)  reset "${2:-}";;
+  *) echo "usage: range status|up|down|reset [--start]"; exit 1;;
+esac

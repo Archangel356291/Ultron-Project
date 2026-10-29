@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# labctl-misa — difficulty dial for the misa practice target (CT106, 10.9.9.30).
+# Moves offense difficulty and defense posture together across 5 rungs, like CT103's labctl.
+# Usage: labctl-misa <beginner|easy|intermediate|advanced|expert|status>
+# AUTHORIZED LAB TARGET ONLY.
+set -euo pipefail
+LEVEL_FILE=/etc/lab-level
+SSH_DROPIN=/etc/ssh/sshd_config.d/zz-lab.conf
+LAB_PORTS="21 139 445 161 2121 23 80"   # ftp smb(x2) snmp oldbanner telnet http
+
+usage(){ echo "usage: labctl-misa <beginner|easy|intermediate|advanced|expert|status>"; exit 1; }
+
+# profile:  FIREWALL FAIL2BAN SSHPW TELNET OLDBANNER
+profile(){
+  case "$1" in
+    beginner)     echo "off off yes on  on";;
+    easy)         echo "on  off yes on  on";;
+    intermediate) echo "on  on  yes off on";;
+    advanced)     echo "on  on  yes off off";;
+    expert)       echo "on  on  no  off off";;
+    *) return 1;;
+  esac
+}
+onoff(){ if [ "$2" = on ]; then systemctl enable --now "$1" 2>/dev/null || true; else systemctl disable --now "$1" 2>/dev/null || true; fi; }
+
+apply(){
+  local lvl="$1"; read -r FW F2B SSHPW TELNET OLDB < <(profile "$lvl") || usage
+  if [ "$FW" = on ]; then
+    ufw --force reset >/dev/null; ufw default deny incoming >/dev/null
+    for p in $LAB_PORTS; do ufw allow "$p" >/dev/null; done
+    ufw allow 22/tcp >/dev/null; ufw --force enable >/dev/null
+  else ufw --force disable >/dev/null 2>&1 || true; fi
+  onoff fail2ban "$F2B"
+  onoff telnet.socket "$TELNET"
+  onoff oldbanner "$OLDB"
+  printf 'PasswordAuthentication %s\nPermitRootLogin no\n' "$([ "$SSHPW" = yes ] && echo yes || echo no)" > "$SSH_DROPIN"
+  systemctl reload ssh 2>/dev/null || systemctl restart ssh 2>/dev/null || true
+  echo "$lvl" > "$LEVEL_FILE"; status
+}
+status(){
+  local lvl; lvl=$(cat "$LEVEL_FILE" 2>/dev/null || echo unset)
+  echo "misa lab level: $lvl"
+  read -r FW F2B SSHPW TELNET OLDB < <(profile "$lvl" 2>/dev/null) || return 0
+  printf "  firewall=%s fail2ban=%s ssh-password=%s telnet=%s oldbanner=%s\n" "$FW" "$F2B" "$SSHPW" "$TELNET" "$OLDB"
+}
+case "${1:-}" in
+  beginner|easy|intermediate|advanced|expert) apply "$1";;
+  status|"") status;;
+  *) usage;;
+esac

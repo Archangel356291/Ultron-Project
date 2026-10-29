@@ -1,0 +1,86 @@
+#!/bin/bash
+# Forced-command wrapper for Ryuk's lab-ops key. Only a fixed set of verbs is allowed; everything else is
+# denied + logged. No arbitrary commands ever run, even if the harness is compromised.
+#   diag                 read-only host health
+#   restart <name>       restart an allowlisted container/service/CT   (/etc/ryuk-ops-allow)
+#   detect               read-only active-attack signals (failed logins, live conns, fail2ban, our blocks)
+#   blocklist            read-only list of IPs Ryuk has firewall-blocked (the RYUK-DEF chain)
+#   block <ip>           DROP all traffic from <ip>   (active defense; harness gates this behind owner approval)
+#   unblock <ip>         remove a Ryuk block for <ip>
+#   range [status|up|down|reset [--start]]   control the practice target range (lab CTs 103/105/106 only)
+set -u
+cmd="${SSH_ORIGINAL_COMMAND:-}"
+printf '%s ryuk-ops: %s\n' "$(date -Is)" "$cmd" >> /var/log/ryuk-ops.log 2>/dev/null || true
+ALLOW=/etc/ryuk-ops-allow
+S=""; [ "$(id -u)" = "0" ] || S="sudo -n"   # use sudo only when not already root (grant NOPASSWD for iptables/journalctl/lastb)
+
+# firewall binary for an address: ip6tables for IPv6 (has ':'), iptables otherwise
+_ipt(){ case "$1" in *:*) echo ip6tables;; *) echo iptables;; esac; }
+# ensure our own chain exists and is hooked into INPUT (idempotent)
+_ensure_chain(){ local t="$1"; $S "$t" -nL RYUK-DEF >/dev/null 2>&1 || { $S "$t" -N RYUK-DEF && $S "$t" -I INPUT -j RYUK-DEF; }; }
+
+case "$cmd" in
+  diag)
+    echo "== $(hostname) =="
+    uptime
+    echo; free -h 2>/dev/null | head -2
+    echo; df -h / 2>/dev/null | tail -1
+    if command -v docker >/dev/null 2>&1; then echo; echo "[containers]"; docker ps --format '{{.Names}}  {{.Status}}' 2>/dev/null | head -25; fi
+    if command -v systemctl >/dev/null 2>&1; then echo; echo "[failed units]"; systemctl --failed --no-legend 2>/dev/null | head -10; fi
+    if command -v pct >/dev/null 2>&1; then echo; echo "[guests]"; pct list 2>/dev/null | tail -n +2; qm list 2>/dev/null | tail -n +2; fi
+    echo; echo "[heal-allowlist]"; cat "$ALLOW" 2>/dev/null | tr '\n' ' '; echo
+    ;;
+
+  detect)
+    echo "== $(hostname) defense scan @ $(date -Is) =="
+    echo "[top failed-login source IPs]"
+    ( $S lastb -i 2>/dev/null | awk '$3 ~ /^[0-9a-fA-F:.]+$/ {print $3}' | sort | uniq -c | sort -rn | head -10 ) 2>/dev/null
+    echo "[recent sshd auth failures by IP (journal, last 2h)]"
+    ( $S journalctl _COMM=sshd --since '-2h' --no-pager 2>/dev/null | grep -iE 'failed password|invalid user|authentication failure' \
+        | grep -oE 'from [0-9a-fA-F:.]+' | awk '{print $2}' | sort | uniq -c | sort -rn | head -10 ) 2>/dev/null
+    echo "[established connections by remote IP]"
+    ( ss -tnH state established 2>/dev/null | awk '{print $4}' | sed 's/:[0-9]*$//' | sed 's/^\[//; s/\]$//' | sort | uniq -c | sort -rn | head -12 )
+    if command -v fail2ban-client >/dev/null 2>&1; then
+      echo "[fail2ban]"; $S fail2ban-client status 2>/dev/null | tr '\n' ' '; echo
+    fi
+    echo "[currently Ryuk-blocked (RYUK-DEF)]"
+    { $S iptables -S RYUK-DEF 2>/dev/null; $S ip6tables -S RYUK-DEF 2>/dev/null; } | awk '/-s /{for(i=1;i<=NF;i++) if($i=="-s") print $(i+1)}' | sort -u
+    ;;
+
+  blocklist)
+    { $S iptables -S RYUK-DEF 2>/dev/null; $S ip6tables -S RYUK-DEF 2>/dev/null; } \
+      | awk '/-s /{for(i=1;i<=NF;i++) if($i=="-s") print $(i+1)}' | sort -u | sed 's/^/blocked: /'
+    echo "(end)"
+    ;;
+
+  "block "*|"unblock "*)
+    verb="${cmd%% *}"; ip="${cmd#* }"
+    case "$ip" in
+      *[!0-9A-Fa-f:./]*|"" ) echo "DENIED: bad IP '$ip'"; exit 3;;
+    esac
+    t="$(_ipt "$ip")"
+    if [ "$verb" = "block" ]; then
+      _ensure_chain "$t"
+      $S "$t" -C RYUK-DEF -s "$ip" -j DROP 2>/dev/null || $S "$t" -I RYUK-DEF -s "$ip" -j DROP
+      if $S "$t" -C RYUK-DEF -s "$ip" -j DROP 2>/dev/null; then echo "BLOCKED $ip"; else echo "FAILED to block $ip"; exit 5; fi
+    else
+      if $S "$t" -D RYUK-DEF -s "$ip" -j DROP 2>/dev/null; then echo "UNBLOCKED $ip"; else echo "not blocked: $ip"; fi
+    fi
+    ;;
+
+  range|"range "*)
+    sub="${cmd#range}"; sub="${sub# }"
+    case "$sub" in
+      ""|status)        exec range status;;
+      up)               exec range up;;
+      down)             exec range down;;
+      reset)            exec range reset;;
+      "reset --start")  exec range reset --start;;
+      *) echo "DENIED: range allows only status|up|down|reset [--start]"; exit 2;;
+    esac
+    ;;
+
+  *)
+    echo "DENIED: Ryuk lab-ops allows only diag | restart <name> | detect | blocklist | block <ip> | unblock <ip> | range [status|up|down|reset [--start]]"; exit 1
+    ;;
+esac
