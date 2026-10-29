@@ -5,26 +5,26 @@ Private. Lab-only weak credentials appear below — isolated practice network on
 
 ---
 
-## 0. One-time setup
+## 0. Environment (already set up)
 
-**Pixel 7**
-1. Install the **Tailscale** app → sign in as `Archangel356291`. The phone is already tagged `tag:attacker` and never expires.
-2. Install **KaliDroid** (Kali in a proot/chroot on Android). Launch it once so the rootfs unpacks.
-3. Inside Kali, update tools you'll use: `apt update && apt install -y nmap smbclient snmp ftp hydra sqlmap nikto netcat-traditional seclists`.
+**Pixel 7 (GrapheneOS)** — Tailscale app signed in as `Archangel356291`, tagged `tag:attacker` (range-only, never expires). The phone does **not** need `--accept-routes` (Android Tailscale uses the subnet route automatically).
 
-**Laptop (gelus) — run once, needed to reach the range:**
+**KaliDroid** — a real QEMU Kali VM (not proot): 4 GB RAM / 4 vCPU / 16 GB disk, **OpenRC** init (not systemd — a `systemctl` shim prints harmless `SyntaxWarning` lines, ignore them), zsh, terminal auto-logs in as root. Tools already installed (`kali-tools-top10`: nmap, metasploit, sqlmap, john, hydra, netexec, responder, bloodhound.py, certipy + nikto, gobuster, whatweb, theharvester). SSH on **port 9922** (LAN-exposure off). Phone Downloads is shared into the VM at **`/mnt/downloads`**. Metasploit DB (`msfdb`) and the TryHackMe OpenVPN auto-start at boot — THM's `tun0` and the lab range coexist fine.
+
+> ### ⚠️ KaliDroid networking reality — READ THIS
+> The VM sits behind **QEMU user-mode NAT** (VM IP `10.0.2.15`, gateway `10.0.2.2`). Outbound TCP/UDP works and rides the phone's Tailscale, but **raw ICMP `ping`, ARP sweeps, and SYN (`-sS`) / UDP scans do NOT traverse QEMU NAT.**
+> - Use **`nmap -sT -Pn`** (TCP connect, no ping) — *never* `-sS`, `-sU`, or ping-based discovery from the VM.
+> - Test reachability with a TCP check, not ping: `nc -vz 10.9.9.20 80`.
+> - Reverse shells to the phone need an app port-forward and usually fail — **catch them on CT102 `kali` or the laptop** instead.
+
+**Laptop (gelus) — already done** (`sudo tailscale set --accept-routes=true`); it reaches the range natively, so from the laptop `ping`/`-sS` work normally.
+
+**Verify the phone can see the range** (from KaliDroid, after `range up` on viking) — use a TCP check, ping won't work here:
 ```bash
-sudo tailscale set --accept-routes
-# verify:
-ping -c1 10.9.9.20   # DVWA should answer once the range is up
+nc -vz 10.9.9.20 80        # DVWA — "open" = you're in
+nc -vz 10.9.9.30 21        # misa FTP
 ```
-The phone does **not** need `--accept-routes` (KaliDroid/Android rides the app's routes automatically).
-
-**Verify the phone can see the range** (from KaliDroid, after `range up` on viking):
-```bash
-ping -c1 10.9.9.20 && ping -c1 10.9.9.30
-```
-No answer → open the Tailscale app and confirm it's Connected; make sure the range is up (below).
+No connection → open the Tailscale app, confirm it's Connected, and make sure the range is up (below).
 
 ---
 
@@ -55,10 +55,14 @@ ssh root@192.168.0.50 "pct exec 106 -- labctl-misa advanced"      # services box
 | 10.9.9.30 | misa (CT106) | Network-service recon/exploitation (FTP/SMB/SNMP/telnet) + Linux privesc |
 
 ### Recon first (always)
+From **KaliDroid** (behind QEMU NAT) use TCP-connect scans only:
 ```bash
-nmap -sV -sC -p- 10.9.9.30          # full service/version scan
-nmap -sU --top-ports 25 10.9.9.30   # UDP (catches SNMP 161)
+nmap -sT -Pn -sV 10.9.9.30                 # TCP connect + version (no ping, no SYN)
+nmap -sT -Pn -p- 10.9.9.30                 # full TCP port sweep
+# SNMP/UDP won't scan through QEMU NAT — just query it directly:
+snmpwalk -v2c -c public 10.9.9.30 | head
 ```
+From the **laptop** (native routing) the normal fast scans work: `nmap -sV -sC -p- 10.9.9.30`, `nmap -sU --top-ports 25 10.9.9.30`.
 
 ### misa (10.9.9.30) walkthrough
 ```bash
@@ -144,4 +148,4 @@ The Pixel is behind mobile-carrier NAT, so targets usually **can't** connect bac
 | SUID hunt | `find / -perm -4000 2>/dev/null` |
 | Sudo check | `sudo -l` |
 
-**Golden rules:** range IPs are `10.9.9.x` (isolated, safe to hammer, reset anytime). Real clients only with signed authorization and in scope. Phone can't catch reverse shells behind NAT — use the laptop on-site.
+**Golden rules:** range IPs are `10.9.9.x` (isolated, safe to hammer, reset anytime). Real clients only with signed authorization and in scope. From **KaliDroid** use `nmap -sT -Pn` only (QEMU NAT blocks ping/SYN/UDP); from the **laptop** normal scans work. Phone can't catch reverse shells behind NAT — use the laptop or CT102 on-site.
